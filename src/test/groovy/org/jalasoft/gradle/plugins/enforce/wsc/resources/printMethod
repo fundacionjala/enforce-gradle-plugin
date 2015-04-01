@@ -1,0 +1,3 @@
+public void print(String s){
+ System.Debug('Hello world!');
+}
