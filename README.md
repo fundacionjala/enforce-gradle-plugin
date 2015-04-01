@@ -32,13 +32,29 @@ Here you can find the enought required information to have running a Gradle proj
 ```
 
 2.Register a Salesforce credential to be used
+
 ```groovy
-   $ gradle addCredential -Pid=<identifier>
-						  -Puser=<USER NAME>
-						  -Ppassword=<PASSWORD>
-						  -Ptoken=<SECURITY TOKEN>
+   $ gradle addCredential -Pid=<IDENTIFIER>
+			  -Puser=<USER NAME>
+			  -Ppassword=<PASSWORD>
+			  -Ptoken=<SECURITY TOKEN>
 ```
-3.Start executing available commands, for example, retrieve all the classes from the Salesforce Organization
+
+In this step is recomendable put credential id as ***default*** value, to run the EnForce tasks without using ***credentialId*** parameter.
+
+Executing a task without ***credentialId*** parameter:
+
+	$ gradle <TASK NAME>
+	
+Is command execute a task using credential by default.
+	
+Executing a task with ***credentialId*** parameter:
+
+	$ gradle <TASK NAME> -PcredentialId=<CREDENTIAL ID>
+	
+This credential will be saved in credentials.dat file located in user HOME directory.
+
+3.Start executing available commands, for example, deploy all classes from your local repository to your organization.
 
 ```
    $ gradle deploy
