@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge' />
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <link rel='stylesheet' href='https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css' />
+    <link rel='stylesheet' href='https://netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.css' />
+    <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css' />
+    <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js'></script>
+    <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-route.js'></script>
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+    <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js'></script>
+    <script src='http://bouil.github.io/angular-google-chart/ng-google-chart.js'></script>
+  </head>
+  <body ng-app='MyApp'>
+    <header>
+      <nav class='navbar navbar-default'>
+        <div class='container'>
+          <div class='navbar-header'>
+            <a class='navbar-brand' href='/'>SFDC-Dev-Tool</a>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <script type='text/javascript'>
+            var app = angular.module("MyApp", ['googlechart']);
+    </script>
+
+    <script type='text/javascript'>
+
+          app.controller('controllerChartPie', function($scope) {
+
+              var chart1 = {};
+              chart1.type = "PieChart";
+              chart1.data = [['Lines', 'Number'], ['danger', 2], ['warning', 0], ['info', 0], ['success', 0]]
+              chart1.options = {
+                      displayExactValues: true,
+                      width: 400,
+                      height: 200,
+                      is3D: true,
+                      chartArea: {left:10,top:10,bottom:0,height:"100%"}
+              };
+              $scope.chart = chart1;
+          });
+    </script>
+
+    <script type='text/javascript'>
+        app.controller('controllerClass', function($scope) {
+                  $scope.files = [{name: 'class1', percentage: [50, 'danger']}]
+         });
+    </script>
+    <script type='text/javascript'>
+        app.controller('controllerTrigger', function($scope) {
+            $scope.files = [{name: 'trigger1', percentage: [50, 'danger']}]
+        });
+    </script>
+    <div class='container'>
+      <h1 style='text-align:center;'>
+        <spa class='label label-default'>Coverage Report</spa>
+      </h1>
+      <div ng-controller='controllerChartPie' style='border:1px solid #ddd; margin: 50px 0px 50px 0px;'>
+        <div style='margin-left:40%;'>
+          <div google-chart chart='chart'></div>
+        </div>
+        <div style='text-align:center;'>
+          <h1>50 %</h1>
+        </div>
+      </div>
+      <div class='tabs'>
+        <ul class='nav nav-tabs' id='myTab'>
+          <li class='active'>
+            <a data-toggle='tab' href='#tab1'>Classes</a>
+          </li>
+          <li>
+            <a data-toggle='tab' href='#tab2'>Triggers</a>
+          </li>
+        </ul>
+        <div class='tab-content'>
+          <div id='tab1' class='tab-pane fade in active'>
+            <div ng-controller='controllerClass'>
+              <h3>Search a Class</h3>
+              <form class='form-inline'>
+                <input ng-model='query' type='text' placeholder='Filter by name' />
+              </form>
+              <div class='table-responsive'>
+                <table class='table table-bordered'>
+                  <thead>
+                    <th>Name Class</th>
+                    <th>Coverage</th>
+                  </thead>
+                  <tbody>
+                    <tr ng-repeat='file in files | filter: query | orderBy: &apos;percentage[0]&apos; '>
+                      <td>{{file.name}}</td>
+                      <td>
+                        <div class='progress'>
+                          <div class='progress-bar progress-bar-{{file.percentage[1]}}' role='progressbar' aria-valuenow='{{file.percentage[0]}}' aria-valuemin='0' aria-valuemax='100' style='width: {{file.percentage[0]}}%'>{{file.percentage[0]}}%</div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div id='tab2' class='tab-pane fade'>
+            <div ng-controller='controllerTrigger'>
+              <h3>Search a Trigger</h3>
+              <form class='form-inline'>
+                <input ng-model='query' type='text' placeholder='Filter by name' />
+              </form>
+              <div class='table-responsive'>
+                <table class='table table-bordered'>
+                  <thead>
+                    <th>Name Class</th>
+                    <th>Coverage</th>
+                  </thead>
+                  <tbody>
+                    <tr ng-repeat='file in files | filter: query | orderBy: &apos;percentage[0]&apos; '>
+                      <td>{{file.name}}</td>
+                      <td>
+                        <div class='progress'>
+                          <div class='progress-bar progress-bar-{{file.percentage[1]}}' role='progressbar' aria-valuenow='{{file.percentage[0]}}' aria-valuemin='0' aria-valuemax='100' style='width: {{file.percentage[0]}}%'>{{file.percentage[0]}}%</div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

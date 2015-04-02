@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv='X-UA-Compatible' content='IE=edge' />
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <link rel='stylesheet' href='styles/bootstrap.min.css' />
+    <link href="styles/dashboard.css" rel="stylesheet">
+    <script src='scripts/angular.min.js'></script>
+    <script src='scripts/jquery.min.js'></script>
+    <script src='scripts/bootstrap.min.js'></script>
+    <script src='http://bouil.github.io/angular-google-chart/ng-google-chart.js'></script>
+    <link href='http://fonts.googleapis.com/css?family=Alfa+Slab One' rel='stylesheet' type='text/css'>
+    <title>Analysis Report Coverage </title>
+  </head>
+  <body ng-app='MyApp'>
+    <script type='text/javascript'>
+            var app = angular.module("MyApp", ['googlechart']);
+    </script>
+
+    <script type='text/javascript'>
+
+          app.controller('controllerChartPie', function(\$scope) {
+
+              var coverage = {};
+              coverage.type = "PieChart";
+              coverage.data = $arrayChartCoverage
+              coverage.options = {
+                      displayExactValues: true,
+                      width: 400,
+                      height: 200,
+                      is3D: true,
+                      slices: {
+                          0: { color: '#5cb85c'},
+                          1: { color: '#d2322d' }
+                      },
+                      chartArea: {left:10,top:10,bottom:0,height:"100%"}
+              };
+              \$scope.chartCoverage = coverage;
+
+              var chart1 = {};
+              chart1.type = "PieChart";
+              chart1.data = $arrayChartPie
+              chart1.options = {
+                      displayExactValues: true,
+                      width: 600,
+                      height: 200,
+                      is3D: true,
+                      slices: {
+                          0: { color: '#d2322d' },
+                          1: { color: '#ed9c28'},
+                          2: { color: '#2aabd2'},
+                          4: { color: '#5cb85c'}
+                      },
+                      chartArea: {left:10,top:10,bottom:0,height:"100%"}
+              };
+              \$scope.chart = chart1;
+              \$scope.linesCovered;
+              \$scope.percentCovered;
+              \$scope.linesNotCovered;
+              \$scope.percentNotCovered;
+              \$scope.totalLines;
+              \$scope.colorCoverage = "green"
+              for (var info in coverage.data) {
+                  var arrayData = coverage.data[info]
+                  if(arrayData[0] === "Covered") {
+                    \$scope.linesCovered = arrayData[1]
+                  }
+                  if(arrayData[0] === "Not Covered") {
+                     \$scope.linesNotCovered = arrayData[1]
+                  }
+              }
+              \$scope.totalLines =\$scope.linesCovered + \$scope.linesNotCovered;
+              \$scope.percentageCoverage = 0
+              if(\$scope.linesCovered + \$scope.linesNotCovered) {
+                \$scope.percentageCoverage = parseInt((\$scope.linesCovered / (\$scope.linesCovered + \$scope.linesNotCovered)) * 100);
+              }
+              \$scope.percentCovered = \$scope.percentageCoverage
+              \$scope.percentNotCovered = 100 - \$scope.percentCovered
+
+              if(\$scope.percentageCoverage < 74) {
+                \$scope.colorCoverage = "red";
+              }
+
+              \$scope.chartObject = {};
+
+              \$scope.chartObject.data = [
+                  ['unit test', '', { role: 'style' }, { role: 'annotation' }],
+                  ['Success', $unitTestPass, 'green', '$unitTestPass'],
+                  ['Fail', $unitTestFail, 'red', '$unitTestFail']];
+
+              \$scope.chartObject.type = 'BarChart';
+              \$scope.chartObject.options = {
+                  title: "Total Unit Tests: "+ ($unitTestPass + $unitTestFail) ,
+                  width: 1000,
+                  height: 300,
+                  legend: { position: "none" }
+              }
+          });
+    </script>
+
+  <script type='text/javascript'>
+      app.controller('controllerUnitTest', function(\$scope) {
+      \$scope.files = $arrayUnitTest;
+
+            \$scope.orderByField='name';
+            \$scope.danger=true;
+            \$scope.success=false;
+            \$scope.allUnitTest = $unitTestPass + $unitTestFail;
+            \$scope.valueButtonSuccess = "btn btn-success";
+            \$scope.\$watch('success', function() {
+              if (\$scope.success == true) {
+              \$scope.valueButtonSuccess = "btn btn-success";
+              } else {
+              \$scope.valueButtonSuccess = "btn btn-default";
+              }
+          });
+
+            \$scope.valueButtonDanger = "btn btn-danger";
+            \$scope.\$watch('danger', function() {
+              if (\$scope.danger == true) {
+              \$scope.valueButtonDanger = "btn btn-danger";
+              } else {
+              \$scope.valueButtonDanger = "btn btn-default";
+              }
+          });
+
+      });
+  </script>
+
+    <script type='text/javascript'>
+        app.controller('controllerClass', function(\$scope) {
+                  \$scope.files = $arrayClass
+
+            \$scope.orderByField='name';
+            \$scope.danger=true;
+            \$scope.warning=true;
+            \$scope.info=true;
+            \$scope.success=true;
+
+            \$scope.valueButtonSuccess = "btn btn-success";
+            \$scope.\$watch('success', function() {
+                if (\$scope.success == true) {
+                    \$scope.valueButtonSuccess = "btn btn-success";
+                } else {
+                    \$scope.valueButtonSuccess = "btn btn-default";
+                }
+            });
+
+
+            \$scope.valueButtonInfo = "btn btn-info";
+            \$scope.\$watch('info', function() {
+                if (\$scope.info == true) {
+                    \$scope.valueButtonInfo = "btn btn-info";
+                } else {
+                    \$scope.valueButtonInfo = "btn btn-default";
+                }
+            });
+
+            \$scope.valueButtonWarning = "btn btn-warning";
+            \$scope.\$watch('warning', function() {
+                if (\$scope.warning == true) {
+                    \$scope.valueButtonWarning = "btn btn-warning";
+                } else {
+                    \$scope.valueButtonWarning = "btn btn-default";
+                }
+            });
+
+            \$scope.valueButtonDanger = "btn btn-danger";
+            \$scope.\$watch('danger', function() {
+                if (\$scope.danger == true) {
+                    \$scope.valueButtonDanger = "btn btn-danger";
+                } else {
+                    \$scope.valueButtonDanger = "btn btn-default";
+                }
+            });
+
+         });
+    </script>
+    <script type='text/javascript'>
+        app.controller('controllerTrigger', function(\$scope) {
+            \$scope.orderByField='name';
+            \$scope.files = $arrayTrigger
+            \$scope.danger=true;
+            \$scope.warning=true;
+            \$scope.info=true;
+            \$scope.success=true;
+
+            \$scope.valueButtonSuccess = "btn btn-success";
+            \$scope.\$watch('success', function() {
+                if (\$scope.success == true) {
+                \$scope.valueButtonSuccess = "btn btn-success";
+                } else {
+                \$scope.valueButtonSuccess = "btn btn-default";
+                }
+            });
+
+
+            \$scope.valueButtonInfo = "btn btn-info";
+            \$scope.\$watch('info', function() {
+                if (\$scope.info == true) {
+                \$scope.valueButtonInfo = "btn btn-info";
+                } else {
+                \$scope.valueButtonInfo = "btn btn-default";
+                }
+            });
+
+            \$scope.valueButtonWarning = "btn btn-warning";
+            \$scope.\$watch('warning', function() {
+                if (\$scope.warning == true) {
+                \$scope.valueButtonWarning = "btn btn-warning";
+                } else {
+                \$scope.valueButtonWarning = "btn btn-default";
+                }
+            });
+
+            \$scope.valueButtonDanger = "btn btn-danger";
+            \$scope.\$watch('danger', function() {
+                if (\$scope.danger == true) {
+                \$scope.valueButtonDanger = "btn btn-danger";
+                } else {
+                \$scope.valueButtonDanger = "btn btn-default";
+                }
+            });
+        });
+    </script>
+  <script type='text/javascript'>
+      app.controller('controllerChart', function(\$scope) {
+          \$scope.charts = true;
+          \$scope.coverage = false;
+          \$scope.unitTest = false;
+
+          \$scope.chartsActive = "active";
+          \$scope.coverageActive = "";
+          \$scope.unitTestActive = "";
+
+      });
+  </script>
+
+
+    <div class='container' ng-controller='controllerChart'>
+
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand subtitle-team" href='#'>ENFORCE</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li class="{{chartsActive}}"><a href="#" ng-click="charts=true; coverage=false; unitTest=false; chartsActive='active'; coverageActive=''; unitTestActive=''">Summary</a></li>
+                    <li class="{{coverageActive}}"><a href="" ng-click="charts=false; coverage=false; unitTest=true;chartsActive=''; coverageActive='active'; unitTestActive=''">Unit Test</a></li>
+                    <li class="{{unitTestActive}}"><a href="" ng-click="charts=false; coverage=true; unitTest=false;chartsActive=''; coverageActive=''; unitTestActive='active'">Coverage</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+        <div class="row" style="margin-top:50px;">
+            <div class="col-md-12">
+                <div ng-show="charts" style='border:1px solid #ddd; margin: 50px 0px 50px 0px; border-radius: 10px;'>
+                    <div ng-controller='controllerChartPie'>
+                        <div class='row' id="idCharts">
+                            <div class = "col-md-5">
+                                <h4> Organization Coverage </h4>
+                                <p class="Coverage-Report" style="color: {{colorCoverage}}">{{percentageCoverage}}%</p>
+                                <table class='table table-responsive'>
+                                    <tbody>
+                                    <tr>
+                                        <td>Lines covered:</td>
+                                        <td>{{linesCovered}} ({{percentCovered}})%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Lines not covered:</td>
+                                        <td>{{linesNotCovered}} ({{percentNotCovered}})%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Total lines:</td>
+                                        <td>{{totalLines}}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class = "col-md-7">
+                                <h4> Analysis </h4>
+                                <div google-chart chart='chart'></div>
+                            </div>
+                        </div>
+                        <div class="row" id="idCharts">
+                            <div class = "col-md-12">
+                                <h4> Unit Test Result </h4>
+                                <div google-chart chart='chartObject'></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div ng-show="unitTest" ng-controller='controllerUnitTest'>
+                    <div class="row"  style="border-bottom:1px solid #ddd">
+                        <div class = "col-md-8">
+                            <h1>Unit Test Result</h1>
+                        </div>
+                        <div class = "col-md-4">
+                        <table class="table table-condensed">
+                            <thead>
+                            <th> Unit test Fail </th>
+                            <th> Unit test Success </th>
+                            <th> Total unit test </th>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td class="danger">$unitTestFail</td>
+                                <td class="success">$unitTestPass</td>
+                                <td class="info">{{allUnitTest}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        </div>
+                    </div>
+                    <h3>All Test</h3>
+                    <form class='form-inline'>
+                        <input ng-model='query' type='text' placeholder='Filter by name' />
+                        <button class="{{valueButtonSuccess}}" ng-click="success = !success">Success</button>
+                        <button class="{{valueButtonDanger}}" ng-click="danger = !danger">Fail</button>
+                    </form>
+                    <div class='table-responsive'>
+                        <table class='table table-bordered'>
+                            <thead>
+                            <th> <a href="#" ng-click="orderByField='name'; reverse = !reverse">
+                                Unit Test<span ng-show="orderByField == 'name'"><span ng-show="!reverse" class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span><span ng-show="reverse" class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span></span>
+                            </a></th>
+                            <th> <a href="#" ng-click="orderByField='status'; reverse = !reverse">
+                                State <span ng-show="orderByField == 'status'"><span ng-show="!reverse" class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span><span ng-show="reverse" class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span></span>
+                            </a></th>
+                            <th> <a href="#" ng-click="orderByField='description'; reverse = !reverse">
+                                Description <span ng-show="orderByField == 'description'"><span ng-show="!reverse" class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span><span ng-show="reverse" class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span></span>
+                            </a></th>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat='file in files | filter: query | orderBy: orderByField:reverse' ng-show={{file.filter}}>
+                                <td>{{file.name}}</td>
+                                <td>{{file.status}}</td>
+                                <td>{{file.description}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div ng-show="coverage">
+                    <div class="row" ng-controller='controllerChartPie'>
+                        <div class = "col-md-8">
+                            <h1>Coverage Result</h1>
+                        </div>
+                        <div class = "col-md-4">
+                            <table class="table table-condensed">
+                                <thead>
+                                <th> Uncovered </th>
+                                <th> Covered </th>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td class="danger">{{linesNotCovered}}({{percentNotCovered}}%) </td>
+                                    <td class="success">{{linesCovered}} ({{percentCovered}}%)</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class='tabs'>
+                        <ul class='nav nav-tabs' id='myTab'>
+                            <li class='active'>
+                                <a data-toggle='tab' href='#tab1'>Classes</a>
+                            </li>
+                            <li>
+                                <a data-toggle='tab' href='#tab2'>Triggers</a>
+                            </li>
+                        </ul>
+                        <div class='tab-content'>
+                            <div id='tab1' class='tab-pane fade in active'>
+                                <div ng-controller='controllerClass'>
+                                    <h3>Search a Class</h3>
+                                    <form class='form-inline'>
+                                        <input ng-model='query' type='text' placeholder='Filter by name' />
+                                        <button class="{{valueButtonSuccess}}" ng-click="success = !success">Safe</button>
+                                        <button class="{{valueButtonInfo}}" ng-click="info = !info">Acceptable</button>
+                                        <button class="{{valueButtonWarning}}" ng-click="warning = !warning">Risk </button>
+                                        <button class="{{valueButtonDanger}}" ng-click="danger = !danger">Danger </button>
+                                    </form>
+                                    <div class='table-responsive'>
+                                        <table class='table table-bordered'>
+                                            <thead>
+                                            <th> <a href="#" ng-click="orderByField='name'; reverse = !reverse">
+                                                Class Name  <span ng-show="orderByField == 'name'"><span ng-show="!reverse" class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span><span ng-show="reverse" class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span></span>
+                                            </a></th>
+                                            <th> <a href="#" ng-click="orderByField='percentage[0]'; reverse = !reverse">
+                                                Coverage <span ng-show="orderByField == 'percentage[0]'"><span ng-show="!reverse" class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span><span ng-show="reverse" class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span></span>
+                                            </a></th>
+                                            </thead>
+                                            <tbody>
+                                            <tr ng-repeat='file in files | filter: query | orderBy: orderByField:reverse' ng-show={{file.percentage[1]}}>
+                                                <td><a href="pages/{{file.name}}.html">{{file.name}}</a></td>
+                                                <td>
+                                                    <div class='progress'>
+                                                        <div class='progress-bar progress-bar-{{file.percentage[1]}}' role='progressbar' aria-valuenow='{{file.percentage[0]}}' aria-valuemin='0' aria-valuemax='100' style='width: {{file.percentage[0]}}%'>{{file.percentage[0]}}%</div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id='tab2' class='tab-pane fade'>
+                                <div ng-controller='controllerTrigger'>
+                                    <h3>Search a Trigger</h3>
+                                    <form class='form-inline'>
+                                        <input ng-model='query' type='text' placeholder='Filter by name' />
+                                        <button class="{{valueButtonSuccess}}" ng-click="success = !success">Safe</button>
+                                        <button class="{{valueButtonInfo}}" ng-click="info = !info">Acceptable</button>
+                                        <button class="{{valueButtonWarning}}" ng-click="warning = !warning">Risk </button>
+                                        <button class="{{valueButtonDanger}}" ng-click="danger = !danger">Danger </button>
+                                    </form>
+                                    <div class='table-responsive'>
+                                        <table class='table table-bordered'>
+                                            <thead>
+                                            <th> <a href="#" ng-click="orderByField='name'; reverse = !reverse">
+                                                Trigger Name<span ng-show="orderByField == 'name'"><span ng-show="!reverse" class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span><span ng-show="reverse" class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span></span>
+                                            </a></th>
+                                            <th> <a href="#" ng-click="orderByField='percentage[0]'; reverse = !reverse">
+                                                Coverage <span ng-show="orderByField == 'percentage[0]'"><span ng-show="!reverse" class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span><span ng-show="reverse" class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span></span>
+                                            </a></th>
+                                            </thead>
+                                            <tbody>
+                                            <tr ng-repeat='file in files | filter: query | orderBy: orderByField:reverse'  ng-show={{file.percentage[1]}}>
+                                                <td><a href="pages/{{file.name}}.html">{{file.name}}</a></td>
+                                                <td>
+                                                    <div class='progress'>
+                                                        <div class='progress-bar progress-bar-{{file.percentage[1]}}' role='progressbar' aria-valuenow='{{file.percentage[0]}}' aria-valuemin='0' aria-valuemax='100' style='width: {{file.percentage[0]}}%'>{{file.percentage[0]}}%</div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </body>
+</html>

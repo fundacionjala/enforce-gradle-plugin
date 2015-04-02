@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+  ~ Copyright 2015 Jalasoft.
+  ~ Licensed under MIT (https://github.com/Jalasoft/enforce-gradle-plugin/blob/master/LICENSE)
+  -->
+
+<testsuites>
+    <testsuite name='Apex' timestamp=''>
+        <properties />
+    </testsuite>
+    <testcase name='one' classname='classOne' time='0'>
+        <failure type='Class' message='error one' />
+        <system-err>problem in line 1</system-err>
+    </testcase>
+    <testcase name='two' classname='ClassTwo' time='0'>
+        <failure type='Class' message='error Two' />
+        <system-err>problem in line 1</system-err>
+    </testcase>
+    <testcase name='tree' classname='ClassTree' time='0' />
+</testsuites>

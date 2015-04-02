@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+  ~ Copyright 2015 Jalasoft.
+  ~ Licensed under MIT (https://github.com/Jalasoft/enforce-gradle-plugin/blob/master/LICENSE)
+  -->
+
+<coverage>
+    <sources>
+        <source>classes</source>
+    </sources>
+    <packages>
+        <Package name='Coverage' line-rate='1.0' branch-rate='1.0' complexity='0.0'>
+            <classes />
+        </Package>
+    </packages>
+    <sources>
+        <source>triggers</source>
+    </sources>
+    <packages>
+        <Package name='Coverage' line-rate='1.0' branch-rate='1.0' complexity='0.0'>
+            <classes />
+        </Package>
+    </packages>
+</coverage>
