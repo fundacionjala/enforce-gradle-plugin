@@ -13,22 +13,22 @@ Here you can find the enought required information to have running a Gradle proj
 1.Create build.gradle file on your source code project, below you have an example:
 
 ```groovy
-   buildscript {
-       repositories {
-           mavenLocal()
-           mavenCentral()
-           maven {
-                url "https://dl.bintray.com/jalasoft/enforce"
-           }
-       }
-       dependencies {
-           classpath 'org.jalasoft.gradle.plugins.enforce:enforce-gradle-plugin:1.0.0'
-       }
-   }
-   apply plugin: 'enforce'
-   enforce {
-     srcPath = 'src'
-   }
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+                url "https://dl.bintray.com/fundacionjala/enforce"
+        }
+    }
+    dependencies {
+        classpath 'org.fundacionjala.gradle.plugins.enforce:enforce-gradle-plugin:1.0.0'
+    }
+}
+
+apply plugin: 'enforce'
+enforce {
+	srcPath = 'src'
+}
 ```
 
 2.Register a Salesforce credential to be used
