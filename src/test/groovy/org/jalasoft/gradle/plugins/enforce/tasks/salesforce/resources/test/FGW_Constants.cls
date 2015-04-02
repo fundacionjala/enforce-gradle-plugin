@@ -1,1 +1,0 @@
-public class FGW_Constants {}
