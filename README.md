@@ -46,7 +46,7 @@ Executing a task without ***credentialId*** parameter:
 
 	$ gradle <TASK NAME>
 	
-Is command execute a task using credential by default.
+It uses the default credential.
 	
 Executing a task with ***credentialId*** parameter:
 
