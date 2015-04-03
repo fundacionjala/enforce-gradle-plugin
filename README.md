@@ -35,9 +35,9 @@ enforce {
 
 ```groovy
    $ gradle addCredential -Pid=<IDENTIFIER>
-			  -Puser=<USER NAME>
-			  -Ppassword=<PASSWORD>
-			  -Ptoken=<SECURITY TOKEN>
+			  	-Puser=<USER NAME>
+			  	-Ppassword=<PASSWORD>
+			  	-Ptoken=<SECURITY TOKEN>
 ```
 
 In this step is recomendable put credential id as ***default*** value, to run the EnForce tasks without using ***credentialId*** parameter.
