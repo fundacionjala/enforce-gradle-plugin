@@ -1,0 +1,18 @@
+- title: Getting Started
+  docs:
+  - home
+  - quickstart
+  - installation
+  - development
+  - usage
+  - structure
+  - configuration
+  - auth
+  - credentials
+  - file-monitor
+  - package-management
+  - retrieve
+  - undeploy
+  - deployment
+  - update
+  - utils

@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Undeploy &middot; EnForce
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="http://fundacionjala.github.io/enforce-gradle-plugin/css/poole.css">
+  <link rel="stylesheet" href="http://fundacionjala.github.io/enforce-gradle-plugin/css/syntax.css">
+  <link rel="stylesheet" href="http://fundacionjala.github.io/enforce-gradle-plugin/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://fundacionjala.github.io/enforce-gradle-plugin/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="http://fundacionjala.github.io/enforce-gradle-plugin/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0d">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+  <div class="sidebar-about">
+      <h1>
+        <a href="http://fundacionjala.github.io/enforce-gradle-plugin">
+          EnForce
+        </a>
+      </h1>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/documentation.html">Back</a>
+
+
+    
+      <h3>Gradle plugin documentation</h3>
+      
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/quickstart/">Quick start</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/installation/">Installation</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/usage/">Basic usage</a>
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/configuration/">Configuration</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/auth/">Authentication</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/faq/">FAQ</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      <h3>Features</h3>
+      
+      
+
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/credentials/">Credentials management</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/file-monitor/">Monitoring local changes</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/package-management/">Package management</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/update/">Update</a>
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/deployment/">Deployment tasks</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item active" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/undeploy/">Undeploy</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/retrieve/">Retrieve code</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/unit-test/">Unit tests and Reporting</a>
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/utils/">Utils</a>
+        
+      
+    
+    
+    
+
+      <span class="sidebar-nav-item">Currently v1.0.0</span>
+    </nav>
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+     <div class="page">
+		  <h1 class="page-title">Undeploy</h1>
+		  <h2 id="undeploy-task">Undeploy task</h2>
+
+<h4 id="objective"><strong>Objective</strong></h4>
+
+<p>This task is able to undeploy code from Salesforce organization. To avoid dependency problems It truncates code and it deploys code truncated as first step and then It will try to delete all code from Salesforce organization according to local code.</p>
+
+<h4 id="parameters"><strong>Parameters</strong></h4>
+
+<p>This class only have a parameter called <strong><em>excludes</em></strong> it can be used as task property or into your build script.</p>
+
+<h4 id="interceptors-by-default"><strong>Interceptors by default</strong></h4>
+
+<p>All code will be undeployed from SalesForce organization, truncating dependencies of next elements with its respective interceptors:</p>
+<ol>
+    <li>
+         <strong>Classes </strong>
+        <ul>
+            <li> truncateClasses</li>
+            <li> removeDeprecateAnnotation</li>
+        </ul>
+    </li>
+    <li>
+        <strong>Objects</strong>
+        <ul>
+            <li> truncateFieldSets</li>
+            <li> truncateActionOverrides</li>
+            <li> truncateFormulas</li>
+            <li> truncateWebLinks</li>
+        </ul>
+    </li>
+    <li>
+        <strong>Triggers</strong>
+        <ul>
+            <li> truncateTriggers</li>
+        </ul>
+    </li>
+    <li>
+        <strong>Components</strong>
+        <ul>
+            <li> truncateComponents</li>
+        </ul>
+    </li>
+    <li>
+        <strong>Pages</strong>
+        <ul>
+            <li> truncatePages</li>
+        </ul>
+    </li>
+    <li>
+        <strong>Tabs</strong>
+        <ul>
+            <li> truncateTabs</li>
+        </ul>
+    </li>
+    <li>
+        <strong>WorkFlows</strong>
+        <ul>
+            <li> truncateWorkflows</li>
+        </ul>
+    </li>
+</ol>
+<blockquote>
+  <p><strong>Note:</strong><br />
+Those interceptors by default are support on upload, deploy, update and undeploy tasks.<br />
+You are able to create your custom interceptors using <strong><em>globalInterceptor</em></strong> or <strong><em>interceptor</em></strong>.</p>
+</blockquote>
+
+<h2 id="undeploy-task-using-interceptors">Undeploy task using interceptors</h2>
+<p>When the undeploy task is executed all interceptors by default will be executed.</p>
+
+<h4 id="adding-global-interceptors"><strong>Adding global interceptors</strong></h4>
+<p>To add a new global interceptor you can use <strong><em>globalInterceptor</em></strong> method in the plugin extension “enforce”, it will be visible for all tasks that using the truncated process.</p>
+
+<pre><code class="language-bash">
+enforce {
+    globalInterceptor('classes','printClassName', { classFile -&gt;
+        println classFile.name
+    })
+}
+
+
+undeploy {
+    interceptors = ['printClassName']
+}
+
+update {
+    interceptors = ['printClassName']
+}
+
+</code></pre>
+
+<h4 id="adding-custom-interceptor"><strong>Adding custom interceptor</strong></h4>
+<p>To add a new <strong><em>interceptor</em></strong> you can use interceptor or firstInterceptor methods for each task where you want to add a new custom interceptor.</p>
+
+<p>Adding a new anonymous interceptor, it will always be executed because it doesn’t have a specific name.</p>
+
+<pre><code class="language-bash">undeploy {
+    interceptor('classes', { classFile -&gt;
+        println classFile.path
+    })
+}
+
+</code></pre>
+
+<p>Adding a new custom interceptor that will execute after of all interceptors on the classes for example.</p>
+
+<pre><code class="language-bash">undeploy {
+    interceptor('classes','doLast', { classFile -&gt;
+        println classFile.path
+    })
+}
+
+</code></pre>
+
+<p>Adding a new custom interceptor that will execute before of all interceptors on the objects for example.</p>
+
+<pre><code class="language-bash">undeploy {
+    firstInterceptor('objects', 'doFirst', { objectFile -&gt;
+        println objectFile.name 
+    })
+}
+
+</code></pre>
+
+<blockquote>
+  <p><strong>Note:</strong> Those interceptors have to be into build.gradle file.</p>
+</blockquote>
+
+<h2 id="undeploy-task-using-excludes-parameter">Undeploy task using excludes parameter</h2>
+<p>This parameter can exclude files by:</p>
+
+<ul>
+  <li><strong><em>folder</em></strong> if you want to exclude a folder or folders, You should write the next parameter:
+    <ul>
+      <li>-Pexcludes=classes</li>
+      <li>-Pexcludes=classes,objects.</li>
+    </ul>
+  </li>
+  <li><strong><em>file</em></strong> if you want to exclude a file or files, You should write the next parameter:
+    <ul>
+      <li>-Pexcludes=classes/Class1.cls</li>
+      <li>-Pexcludes=classes/Class1.cls, classes/Class2.cls.</li>
+    </ul>
+  </li>
+  <li><strong><em>wildcard</em></strong> if you want to exclude using wildcard, You should write the next parameter:
+    <ul>
+      <li>-Pexcludes=classes/**</li>
+      <li>-Pexcludes=objects/*.object</li>
+      <li>-Pexcludes=**/*Account*/**</li>
+      <li>-Pexcludes=**/*.cls</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="examples"><strong>Examples:</strong></h2>
+
+<h3 id="using-excludes-parameter"><strong>Using excludes parameter:</strong></h3>
+<p>To exclude all classes.</p>
+
+<pre><code>$ gradle undeploy -Pexcludes=classes
+$ gradle undeploy -Pexcludes=classes/**
+$ gradle undeploy -Pexcludes=classes/*.cls
+</code></pre>
+
+<p>To exclude all classes all objects and all triggers.</p>
+
+<pre><code>$ gradle undeploy -Pexcludes=classes,objects,triggers
+</code></pre>
+
+<p>To exclude the Class1.cls</p>
+
+<pre><code>$ gradle undeploy -Pexcludes=classes/Class1.cls
+</code></pre>
+
+<p>To exclude Class1.cls and Trigger1.cls</p>
+
+<pre><code>$ gradle undeploy -Pexcludes=classes/Class1.cls,triggers/Trigger1.trigger
+</code></pre>
+
+<p>To exclude all files that contain Account word with any extension and any folders.</p>
+
+<pre><code>$ gradle undeploy -Pexcludes=**\*Account*/**
+</code></pre>
+
+<p>To exclude all files with  <strong>.cls</strong> extension.</p>
+
+<pre><code>$ gradle undeploy -Pexcludes=**/*.cls
+</code></pre>
+
+<h3 id="using-interceptors-by-default"><strong>Using interceptors by default:</strong></h3>
+
+<p>command:</p>
+
+<pre><code>$ gradle undeploy
+</code></pre>
+
+<p>output:</p>
+
+<pre><code class="language-bash">    &gt; gradle undeploy
+    :undeploy
+    ___________________________________________
+          Username: john.doe@email.com
+          Login type: login
+    ___________________________________________
+
+      [zip] Building zip: /user/build/deploy.zip
+Starting undeploy...
+[==================================================]   100%
+All components truncated were successfully uploaded
+
+      [zip] Building zip: /user/build/deploy.zip
+
+[==================================================]   100%
+The files were successfully deleted
+
+    BUILD SUCCESSFUL
+</code></pre>
+
+
+	 </div>
+    </div>
+
+  </body>
+</html>

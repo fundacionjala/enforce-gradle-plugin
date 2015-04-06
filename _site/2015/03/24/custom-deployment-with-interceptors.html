@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Custom deployment with Interceptors &middot; EnForce
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="http://fundacionjala.github.io/enforce-gradle-plugin/css/poole.css">
+  <link rel="stylesheet" href="http://fundacionjala.github.io/enforce-gradle-plugin/css/syntax.css">
+  <link rel="stylesheet" href="http://fundacionjala.github.io/enforce-gradle-plugin/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://fundacionjala.github.io/enforce-gradle-plugin/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="http://fundacionjala.github.io/enforce-gradle-plugin/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0d">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="http://fundacionjala.github.io/enforce-gradle-plugin">
+          EnForce
+        </a>
+      </h1>
+      <p class="lead">EnForce tools for Salesforce that helps on development and Continuous Integration for Salesforce projects.</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin">Home</a>
+
+
+      <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/home/">Gradle plugin documentation</a>
+      <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/jenkins/home/">Jenkins plugin documentation</a>
+      <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/tutorials.html">Tutorials</a>
+      <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/about.html">About</a>
+      <a class="sidebar-nav-item" href="https://github.com/fundacionjala/enforce-gradle-plugin">GitHub project</a>
+      <span class="sidebar-nav-item">Currently v1.0.0</span>
+    </nav>
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Custom deployment with Interceptors</h1>
+  <span class="post-date">24 Mar 2015</span>
+  <h2 id="scenario">Scenario</h2>
+<p>The problem that I found during the development, is that most of the developers have all their data, scenarios and configuration present in the organization, therefore they did not like the idea of undeploy the current code and then deploy the latest changes, however they always need the latest changes.</p>
+
+<p>What I did is I implemented a custom task to update the current code that it’s in the organization without performing an undeploy operation in order to keep all the data, configuration and so on. Here you have an example:</p>
+
+<div class="highlight"><pre><code class="language-groovy" data-lang="groovy"><span class="n">task</span> <span class="nf">truncate</span><span class="o">(</span><span class="nl">type:</span><span class="n">Upload</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">group</span> <span class="o">=</span> <span class="s1">&#39;Project Tasks&#39;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;Truncates pages, classes, triggers and componenets&#39;</span>
+    <span class="n">folders</span> <span class="o">=</span> <span class="s2">&quot;classes,pages,components,triggers&quot;</span>
+    <span class="n">commands</span> <span class="o">=</span> <span class="o">[</span><span class="s1">&#39;classInterceptor&#39;</span><span class="o">,</span> <span class="s1">&#39;deprecate&#39;</span><span class="o">,</span> <span class="s1">&#39;triggerInterceptor&#39;</span><span class="o">,</span> <span class="s1">&#39;componentInterceptor&#39;</span><span class="o">,</span> <span class="s1">&#39;pageInterceptor&#39;</span><span class="o">]</span>
+<span class="o">}</span>
+
+<span class="n">task</span> <span class="nf">uploadDevOrg</span><span class="o">(</span><span class="nl">type:</span><span class="n">Upload</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">group</span> <span class="o">=</span> <span class="s1">&#39;Project Tasks&#39;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;...&#39;</span>
+    <span class="n">folders</span> <span class="o">=</span> <span class="s2">&quot;classes,pages,staticresources,components,triggers,objects,labels,tabs&quot;</span>
+    <span class="n">commands</span> <span class="o">=</span> <span class="o">[</span><span class="s1">&#39;deprecate&#39;</span><span class="o">]</span>
+<span class="o">}</span>
+
+<span class="n">uploadDevOrg</span><span class="o">.</span><span class="na">dependsOn</span> <span class="n">truncate</span></code></pre></div>
+
+<p>The reason to have the truncate task is because the organization may have old, updated or removed classes, methods or constructors, so in order to be able to upload the latest code in the organization, we need to truncate all the components.</p>
+
+<p>Once we have everything truncated we will be able to upload the code into your organization and all the development team should be able to work with the latest changes without losing their data.</p>
+
+</div>
+       
+    </div>
+
+  </body>
+</html>

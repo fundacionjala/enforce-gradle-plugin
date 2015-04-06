@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EnForce</title>
+	<meta name="keywords" content="">
+	<meta name="description" content="EnForce tools for Salesforce that helps on development and Continuous Integration for Salesforce projects.">
+  <link rel="stylesheet" href="combo.css">
+  <link href='http://fonts.googleapis.com/css?family=Raleway:400,300,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+  <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+	<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+</head>
+<body>
+  <div id="main">
+
+    <nav><ul>
+      
+        <li class="p-home"><a href="#home">home</a></li>
+      
+        <li class="p-what"><a href="#what">What?</a></li>
+      
+        <li class="p-why"><a href="#why">Why?</a></li>
+      
+        <li class="p-quickstart"><a href="#quickstart">quickstart</a></li>
+      
+        <li class="p-documentation"><a href="#documentation">documentation</a></li>
+      
+        <li class="p-contribute"><a href="#contribute">contribute</a></li>
+      
+        <li class="p-about"><a href="#about">about</a></li>
+      
+        <li class="p-faq"><a href="#faq">faq</a></li>
+      
+    </ul></nav>
+
+
+    
+      
+      <div id="home" class="section p-home">
+        
+        <div class="container center">
+          <h1 class="text-purple" id="enforce"><strong><em>EnForce</em></strong></h1>
+
+<div class="stacked-icons" style="font-size:50px">
+  <span class="fa-stack fa-3x">
+    <i class="fa fa-cloud fa-stack-2x" style="color:#fab125;"></i>
+    <strong class="fa fa-gear fa-stack-1x fa-stack-text fa-inverse" style="font-size:200px"></strong>
+  </span>
+</div>
+
+<h2 class="text-purple" id="a-development-and-ci-supporting-tool">a development and CI supporting tool</h2>
+
+<p>…it’s focused on provide utilities for a Salesforce development environment, making easy to implement a Continuous Integration process for your Salesforce project!</p>
+
+<p><span id="forkongithub">
+  <a href="https://github.com/fundacionjala/enforce-gradle-plugin" class="bg-blue">
+    Fork me on GitHub
+  </a>
+</span></p>
+
+        </div>
+      </div>
+    
+      
+      <div id="what" class="section p-what">
+        
+        <div class="subtlecircle sectiondivider faicon">
+          <span class="fa-stack">
+            <i class="fa fa-circle fa-stack-2x"></i>
+            <i class="fa fa-question fa-stack-1x"></i>
+          </span>
+          <h5 class="icon-title">What?</h5>
+        </div>
+        
+        <div class="container ">
+          <h1 id="enforce-is-">EnForce is …</h1>
+
+<table style="width:100%">
+<tr>
+<td width="50%">
+<h4>a plugin for</h4>
+<img src="img/gradle.png" alt="Gradle Logo" />
+</td>
+<td width="50%">
+<span style="display: block;text-align: right;width: 100%;">
+<h4>a plugin for</h4>
+<img src="img/jenkins.png" alt="Gradle Logo" />
+</span>
+</td>
+
+</tr>
+<tr>
+<td width="50%">
+<h4>that provides useful tasks for implement a Continuous Itegration process.</h4>
+</td>
+<td width="50%">
+<h4>that integrates Salesforce unit test and code coverage reports in your Jenkins jobs.</h4>
+</td>
+<tr>
+
+</tr></tr></table>
+
+        </div>
+      </div>
+    
+      
+      <div id="why" class="section p-why">
+        
+        <div class="subtlecircle sectiondivider faicon">
+          <span class="fa-stack">
+            <i class="fa fa-circle fa-stack-2x"></i>
+            <i class="fa fa-check-square-o fa-stack-1x"></i>
+          </span>
+          <h5 class="icon-title">Why?</h5>
+        </div>
+        
+        <div class="container ">
+          <h3 id="basically">Basically</h3>
+
+<h1 id="because-there-are-no-out-the-box-support-for-continuous-integration-on-salesforce">because there are no out the box support for Continuous Integration on Salesforce.</h1>
+
+<ul>
+  <li>Migration Tool is a basic tool that cannot support complex deployment scenarios where the source code has dependencies between its elements (classes, pages, objects).</li>
+  <li>No easy way to upload or retrieve code from a Salesforce Organization.</li>
+  <li>There are no available tools for junit reports or coverage reports.</li>
+</ul>
+
+<p>Sounds good? Let’s go!</p>
+
+        </div>
+      </div>
+    
+      
+      <div id="quickstart" class="section p-quickstart">
+        
+        <div class="subtlecircle sectiondivider faicon">
+          <span class="fa-stack">
+            <i class="fa fa-circle fa-stack-2x"></i>
+            <i class="fa fa-toggle-on fa-stack-1x"></i>
+          </span>
+          <h5 class="icon-title">quickstart</h5>
+        </div>
+        
+        <div class="container ">
+          <h2 id="setup-a-gradle-script-file">Setup a <code>gradle</code> script file</h2>
+
+<ul>
+  <li>Create <code>build.gradle</code> file on your source code project, below you have an example</li>
+</ul>
+
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><code class="language-groovy" data-lang="groovy"> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17</code></pre></div></td><td class="code"><div class="highlight"><pre><span class="n">buildscript</span> <span class="o">{</span>
+   <span class="n">repositories</span> <span class="o">{</span>
+       <span class="n">mavenCentral</span><span class="o">()</span>
+       <span class="n">maven</span> <span class="o">{</span>
+            <span class="n">url</span> <span class="s2">&quot;https://dl.bintray.com/fundacionjala/enforce&quot;</span>
+       <span class="o">}</span>
+   <span class="o">}</span>
+   <span class="n">dependencies</span> <span class="o">{</span>
+       <span class="n">classpath</span> <span class="s1">&#39;org.fundacionjala.gradle.plugins.enforce:enforce-gradle-plugin:1.0.0&#39;</span>
+   <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;enforce&#39;</span>
+
+<span class="n">enforce</span> <span class="o">{</span>
+    <span class="n">srcPath</span> <span class="o">=</span> <span class="s1">&#39;src&#39;</span>
+<span class="o">}</span>
+</pre></div>
+</td></tr></table>
+
+<ul>
+  <li>Register a Salesforce credential to be used</li>
+</ul>
+
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><code class="language-bash" data-lang="bash">1
+2
+3
+4
+5</code></pre></div></td><td class="code"><div class="highlight"><pre><span class="nv">$ </span>gradle addCredential  -Pid<span class="o">=</span>&lt;default&gt; 
+                        -Puser<span class="o">=</span>&lt;USER NAME&gt; 
+                        -Ppassword<span class="o">=</span>&lt;PASSWORD&gt; 
+                        -Ptoken<span class="o">=</span>&lt;SECURITY TOKEN&gt;
+   <span class="c">#=&gt; Creates an entry on the credentials store, credential id with &#39;default&#39; value</span>
+</pre></div>
+</td></tr></table>
+
+<ul>
+  <li>Start executing available commands, for example:</li>
+</ul>
+
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><code class="language-bash" data-lang="bash">1
+2</code></pre></div></td><td class="code"><div class="highlight"><pre><span class="nv">$ </span>gradle retrieve -Pfiles<span class="o">=</span>classes
+   <span class="c">#=&gt; Retrieves all the classes from a Salesforce organization</span>
+</pre></div>
+</td></tr></table>
+
+<p>Now you can start using all the EnForce features reviwing the <a href="documentation.html">Documentation</a>.</p>
+
+
+        </div>
+      </div>
+    
+      
+      <div id="documentation" class="section p-documentation">
+        
+        <div class="subtlecircle sectiondivider faicon">
+          <span class="fa-stack">
+            <i class="fa fa-circle fa-stack-2x"></i>
+            <i class="fa fa-book fa-stack-1x"></i>
+          </span>
+          <h5 class="icon-title">documentation</h5>
+        </div>
+        
+        <div class="container ">
+          <h2 id="all-the-documentation-is-available-heredocumentationhtml">All the documentation is available <strong><a href="documentation.html">here</a></strong></h2>
+
+<p>Below you have links to most important ones:<br />
+  * <a href="docs/quickstart/">Quick start</a><br />
+  * <a href="docs/installation/">Installation</a><br />
+  * <a href="tutorials.html">Tutorials</a><br />
+  * <a href="docs/development/">Development</a><br />
+  * <a href="docs/faq/">FAQ</a></p>
+
+        </div>
+      </div>
+    
+      
+      <div id="contribute" class="section p-contribute">
+        
+        <div class="subtlecircle sectiondivider faicon">
+          <span class="fa-stack">
+            <i class="fa fa-circle fa-stack-2x"></i>
+            <i class="fa fa-group fa-stack-1x"></i>
+          </span>
+          <h5 class="icon-title">contribute</h5>
+        </div>
+        
+        <div class="container ">
+          <p>Do you have a cool feature and want to share it? Use your <a href="https://github.com/fundacionjala/enforce-gradle-plugin">fork on github!</a> and submit a pull request. You can find information about setup your development environment at <a href="docs/development">here</a></p>
+
+
+        </div>
+      </div>
+    
+      
+      <div id="about" class="section p-about">
+        
+        <div class="subtlecircle sectiondivider faicon">
+          <span class="fa-stack">
+            <i class="fa fa-circle fa-stack-2x"></i>
+            <i class="fa fa-child fa-stack-1x"></i>
+          </span>
+          <h5 class="icon-title">about</h5>
+        </div>
+        
+        <div class="container ">
+          <p><em>EnForce</em> is an project donated to the community as an open source project by the <a href="http://fundacion-jala.org" target="_blank">Jalasoft Foundation</a>.</p>
+
+<p>You can find more information about the participants on this project <a href="about.html">here</a></p>
+
+        </div>
+      </div>
+    
+      
+      <div id="faq" class="section p-faq">
+        
+        <div class="subtlecircle sectiondivider faicon">
+          <span class="fa-stack">
+            <i class="fa fa-circle fa-stack-2x"></i>
+            <i class="fa fa-check-square-o fa-stack-1x"></i>
+          </span>
+          <h5 class="icon-title">faq</h5>
+        </div>
+        
+        <div class="container ">
+          <p>For more information about uses enter <a href="docs/faq/" target="_blank">here</a></p>
+
+        </div>
+      </div>
+    
+
+
+    <div id="footer" class="section text-white">
+      <div class="container">
+        
+        <p>Jalasoft - Fundación Jala 2015. Web site based on <a href="https://github.com/t413/SinglePaged">SinglePaged</a></p>
+
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+</body>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="site.js"></script>
+</html>

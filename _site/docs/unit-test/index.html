@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Unit tests and Reporting &middot; EnForce
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="http://fundacionjala.github.io/enforce-gradle-plugin/css/poole.css">
+  <link rel="stylesheet" href="http://fundacionjala.github.io/enforce-gradle-plugin/css/syntax.css">
+  <link rel="stylesheet" href="http://fundacionjala.github.io/enforce-gradle-plugin/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://fundacionjala.github.io/enforce-gradle-plugin/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="http://fundacionjala.github.io/enforce-gradle-plugin/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0d">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+  <div class="sidebar-about">
+      <h1>
+        <a href="http://fundacionjala.github.io/enforce-gradle-plugin">
+          EnForce
+        </a>
+      </h1>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/documentation.html">Back</a>
+
+
+    
+      <h3>Gradle plugin documentation</h3>
+      
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/quickstart/">Quick start</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/installation/">Installation</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/usage/">Basic usage</a>
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/configuration/">Configuration</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/auth/">Authentication</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/faq/">FAQ</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      <h3>Features</h3>
+      
+      
+
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/credentials/">Credentials management</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/file-monitor/">Monitoring local changes</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/package-management/">Package management</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/update/">Update</a>
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/deployment/">Deployment tasks</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/undeploy/">Undeploy</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/retrieve/">Retrieve code</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item active" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/unit-test/">Unit tests and Reporting</a>
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/utils/">Utils</a>
+        
+      
+    
+    
+    
+
+      <span class="sidebar-nav-item">Currently v1.0.0</span>
+    </nav>
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+     <div class="page">
+		  <h1 class="page-title">Unit tests and Reporting</h1>
+		  <h2 id="runtest-task">RunTest task</h2>
+
+<h4 id="objective"><strong>Objective</strong></h4>
+
+<p>This task executes all unit test classes in your organization but it is also possible execute some unit test using wildcards. It generates reports about:</p>
+
+<ul>
+  <li>Code coverage report.</li>
+  <li>Unit test report</li>
+</ul>
+
+<h4 id="parameters"><strong>Parameters</strong></h4>
+<p>This task has two parameters called <strong><em>async</em></strong> and <strong><em>cls</em></strong> where the first is used to run test asynchronously by default it runs test synchronously another one is used to choose specific test classes using wildcards.</p>
+
+<h2 id="executing-runtest-task">Executing RunTest task</h2>
+
+<h3 id="synchronously">Synchronously</h3>
+
+<p>Once runTest task is executed without parameters It will execute all test classes from your organization and It is synchronously by default.</p>
+
+<pre><code>$ gradle runTest
+</code></pre>
+
+<h3 id="using-a-wildcard-synchronously">Using a wildcard synchronously</h3>
+
+<p>This task runs only unit test classes according to wildcard and It generates XML reports of results obtained from server those reports are saved in <strong><em>build/report</em></strong> directory.</p>
+
+<pre><code>$ gradle runTest -Pcls=Test*
+</code></pre>
+
+<h3 id="asynchronously">Asynchronously</h3>
+
+<p>To execute tests asynchronously you should use parameter called <strong><em>async</em></strong> and send value equals true.</p>
+
+<pre><code>$ gradle runTest -Pasync=true
+</code></pre>
+
+<h3 id="using-a-wildcard-asynchronously">Using a wildcard asynchronously</h3>
+
+<p>This task run only unit test classes according to wildcard and it generates XML reports of results obtained from server in <strong><em>build/report</em></strong> directory.</p>
+
+<pre><code>$ gradle runTest -Pcls=Test* -Pasync=true
+</code></pre>
+
+<h2 id="examples">Examples</h2>
+
+<h3 id="using-a-wildcard-synchronously-1">Using a wildcard synchronously</h3>
+
+<p>Scenario:</p>
+
+<p>In this case I want to run test classes that have <em>‘Test’</em> word in their names and I want to run those unit test synchronously.</p>
+
+<p>command:</p>
+
+<pre><code>$ gradle runTest -Pcls=Test*
+</code></pre>
+
+<p>output:</p>
+
+<pre><code class="language-bash">:runTest
+___________________________________________
+        Username: juan.perez@mail.com
+        Login type: login
+___________________________________________
+
+Waiting reply from server: https://na17.salesforce.com
+Unit Test Results:
+        TestClass.test1
+                Test Fail - System.AssertException: Assertion Failed: true | Class.TestClass.test1: line 26, column 1
+        TestClass.test2
+                Test Fail - System.AssertException: Assertion Failed: true | Class.TestClass.test2: line 33, column 1
+        TestClass.test3
+                Test Fail - System.AssertException: Assertion Failed: true | Class.TestClass.test3: line 39, column 1
+        TestClass2.test3
+                Test Fail - System.AssertException: Assertion Failed: true | Class.TestClass2.test3: line 39, column 1
+        TestClass1.test3
+                Test Fail - System.AssertException: Assertion Failed: true | Class.TestClass1.test3: line 39, column 1
+Total time: 00:00:05:5315
+
+BUILD SUCCESSFUL
+</code></pre>
+
+<h3 id="using-a-wildcard-asynchronously-1">Using a wildcard asynchronously</h3>
+
+<p>Scenario:</p>
+
+<p>In this case I want to run all test classes and I want to run those unit test asynchronously.</p>
+
+<p>command:</p>
+
+<pre><code>$ gradle runTest -Pcls=Test* -Pasync=true
+</code></pre>
+
+<p>output:</p>
+
+<pre><code class="language-bash">:runTest
+___________________________________________
+        Username: juan.perez@mail.com
+        Login type: login
+___________________________________________
+
+Waiting reply from server: https://na17.salesforce.com
+Unit Test Results:
+        TestClass.test1
+                Test Fail - System.AssertException: Assertion Failed: true | Class.TestClass.test1: line 26, column 1
+        TestClass.test2
+                Test Fail - System.AssertException: Assertion Failed: true | Class.TestClass.test2: line 33, column 1
+        TestClass.test3
+                Test Fail - System.AssertException: Assertion Failed: true | Class.TestClass.test3: line 39, column 1
+        TestClass2.test3
+                Test Fail - System.AssertException: Assertion Failed: true | Class.TestClass2.test3: line 39, column 1
+        TestClass1.test3
+                Test Fail - System.AssertException: Assertion Failed: true | Class.TestClass1.test3: line 39, column 1
+Total time: 00:00:05:5315
+
+BUILD SUCCESSFUL
+</code></pre>
+
+	 </div>
+    </div>
+
+  </body>
+</html>

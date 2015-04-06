@@ -1,0 +1,20 @@
+- title: Gradle plugin documentation
+  docs:
+  - quickstart
+  - installation
+  - usage
+  - configuration
+  - auth
+  - faq
+
+- title: Features
+  docs:
+  - credentials
+  - file-monitor
+  - package-management
+  - update
+  - deployment
+  - undeploy
+  - retrieve
+  - unit-test
+  - utils

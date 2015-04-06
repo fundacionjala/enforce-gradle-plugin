@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+ <title>EnForce</title>
+ <link href="http://fundacionjala.github.io/enforce-gradle-plugin/atom.xml" rel="self"/>
+ <link href="http://fundacionjala.github.io/enforce-gradle-plugin/"/>
+ <updated>2015-04-06T17:48:43-04:00</updated>
+ <id>http://fundacionjala.github.io/enforce-gradle-plugin</id>
+ <author>
+   <name>Fundacion Jala.</name>
+   <email></email>
+ </author>
+
+ 
+ <entry>
+   <title>Upload only modified files with Mavensmate</title>
+   <link href="http://fundacionjala.github.io/enforce-gradle-plugin/2015/03/24/upload-only-modified-files-with-mavensmate.html"/>
+   <updated>2015-03-24T00:00:00-04:00</updated>
+   <id>http://fundacionjala.github.io/enforce-gradle-plugin/2015/03/24/upload-only-modified-files-with-mavensmate</id>
+   <content type="html">&lt;p&gt;Mavesmate is a tool that helps you in your Salesforce development, but the bad news is that you need to deploy your changes one by one(and also with the Salesforce IDE). You can easily improve this scenario using the  &lt;code&gt;update&lt;/code&gt; command to deploy your modified files in just a deploy.&lt;/p&gt;
+
+&lt;h3 id=&quot;step-1&quot;&gt;Step 1&lt;/h3&gt;
+&lt;p&gt;You need to setting up your EnForce environment into your Mavesmate project.&lt;/p&gt;
+
+&lt;h3 id=&quot;step-2&quot;&gt;Step 2&lt;/h3&gt;
+&lt;p&gt;Then disable the Mavesmate &lt;code&gt;mm_compile_on_save&lt;/code&gt; option. Just open your Mavesmate project and then go to  &lt;code&gt;MavesMate&amp;gt;Settings&amp;gt;User&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&quot;mm_compile_on_save&quot; : false,
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;step-3&quot;&gt;Step 3&lt;/h3&gt;
+&lt;p&gt;Create a build command for your Mavesmate project, it should look something like this.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+    &quot;cmd&quot;: [&quot;gradle&quot;, &quot;update&quot;],
+    &quot;working_dir&quot;: &quot;${project_path}&quot;,
+    &quot;selector&quot;: &quot;text.html,source.apex,text.xml&quot;,
+    &quot;shell&quot;: true
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;it needs to be stored in the Sublime user’s packages, let say &lt;code&gt;sf-build-command.sublime-build&lt;/code&gt; file.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Windows: %APPDATA%\Sublime Text 3\Packages\User\sf-build-command.sublime-build&lt;/li&gt;
+  &lt;li&gt;OS X: ~/Library/Application Support/Sublime Text 3/Packages/User/sf-build-command.sublime-build&lt;/li&gt;
+  &lt;li&gt;Linux: ~/.config/sublime-text-3/packages/user/sf-build-command.sublime-build&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Then go to &lt;code&gt;Tools&amp;gt;Build System&lt;/code&gt; and select &lt;code&gt;sf-build-command&lt;/code&gt;  by default.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; The &lt;code&gt;working_dir&lt;/code&gt; property of your build command should point out to the folder where you have your &lt;code&gt;build.gradle&lt;/code&gt; file, in this case the &lt;code&gt;build.gradle&lt;/code&gt; file is in the project’s root folder.&lt;/p&gt;
+
+&lt;h3 id=&quot;step-4&quot;&gt;Step 4&lt;/h3&gt;
+
+&lt;p&gt;Open a console where you have your build.gradle script and then execute.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;gradle status
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;It is just to start the EnForce file monitor that checks the file modifications.&lt;/p&gt;
+
+&lt;h3 id=&quot;step-5&quot;&gt;Step 5&lt;/h3&gt;
+&lt;p&gt;Once you want to deploy your changes, just execute &lt;code&gt;Ctrl + b&lt;/code&gt; to deploy them.&lt;/p&gt;
+
+&lt;p&gt;Now you are able to deploy your modified files just in a deploy instead one by one and that it is awesome.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>How to use an Organization with custom domain</title>
+   <link href="http://fundacionjala.github.io/enforce-gradle-plugin/2015/03/24/how-to-use-an-organization-with-custom-domain.html"/>
+   <updated>2015-03-24T00:00:00-04:00</updated>
+   <id>http://fundacionjala.github.io/enforce-gradle-plugin/2015/03/24/how-to-use-an-organization-with-custom-domain</id>
+   <content type="html">&lt;h2 id=&quot;scenario&quot;&gt;Scenario&lt;/h2&gt;
+
+&lt;p&gt;When the user create an account using wizard of plugin only has two options about  organization domain:&lt;br /&gt;
+-	login&lt;br /&gt;
+-	test&lt;/p&gt;
+
+&lt;p&gt;The problem that I found when I was using plugin, is that some projects uses sandboxes and create accounts in that instances, if you try login, for example :&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;test.salesforce.com, some accounts can’t login&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;But if you use another domain for example&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;cs15.salesforce.com, this works&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;What I did is I change sfdcType domain of credential.dat&lt;/p&gt;
+
+&lt;p&gt;default credential&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
+&quot;default&quot;: {
+        &quot;username&quot;: &quot;user@org.com&quot;,
+        &quot;password&quot;: &quot;mypassword&quot;,
+        &quot;token&quot;: &quot;2B9UvHKK2E1ky1EkkYBPFvbLM&quot;,
+        &quot;sfdcType&quot; : &quot;login&quot;,
+        &quot;type&quot;: &quot;ecrypted&quot;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;modified credential&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
+&quot;default&quot;: {
+        &quot;username&quot;: &quot;user@org.com&quot;,
+        &quot;password&quot;: &quot;mypassword&quot;,
+        &quot;token&quot;: &quot;2B9UvHKK2E1ky1EkkYBPFvbLM&quot;,
+        &quot;sfdcType&quot; : &quot;cs15&quot;,
+        &quot;type&quot;: &quot;ecrypted&quot;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Custom deployment with Interceptors</title>
+   <link href="http://fundacionjala.github.io/enforce-gradle-plugin/2015/03/24/custom-deployment-with-interceptors.html"/>
+   <updated>2015-03-24T00:00:00-04:00</updated>
+   <id>http://fundacionjala.github.io/enforce-gradle-plugin/2015/03/24/custom-deployment-with-interceptors</id>
+   <content type="html">&lt;h2 id=&quot;scenario&quot;&gt;Scenario&lt;/h2&gt;
+&lt;p&gt;The problem that I found during the development, is that most of the developers have all their data, scenarios and configuration present in the organization, therefore they did not like the idea of undeploy the current code and then deploy the latest changes, however they always need the latest changes.&lt;/p&gt;
+
+&lt;p&gt;What I did is I implemented a custom task to update the current code that it’s in the organization without performing an undeploy operation in order to keep all the data, configuration and so on. Here you have an example:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;&lt;span class=&quot;n&quot;&gt;task&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;truncate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;type:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Upload&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;group&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;Project Tasks&amp;#39;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;description&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;Truncates pages, classes, triggers and componenets&amp;#39;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;folders&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;classes,pages,components,triggers&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;commands&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;classInterceptor&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;deprecate&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;triggerInterceptor&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;componentInterceptor&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;pageInterceptor&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;task&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;uploadDevOrg&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;type:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Upload&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;group&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;Project Tasks&amp;#39;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;description&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;...&amp;#39;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;folders&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;classes,pages,staticresources,components,triggers,objects,labels,tabs&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;commands&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;deprecate&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;uploadDevOrg&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;dependsOn&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;truncate&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The reason to have the truncate task is because the organization may have old, updated or removed classes, methods or constructors, so in order to be able to upload the latest code in the organization, we need to truncate all the components.&lt;/p&gt;
+
+&lt;p&gt;Once we have everything truncated we will be able to upload the code into your organization and all the development team should be able to work with the latest changes without losing their data.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Implement a Continuous Integration for a Salesforce Project</title>
+   <link href="http://fundacionjala.github.io/enforce-gradle-plugin/2015/03/13/implement-a-continuous-integration-for-a-salesforce-project.html"/>
+   <updated>2015-03-13T00:00:00-04:00</updated>
+   <id>http://fundacionjala.github.io/enforce-gradle-plugin/2015/03/13/implement-a-continuous-integration-for-a-salesforce-project</id>
+   <content type="html">&lt;p&gt;Implement a Continuous Integration process for a Salesforce project is quite difficult due to the cyclic dependencies between project components, for example, an &lt;code&gt;Object&lt;/code&gt; can have a &lt;code&gt;weblink&lt;/code&gt; to a &lt;code&gt;Custom Page&lt;/code&gt;, which has a Class Controller that uses the previuous &lt;code&gt;Object&lt;/code&gt;. These dependencies makes difficult to deploy project source code in a simple way, it is true that the &lt;code&gt;Migration Tool&lt;/code&gt; can help you to upload code to an Organization, but it is not able to resolve those dependencies problems.&lt;br /&gt;
+&lt;code&gt;EnForce Gradle plugin&lt;/code&gt; provides tasks that makes possible to implement a Continuous Integration process using &lt;code&gt;Gradle&lt;/code&gt;.&lt;br /&gt;
+This article tries to show an example of a Gradle build script which implements a Continuos Integration process with the next steps:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;clean environment&lt;/li&gt;
+  &lt;li&gt;deploy code&lt;/li&gt;
+  &lt;li&gt;runt unit test&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;table class=&quot;highlighttable&quot;&gt;&lt;tr&gt;&lt;td class=&quot;linenos&quot;&gt;&lt;div class=&quot;linenodiv&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt; 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;span class=&quot;n&quot;&gt;buildscript&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+   &lt;span class=&quot;n&quot;&gt;repositories&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+       &lt;span class=&quot;n&quot;&gt;mavenCentral&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
+       &lt;span class=&quot;n&quot;&gt;maven&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;url&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;https://dl.bintray.com/fundacionjala/enforce&amp;quot;&lt;/span&gt;
+       &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+   &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+   &lt;span class=&quot;n&quot;&gt;dependencies&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+       &lt;span class=&quot;n&quot;&gt;classpath&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;org.fundacionjala.gradle.plugins.enforce:enforce-gradle-plugin:1.0.0&amp;#39;&lt;/span&gt;
+   &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;apply&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;plugin:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;enforce&amp;#39;&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;enforce&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;srcPath&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;src&amp;#39;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+</content>
+ </entry>
+ 
+
+</feed>

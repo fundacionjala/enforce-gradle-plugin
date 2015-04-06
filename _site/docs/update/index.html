@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Update &middot; EnForce
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="http://fundacionjala.github.io/enforce-gradle-plugin/css/poole.css">
+  <link rel="stylesheet" href="http://fundacionjala.github.io/enforce-gradle-plugin/css/syntax.css">
+  <link rel="stylesheet" href="http://fundacionjala.github.io/enforce-gradle-plugin/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://fundacionjala.github.io/enforce-gradle-plugin/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="http://fundacionjala.github.io/enforce-gradle-plugin/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0d">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+  <div class="sidebar-about">
+      <h1>
+        <a href="http://fundacionjala.github.io/enforce-gradle-plugin">
+          EnForce
+        </a>
+      </h1>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/documentation.html">Back</a>
+
+
+    
+      <h3>Gradle plugin documentation</h3>
+      
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/quickstart/">Quick start</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/installation/">Installation</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/usage/">Basic usage</a>
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/configuration/">Configuration</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/auth/">Authentication</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/faq/">FAQ</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      <h3>Features</h3>
+      
+      
+
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/credentials/">Credentials management</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/file-monitor/">Monitoring local changes</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/package-management/">Package management</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item active" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/update/">Update</a>
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/deployment/">Deployment tasks</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/undeploy/">Undeploy</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/retrieve/">Retrieve code</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/unit-test/">Unit tests and Reporting</a>
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/utils/">Utils</a>
+        
+      
+    
+    
+    
+
+      <span class="sidebar-nav-item">Currently v1.0.0</span>
+    </nav>
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+     <div class="page">
+		  <h1 class="page-title">Update</h1>
+		  <h2 id="update-task">Update task</h2>
+
+<h4 id="objective"><strong>Objective</strong></h4>
+<p>This task just deploys changed code as: deleted code, added code and updated code, for example if you changed a class called MyClass.cls and you deleted a trigger called MyTrigger.trigger This deletes MyTrigger.trigger and It updates MyClass.cls according file tracker in your organization.</p>
+
+<h4 id="parameters"><strong>Parameters</strong></h4>
+<p>This task has two parameters called <strong>excludes</strong> and <strong>folders</strong>. You can choose folder o folders to update it. Also you are able to exclude files by name by folder and using wildcards.</p>
+
+<p>Those parameters can be used as task property or into your build script.</p>
+
+<h2 id="executing-update-task">Executing update task</h2>
+
+<h4 id="without-parameters"><strong>Without parameters</strong></h4>
+
+<p>User can update all files that are listed on file tracker like file changed, deleted or new one. If you want to run this task, you should write the next command:</p>
+
+<pre><code>$ gradle update
+</code></pre>
+
+<blockquote>
+  <p><strong>Note:</strong> This command executed deploys files listed by file tracker to your organization.</p>
+</blockquote>
+
+<h4 id="using-folders-parameter"><strong>Using folders parameter</strong></h4>
+
+<p>User can update files that are within the folder user wants and listed on file tracker like file changed, deleted or new one.</p>
+
+<pre><code>$ gradle update -Pfolders=classes
+$ gradle update -Pfolders=classes,objects,triggers
+</code></pre>
+
+<blockquote>
+  <p><strong>Note:</strong> Many Folders can be added</p>
+</blockquote>
+
+<h4 id="using-excludes-parameter"><strong>Using excludes parameter</strong></h4>
+
+<p>User can update all files that are listed on file tracker like file changed, deleted or new one, excluding files by its name, by folders or using wildcards.</p>
+
+<p>This parameter can exclude files by:</p>
+
+<p><strong><em>folder</em></strong> if you want to exclude a folder or folders, You should write the next parameter:</p>
+
+<pre><code>    $ gradle update -Pexcludes=classes
+    $ gradle update -Pexcludes=classes,objects.
+</code></pre>
+
+<p><strong><em>file</em></strong> if you want to exclude a file or files, You should write the next parameter:</p>
+
+<pre><code>    $ gradle update -Pexcludes=classes/Class1.cls
+</code></pre>
+
+<p><strong><em>wildcard</em></strong> if you want to exclude using wildcard, You should write the next parameter:</p>
+
+<pre><code>    $ gradle update  -Pexcludes=classes/**
+    $ gradle update  -Pexcludes=objects/*.object
+    $ gradle update  -Pexcludes=**/*Account*/**
+    $ gradle update  -Pexcludes=**/*.cls
+</code></pre>
+
+<h2 id="examples">Examples:</h2>
+
+<h3 id="without-parameters-1">without parameters:</h3>
+
+<p>Scenario:</p>
+
+<p>In this case four files were changed from my local directory (object1__c.object, Page1.page, Trigger1.trigger and Class1.cls) and I want to deploy only files updated to my organization and not all files.</p>
+
+<p>command:</p>
+
+<pre><code>$ gradle update
+</code></pre>
+
+<p>output:</p>
+
+<pre><code class="language-bash">    :update
+    ___________________________________________
+            Username: juan.perez.f@gmail.com
+            Login type: login
+    ___________________________________________
+
+    *********************************************
+                  Status Files Changed
+    *********************************************
+    Object1__c.object - Changed file
+    Page1.page - Changed file
+    Trigger1.trigger - Changed file
+    Class1.cls - Changed file
+    *********************************************
+
+    Starting deploy...
+    [==================================================]   100%
+    The files were successfully deployed
+
+    BUILD SUCCESSFUL
+</code></pre>
+
+<h3 id="using-folders-parameter-1">Using folders parameter:</h3>
+
+<p>Scenario:</p>
+
+<p>In this case Class1.cls was changed and Class2.cls was deleted, Trigger1.trigger was added and Object1__c.object was changed. and I just want to deploy classes and triggers updated and not the others files changed.</p>
+
+<p>To cover this scenario you should write the next command:</p>
+
+<pre><code>$ gradle update -Pfolders=classes,triggers
+</code></pre>
+
+<p>output:</p>
+
+<pre><code class="language-bash">    :update
+    ___________________________________________
+            Username: juan.perez.f@gmail.com
+            Login type: login
+    ___________________________________________
+
+    *********************************************
+                  Status Files Changed
+    *********************************************
+    Trigger1.trigger - new file
+    Class1.cls - Deleted file
+    Class2.cls - Changed file
+    *********************************************
+
+    Starting deploy...
+    [==================================================]   100%
+    The files were successfully deployed
+
+    BUILD SUCCESSFUL
+</code></pre>
+
+<h3 id="using-excludes-parameter-1">Using excludes parameter:</h3>
+
+<p>Scenario:</p>
+
+<p>In this case Class1.cls was added, Class2.cls and Class3.cls was deleted and Class4.cls was changed and I want to deploy all classes updated less Class4.cls</p>
+
+<p>To cover this scenario you should use the next command:</p>
+
+<pre><code>$ gradle update -Pexcludes=**/Class4.cls
+</code></pre>
+
+<p>output:</p>
+
+<pre><code class="language-bash">    &gt; gradle update
+    :update
+    ___________________________________________
+            Username: juan.perez@mail.com
+            Login type: login
+    ___________________________________________
+
+    *********************************************
+              Status Files Changed
+    *********************************************
+    Class1.cls - new file
+    Class2.cls - deleted file
+    Class3.cls - deleted file
+    *********************************************
+    *********************************************
+                  Files excluded
+    *********************************************
+    Class4.cls -  excluded
+    *********************************************
+    Starting deploy...
+    [==================================================]   100%
+    The files were successfully deployed
+
+    BUILD SUCCESSFUL
+
+</code></pre>
+
+<p>Scenario:</p>
+
+<p>In this case classes and obejcts were updated and I just want to deploy objects.</p>
+
+<p>To cover this scenario you should write the next command:</p>
+
+<pre><code>$ gradle update -Pexcludes=classes
+</code></pre>
+
+<p>output:</p>
+
+<pre><code class="language-bash">    &gt; gradle update
+    :update
+    ___________________________________________
+            Username: juan.perez@mail.com
+            Login type: login
+    ___________________________________________
+
+   *********************************************
+              Status Files Changed
+    *********************************************
+    Account.object - Changed file
+    *********************************************
+    *********************************************
+                  Files excluded
+    *********************************************
+    Class1.cls -  excluded
+    Class2.cls -  excluded
+    *********************************************
+    Starting deploy...
+    [==================================================]   100%
+    The files were successfully deployed
+
+BUILD SUCCESSFUL
+
+</code></pre>
+
+	 </div>
+    </div>
+
+  </body>
+</html>

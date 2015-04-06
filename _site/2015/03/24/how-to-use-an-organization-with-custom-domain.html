@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      How to use an Organization with custom domain &middot; EnForce
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="http://fundacionjala.github.io/enforce-gradle-plugin/css/poole.css">
+  <link rel="stylesheet" href="http://fundacionjala.github.io/enforce-gradle-plugin/css/syntax.css">
+  <link rel="stylesheet" href="http://fundacionjala.github.io/enforce-gradle-plugin/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://fundacionjala.github.io/enforce-gradle-plugin/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="http://fundacionjala.github.io/enforce-gradle-plugin/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0d">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="http://fundacionjala.github.io/enforce-gradle-plugin">
+          EnForce
+        </a>
+      </h1>
+      <p class="lead">EnForce tools for Salesforce that helps on development and Continuous Integration for Salesforce projects.</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin">Home</a>
+
+
+      <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/home/">Gradle plugin documentation</a>
+      <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/jenkins/home/">Jenkins plugin documentation</a>
+      <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/tutorials.html">Tutorials</a>
+      <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/about.html">About</a>
+      <a class="sidebar-nav-item" href="https://github.com/fundacionjala/enforce-gradle-plugin">GitHub project</a>
+      <span class="sidebar-nav-item">Currently v1.0.0</span>
+    </nav>
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">How to use an Organization with custom domain</h1>
+  <span class="post-date">24 Mar 2015</span>
+  <h2 id="scenario">Scenario</h2>
+
+<p>When the user create an account using wizard of plugin only has two options about  organization domain:<br />
+-	login<br />
+-	test</p>
+
+<p>The problem that I found when I was using plugin, is that some projects uses sandboxes and create accounts in that instances, if you try login, for example :</p>
+
+<ul>
+  <li>test.salesforce.com, some accounts can’t login</li>
+</ul>
+
+<p>But if you use another domain for example</p>
+
+<ul>
+  <li>cs15.salesforce.com, this works</li>
+</ul>
+
+<p>What I did is I change sfdcType domain of credential.dat</p>
+
+<p>default credential</p>
+
+<pre><code class="language-json">{
+"default": {
+        "username": "user@org.com",
+        "password": "mypassword",
+        "token": "2B9UvHKK2E1ky1EkkYBPFvbLM",
+        "sfdcType" : "login",
+        "type": "ecrypted"
+    }
+}
+</code></pre>
+
+<p>modified credential</p>
+
+<pre><code class="language-json">{
+"default": {
+        "username": "user@org.com",
+        "password": "mypassword",
+        "token": "2B9UvHKK2E1ky1EkkYBPFvbLM",
+        "sfdcType" : "cs15",
+        "type": "ecrypted"
+    }
+}
+</code></pre>
+
+</div>
+       
+    </div>
+
+  </body>
+</html>

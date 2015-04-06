@@ -1,0 +1,33 @@
+<div class="sidebar">
+  <div class="container sidebar-sticky">
+  <div class="sidebar-about">
+      <h1>
+        <a href="{{ site.url }}">
+          {{ site.title }}
+        </a>
+      </h1>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item{% if page.url == site.url %} active{% endif %}" href="{{ "/documentation.html" | prepend: site.url }}">Back</a>
+
+
+    {% for section in site.data.gradledoc %}
+      <h3>{{ section.title }}</h3>
+      {% for item in section.docs %}
+      {% assign item_url = item | prepend:"/docs/" | append:"/" %}
+
+      {% for p in site.docs %}
+        {% if p.url == item_url %}
+          <a class="sidebar-nav-item{% if page.url == p.url %} active{% endif %}" href="{{ p.url | prepend: site.url }}">{{ p.title }}</a>
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+    
+    {% endfor %}
+
+      <span class="sidebar-nav-item">Currently v{{ site.version }}</span>
+    </nav>
+
+    <p>&copy; {{ site.time | date: '%Y' }}. All rights reserved.</p>
+  </div>
+</div>

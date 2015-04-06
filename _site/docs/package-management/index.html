@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Package management &middot; EnForce
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="http://fundacionjala.github.io/enforce-gradle-plugin/css/poole.css">
+  <link rel="stylesheet" href="http://fundacionjala.github.io/enforce-gradle-plugin/css/syntax.css">
+  <link rel="stylesheet" href="http://fundacionjala.github.io/enforce-gradle-plugin/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://fundacionjala.github.io/enforce-gradle-plugin/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="http://fundacionjala.github.io/enforce-gradle-plugin/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0d">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+  <div class="sidebar-about">
+      <h1>
+        <a href="http://fundacionjala.github.io/enforce-gradle-plugin">
+          EnForce
+        </a>
+      </h1>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/documentation.html">Back</a>
+
+
+    
+      <h3>Gradle plugin documentation</h3>
+      
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/quickstart/">Quick start</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/installation/">Installation</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/usage/">Basic usage</a>
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/configuration/">Configuration</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/auth/">Authentication</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/faq/">FAQ</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      <h3>Features</h3>
+      
+      
+
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/credentials/">Credentials management</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/file-monitor/">Monitoring local changes</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item active" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/package-management/">Package management</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/update/">Update</a>
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/deployment/">Deployment tasks</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/undeploy/">Undeploy</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/retrieve/">Retrieve code</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/unit-test/">Unit tests and Reporting</a>
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/utils/">Utils</a>
+        
+      
+    
+    
+    
+
+      <span class="sidebar-nav-item">Currently v1.0.0</span>
+    </nav>
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+     <div class="page">
+		  <h1 class="page-title">Package management</h1>
+		  <h2 id="management-package">Management package</h2>
+
+<p>Those tasks are able to install and unisntall packages.</p>
+
+<h2 id="install-package-task">Install package task</h2>
+
+<p>This task installs a manage package based on the following parameters:</p>
+
+<ul>
+  <li>-Ppkg.namespace = Package namespace is required parameter.</li>
+  <li>-Ppkg.version = Package version is required parameter.</li>
+  <li>-Ppkg.password = Package password is not required and depends on source package settings(maybe the package does not require a password).</li>
+</ul>
+
+<p>This task uses the same credentials used in other tasks, so bellow we have an example about <a href="https://code.google.com/p/apex-lang/">Apex Lang</a> package installation.</p>
+
+<p>command:</p>
+
+<pre><code>$ gradle installPackage -Ppkg.namespace=al -Ppkg.version=1.18
+</code></pre>
+
+<p>output:</p>
+
+<pre><code class="language-bash">    :installPackage
+    ___________________________________________
+            Username: john.smith@gmail.com
+            Login type: login
+    ___________________________________________
+
+          [zip] Building zip: \users\john.smith\my_sfdc_project\build\deploy.zip
+    Starting deploy...
+    [==================================================]   100%
+    The files were successfully deployed
+    Install package 'al' v1.18 success.
+
+    BUILD SUCCESSFUL
+
+    Total time: 4 mins 28.956 secs
+</code></pre>
+
+<p>Once that task is completed a result message will be displayed.</p>
+
+<h2 id="uninstall-package-task">Uninstall package task</h2>
+
+<p>This task uninstalls a manage package based on the following parameters:</p>
+
+<ul>
+  <li>-Ppkg.namespace = Package namespace is required parameter.</li>
+</ul>
+
+<p>Bellow we have an example about <a href="https://code.google.com/p/apex-lang/">Apex Lang</a> package installation.</p>
+
+<p>command:</p>
+
+<pre><code>$ gradle uninstallPackage -Ppkg.namespace=al
+</code></pre>
+
+<p>output:</p>
+
+<pre><code class="language-bash">    :uninstallPackage
+    ___________________________________________
+            Username: john.smith@gmail.com
+            Login type: login
+
+    ___________________________________________
+
+    Verifying installed package 'al' ...
+    Starting retrieve...
+    Waiting for retrieve result...
+    Retrieve result completed
+        [unzip] Expanding: \users\john.smith\my_sfdc_project\build\installedpkgsresult\installedPkgs.zip into \users\john.smith\my_sfdc_project\build\installedpkgsresult
+    Installed package 'al' found.
+          [zip] Building zip: \users\john.smith\my_sfdc_project\build\deploy.zip
+    Starting deploy...
+    [==================================================]   100%
+    The files were successfully deployed
+    Uninstall package 'al' success.
+
+    BUILD SUCCESSFUL
+
+    Total time: 2 mins 24.547 secs
+
+</code></pre>
+<p>Once that task is completed a result message will be displayed.</p>
+
+<p>If there target org does not have the related package installed the command will do nothing, becuase it verified an installed package before to start the process, bellow we have an execution example.</p>
+
+<pre><code>$ gradle uninstallPackage -Ppkg.namespace=al
+</code></pre>
+
+<p>output:</p>
+
+<pre><code class="language-bash">    :uninstallPackage
+    ___________________________________________
+            Username: john.smith@gmail.com
+            Login type: login
+    ___________________________________________
+
+    Verifying installed package 'al' ...
+    Starting retrieve...
+    Waiting for retrieve result...
+    Retrieve result completed
+    WARNING: Entity of type 'InstalledPackage' named 'al' cannot be found
+    Installed package 'al' not found.
+
+    BUILD SUCCESSFUL
+
+    Total time: 15.179 secs
+
+</code></pre>
+<p>As you can see an information message is displayed to notify that there is not an installed package.</p>
+
+<h4 id="limitations">Limitations</h4>
+<ul>
+  <li>It does not uninstall custom components associated to the package. I.E. Profiles, PermissionSets, Etc.</li>
+  <li>If there is org-to-org configuration over the related package, it could not be possible to be uninstalled due dependencies.</li>
+</ul>
+
+	 </div>
+    </div>
+
+  </body>
+</html>

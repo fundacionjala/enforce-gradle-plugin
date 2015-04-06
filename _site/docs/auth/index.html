@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Authentication &middot; EnForce
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="http://fundacionjala.github.io/enforce-gradle-plugin/css/poole.css">
+  <link rel="stylesheet" href="http://fundacionjala.github.io/enforce-gradle-plugin/css/syntax.css">
+  <link rel="stylesheet" href="http://fundacionjala.github.io/enforce-gradle-plugin/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://fundacionjala.github.io/enforce-gradle-plugin/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="http://fundacionjala.github.io/enforce-gradle-plugin/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0d">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+  <div class="sidebar-about">
+      <h1>
+        <a href="http://fundacionjala.github.io/enforce-gradle-plugin">
+          EnForce
+        </a>
+      </h1>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/documentation.html">Back</a>
+
+
+    
+      <h3>Gradle plugin documentation</h3>
+      
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/quickstart/">Quick start</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/installation/">Installation</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/usage/">Basic usage</a>
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/configuration/">Configuration</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+          <a class="sidebar-nav-item active" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/auth/">Authentication</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/faq/">FAQ</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      <h3>Features</h3>
+      
+      
+
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/credentials/">Credentials management</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/file-monitor/">Monitoring local changes</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/package-management/">Package management</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/update/">Update</a>
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/deployment/">Deployment tasks</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/undeploy/">Undeploy</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/retrieve/">Retrieve code</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/unit-test/">Unit tests and Reporting</a>
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/utils/">Utils</a>
+        
+      
+    
+    
+    
+
+      <span class="sidebar-nav-item">Currently v1.0.0</span>
+    </nav>
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+     <div class="page">
+		  <h1 class="page-title">Authentication</h1>
+		  <h2 id="authentication-to-run-tasks">Authentication to run tasks</h2>
+
+<h4 id="objective"><strong>Objective</strong></h4>
+<p>To run deployment tasks you need login into your organization for so you have three options to authentication:</p>
+<ul>
+	<li>Using a credential by default, for so you should add a credential with default id.</li>
+	<li>Using an specific credential for so you should use credential id.</li>
+	<li>Using parameters as username, password and token.</li>
+</ul>
+
+<h4 id="parameter"><strong>Parameter</strong></h4>
+
+<p>To use a credential you should use parameter called <strong><em>credentialId</em></strong> and send your credential id to run a deployment task.</p>
+
+<h2 id="forms-of-authentication">Forms of authentication</h2>
+
+<h3 id="using-credential-by-default">Using credential by default</h3>
+
+<p>You are able to run task with a credential by default where you don’t need to use <strong><em>credentialId</em></strong> parameter. To do this You should have a credential with <strong><em>default</em></strong> id into credentials.dat file.</p>
+
+<p>For example when you run the next task you are using a credential by default,  You don’t need write <em>‘credentialId’</em> parameter.</p>
+
+<pre><code>$ gradle deploy
+$ gradle undeploy
+</code></pre>
+
+<h3 id="using-a-specific-credential">Using a specific credential</h3>
+
+<p>You are able to run tasks using an specific credential, for so you should use <strong><em>credentialId</em></strong> parameter with your id, in this case there is a credential in <em>‘credentials.dat’</em> file with an id called <em>‘myId’</em></p>
+
+<pre><code>$ gradle deploy -PcredentialId=myId
+$ gradle undeploy -PcredentialId=myId
+</code></pre>
+
+<h3 id="using-parameters">Using parameters</h3>
+
+<p>You are able to run task using parameters of credential, to do this you should send the next parameter: <em>username, password and token</em>.</p>
+
+<pre><code>$ gradle deploy -Pusername=juan.perez@jalasoft.com
+		-Ppassword=123qweJuan
+		-Ptoken=qweyh65fd43789sw
+</code></pre>
+
+<h2 id="examples">Examples:</h2>
+
+<h3 id="using-a-credential-by-default">Using a credential by default</h3>
+
+<p>Scenario:</p>
+
+<p>In this case if you want to run <em>‘deploy task’</em> using your credential by default. for so you should have a credential saved into credentials.dat with <strong><em>‘default’</em></strong> id.</p>
+
+<p>Command:</p>
+
+<pre><code>$ gradle deploy
+</code></pre>
+
+<p>Output:</p>
+
+<pre><code class="language-bash">    :deploy
+    ___________________________________________
+    __________________________________________
+            Username: juan.perez@jalasoft.com
+            Login type: login
+    ___________________________________________
+
+
+    Starting deploy...
+    [==================================================]   100%
+    The files were successfully deployed
+
+    BUILD SUCCESSFUL
+</code></pre>
+
+<h3 id="using-an-specific-credential">Using an specific credential</h3>
+
+<p>Scenario:</p>
+
+<p>In this case I want to run a task using my credential that is saved as <em>‘myId’</em> id.</p>
+
+<p>Command:</p>
+
+<pre><code>$ gradle deploy -PcredentialId=myId
+</code></pre>
+
+<p>Output:</p>
+
+<pre><code class="language-bash">    :deploy
+    ___________________________________________
+    __________________________________________
+            Username: juan.perez@jalasoft.com
+            Login type: login
+    ___________________________________________
+
+
+    Starting deploy...
+    [==================================================]   100%
+    The files were successfully deployed
+
+    BUILD SUCCESSFUL
+</code></pre>
+
+<h3 id="using-parameters-1">Using parameters</h3>
+
+<p>Scenario:</p>
+
+<p>In this case I want to run <em>‘deploy task’</em> with my new credential created on Salesforce, it isn’t saved in credentials.dat file.</p>
+
+<p>Command:</p>
+
+<pre><code>$ gradle deploy -Pusername=juan.perez@jalasoft.com
+		-Ppassword=123qweJuan
+		-Ptoken=qweyh65fd43789sw
+</code></pre>
+
+<p>Output:</p>
+
+<pre><code class="language-bash">    :deploy
+    ___________________________________________
+    __________________________________________
+            Username: juan.perez@jalasoft.com
+            Login type: login
+    ___________________________________________
+
+
+    Starting deploy...
+    [==================================================]   100%
+    The files were successfully deployed
+
+    BUILD SUCCESSFUL
+</code></pre>
+
+	 </div>
+    </div>
+
+  </body>
+</html>

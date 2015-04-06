@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Installation &middot; EnForce
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="http://fundacionjala.github.io/enforce-gradle-plugin/css/poole.css">
+  <link rel="stylesheet" href="http://fundacionjala.github.io/enforce-gradle-plugin/css/syntax.css">
+  <link rel="stylesheet" href="http://fundacionjala.github.io/enforce-gradle-plugin/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://fundacionjala.github.io/enforce-gradle-plugin/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="http://fundacionjala.github.io/enforce-gradle-plugin/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0d">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+  <div class="sidebar-about">
+      <h1>
+        <a href="http://fundacionjala.github.io/enforce-gradle-plugin">
+          EnForce
+        </a>
+      </h1>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/documentation.html">Back</a>
+
+
+    
+      <h3>Gradle plugin documentation</h3>
+      
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/quickstart/">Quick start</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item active" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/installation/">Installation</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/usage/">Basic usage</a>
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/configuration/">Configuration</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/auth/">Authentication</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/faq/">FAQ</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      <h3>Features</h3>
+      
+      
+
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/credentials/">Credentials management</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/file-monitor/">Monitoring local changes</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/package-management/">Package management</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/update/">Update</a>
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/deployment/">Deployment tasks</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/undeploy/">Undeploy</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/retrieve/">Retrieve code</a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/unit-test/">Unit tests and Reporting</a>
+        
+      
+        
+      
+        
+      
+        
+      
+    
+      
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <a class="sidebar-nav-item" href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/utils/">Utils</a>
+        
+      
+    
+    
+    
+
+      <span class="sidebar-nav-item">Currently v1.0.0</span>
+    </nav>
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+     <div class="page">
+		  <h1 class="page-title">Installation</h1>
+		  <h3 id="requirements">Requirements</h3>
+<ul>
+  <li><a href="http://java.com/en/">Java JDK or JRE, version 7 or higher</a></li>
+  <li><a href="https://gradle.org/docs/current/userguide/installation.html">Gradle version 2.0 or higher</a></li>
+  <li>Internet access (<a href="https://gradle.org/docs/current/userguide/build_environment.html">configure Gradle if you are using a Proxy</a>)</li>
+  <li>Valid user account in a Salesforce Organization and the related <a href="https://help.salesforce.com/apex/HTViewHelpDoc?id=user_security_token.htm">Security Token</a></li>
+</ul>
+
+<h2 id="create-a-buildgradle-file-for-your-project">Create a build.gradle file for your project</h2>
+<p>Enforce is a Gradle plugin, so it is required to have build.gradle file where is defined the dependency to the Enforce plugin, and makes possible to start using Enforce features. Below you can find an example for a basic build.gradle file:</p>
+
+<div class="highlight"><pre><code class="language-groovy" data-lang="groovy"><span class="n">buildscript</span> <span class="o">{</span>
+       <span class="n">repositories</span> <span class="o">{</span>
+           <span class="n">mavenCentral</span><span class="o">()</span>
+           <span class="n">maven</span> <span class="o">{</span>
+                <span class="n">url</span> <span class="s2">&quot;https://dl.bintray.com/fundacionjala/enforce&quot;</span>
+           <span class="o">}</span>
+       <span class="o">}</span>
+       <span class="n">dependencies</span> <span class="o">{</span>
+           <span class="n">classpath</span> <span class="s1">&#39;org.fundacionjala.gradle.plugins.enforce:enforce-gradle-plugin:1.0.0&#39;</span>
+       <span class="o">}</span>
+   <span class="o">}</span>
+   
+   <span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;enforce&#39;</span>
+   
+   <span class="n">enforce</span> <span class="o">{</span>
+     <span class="n">srcPath</span> <span class="o">=</span> <span class="s1">&#39;src&#39;</span>
+   <span class="o">}</span></code></pre></div>
+
+<h2 id="just-a-file-where-is-the-program">Just a file, where is the program?</h2>
+<p>Gradle provides a dependency mechanism which allows download Gradle plugins and its dependencies from a Maven Repository, the first time that a tasks from the build.gradle is executed, Gradle will automatically download the Enforce plugin and its dependecies, which will be stored in a cache in your machine, this mechanism avoids to download several times the same files.</p>
+
+<p>You can try executing the next command:</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>gradle tasks</code></pre></div>
+
+<h2 id="setup-salesforce-organization-credentials">Setup Salesforce organization credentials</h2>
+<p>Enforce requires access to a Salesforce Organization, so you need to provide the credentials and <a href="https://help.salesforce.com/apex/HTViewHelpDoc?id=user_security_token.htm">Security Token</a> for an user with System Administrator rights.</p>
+
+<p>Enforce provides a task for create credentials, which are stored on your home folder and can be encrypted also.</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>gradle addCredential</code></pre></div>
+
+<p>The task will ask for the credential values to be introduced, the <em>Id</em> represents the key that is used to identify the credential, in this way it is possible to store credentials for several organizations but you need to keep in mind that the <em>Id</em> must be unique. You can find <a href="http://fundacionjala.github.io/enforce-gradle-plugin/docs/credentials/" target="_blank">here</a> more information about Credential Management.</p>
+
+<h2 id="integrate-your-salesforce-project-with-enforce">Integrate your Salesforce project with Enforce</h2>
+<p>The easy way to integrate Enforce with your Salesforce project source code is making the build.gradle file part of your source code, that means move the build.gradle file to your project folder.<br />
+Now, you can configure on Enforce the path of your project code, open your build.gradle file and add the next lines at the end:</p>
+
+<div class="highlight"><pre><code class="language-groovy" data-lang="groovy"><span class="n">enforce</span> <span class="o">{</span>
+    <span class="n">srcPath</span> <span class="o">=</span> <span class="s1">&#39;src&#39;</span>
+  <span class="o">}</span></code></pre></div>
+
+<p>In this case we are assuming the next folder structure for your project:</p>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">MySalesforceProject
+|- src
+   |- classes
+   |- pages
+   |- package.xml
+|- build.gradle</code></pre></div>
+
+<p>In this case, the <em>srcPath</em> property is pointing to the <em>src</em> folder, which contains the Salesforce project.</p>
+
+<div class="note info">
+  <p>Remember that a Salesforce project is the one that contains at least a <em>package.xml</em> , and valid Salesforce folders like: classes, objects, etc.</p>
+</div>
+
+<p>By default, the <em>srcPath</em> property points to the build.gradle folder.</p>
+
+<p>You can list the available tasks provided by Enforce executing:</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>gradle tasks</code></pre></div>
+
+<p>Now you have a basic Gradle project (build.gradle) and you can start using all the features!</p>
+
+	 </div>
+    </div>
+
+  </body>
+</html>
