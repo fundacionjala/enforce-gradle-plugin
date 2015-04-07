@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <deleteConstraint>Cascade</deleteConstraint>
+    <nameField>
+        <label>Object1 Name</label>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Object1</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ReadWrite</sharingModel>
+    <fields>
+        <fullName>HHId__c</fullName>
+        <externalId>false</externalId>
+        <formula>       if(Account.SYSTEM_AccountType__c==&apos;Household Account&apos;,CASESAFEID(AccountId),CASESAFEID(npo02__Household__c))
+        </formula>
+  <inlineHelpText>holds the ID  of the current household, whether it is a Household Account, or a Household Object.</inlineHelpText>
+        <label>HHId</label>
+        <required>false</required>
+        <type>    Text      </type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>HHId__c</fullName>
+        <externalId>false</externalId>
+        <formula>      if(Account.SYSTEM_AccountType__c==&apos;Household Account&apos;,CASESAFEID(AccountId),CASESAFEID(npo02__Household__c))</formula>
+        <inlineHelpText>holds the ID of the current household, whether it is a Household Account, or a Household Object.</inlineHelpText>
+        <label>HHId</label>
+        <required>false</required>
+        <type>   Text     </type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>HHId__c</fullName>
+        <externalId>false</externalId>
+        <formula>  ddfasfdsfif(Account.SYSTEM_AccountType__c==&apos;Household Account&apos;,CASESAFEID(AccountId),CASESAFEID(npo02__Household__c))
+        CASESAFEID(npo02__Household__c)
+</formula>
+        <inlineHelpText>holds the ID of the current household, whether it is a Household Account, or a Household Object.</inlineHelpText>
+        <label>HHId</label>
+        <required>false</required>
+        <type>   Text       </type>
+        <unique>false</unique>
+    </fields>
+
+<fields>
+        <fullName>Results__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>HYPERLINK(&apos;/apex/pros_q2w__PricingWaveCloneResults?id=&apos; + PricingWaveChild__r.Id , &apos;View Results&apos;, &apos;_self&apos;)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Results</label>
+        <required>false</required>
+        <type>  Text  </type>
+        <unique>false</unique>
+    </fields>
+<fields>
+        <fullName>Results__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>Reminder Date = CloseDate - 7</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Results</label>
+        <required>false</required>
+        <type> Date</type>
+        <unique>false</unique>
+    </fields>
+<fields>
+        <fullName>Results__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>Next = NOW() + 1</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Results</label>
+        <required>false</required>
+        <type> DateTime</type>
+        <unique>false</unique>
+    </fields>
+<fields>
+        <fullName>Results__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>Fahrenheit = 1.8 * Celsius__c + 32</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Results</label>
+        <required>false</required>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+<fields>
+        <fullName>Results__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>Gross Margin = Amount - Cost__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Results</label>
+        <required>false</required>
+        <type>Currency</type>
+        <unique>false</unique>
+    </fields>
+<fields>
+        <fullName>Results__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>TODAY() > CloseDate</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Results</label>
+        <required>false</required>
+        <type>Checkbox</type>
+        <unique>false</unique>
+    </fields>
+<fields>
+        <fullName>Results__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>Discount = (Amount - Discounted_Amount__c) / Amount</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Results</label>
+        <required>false</required>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+ <fields>
+
+        <fullName>CurrencyProposedRevenue__c</fullName>
+
+        <externalId>false</externalId>
+
+        <formula>ProposedRevenue__c</formula>
+
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+
+        <label>CurrencyProposedRevenue</label>
+
+        <precision>18</precision>
+
+        <required>false</required>
+
+        <scale>2</scale>
+
+        <trackTrending>false</trackTrending>
+
+        <type>Currency</type>
+
+    </fields>
+
+ <fields>
+
+        <fullName>ProposedRevenue__c</fullName>
+
+        <defaultValue>100</defaultValue>
+
+        <externalId>false</externalId>
+
+        <label>ProposedRevenue</label>
+
+        <precision>18</precision>
+
+        <required>false</required>
+
+        <scale>2</scale>
+
+        <trackTrending>false</trackTrending>
+
+        <type>Currency</type>
+
+    </fields>
+
+    <fields>
+        <fullName>Unique_Volunteer_Count__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>1</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Volunteer Unique Count</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+</CustomObject>

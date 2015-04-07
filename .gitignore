@@ -1,0 +1,14 @@
+# Files #
+*.jar
+*.war
+*.ear
+*.iml
+# Folders #
+.idea/
+build/
+lib/
+logs/
+repo/
+.gradle/
+
+

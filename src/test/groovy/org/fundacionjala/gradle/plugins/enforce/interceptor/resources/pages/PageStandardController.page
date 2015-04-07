@@ -1,0 +1,12 @@
+<apex:page standardStylesheets="true" sidebar="false" showHeader="true" 
+			standardController = "Quote__c" 
+
+extensions  ="QuoteController"    >
+<!-- Begin Default Content REMOVE THIS -->
+<h1>Page 2</h1>
+<h1>Congratulations</h1>
+This is your new Page
+<!-- End Default Content REMOVE THIS -->
+
+
+   </apex:page>

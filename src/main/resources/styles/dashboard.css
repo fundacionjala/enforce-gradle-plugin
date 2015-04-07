@@ -1,0 +1,40 @@
+.info-labels {
+    margin-left: 30px;
+}
+.subtitle-team {
+    font-family: Alfa Slab One;
+    line-height: 1em;
+    color: #ffffff;
+    font-size: 30px;
+    margin-bottom: 0px;
+}
+.Coverage-Report {
+    font-family: Alfa Slab One;
+    line-height: 1em;
+    color: #089913;
+    font-size: 40px;
+    margin-top: 60px;
+    margin-left: 30px;
+}
+.navbar-default {
+    background-color: #00688B;
+    color:#ffffff;
+    border-radius:0;
+}
+.navbar-default .navbar-nav > li > a {
+    color:#fff;
+}
+.navbar-default .navbar-nav > .active > a, .navbar-nav > .active > a:hover, .navbar-nav > .active > a:focus {
+    color: #0099CC;
+}
+
+.navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus {
+    color:#fff;
+}
+.navbar-default .navbar-brand {
+    color:#eeeeee;
+}
+
+#idCharts h4 {
+    margin-left:50px;
+}

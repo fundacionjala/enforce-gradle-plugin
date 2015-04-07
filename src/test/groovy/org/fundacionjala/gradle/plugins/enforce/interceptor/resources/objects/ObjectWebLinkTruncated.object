@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Visualforce</type>
+    </actionOverrides>
+    <fields>
+        <fullName>Primary_Affiliation__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <inlineHelpText>Used to track the account of the contact&apos;s Organization Affiliation record that is marked primary.</inlineHelpText>
+        <label>Primary Affiliation</label>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>Do Not Use.  Use Organization Affiliations.</relationshipLabel>
+        <relationshipName>PrimaryAffiliatedContacts</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Lookup</type>
+    </fields>
+   <webLinks>
+           <fullName>NewQuote</fullName>
+           <availability>online</availability>
+           <displayType>massActionButton</displayType>
+           <linkType>javascript</linkType>
+           <masterLabel>New Quote</masterLabel>
+           <openType>onClickJavaScript</openType>
+           <protected>false</protected>
+           <requireRowSelection>false</requireRowSelection>
+           <url>alert('')</url>
+       </webLinks>
+    <fields>
+        <fullName>Soft_Credit_Last_N_Days__c</fullName>
+        <defaultValue>0</defaultValue>
+        <externalId>false</externalId>
+        <inlineHelpText>The total amount of Soft Credit, closed in the last number of days defined in Household Settings.</inlineHelpText>
+        <label>Soft Credit Last N Days</label>
+        <precision>16</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Currency</type>
+    </fields>
+
+
+    <fields>
+        <fullName>is_Address_Override__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>If checked, the Contact&apos;s Current Address lookup overrides the Household&apos;s default Address or seasonal Address.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>If checked, the Contact&apos;s Current Address lookup overrides the Household&apos;s default Address or seasonal Address.</inlineHelpText>
+        <label>Address Override</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Checkbox</type>
+    </fields>
+    <webLinks>
+            <fullName>NewQuote</fullName>
+            <availability>online</availability>
+            <displayType>massActionButton</displayType>
+            <linkType>javascript</linkType>
+            <masterLabel>New Quote</masterLabel>
+            <openType>onClickJavaScript</openType>
+            <protected>false</protected>
+            <requireRowSelection>false</requireRowSelection>
+            <url>alert('')</url>
+        </webLinks>
+
+    <webLinks>
+        <fullName>googleButton</fullName>
+        <availability>online</availability>
+        <displayType>link</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <hasMenubar>false</hasMenubar>
+        <hasScrollbars>true</hasScrollbars>
+        <hasToolbar>false</hasToolbar>
+        <height>600</height>
+        <isResizable>true</isResizable>
+        <linkType>url</linkType>
+        <masterLabel>google</masterLabel>
+        <openType>newWindow</openType>
+        <position>none</position>
+        <protected>false</protected>
+        <showsLocation>false</showsLocation>
+        <showsStatus>false</showsStatus>
+        <url>http://www.google.com</url>
+        <width>600</width>
+    </webLinks>
+</CustomObject>

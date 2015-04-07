@@ -1,0 +1,22 @@
+/*
+ * Copyright (c) Fundacion Jala. All rights reserved.
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://dl.bintray.com/fundacionjala/enforce"
+        }
+    }
+    dependencies {
+        classpath 'org.fundacionjala.gradle.plugins.enforce:enforce-gradle-plugin:1.0.0'
+    }
+}
+
+apply plugin: 'enforce'
+
+enforce {
+    srcPath = 'src'
+}
