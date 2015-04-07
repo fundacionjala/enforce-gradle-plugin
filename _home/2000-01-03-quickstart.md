@@ -32,8 +32,8 @@ enforce {
 
 - Register a Salesforce credential to be used
 {% highlight bash linenos=table%}
-   $ gradle addCredential  -Pid=<default> 
-                        -Puser=<USER NAME> 
+   $ gradle addCredential  -Pid=default
+                        -Pusername=<USER NAME>
                         -Ppassword=<PASSWORD> 
                         -Ptoken=<SECURITY TOKEN>
    #=> Creates an entry on the credentials store, credential id with 'default' value

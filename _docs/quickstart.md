@@ -29,8 +29,8 @@ Here you can find the enought required information to have running a Gradle proj
 
 2. Register a Salesforce credential to be used
 {% highlight bash %}
-   $ gradle addCredential -Pid=<identifier> 
-                         -Puser=<USER NAME> 
+   $ gradle addCredential -Pid=default
+                         -Pusername=<USER NAME>
                          -Ppassword=<PASSWORD> 
                          -Ptoken=<SECURITY TOKEN>
 {% endhighlight %}

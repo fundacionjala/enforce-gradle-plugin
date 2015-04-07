@@ -41,8 +41,6 @@ lsi: false
 
 
 ### content configuration ###
-favicon:     "img/favicon.ico"
-touch_icon:  "img/apple-touch-icon.png"
 google_analytics_key: ## put YOUR key here to enable tracking! (blank to disable)
 
 
