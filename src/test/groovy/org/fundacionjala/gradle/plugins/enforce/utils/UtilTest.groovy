@@ -18,22 +18,49 @@ class UtilTest extends Specification {
         resourcesPath = Paths.get(System.getProperty("user.dir"), 'src', 'test', 'groovy', 'org', 'fundacionjala', 'gradle', 'plugins','enforce', 'utils', 'resources').toString()
     }
 
-    def "Test should return true if email is valid"() {
+    def "Test should return true if emails are valid"() {
         given:
             String email = 'Juan.Perez@gmail.com'
+            String email1 = 'lucas.cdlv@gmail.com.lucas01.juan.com.cls'
+            String email2 = 'lucas.cdlv_12312@gmail.com'
+            String email3 = 'lucas.cdlv@gmail.com.m.cdfre'
+            String email4 = 'lucas.cdlv.dev@gmail.com'
+            String email5 = 'luc-asd@gmail.com'
+            String email6 = 'Liz-juan.perez.cochabamba@ohoho.com-jala.extension'
         when:
             Boolean result = Util.validEmail(email)
+            Boolean result1 = Util.validEmail(email1)
+            Boolean result2 = Util.validEmail(email2)
+            Boolean result3 = Util.validEmail(email3)
+            Boolean result4 = Util.validEmail(email4)
+            Boolean result5 = Util.validEmail(email5)
+            Boolean result6 = Util.validEmail(email6)
         then:
             result
+            result1
+            result2
+            result3
+            result4
+            result5
+            result6
     }
 
     def "Test should return false if email is invalid"() {
         given:
             String email = 'Juan.Perezmail.com'
+            String email1 = 'Juan.Perezmail@com'
+            String email2 = 'pedro blanco@jalasoft.com'
+            String email3 = 'juan.lucas@jala.open test.com'
         when:
             Boolean result = Util.validEmail(email)
+            Boolean result1 = Util.validEmail(email1)
+            Boolean result2 = Util.validEmail(email2)
+            Boolean result3 = Util.validEmail(email3)
         then:
             !result
+            !result1
+            !result2
+            !result3
     }
 
     def "Test Should return hour format" () {

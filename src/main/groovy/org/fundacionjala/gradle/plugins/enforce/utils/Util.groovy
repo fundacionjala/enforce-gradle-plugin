@@ -17,9 +17,8 @@ import java.util.regex.Pattern
 /**
  * A set methods of utility
  */
-
 class Util {
-    private static final String PATTERN_EMAIL = '''^[\\w-]+(\\.[\\w-]+)*@[\\w-]+(\\.[\\w-]+)*[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$'''
+    private static final String PATTERN_EMAIL = '([\\w-]+(\\.[\\w-]+)*@[\\w-]+(\\.[\\w-]+)*(\\.[\\w-]+))'
     private static final String PATTERN_FILE_EXT = ~/[.][^.]+$/
     private static final int MAC_ADDRESS_SIZE = 12
 
@@ -68,15 +67,19 @@ class Util {
      * @return true if email is valid else false
      */
     public static boolean validEmail(String email) {
-        Pattern pattern = Pattern.compile(PATTERN_EMAIL)
-        Matcher matcher = pattern.matcher(email)
-        return matcher.find()
+        boolean result = false
+        if (!email.contains(" ")) {
+            Pattern pattern = Pattern.compile(PATTERN_EMAIL)
+            Matcher matcher = pattern.matcher(email)
+            result = matcher.find()
+        }
+        return result
     }
     /**
      * Gets mac address of your computer
      * @return String mac address
      */
-    private static String getMacAddress() {
+    public static String getMacAddress() {
         def macAddress
         def interfaces = NetworkInterface.networkInterfaces.collect { element ->
             element.hardwareAddress?.encodeHex().toString()
