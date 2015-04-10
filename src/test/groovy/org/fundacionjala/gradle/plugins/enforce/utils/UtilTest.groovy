@@ -20,47 +20,47 @@ class UtilTest extends Specification {
 
     def "Test should return true if emails are valid"() {
         given:
-            String email = 'Juan.Perez@gmail.com'
-            String email1 = 'lucas.cdlv@gmail.com.lucas01.juan.com.cls'
-            String email2 = 'lucas.cdlv_12312@gmail.com'
-            String email3 = 'lucas.cdlv@gmail.com.m.cdfre'
-            String email4 = 'lucas.cdlv.dev@gmail.com'
-            String email5 = 'luc-asd@gmail.com'
-            String email6 = 'Liz-juan.perez.cochabamba@ohoho.com-jala.extension'
+            String emailCommon = 'Juan.Perez@gmail.com'
+            String emailWithManyDotsAfterAtSign = 'lucas.cdlv@gmail.com.lucas01.juan.com.cls'
+            String emailWithUnderscoreBeforeAtSign = 'lucas.cdlv_12312@gmail.com'
+            String emailWithUnderscoreAfterAtSign = 'lucas.cdlv@gmail.com_m.cdfre'
+            String emailWithManyDotsBeforeAtSign = 'lucas.cdlv.dev@gmail.com'
+            String emailWithHyphen = 'luc-asd@gmail.com'
+            String emailWithHyphenBeforeAndAfterAtSign = 'Liz-juan.perez.cochabamba@ohoho.com-jala.extension'
         when:
-            Boolean result = Util.validEmail(email)
-            Boolean result1 = Util.validEmail(email1)
-            Boolean result2 = Util.validEmail(email2)
-            Boolean result3 = Util.validEmail(email3)
-            Boolean result4 = Util.validEmail(email4)
-            Boolean result5 = Util.validEmail(email5)
-            Boolean result6 = Util.validEmail(email6)
+            Boolean resultEmailCommon = Util.validEmail(emailCommon)
+            Boolean resultWithManyDotsAfterAtSign = Util.validEmail(emailWithManyDotsAfterAtSign)
+            Boolean resultWithUnderscoreBeforeAtSign = Util.validEmail(emailWithUnderscoreBeforeAtSign)
+            Boolean resultWithUnderscoreAfterAtSign = Util.validEmail(emailWithUnderscoreAfterAtSign)
+            Boolean resultWithManyDotsBeforeAtSign = Util.validEmail(emailWithManyDotsBeforeAtSign)
+            Boolean resultWithHyphen = Util.validEmail(emailWithHyphen)
+            Boolean resultWithHyphenBeforeAndAfterAtSign = Util.validEmail(emailWithHyphenBeforeAndAfterAtSign)
         then:
-            result
-            result1
-            result2
-            result3
-            result4
-            result5
-            result6
+            resultEmailCommon
+            resultWithManyDotsAfterAtSign
+            resultWithUnderscoreBeforeAtSign
+            resultWithUnderscoreAfterAtSign
+            resultWithManyDotsBeforeAtSign
+            resultWithHyphen
+            resultWithHyphenBeforeAndAfterAtSign
     }
 
-    def "Test should return false if email is invalid"() {
+    def "Test should return false if email are invalid"() {
         given:
-            String email = 'Juan.Perezmail.com'
-            String email1 = 'Juan.Perezmail@com'
-            String email2 = 'pedro blanco@jalasoft.com'
-            String email3 = 'juan.lucas@jala.open test.com'
+            String emailWithoutAtSign = 'Juan.Perezmail.com'
+            String emailWithoutDotsAfterAtSign = 'Juan.Perezmail@com'
+            String emailWithBlankSpaceBeforeAtSign = 'pedro blanco@jalasoft.com'
+            String emailWithBlankSpaceAfterAtSign = 'juan.lucas@jala.open test.com'
         when:
-            Boolean result = Util.validEmail(email)
-            Boolean result1 = Util.validEmail(email1)
-            Boolean result2 = Util.validEmail(email2)
-            Boolean result3 = Util.validEmail(email3)
+            Boolean resultWithoutAtSign = Util.validEmail(emailWithoutAtSign)
+            Boolean resultWithoutDotsAfterAtSign = Util.validEmail(emailWithoutDotsAfterAtSign)
+            Boolean resultWithBlankSpaceBeforeAtSign = Util.validEmail(emailWithBlankSpaceBeforeAtSign)
+            Boolean resultWithBlankSpaceAfterAtSign = Util.validEmail(emailWithBlankSpaceAfterAtSign)
         then:
-            !result
-            !result1
-            !result2
-            !result3
+            !resultWithoutAtSign
+            !resultWithoutDotsAfterAtSign
+            !resultWithBlankSpaceBeforeAtSign
+            !resultWithBlankSpaceAfterAtSign
     }
 
     def "Test Should return hour format" () {
