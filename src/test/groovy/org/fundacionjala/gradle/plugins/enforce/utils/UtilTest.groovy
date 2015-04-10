@@ -127,6 +127,13 @@ class UtilTest extends Specification {
             extension == "object"
     }
 
+    def "Test should get mac address with size equals 12" () {
+        when:
+            def macAddress = Util.getMacAddress()
+        then:
+            macAddress.size() == 12
+    }
+
     def cleanupSpec() {
         new File(Paths.get(resourcesPath, 'triggers').toString()).deleteDir()
     }

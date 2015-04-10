@@ -227,4 +227,8 @@ class CredentialManagerTest extends Specification {
         then:
             thrown(Exception)
     }
+
+    def cleanupSpec() {
+        new File(pathSecretKeyGenerated).delete()
+    }
 }
