@@ -1,11 +1,16 @@
 # EnForce website setup
 
 The website is based on [Jekyll](http://jekyllrb.com/docs/quickstart/), if you want to run the website it is required ruby, and I would like to suggest a linux environment.
-## The first step is to install some dependencies for Ruby.
+
+## Install dependencies
 ``` bash
   $ sudo apt-get update
   $ sudo apt-get install git-core curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev python-software-properties libffi-dev
   $ sudo apt-get install libgdbm-dev libncurses5-dev automake libtool bison libffi-dev
+```
+
+## Install rvm
+``` bash  
   $ curl -sSL https://rvm.io/mpapis.asc | gpg --import -
   $ curl -L https://get.rvm.io | bash -s stable
   $ source ~/.rvm/scripts/rvm
