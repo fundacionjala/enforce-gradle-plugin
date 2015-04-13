@@ -17,11 +17,11 @@ import java.util.regex.Pattern
 /**
  * A set methods of utility
  */
-
 class Util {
-    private static final String PATTERN_EMAIL = '''^[\\w-]+(\\.[\\w-]+)*@[\\w-]+(\\.[\\w-]+)*[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$'''
+    private static final String PATTERN_EMAIL = '([\\w-]+(\\.[\\w-]+)*@[\\w-]+(\\.[\\w-]+)*(\\.[\\w-]+))'
     private static final String PATTERN_FILE_EXT = ~/[.][^.]+$/
     private static final int MAC_ADDRESS_SIZE = 12
+    private static final String MAC_ADDRESS_BY_DEFAULT = '000000000000'
 
     /**
      * Gets only file typeName without the extension
@@ -68,28 +68,36 @@ class Util {
      * @return true if email is valid else false
      */
     public static boolean validEmail(String email) {
-        Pattern pattern = Pattern.compile(PATTERN_EMAIL)
-        Matcher matcher = pattern.matcher(email)
-        return matcher.find()
+        boolean result = false
+        if (!email.contains(" ")) {
+            Pattern pattern = Pattern.compile(PATTERN_EMAIL)
+            Matcher matcher = pattern.matcher(email)
+            result = matcher.find()
+        }
+        return result
     }
     /**
      * Gets mac address of your computer
      * @return String mac address
      */
-    private static String getMacAddress() {
-        def macAddress
-        def interfaces = NetworkInterface.networkInterfaces.collect { element ->
-            element.hardwareAddress?.encodeHex().toString()
+    public static String getMacAddress() {
+        String macAddress = MAC_ADDRESS_BY_DEFAULT
+        ArrayList<String> interfaces = new ArrayList<String>()
+
+        NetworkInterface.getNetworkInterfaces().each { NetworkInterface element ->
+            def elementEncoded = element.hardwareAddress?.encodeHex()
+            interfaces.push(elementEncoded.toString())
         }
-        interfaces.each { mac ->
+        interfaces.each { String mac ->
             if (mac && mac.size() == MAC_ADDRESS_SIZE) {
                 macAddress = mac
             }
         }
         return macAddress
+
     }
 
-    public static String formatDurationHMS(long milliseconds){
+    public static String formatDurationHMS(long milliseconds) {
 
         long second = (milliseconds / 1000)
         second = second % 60
@@ -102,7 +110,7 @@ class Util {
         return time
     }
 
-    public static byte[] getBytes(String value, String charsetName){
+    public static byte[] getBytes(String value, String charsetName) {
         value.getBytes(Charset.forName(charsetName))
     }
 
@@ -123,7 +131,7 @@ class Util {
      * @param logger the instance Logger of java
      * @param folderNames an array list of strings
      */
-    public static void logList(Logger logger, String message, ArrayList<String> stringArrayList){
+    public static void logList(Logger logger, String message, ArrayList<String> stringArrayList) {
         logger.info("${message}:\n")
         stringArrayList.each { folder ->
             logger.info(folder)
@@ -149,9 +157,9 @@ class Util {
      * @param foldersName are folders name
      * @return an Array list with invalid folders
      */
-    public static ArrayList<String> getInvalidFolders (ArrayList<String> foldersName) {
+    public static ArrayList<String> getInvalidFolders(ArrayList<String> foldersName) {
         ArrayList<String> invalidFolders = new ArrayList<String>()
-        foldersName.each {String folderName ->
+        foldersName.each { String folderName ->
             if (!MetadataComponents.validFolder(folderName)) {
                 invalidFolders.push(folderName)
             }
@@ -164,9 +172,9 @@ class Util {
      * @param foldersName are folders name
      * @return an Array list with empty folders
      */
-    public static ArrayList<String> getEmptyFolders (ArrayList<String> foldersName, String projectPath) {
+    public static ArrayList<String> getEmptyFolders(ArrayList<String> foldersName, String projectPath) {
         ArrayList<String> emptyFolders = new ArrayList<String>()
-        foldersName.each {String folderName ->
+        foldersName.each { String folderName ->
             File file = new File(Paths.get(projectPath, folderName).toString())
             if (file.exists() && file.list().length == 0) {
                 emptyFolders.push(folderName)
@@ -183,7 +191,7 @@ class Util {
      */
     public static ArrayList<String> getNotExistFolders(ArrayList<String> foldersName, String projectPath) {
         ArrayList<String> notExistFolders = new ArrayList<String>()
-        foldersName.each {String folderName ->
+        foldersName.each { String folderName ->
             File file = new File(Paths.get(projectPath, folderName).toString())
             if (!file.exists()) {
                 notExistFolders.push(folderName)
