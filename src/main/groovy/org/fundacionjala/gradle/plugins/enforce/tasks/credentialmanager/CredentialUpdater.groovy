@@ -14,23 +14,22 @@ import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import java.nio.file.Paths
 
 class CredentialUpdater extends CredentialManagerTask {
-    private final String SECRET_KEY_PATH = Paths.get(System.properties['user.home'], 'keyGenerated.txt').toString()
-    private final String PATH_FILE_CREDENTIALS = Paths.get(System.properties['user.home'], 'credentials.dat').toString()
-    private CredentialManagerInput credentialUpdaterInput
 
+    /**
+     * This class Updates credential from credentials.dat file
+     */
     CredentialUpdater() {
         super("You can update a credential", "Credential Manager")
     }
 
     @Override
     void runTask() {
-        credentialUpdaterInput = new CredentialManagerInput(PATH_FILE_CREDENTIALS, SECRET_KEY_PATH)
         if (CredentialParameterValidator.hasIdCredential(project)) {
             updateCredentialByParameters()
         }
         if (!CredentialParameterValidator.hasIdCredential(project) || !CredentialParameterValidator.hasUserName(project)) {
-            while (credentialUpdaterInput.finished) {
-                credentialUpdaterInput.updateCredentialByConsole()
+            while (credentialManagerInput.finished) {
+                credentialManagerInput.updateCredentialByConsole()
             }
         }
     }
@@ -39,26 +38,12 @@ class CredentialUpdater extends CredentialManagerTask {
      * Updates a credential by parameters
      */
     public void updateCredentialByParameters() {
-        if (!credentialUpdaterInput.hasCredential(project.properties[CredentialMessage.ID_PARAM.value()])) {
+        if (!credentialManagerInput.hasCredential(project.properties[CredentialMessage.ID_PARAM.value()].toString())) {
             throw new CredentialException(CredentialMessage.MESSAGE_ID_CREDENTIAL_DOES_NOT_EXIST.value())
         }
         if(CredentialParameterValidator.validateFieldsCredential(project)) {
-            credentialUpdaterInput.updateCredential(getCredential())
+            def credentialId = project.properties[CredentialMessage.ID_PARAM.value()].toString()
+            credentialManagerInput.updateCredential(getCredential(credentialManagerInput.getCredentialToUpdate(credentialId).type))
         }
-    }
-
-    /**
-     * Gets a credential inserted by parameters
-     * @return a credential
-     */
-    public Credential getCredential() {
-        Credential credential = new Credential()
-        credential.id = project.properties[CredentialMessage.ID_PARAM.value()]
-        credential.username = project.properties[CredentialParameter.USER_NAME.value()]
-        credential.password = project.properties[CredentialParameter.PASSWORD.value()]
-        credential.token = project.properties[CredentialParameter.TOKEN.value()]
-        credential.loginFormat = CredentialParameterValidator.getLoginType(project)
-        credential.type = credentialUpdaterInput.getCredentialToUpdate(credential.id).type
-        return credential
     }
 }
