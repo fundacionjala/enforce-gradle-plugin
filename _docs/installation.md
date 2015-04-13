@@ -18,9 +18,7 @@ Enforce is a Gradle plugin, so it is required to have build.gradle file where is
    buildscript {
        repositories {
            mavenCentral()
-           maven {
-                url "https://dl.bintray.com/fundacionjala/enforce"
-           }
+           jcenter()
        }
        dependencies {
            classpath 'org.fundacionjala.gradle.plugins.enforce:enforce-gradle-plugin:1.0.0'
