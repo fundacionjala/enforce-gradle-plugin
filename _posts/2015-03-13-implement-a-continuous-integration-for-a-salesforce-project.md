@@ -19,9 +19,7 @@ This article tries to show an example of a Gradle build script which implements 
 buildscript {
    repositories {
        mavenCentral()
-       maven {
-            url "https://dl.bintray.com/fundacionjala/enforce"
-       }
+       jcenter()
    }
    dependencies {
        classpath 'org.fundacionjala.gradle.plugins.enforce:enforce-gradle-plugin:1.0.0'

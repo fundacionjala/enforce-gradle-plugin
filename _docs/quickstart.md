@@ -11,9 +11,7 @@ Here you can find the enought required information to have running a Gradle proj
    buildscript {
        repositories {
          mavenCentral()
-         maven {
-            url "https://dl.bintray.com/fundacionjala/enforce"
-         }
+         jcenter()
        }
        dependencies {
            classpath 'org.fundacionjala.gradle.plugins.enforce:enforce-gradle-plugin:1.0.0'
