@@ -24,4 +24,58 @@ class CredentialParameterValidatorTest extends Specification{
         expect:
         credentialParameterValidator instanceof CredentialParameterValidator
     }
+
+    def "Test should return type credential as 'encrypted' if option is equal to 'y'"() {
+        given:
+            String option = 'y'
+        when:
+            String credentialType = CredentialParameterValidator.getCredentialType(option)
+        then:
+            credentialType == "encrypted"
+    }
+
+    def "Test should return type credential as 'normal' if option is equal to 'n'"() {
+        given:
+            String option = 'n'
+        when:
+            String credentialType = CredentialParameterValidator.getCredentialType(option)
+        then:
+            credentialType == "normal"
+    }
+
+    def "Test should return type credential as 'encrypted' by default"() {
+        given:
+            String option = null
+        when:
+            String credentialType = CredentialParameterValidator.getCredentialType(option)
+        then:
+            credentialType == "encrypted"
+    }
+
+    def "Test should return type login as 'login' by default"() {
+        given:
+            String loginTypeInserted = null
+        when:
+            String credentialType = CredentialParameterValidator.getLoginType(loginTypeInserted)
+        then:
+            credentialType == "login"
+    }
+
+    def "Test should return type login as 'login' if type login is iqual to 'login'"() {
+        given:
+            String loginTypeInserted = 'login'
+        when:
+            String credentialType = CredentialParameterValidator.getLoginType(loginTypeInserted)
+        then:
+            credentialType == "login"
+    }
+
+    def "Test should return type login as 'test' if type login is iqual to 'test'"() {
+        given:
+            String loginTypeInserted = 'test'
+        when:
+            String credentialType = CredentialParameterValidator.getLoginType(loginTypeInserted)
+        then:
+            credentialType == "test"
+    }
 }

@@ -5,13 +5,13 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.credentialmanager
 
+import org.fundacionjala.gradle.plugins.enforce.credentialmanagement.CredentialMessage
 import org.fundacionjala.gradle.plugins.enforce.credentialmanagement.CredentialParameter
 import org.fundacionjala.gradle.plugins.enforce.exceptions.CredentialException
-import org.gradle.api.Project
-import org.fundacionjala.gradle.plugins.enforce.credentialmanagement.CredentialMessage
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.LoginType
+import org.gradle.api.Project
 
 /**
  * Validates the parameters of a credential sent to run a task
@@ -20,33 +20,42 @@ class CredentialParameterValidator {
     /**
      * Returns a credential using parameters sent
      */
-    static Credential getCredentialInserted(Project project) {
+    public static Credential getCredentialInserted(Project project) {
         Credential credential = new Credential()
         credential.id = project.properties[CredentialMessage.ID_PARAM.value()]
         credential.username = project.properties[CredentialParameter.USER_NAME.value()]
         credential.password = project.properties[CredentialParameter.PASSWORD.value()]
-        credential.token = project.properties[CredentialParameter.TOKEN.value()]
-        credential.loginFormat = getLoginType(project)
+        credential.token = getToken(project)
+        String loginInserted = project.properties[CredentialMessage.LOGIN.value()].toString()
+        credential.loginFormat = getLoginType(loginInserted)
         credential.type = CredentialMessage.NORMAL.value()
         return credential
     }
+    private static String getToken(Project project) {
+        String token = ''
+        if (Util.isValidProperty(project, CredentialMessage.TOKEN.value())) {
+            token = project.properties[CredentialMessage.TOKEN.value()]
+        }
+        return token
+    }
+
 
     /**
      * Validates credential fields
      * @return true if fields are validate
      */
-    static boolean validateFieldsCredential(Project project) {
+    public static boolean validateFieldsCredential(Project project) {
         CredentialParameter.each { CredentialParameter parameter ->
             String value = parameter.value()
             if (Util.isEmptyProperty(project, value)) {
                 throw new CredentialException("${value} ${CredentialMessage.MESSAGE_EMPTY_PARAMETER.value()}")
             }
-            if(!Util.isValidProperty(project, value)) {
+            if (!Util.isValidProperty(project, value)) {
                 throw new CredentialException("${value} ${CredentialMessage.MESSAGE_EXCEPTION_INVALID_PARAMETERS.value()}")
             }
         }
         if (!Util.validEmail(project.properties[CredentialParameter.USER_NAME.value()].toString())) {
-            throw new CredentialException( "${CredentialMessage.MESSAGE_EXCEPTION_USER_NAME.value()} '${project.properties[CredentialParameter.USER_NAME.value()].toString()}'")
+            throw new CredentialException("${CredentialMessage.MESSAGE_EXCEPTION_USER_NAME.value()} '${project.properties[CredentialParameter.USER_NAME.value()].toString()}'")
         }
         return true
     }
@@ -56,9 +65,9 @@ class CredentialParameterValidator {
      * @param project is type Project gradle
      * @return true if there are parameters
      */
-    static boolean haveParameters(Project project) {
+    public static boolean haveParameters(Project project) {
         return project.hasProperty(CredentialParameter.USER_NAME.value()) || project.hasProperty(CredentialParameter.PASSWORD.value()) ||
-               project.hasProperty(CredentialParameter.TOKEN.value()) || project.hasProperty(CredentialMessage.LOGIN.value())
+                project.hasProperty(CredentialMessage.TOKEN.value()) || project.hasProperty(CredentialMessage.LOGIN.value())
     }
 
     /**
@@ -66,7 +75,7 @@ class CredentialParameterValidator {
      * @param project is type project
      * @return true if exist
      */
-    static boolean hasUserName(Project project) {
+    public static boolean hasUserName(Project project) {
         return project.hasProperty(CredentialParameter.USER_NAME.value())
     }
 
@@ -75,7 +84,7 @@ class CredentialParameterValidator {
      * @param project is type project
      * @return true if exist
      */
-    static boolean hasIdCredential(Project project) {
+    public static boolean hasIdCredential(Project project) {
         return project.hasProperty(CredentialMessage.ID_PARAM.value())
     }
 
@@ -83,9 +92,9 @@ class CredentialParameterValidator {
      * Gets a login type by default is DEV
      * @return a login type
      */
-    static String getLoginType(Project project) {
+    public static String getLoginType(String loginInserted) {
         def loginType = LoginType.DEV.value()
-        if(project.properties[CredentialMessage.LOGIN.value()] == LoginType.TEST.value()) {
+        if (loginInserted == LoginType.TEST.value()) {
             loginType = LoginType.TEST.value()
         }
         return loginType
@@ -93,11 +102,12 @@ class CredentialParameterValidator {
 
     /**
      * Gets a credential type by default is encrypted
+     * @param option is type String can be 'y' or 'n'
      * @return a credential type (encrypted or not)
      */
-    static String getCredentialType(Project project) {
-        def credentialType = CredentialMessage.ENCRYPTED.value()
-        if(project.properties[CredentialMessage.ENCRYPTED.value()] == CredentialMessage.OPTION_NO.value()) {
+    public static String getCredentialType(String option) {
+        String credentialType = CredentialMessage.ENCRYPTED.value()
+        if (option == CredentialMessage.OPTION_NO.value()) {
             credentialType = CredentialMessage.NORMAL.value()
         }
         return credentialType

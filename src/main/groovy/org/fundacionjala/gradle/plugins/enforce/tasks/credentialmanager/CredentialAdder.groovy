@@ -5,12 +5,7 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.credentialmanager
 
-import org.fundacionjala.gradle.plugins.enforce.credentialmanagement.CredentialManagerInput
 import org.fundacionjala.gradle.plugins.enforce.credentialmanagement.CredentialMessage
-import org.fundacionjala.gradle.plugins.enforce.credentialmanagement.CredentialParameter
-import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
-
-import java.nio.file.Paths
 
 class CredentialAdder extends CredentialManagerTask {
 
@@ -18,7 +13,7 @@ class CredentialAdder extends CredentialManagerTask {
      * Constructor add description an group of task
      */
     CredentialAdder() {
-        super("You can add a credential", "Credential Manager")
+        super(CredentialMessage.ADD_CREDENTIAL_DESCRIPTION.value(), CredentialMessage.CREDENTIAL_MANAGER_GROUP.value())
     }
 
     @Override
@@ -40,8 +35,9 @@ class CredentialAdder extends CredentialManagerTask {
         if (credentialManagerInput.hasCredential(project.properties[CredentialMessage.ID_PARAM.value()].toString())) {
             throw new Exception(CredentialMessage.MESSAGE_ID_CREDENTIAL_EXIST.value())
         }
-        if(CredentialParameterValidator.validateFieldsCredential(project)) {
-            credentialManagerInput.addCredential(getCredential(CredentialParameterValidator.getCredentialType(project)))
+        if (CredentialParameterValidator.validateFieldsCredential(project)) {
+            String credentialTypeInserted = project.properties[CredentialMessage.ENCRYPTED.value()]
+            credentialManagerInput.addCredential(getCredential(CredentialParameterValidator.getCredentialType(credentialTypeInserted)))
         }
     }
 }

@@ -9,6 +9,7 @@ import org.fundacionjala.gradle.plugins.enforce.credentialmanagement.CredentialM
 import org.fundacionjala.gradle.plugins.enforce.credentialmanagement.CredentialMessage
 import org.fundacionjala.gradle.plugins.enforce.credentialmanagement.CredentialParameter
 import org.fundacionjala.gradle.plugins.enforce.tasks.ForceTask
+import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 
 import java.nio.file.Paths
@@ -44,10 +45,24 @@ abstract class CredentialManagerTask extends ForceTask {
         credential.id = project.properties[CredentialMessage.ID_PARAM.value()]
         credential.username = project.properties[CredentialParameter.USER_NAME.value()]
         credential.password = project.properties[CredentialParameter.PASSWORD.value()]
-        credential.token = project.properties[CredentialParameter.TOKEN.value()]
-        credential.loginFormat = CredentialParameterValidator.getLoginType(project)
+        credential.token = getToken()
+        String loginInserted = project.properties[CredentialMessage.LOGIN.value()].toString()
+        credential.loginFormat = CredentialParameterValidator.getLoginType(loginInserted)
         credential.type = typeCredential
         return credential
+    }
+
+    /**
+     * Gets a token it is empty by default.
+     * @param tokenInserted is type String
+     * @return a token
+     */
+    private String getToken() {
+        String token = ''
+        if (Util.isValidProperty(project, CredentialMessage.TOKEN.value())) {
+            token = project.properties[CredentialMessage.TOKEN.value()]
+        }
+        return token
     }
 
     /**
