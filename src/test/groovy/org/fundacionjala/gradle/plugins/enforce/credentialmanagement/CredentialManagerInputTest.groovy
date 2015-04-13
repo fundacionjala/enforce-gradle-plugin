@@ -90,6 +90,46 @@ class CredentialManagerInputTest extends Specification {
             newCredential.type == credential.type
     }
 
+    def "Test should get a login type by default"() {
+        given:
+        credentialAdderInput.idInput = idInput
+        credentialAdderInput.userNameInput = userNameInput
+        credentialAdderInput.passwordInput = passwordInput
+        credentialAdderInput.tokenInput = tokenInput
+        credentialAdderInput.loginTypeInput = ""
+        credentialAdderInput.typeInput = typeInput
+        when:
+        def newCredential = credentialAdderInput.getCredentialInserted()
+        credential.loginFormat = 'login'
+        then:
+        newCredential.id == credential.id
+        newCredential.username == credential.username
+        newCredential.password == credential.password
+        newCredential.token == credential.token
+        newCredential.loginFormat == credential.loginFormat
+        newCredential.type == credential.type
+    }
+
+    def "Test should get a  custom login type"() {
+        given:
+        credentialAdderInput.idInput = idInput
+        credentialAdderInput.userNameInput = userNameInput
+        credentialAdderInput.passwordInput = passwordInput
+        credentialAdderInput.tokenInput = tokenInput
+        credentialAdderInput.loginTypeInput = 'my.custom-domain'
+        credentialAdderInput.typeInput = typeInput
+        when:
+        def newCredential = credentialAdderInput.getCredentialInserted()
+        credential.loginFormat = 'my.custom-domain'
+        then:
+        newCredential.id == credential.id
+        newCredential.username == credential.username
+        newCredential.password == credential.password
+        newCredential.token == credential.token
+        newCredential.loginFormat == credential.loginFormat
+        newCredential.type == credential.type
+    }
+
     def "Test should false if there is a empty input"() {
         given:
             credentialAdderInput.idInput = idInput
