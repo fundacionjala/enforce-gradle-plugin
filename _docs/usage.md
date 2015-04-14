@@ -14,4 +14,4 @@ All the tasks follow the next convention:
 {% endhighlight %}
 
 
-Remember that having a configured  salesforce is required.
+Remember that having a configured salesforce is required.
