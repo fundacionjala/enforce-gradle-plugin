@@ -18,9 +18,12 @@ import org.gradle.api.Project
  */
 class CredentialParameterValidator {
     /**
-     * Returns a credential using parameters sent
+     * Gets a credential with parameters inserted
+     * @param project is type project
+     * @param credentialType is type String can be 'normal' or 'encrypted'
+     * @return a credential
      */
-    public static Credential getCredentialInserted(Project project) {
+    public static Credential getCredentialInserted(Project project, String credentialType) {
         Credential credential = new Credential()
         credential.id = project.properties[CredentialMessage.ID_PARAM.value()]
         credential.username = project.properties[CredentialParameter.USER_NAME.value()]
@@ -28,9 +31,15 @@ class CredentialParameterValidator {
         credential.token = getToken(project)
         String loginInserted = project.properties[CredentialMessage.LOGIN.value()].toString()
         credential.loginFormat = getLoginType(loginInserted)
-        credential.type = CredentialMessage.NORMAL.value()
+        credential.type = credentialType
         return credential
     }
+
+    /**
+     * Gets a token it is empty by default.
+     * @param tokenInserted is type String
+     * @return a token
+     */
     private static String getToken(Project project) {
         String token = ''
         if (Util.isValidProperty(project, CredentialMessage.TOKEN.value())) {

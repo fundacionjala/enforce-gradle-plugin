@@ -38,34 +38,6 @@ abstract class CredentialManagerTask extends ForceTask {
     }
 
     /**
-     * Set inputs by parameters
-     */
-    public Credential getCredential(String typeCredential) {
-        Credential credential = new Credential()
-        credential.id = project.properties[CredentialMessage.ID_PARAM.value()]
-        credential.username = project.properties[CredentialParameter.USER_NAME.value()]
-        credential.password = project.properties[CredentialParameter.PASSWORD.value()]
-        credential.token = getToken()
-        String loginInserted = project.properties[CredentialMessage.LOGIN.value()].toString()
-        credential.loginFormat = CredentialParameterValidator.getLoginType(loginInserted)
-        credential.type = typeCredential
-        return credential
-    }
-
-    /**
-     * Gets a token it is empty by default.
-     * @param tokenInserted is type String
-     * @return a token
-     */
-    private String getToken() {
-        String token = ''
-        if (Util.isValidProperty(project, CredentialMessage.TOKEN.value())) {
-            token = project.properties[CredentialMessage.TOKEN.value()]
-        }
-        return token
-    }
-
-    /**
      * Abstract method: When implement a method can select steps for file monitor task
      */
     abstract void runTask()

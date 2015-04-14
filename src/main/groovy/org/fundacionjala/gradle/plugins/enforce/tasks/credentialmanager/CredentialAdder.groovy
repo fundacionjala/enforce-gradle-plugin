@@ -36,8 +36,9 @@ class CredentialAdder extends CredentialManagerTask {
             throw new Exception(CredentialMessage.MESSAGE_ID_CREDENTIAL_EXIST.value())
         }
         if (CredentialParameterValidator.validateFieldsCredential(project)) {
-            String credentialTypeInserted = project.properties[CredentialMessage.ENCRYPTED.value()]
-            credentialManagerInput.addCredential(getCredential(CredentialParameterValidator.getCredentialType(credentialTypeInserted)))
+            String encryptedValue = project.properties[CredentialMessage.ENCRYPTED.value()]
+            String credentialType = CredentialParameterValidator.getCredentialType(encryptedValue)
+            credentialManagerInput.addCredential(CredentialParameterValidator.getCredentialInserted(project, credentialType))
         }
     }
 }

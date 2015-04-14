@@ -38,7 +38,8 @@ class CredentialUpdater extends CredentialManagerTask {
         }
         if (CredentialParameterValidator.validateFieldsCredential(project)) {
             String credentialId = project.properties[CredentialMessage.ID_PARAM.value()].toString()
-            credentialManagerInput.updateCredential(getCredential(credentialManagerInput.getCredentialToUpdate(credentialId).type))
+            String credentialType = credentialManagerInput.getCredentialToUpdate(credentialId).type
+            credentialManagerInput.updateCredential(CredentialParameterValidator.getCredentialInserted(project, credentialType))
         }
     }
 }

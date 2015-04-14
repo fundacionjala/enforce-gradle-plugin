@@ -72,7 +72,7 @@ abstract class SalesforceTask extends ForceTask {
         }
 
         if (byParameter && CredentialParameterValidator.validateFieldsCredential(project)) {
-            credential = CredentialParameterValidator.getCredentialInserted(project)
+            credential = CredentialParameterValidator.getCredentialInserted(project, CredentialMessage.NORMAL.value())
         }
 
         if (!credential) {
