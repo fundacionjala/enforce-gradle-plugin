@@ -6,10 +6,10 @@ permalink: /docs/update/
 ## Update task
 
 #### **Objective**
-This task just deploys changed code as: deleted code, added code and updated code, for example if you changed a class called MyClass.cls and you deleted a trigger called MyTrigger.trigger This deletes MyTrigger.trigger and It updates MyClass.cls according file tracker in your organization.
+This task just deploys changed code as: deleted code, added code and updated code, for example if you changed a class called MyClass.cls and you deleted a trigger called MyTrigger.trigger This deletes MyTrigger.trigger and it updates MyClass.cls according file tracker in your organization.
 
 #### **Parameters**
-This task has two parameters called **excludes** and **folders**. You can choose folder o folders to update it. Also you are able to exclude files by name by folder and using wildcards.
+This task has two parameters called **excludes** and **folders**. You can choose folder or folders to update it. Also, you are able to exclude files by name by folder and using wildcards.
 
 Those parameters can be used as task property or into your build script.
 
@@ -17,15 +17,15 @@ Those parameters can be used as task property or into your build script.
 
 #### **Without parameters**
 
-User can update all files that are listed on file tracker like file changed, deleted or new one. If you want to run this task, you should write the next command:
+User can update all files that are listed on file tracker like file changed, deleted or new file. If you want to run this task, you should write the next command:
 
 	$ gradle update
 
-> **Note:** This command executed deploys files listed by file tracker to your organization.
+> **Note:** This command , when executed, deploys files that were listed by file tracker in your organization.
 
 #### **Using folders parameter**
 
-User can update files that are within the folder user wants and listed on file tracker like file changed, deleted or new one.
+A user can update files that are within the folder user wants and are listed on file tracker as changed, deleted or new files.
 
 	$ gradle update -Pfolders=classes
 	$ gradle update -Pfolders=classes,objects,triggers
@@ -34,20 +34,20 @@ User can update files that are within the folder user wants and listed on file t
 
 #### **Using excludes parameter**
 
-User can update all files that are listed on file tracker like file changed, deleted or new one, excluding files by its name, by folders or using wildcards.
+A user can update all files that are listed on file tracker as changed, deleted or new files, excluding files by their name, by folders, or using wildcards.
 
 This parameter can exclude files by:
 
- ***folder*** if you want to exclude a folder or folders, You should write the next parameter:
+ ***folder*** if you want to exclude a folder or folders, you should write the following parameter:
 
         $ gradle update -Pexcludes=classes
         $ gradle update -Pexcludes=classes,objects.
 
- ***file*** if you want to exclude a file or files, You should write the next parameter:
+ ***file*** if you want to exclude a file or files, You should write the following parameter:
 
         $ gradle update -Pexcludes=classes/Class1.cls
 
- ***wildcard*** if you want to exclude using wildcard, You should write the next parameter:
+ ***wildcard*** if you want to exclude using wildcard, you should write the following parameter:
 
         $ gradle update  -Pexcludes=classes/**
         $ gradle update  -Pexcludes=objects/*.object
@@ -96,9 +96,9 @@ output:
 
 Scenario:
 
-In this case Class1.cls was changed and Class2.cls was deleted, Trigger1.trigger was added and Object1__c.object was changed. and I just want to deploy classes and triggers updated and not the others files changed. 
+In this case Class1.cls was changed and Class2.cls was deleted, Trigger1.trigger was added and Object1__c.object was changed. I just want to deploy the classes   and triggers that were updated and not the other files that were changed. 
 
-To cover this scenario you should write the next command:
+To cover this scenario, you should write the following command:
 
 
 	$ gradle update -Pfolders=classes,triggers
@@ -131,9 +131,9 @@ output:
 
 Scenario:
 
-In this case Class1.cls was added, Class2.cls and Class3.cls was deleted and Class4.cls was changed and I want to deploy all classes updated less Class4.cls
+In this case Class1.cls was added, Class2.cls and Class3.cls was deleted and Class4.cls was changed. I want to deploy all classes that were updated but Class4.cls
 
-To cover this scenario you should use the next command:
+To cover this scenario,  you should use the following command:
 
 	$ gradle update -Pexcludes=**/Class4.cls
 
@@ -171,7 +171,7 @@ Scenario:
 
 In this case classes and obejcts were updated and I just want to deploy objects. 
 
-To cover this scenario you should write the next command:
+To cover this scenario, you should write the following command:
 
 	$ gradle update -Pexcludes=classes
 
