@@ -199,7 +199,7 @@ class CredentialManagerInput {
         credentialInserted.username = userNameInput
         credentialInserted.password = passwordInput
         credentialInserted.token = tokenInput
-        credentialInserted.loginFormat = getLoginType()
+        credentialInserted.loginFormat = loginTypeInput?:LoginType.DEV.value()
         credentialInserted.type = typeInput
         return credentialInserted
     }
