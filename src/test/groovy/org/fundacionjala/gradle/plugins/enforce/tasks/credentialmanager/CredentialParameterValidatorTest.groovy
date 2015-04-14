@@ -78,4 +78,13 @@ class CredentialParameterValidatorTest extends Specification{
         then:
             credentialType == "test"
     }
+
+    def "Test should return type login as 'customDomain' if type login is iqual to 'customDomain'"() {
+        given:
+            String loginTypeInserted = 'customDomain'
+        when:
+            String credentialType = CredentialParameterValidator.getLoginType(loginTypeInserted)
+        then:
+            credentialType == "customDomain"
+    }
 }

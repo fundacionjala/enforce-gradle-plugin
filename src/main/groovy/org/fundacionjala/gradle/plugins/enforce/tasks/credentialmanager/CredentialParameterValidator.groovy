@@ -48,7 +48,6 @@ class CredentialParameterValidator {
         return token
     }
 
-
     /**
      * Validates credential fields
      * @return true if fields are validate
@@ -102,11 +101,7 @@ class CredentialParameterValidator {
      * @return a login type
      */
     public static String getLoginType(String loginInserted) {
-        def loginType = LoginType.DEV.value()
-        if (loginInserted == LoginType.TEST.value()) {
-            loginType = LoginType.TEST.value()
-        }
-        return loginType
+        return loginInserted?:LoginType.DEV.value()
     }
 
     /**

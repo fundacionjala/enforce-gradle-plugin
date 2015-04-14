@@ -6,11 +6,7 @@
 package org.fundacionjala.gradle.plugins.enforce.tasks.credentialmanager
 
 import org.fundacionjala.gradle.plugins.enforce.credentialmanagement.CredentialManagerInput
-import org.fundacionjala.gradle.plugins.enforce.credentialmanagement.CredentialMessage
-import org.fundacionjala.gradle.plugins.enforce.credentialmanagement.CredentialParameter
 import org.fundacionjala.gradle.plugins.enforce.tasks.ForceTask
-import org.fundacionjala.gradle.plugins.enforce.utils.Util
-import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 
 import java.nio.file.Paths
 
