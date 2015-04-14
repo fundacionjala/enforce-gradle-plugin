@@ -55,7 +55,7 @@ class Util {
         def valid = true
         def projectRef = project
         paramNames.each { paramName ->
-            if (!Util.isValidProperty(projectRef, paramName)) {
+            if (!isValidProperty(projectRef, paramName)) {
                 println "Parameter -P${paramName} is required. "
                 valid = false
             }
