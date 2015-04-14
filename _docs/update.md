@@ -133,7 +133,7 @@ Scenario:
 
 In this case Class1.cls was added, Class2.cls and Class3.cls was deleted and Class4.cls was changed. I want to deploy all classes that were updated but Class4.cls
 
-To cover this scenario,  you should use the following command:
+To cover this scenario, you should use the following command:
 
 	$ gradle update -Pexcludes=**/Class4.cls
 
