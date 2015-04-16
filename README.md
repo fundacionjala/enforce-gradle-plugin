@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/fundacionjala/enforce-gradle-plugin.svg)](https://travis-ci.org/fundacionjala/enforce-gradle-plugin)
+
 ---
 Quick start
 ---
