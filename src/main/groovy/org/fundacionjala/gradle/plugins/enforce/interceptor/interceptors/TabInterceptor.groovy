@@ -9,6 +9,7 @@ import org.fundacionjala.gradle.plugins.enforce.interceptor.commands.Tab
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 import org.fundacionjala.gradle.plugins.enforce.interceptor.MetadataInterceptor
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
+import org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor
 
 /**
  * Implements methods to manage interceptors and load the tabs to truncate
@@ -29,6 +30,6 @@ class TabInterceptor extends MetadataInterceptor {
      */
     @Override
     void loadInterceptors() {
-        addInterceptor(org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_TABS.id, new Tab().execute)
+        addInterceptor(Interceptor.TRUNCATE_TABS.id, new Tab().execute)
     }
 }

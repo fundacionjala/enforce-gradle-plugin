@@ -9,6 +9,7 @@ import org.fundacionjala.gradle.plugins.enforce.filemonitor.FileMonitorSerialize
 import org.fundacionjala.gradle.plugins.enforce.utils.AnsiColor
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
+import org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor
 
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -137,7 +138,7 @@ class Deploy extends Deployment {
      */
     private void deployToSalesForce() {
         if (deprecateTruncateOn) {
-            interceptorsToExecute = [org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.REMOVE_DEPRECATE.id]
+            interceptorsToExecute = [Interceptor.REMOVE_DEPRECATE.id]
             interceptorsToExecute += interceptors
             truncateComponents(folderDeploy)
         }
@@ -181,10 +182,10 @@ class Deploy extends Deployment {
      */
     def truncateComponents() {
         String srcPath = Paths.get(buildFolderPath, FOLDER_DEPLOY).toString()
-        interceptorsToExecute = [org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_CLASSES.id, org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_FIELD_SETS.id, org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_ACTION_OVERRIDES.id,
-                                org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_FORMULAS.id, org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_WEB_LINKS.id, org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_PAGES.id,
-                                org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_TRIGGERS.id, org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_WORKFLOWS.id,
-                                org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_COMPONENTS.id]
+        interceptorsToExecute = [Interceptor.TRUNCATE_CLASSES.id, Interceptor.TRUNCATE_FIELD_SETS.id, Interceptor.TRUNCATE_ACTION_OVERRIDES.id,
+                                 Interceptor.TRUNCATE_FIELD.id,Interceptor.TRUNCATE_FORMULAS.id, Interceptor.TRUNCATE_WEB_LINKS.id,
+                                 Interceptor.TRUNCATE_PAGES.id, Interceptor.TRUNCATE_TRIGGERS.id, Interceptor.TRUNCATE_WORKFLOWS.id,
+                                 Interceptor.TRUNCATE_COMPONENTS.id]
         interceptorsToExecute += interceptors
         truncateComponents(srcPath)
     }
