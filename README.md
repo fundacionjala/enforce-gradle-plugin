@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/alexrv11/enforce-gradle-plugin.svg?branch=master)](https://travis-ci.org/alexrv11/enforce-gradle-plugin)
+[![Build Status](https://travis-ci.org/fundacionjala/enforce-gradle-plugin.svg)](https://travis-ci.org/fundacionjala/enforce-gradle-plugin)
 
 ---
 Quick start
