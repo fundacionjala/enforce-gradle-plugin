@@ -83,7 +83,7 @@ class InspectorResults {
     public int getDeployPercentage(DeployResult deployResult) {
         float percent = deployResult.numberComponentsTotal && deployResult.numberComponentsTotal > Constants.ZERO ?
                 (deployResult.numberComponentsDeployed / deployResult.numberComponentsTotal) * HUNDRED : Constants.ZERO
-        return Math.round(percent)
+        return (int)percent
     }
 
     public void writePercent(int percent) {
