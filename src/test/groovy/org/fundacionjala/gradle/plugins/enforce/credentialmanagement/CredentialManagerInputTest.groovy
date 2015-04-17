@@ -112,22 +112,22 @@ class CredentialManagerInputTest extends Specification {
 
     def "Test should get a  custom login type"() {
         given:
-        credentialAdderInput.idInput = idInput
-        credentialAdderInput.userNameInput = userNameInput
-        credentialAdderInput.passwordInput = passwordInput
-        credentialAdderInput.tokenInput = tokenInput
-        credentialAdderInput.loginTypeInput = 'my.custom-domain'
-        credentialAdderInput.typeInput = typeInput
+            credentialAdderInput.idInput = idInput
+            credentialAdderInput.userNameInput = userNameInput
+            credentialAdderInput.passwordInput = passwordInput
+            credentialAdderInput.tokenInput = tokenInput
+            credentialAdderInput.loginTypeInput = 'my.custom-domain'
+            credentialAdderInput.typeInput = typeInput
         when:
-        def newCredential = credentialAdderInput.getCredentialInserted()
-        credential.loginFormat = 'my.custom-domain'
+            def newCredential = credentialAdderInput.getCredentialInserted()
+            credential.loginFormat = 'my.custom-domain'
         then:
-        newCredential.id == credential.id
-        newCredential.username == credential.username
-        newCredential.password == credential.password
-        newCredential.token == credential.token
-        newCredential.loginFormat == credential.loginFormat
-        newCredential.type == credential.type
+            newCredential.id == credential.id
+            newCredential.username == credential.username
+            newCredential.password == credential.password
+            newCredential.token == credential.token
+            newCredential.loginFormat == credential.loginFormat
+            newCredential.type == credential.type
     }
 
     def "Test should false if there is a empty input"() {
@@ -158,6 +158,7 @@ class CredentialManagerInputTest extends Specification {
 
     def "Test should true if exist an id credential"() {
         given:
+            credentialAdderInput.pathCredentials = pathCredentials
             credentialAdderInput.idInput = idInput
             credentialAdderInput.passwordInput = passwordInput
             credentialAdderInput.tokenInput = tokenInput
@@ -171,6 +172,7 @@ class CredentialManagerInputTest extends Specification {
 
     def "Test should false if doesn't exist an id credential"() {
         given:
+            credentialAdderInput.pathCredentials = pathCredentials
             credentialAdderInput.idInput = '123qwe'
             credentialAdderInput.passwordInput = passwordInput
             credentialAdderInput.tokenInput = tokenInput
