@@ -226,7 +226,6 @@ class CredentialManagerInput {
      * @return true if there is a id credential
      */
     public boolean hasCredential(String idCredential) {
-        println pathCredentials
         File credentialsFile = new File(pathCredentials)
         if (!credentialsFile.exists() || credentialsFile.getText().isEmpty()) {
             return false
