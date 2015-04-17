@@ -243,7 +243,7 @@ class InformationLoader {
             if(apexTestResult.outcome != STATE_FAIL) {
                 filter = STATE_PROGRESS_BAR_SUCCESS
             }
-            String objectJson = "{name: '${apexTestResult.methodName}', status: '${apexTestResult.outcome}', description: '${apexTestResult.stackTrace}', filter: '$filter'}"
+            String objectJson = "{name: '${apexTestResult.className}.${apexTestResult.methodName}', status: '${apexTestResult.outcome}', stackTrace: '${apexTestResult.stackTrace}', message: '${apexTestResult.message}', filter: '$filter'}"
             arrayJson.push(objectJson)
         }
         JsonBuilder json = new JsonBuilder()

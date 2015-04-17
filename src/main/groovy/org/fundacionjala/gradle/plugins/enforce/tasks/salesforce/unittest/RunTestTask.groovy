@@ -196,6 +196,7 @@ class RunTestTask extends SalesforceTask {
             apexRunTestResult.methodName = testFailures.methodName
             apexRunTestResult.apexClassId = testFailures.id
             apexRunTestResult.message = testFailures.message
+            apexRunTestResult.className = testFailures.name
             printTestFailure(testFailures)
             apexTestResultArrayList.push(apexRunTestResult)
         }
@@ -207,6 +208,7 @@ class RunTestTask extends SalesforceTask {
             apexRunTestResult.TestTimestamp = testFailures.time
             apexRunTestResult.methodName = testFailures.methodName
             apexRunTestResult.apexClassId = testFailures.id
+            apexRunTestResult.className = testFailures.name
             apexTestResultArrayList.push(apexRunTestResult)
         }
 
