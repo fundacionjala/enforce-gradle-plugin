@@ -36,23 +36,24 @@ In this file are saved all credentials with respective fields. It should be loca
 
 ## AddCredential task
 
-This task adds a new credential into credentials.dat located in user home directory. There are two ways to add credentials one is by console another one is by parameters.
+This task adds a new credential into credentials.dat located in user home directory by default. There are two ways to add credentials one is by console another one is by parameters also, you are able to add credentials in home directory and project directory to do it you should use parameter called location.
 
 ###  By console
 
-You are able to add credentials encrypted and credentials decrypted. If you want to add a credential encrypted you should put option ***y*** in option: ***Encrypt credential(y/n, by default is encrypted):***
+You are able to add credentials encrypted and credentials decrypted. If you want to add a credential encrypted you should put option ***y*** in option: ***Encrypt credential(y/n, by default is encrypted):*** also, you are able to choose where will save the credentials using the option: ***Credential location (home/project by default is home):*** 
 
 To add a new credential you should write the next command:
 
 	$ gradle addCredential
 
 ### By parameters
-When you add credential by parameters it is encrypted by default. To add a new credential by parameter you should use the next parameters:
+When you add credential by parameters it is encrypted by default also, you are able to choose the credentials.dat file where will add the credential using parameter called ***location*** by default is home directory. To add a new credential by parameter you should use the next parameters:
 
 	 -Pid is id of credential
 	 -Pusername is your account
 	 -Ppassword is your password
 	 -Ptoken is your token
+	 -Plocation is credentials.dat file location
 
 The command to add is:
 
@@ -60,26 +61,27 @@ The command to add is:
 			       -Pusername=juana@gmail.com
 	                       -Ppassword=123456 
 	                       -Ptoken=as:addCredential
-
+						   -Plocation=project
 
 
 ## UpdateCredential  task
-This task updates a credential from credentials.dat file located in user home directory.
+This task updates a credential from credentials.dat file located in user home directory and project directory by default is home.
 
 ### By console
 
-To update a credential by console you should write  the next command and filling credentials fields by console.
+To update a credential by console you should write  the next command and filling credentials fields by console, if you want update a credential from project you should write ***'project'*** in the option: ***Credential location (home/project by default is home):***
 
 	$ gradle updateCredential
 
 
 ### By parameters
-If you want to update credential by parameters you should use the next parameters:
+If you want to update credential from project directory you should write ***'project'*** value in parameter called  ***location*** use the next parameters:
 
 	 -Pid is id of credential.
 	 -Pusername is your account.
 	 -Ppassword is your password.
 	 -Ptoken is your token.
+	 -Plocation is credentials.dat file directory.
 
 Command:
 
@@ -87,6 +89,7 @@ Command:
 			          -Pusername=user@organization.com
 	                          -Ppassword=myPassword 
 	                          -Ptoken=myToken
+	                          -Plocation=project
 
 
 ## Examples
@@ -101,6 +104,8 @@ Output:
 
 ```bash
 > Building 0% > :addCredential
+Credential location (home/project by default is home):project
+
 Id:myId
 UserName(example@email.com):john@email.com
 Password:myPassword
@@ -120,6 +125,7 @@ Command:
 			       -Pusername=juana@gmail.com
 			       -Ppassword=123456 
 			       -Ptoken=as:addCredential
+			       -Plocation=project
 
 Output:
 
@@ -140,6 +146,8 @@ Output:
 
 ```bash
 :updateCredential
+Credential location (home/project by default is home):project
+
 id:mine
 UserName(example@email.com):david@email.com
 Password:myPassword
@@ -158,6 +166,7 @@ Command:
 			          -Pusername=user@organization.com
 		    		  -Ppassword=myPassword 
 		    		  -Ptoken=myToken
+		    		  -Plocation=project
 
 Output:
 
@@ -167,4 +176,4 @@ Output:
 BUILD SUCCESSFUL
 ```
 
-> **Note:** These credentials are added and updated in *credentials.dat* file that is located in user HOME directory.
+> **Note:** You are able to choose the credentials.dat file for credentials management it can be from the home or project directory.
