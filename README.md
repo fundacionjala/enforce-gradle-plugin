@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/fundacionjala/enforce-gradle-plugin.svg)](https://travis-ci.org/fundacionjala/enforce-gradle-plugin) [![license](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](https://github.com/fundacionjala/enforce-gradle-plugin/blob/master/LICENSE)
+==
 
 ---
 Quick start
