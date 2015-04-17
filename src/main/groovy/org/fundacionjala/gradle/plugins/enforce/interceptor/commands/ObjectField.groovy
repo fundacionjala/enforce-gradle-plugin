@@ -20,23 +20,29 @@ class ObjectField {
     private final String DESCRIPTION_TAG = "<description>new description</description>"
     private final String HELP_TEXT_TAG = "<inlineHelpText>new help text</inlineHelpText>"
 
+    /**
+     * A closure to replace a "field.description" and "field.inlineHelpText" by default for all "fields" that matches
+     * with the regex in an object file
+     */
     Closure execute = { file ->
-        if (!file) return
+        if (!file) {
+            return
+        }
         Matcher fieldMatcher = file.text =~ FIELDS_REGEX
-        fieldMatcher.each { fieldIt->
-          String field = fieldIt[FIELD_INDEX]
-          if(field) {
-              String newField = field
-              Matcher descriptionMatcher = field =~ DESCRIPTION_REGEX
-              descriptionMatcher.each { descriptionIt->
-                  newField = field.replace(descriptionIt[DESCRIPTION_INDEX].toString(),DESCRIPTION_TAG)
-              }
-              Matcher helpTextMatcher = field =~ HELP_TEXT_REGEX
-              helpTextMatcher.each { helpTextIt->
-                  newField = newField.replace(helpTextIt[HELP_TEXT_INDEX].toString(), HELP_TEXT_TAG)
-              }
-              file.text = file.text.replace(field, newField)
-          }
+        fieldMatcher.each { fieldIt ->
+            String field = fieldIt[FIELD_INDEX]
+            if (field) {
+                String newField = field
+                Matcher descriptionMatcher = field =~ DESCRIPTION_REGEX
+                descriptionMatcher.each { descriptionIt ->
+                    newField = field.replace(descriptionIt[DESCRIPTION_INDEX].toString(), DESCRIPTION_TAG)
+                }
+                Matcher helpTextMatcher = field =~ HELP_TEXT_REGEX
+                helpTextMatcher.each { helpTextIt ->
+                    newField = newField.replace(helpTextIt[HELP_TEXT_INDEX].toString(), HELP_TEXT_TAG)
+                }
+                file.text = file.text.replace(field, newField)
+            }
         }
     }
 }
