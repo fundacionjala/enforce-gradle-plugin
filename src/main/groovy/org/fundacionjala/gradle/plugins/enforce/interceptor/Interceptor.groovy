@@ -12,6 +12,7 @@ public enum Interceptor {
     REMOVE_DEPRECATE("removeDeprecateAnnotation"),
     TRUNCATE_CLASSES("truncateClasses"),
     TRUNCATE_FIELD_SETS("truncateFieldSets"),
+    TRUNCATE_FIELD("truncateField"),
     TRUNCATE_ACTION_OVERRIDES("truncateActionOverrides"),
     TRUNCATE_FORMULAS("truncateFormulas"),
     TRUNCATE_WEB_LINKS("truncateWebLinks"),
