@@ -57,9 +57,9 @@ class Retrieve extends Retrieval {
                 logger.warn(MESSAGE_CANCELED)
             }
         } else {
+            showInfoMessage()
             retrieveWithPackageXml()
         }
-        showInfoMessage()
     }
 
     /**
@@ -294,7 +294,7 @@ class Retrieve extends Retrieval {
             print AnsiColor.ANSI_CYAN.value()
             print "Info:"
             print AnsiColor.ANSI_RESET.value()
-            println replacedElements.size() == 1 ? " ${replacedElements} was replaced" : " ${replacedElements} were replaced"
+            println " ${replacedElements} will be replaced"
         }
     }
 }

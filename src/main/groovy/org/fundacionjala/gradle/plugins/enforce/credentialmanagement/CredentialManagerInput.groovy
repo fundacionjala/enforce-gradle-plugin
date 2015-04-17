@@ -151,7 +151,7 @@ class CredentialManagerInput {
      */
     public void showConsoleInputs() {
         passwordInput = console.readLine(CredentialMessage.PASSWORD.value()).toString()
-        tokenInput = console.readLine(CredentialMessage.TOKEN.value()).toString()
+        tokenInput = console.readLine(CredentialMessage.TOKEN_OPTION.value()).toString()
         loginTypeInput = console.readLine(CredentialMessage.LOGIN_TYPE.value()).toString()
     }
 
@@ -199,7 +199,7 @@ class CredentialManagerInput {
         credentialInserted.username = userNameInput
         credentialInserted.password = passwordInput
         credentialInserted.token = tokenInput
-        credentialInserted.loginFormat = getLoginType()
+        credentialInserted.loginFormat = loginTypeInput?:LoginType.DEV.value()
         credentialInserted.type = typeInput
         return credentialInserted
     }
@@ -209,7 +209,7 @@ class CredentialManagerInput {
      * @return true if are validates
      */
     public boolean validateFields() {
-        return !idInput.isEmpty() && !passwordInput.isEmpty() && !tokenInput.isEmpty()
+        return !idInput.isEmpty() && !passwordInput.isEmpty()
     }
 
     /**

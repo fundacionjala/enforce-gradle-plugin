@@ -7,8 +7,7 @@ package org.fundacionjala.gradle.plugins.enforce.credentialmanagement
 
 enum CredentialParameter {
     USER_NAME("username"),
-    PASSWORD("password"),
-    TOKEN("token")
+    PASSWORD("password")
 
     CredentialParameter(String value) {
         this.value = value
