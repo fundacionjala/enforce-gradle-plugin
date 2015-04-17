@@ -101,44 +101,43 @@
 
 <script type='text/javascript'>
       app.controller('controllerUnitTest', function(\$scope) {
-      \$scope.files = $arrayUnitTest;
-
-            \$scope.orderByField='name';
-            \$scope.danger=true;
-            \$scope.success=false;
-            \$scope.allUnitTest = $unitTestPass + $unitTestFail;
-            \$scope.valueButtonSuccess = "btn btn-success";
-            \$scope.\$watch('success', function() {
-              if (\$scope.success == true) {
+        \$scope.files = $arrayUnitTest;
+        \$scope.orderByField='name';
+        \$scope.danger=true;
+        \$scope.success=false;
+        \$scope.allUnitTest = $unitTestPass + $unitTestFail;
+        \$scope.valueButtonSuccess = "btn btn-success";
+        \$scope.\$watch('success', function() {
+          if (\$scope.success == true) {
               \$scope.valueButtonSuccess = "btn btn-success";
-              } else {
+          } else {
               \$scope.valueButtonSuccess = "btn btn-default";
-              }
-          });
+          }
+        });
 
-            \$scope.valueButtonDanger = "btn btn-danger";
-            \$scope.\$watch('danger', function() {
-              if (\$scope.danger == true) {
-              \$scope.valueButtonDanger = "btn btn-danger";
-              } else {
-              \$scope.valueButtonDanger = "btn btn-default";
-              }
-          });
+        \$scope.valueButtonDanger = "btn btn-danger";
+        \$scope.\$watch('danger', function() {
+            if (\$scope.danger == true) {
+                \$scope.valueButtonDanger = "btn btn-danger";
+            } else {
+                \$scope.valueButtonDanger = "btn btn-default";
+            }
+        });
 
-          \$scope.getStatusColor = function(file) {
+        \$scope.getStatusColor = function(file) {
             if(file.status === 'Fail') {
                 return 'danger';
             }
 
             return 'success';
-          }
+        };
 
       });
   </script>
 
 <script type='text/javascript'>
         app.controller('controllerClass', function(\$scope) {
-                  \$scope.files = $arrayClass
+            \$scope.files = $arrayClass
             \$scope.orderByField='name';
             \$scope.danger=true;
             \$scope.warning=true;
