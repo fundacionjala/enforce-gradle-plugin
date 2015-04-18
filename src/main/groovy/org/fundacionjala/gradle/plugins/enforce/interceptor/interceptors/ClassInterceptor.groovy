@@ -10,6 +10,7 @@ import org.fundacionjala.gradle.plugins.enforce.interceptor.commands.ClassAnnota
 import org.fundacionjala.gradle.plugins.enforce.interceptor.commands.Class
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
+import org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor
 
 /**
  * Implements methods to manage interceptors and load the classes to truncate
@@ -33,8 +34,8 @@ class ClassInterceptor extends MetadataInterceptor {
     void loadInterceptors() {
         ClassAnnotation annotationCmd = new ClassAnnotation()
         annotationCmd.annotation = DEPRECATE_ANNOTATION
-        addInterceptor(org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.REMOVE_DEPRECATE.id, annotationCmd.execute)
+        addInterceptor(Interceptor.REMOVE_DEPRECATE.id, annotationCmd.execute)
         Class contentCmd = new Class()
-        addInterceptor(org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_CLASSES.id, contentCmd.execute)
+        addInterceptor(Interceptor.TRUNCATE_CLASSES.id, contentCmd.execute)
     }
 }

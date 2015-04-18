@@ -32,7 +32,7 @@ class ObjectInterceptorTest extends Specification {
         when:
             objectInterceptor.loadFiles(path)
         then:
-            objectInterceptor.files.size() == 7
+            objectInterceptor.files.size() == 9
 
     }
 
@@ -91,8 +91,8 @@ class ObjectInterceptorTest extends Specification {
         })
         commands = objectInterceptor.interceptors.keySet().toArray()
         then:
-        commands[commands.length - 2] == org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_ACTION_OVERRIDES.id
-        commands[commands.length -1] == 'lastCmd'
+        commands[commands.length - 3] == org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_ACTION_OVERRIDES.id
+        commands[commands.length - 1] == 'lastCmd'
     }
 
     def "Should add new command in the third index"() {

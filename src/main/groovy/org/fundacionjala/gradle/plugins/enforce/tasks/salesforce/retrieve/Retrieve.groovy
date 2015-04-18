@@ -20,7 +20,7 @@ import java.nio.file.Paths
 class Retrieve extends Retrieval {
     private static final String GROUP_OF_TASK = "Retrieve"
     private static final String DESCRIPTION_OF_TASK = 'This task recover specific files from an organization'
-    private static final String MESSAGE_WARNING = 'Warning: Your files will be replaced if there are.'
+    private static final String MESSAGE_WARNING = 'Warning: All files according to package will be downloaded'
     private static final String MESSAGE_CANCELED = 'Retrieve task was canceled!!'
     private static final String QUESTION_TO_CONTINUE = 'Do you want to continue? (y/n) : '
     private final String FILES_RETRIEVE = 'files'
@@ -50,16 +50,42 @@ class Retrieve extends Retrieval {
         verifyFiles()
         validateContentParameter()
         if (!hasPackage() && !files) {
-            showWarningMessage()
-            if (option == YES) {
-                retrieveWithoutPackageXml()
-            } else {
-                logger.warn(MESSAGE_CANCELED)
-            }
+           retrieveWithoutPackageXml()
         } else {
+            if(files){
+                showInfoMessage()
+                createPackageFromFiles()
+            }else{
+                showWarningMessage()
+                if (option == YES) {
+                    loadFromPackage()
+                } else {
+                    logger.warn(MESSAGE_CANCELED)
+                    System.exit(0)
+                }
+            }
             retrieveWithPackageXml()
         }
-        showInfoMessage()
+    }
+
+    /**
+     * Creates the package xml file from files parameter
+     */
+    private void createPackageFromFiles(){
+        ArrayList<File> filesRetrieve = new ArrayList<File>()
+        ArrayList<String> arrayNameArchives = files.split(COMMA)
+        arrayNameArchives.each { nameFile ->
+            filesRetrieve.push(new File(nameFile))
+        }
+        packageBuilder.createPackage(filesRetrieve)
+    }
+
+    /**
+     * Loads the package structure file from package xml
+     */
+    private void loadFromPackage(){
+        FileReader packageFileReader = new FileReader(Paths.get(projectPath, Constants.PACKAGE_FILE_NAME).toString())
+        packageBuilder.read(packageFileReader)
     }
 
     /**
@@ -117,7 +143,6 @@ class Retrieve extends Retrieval {
      * Executes the logic to retrieve updating the package.xml file
      */
     void retrieveWithPackageXml() {
-        createPackage()
         runRetrieve()
         copyFilesWithoutPackage()
         updatePackageXml(Paths.get(unPackageFolder, Constants.PACKAGE_FILE_NAME).toString(), Paths.get(projectPath, Constants.PACKAGE_FILE_NAME).toString())
@@ -294,7 +319,7 @@ class Retrieve extends Retrieval {
             print AnsiColor.ANSI_CYAN.value()
             print "Info:"
             print AnsiColor.ANSI_RESET.value()
-            println replacedElements.size() == 1 ? " ${replacedElements} was replaced" : " ${replacedElements} were replaced"
+            println " ${replacedElements} will be replaced"
         }
     }
 }
