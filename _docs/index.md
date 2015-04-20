@@ -16,7 +16,7 @@ Enforce tools for Salesforce tries to make easy to deploy and undeploy a project
 ## Features
 
 * Store encrypted Salesforce credentials identified by an Id which it can be used in the EnForce Gradle tasks.
-* Deploy Salesforce project code, no matter if there are dependencies between objects, pages, classes, etc., this task will try to break those dependencies in order to make possible to deploy the code into an organization.
+* Deploy Salesforce project code, no matter if there are dependencies between objects, pages, classes, etc., this task will try to break those dependencies in order to make possible to deploy the code to an organization.
 * Upload Salesforce project code as it is, similar to the functionality that the Migration Tool provides.
 * Undeploy code from an organization, that means remove the source code from a Salesforce organization.
 * Track local changes on project files and upload them with one task.

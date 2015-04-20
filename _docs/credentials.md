@@ -5,7 +5,7 @@ permalink: /docs/credentials/
 ---
 ## Management credential profile
 
-To deploy code into an organization, you need a credential. To do so you should create an account in SalesForce.
+To deploy code to an organization, you need a credential. To do so you should create an account in SalesForce.
 
 
 To manage your credentials, there are two files called credentials.dat that are located, one in your project directory, and the other in user home directory where your credentials are saved on json format with the following fields:
