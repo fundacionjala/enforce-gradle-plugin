@@ -28,7 +28,7 @@ enforce {
 }
 {% endhighlight %}
 
-- Register a Salesforce credential to be used
+- Register a Salesforce credential to be used. [generate token security](http://www.salesforcegeneral.com/salesforce-articles/salesforce-security-token.html)
 {% highlight bash linenos=table%}
    $ gradle addCredential  -Pid=default
                         -Pusername=<USER NAME>
@@ -37,11 +37,16 @@ enforce {
    #=> Creates an entry on the credentials store, credential id with 'default' value
 {% endhighlight %}
 
-- Start executing available commands, for example:
+- When you want to upload your local code to your salesforce organization:
 {% highlight bash linenos=table%}
-   $ gradle retrieve -Pfiles=classes
-   #=> Retrieves all the classes from a Salesforce organization
+   $ gradle deploy
+   #=> This command in the first time break the dependencies and then upload all your code.
 {% endhighlight %}
 
-Now you can start using all the EnForce features reviwing the [Documentation](documentation.html).
+- When you want to upload only files changed to your salesforce organization:
+{% highlight bash linenos=table%}
+   $ gradle update
+{% endhighlight %}
+
+Now you can start using all the EnForce features reviewing the [Documentation](documentation.html).
 

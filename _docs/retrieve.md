@@ -7,7 +7,8 @@ permalink: /docs/retrieve/
 ## Retrieve task
 
 #### **Objective**
-This task download files from your organization, based in your package xml, if there isn't this file, it downloads files by default:
+
+This task download files from your organization is based on your .xml package. If this file is missing, the system downloads files by default:
 
 * objects
 * staticresources
@@ -16,7 +17,7 @@ This task download files from your organization, based in your package xml, if t
 * triggers
 * components
 
-If you don't have a package xml and you want to download only classes and triggers you should use the next task property into your build.gradle:
+If you don’t have an xml package and you want to download classes and triggers only, you should use the next task property into your build.gradle:
 
 	foldersToDownload = "classes,triggers"
 	
@@ -24,19 +25,19 @@ If you don't have a package xml and you want to download only classes and trigge
 
 #### **Parameters**
 
-This task has two parameters called ***files*** and ***destination*** , where the first parameter is used to download specifics files it supports files and folders, another one is used to indicate destination of files that will download.
+This task has two parameters called ***files*** and ***destination***, where the first parameter is used to download  specifics files. It supports files and folders, another one is used to indicate destination of files that will be downloaded.
 
 ## Executing Retrieve task
 
 ### Without parameters
 
-Once retrieve task is executed without parameters It uses package xml to retrieve files from your organization.
+Once retrieve task is executed without parameters, it uses xml package to retrieve files from your organization.
 
 	$ gradle retrieve
 
 ### Without package xml file
 
-Once retrieve task is executed and there isn't a package xml it retrieves files by default:
+Once retrieve task is executed and there isn’t an xml package, it retrieves files by default:
 
 * objects
 * staticresources
@@ -45,22 +46,23 @@ Once retrieve task is executed and there isn't a package xml it retrieves files 
 * triggers
 * components
 
-We can set those values for ONLY THE FOLDERS that we want to retrieve.
+We can set those values ONLY FOR THE FOLDERS that we want to retrieve.
+
 The only thing that we have to do is:
 
-* Add in the build.gradle file, the line with the next content.
+* To add the line with the next content to the build.gradle file.
 ```
 	foldersToDownload = "classes,pages"
 ```
- 
- * This means that folders which will be retrieved are classes and pages, you can add folders as you want to recover them.
+
+ * This means that folders which will be retrieved are classes and pages, you can add folders if you want to recover them.
 ```
         foldersToDownload = classes,triggers,pages...
 ```
 
 ### Using files parameter
 
-This task retrieves the files that we want to retrieve, that means that we can recover a file o many specific files from the organization. This parameter support files and folders.
+This task retrieves the files that we want to retrieve, that means that we can retrieve a file with many specific files from the organization. This parameter support files and folders.
 
 Files:      
       
@@ -81,17 +83,16 @@ You can add many files or many folders as you want also you can use files an fol
 
 ### Using destination parameter
 
-This task retrieves the files that you want to retrieve in a specific folder from your organization.
+This task retrieves the files that you want to retrieve in a specific folder of your organization.
 
     $ gradle retrieve -Pfiles=classes,objects -Pdestination=relative/path
     $ gradle retrieve -Pfiles=classes/Class.cls -Pdestination=/absolute/path
 
-When you use destination parameter you can use relative or absolute path.
-
+When you use destination parameter you can use a relative or absolute path.
 
 >***Notes:***
 >Once that task is executed successfully all the files are copied inside the your local repository replacing the existing files.
->If you want to see only the files retrieved you can find them on build folder as a zip file with the name zipRecovered.zip
+ If you want to see only the retrieved files, you can find them on a build folder as a zip file with the name zipRecovered.zip
 
 ## Examples
 
@@ -99,9 +100,9 @@ When you use destination parameter you can use relative or absolute path.
 
 Scenario:
 
-In the case what you want to retrieve all files of classes, objects, triggers, pages, components and staticresources folders.
+You want to retrieve all files of classes, objects, triggers, pages, components and static resources folders.
 
-To cover this scenario you should execute the next command and package.xml should be in your local repository:
+To cover this scenario, you should execute the following command and the xml package should be in your local repository:
 
 	$ gradle retrieve
 
@@ -156,7 +157,7 @@ Output:
 
 Scenario:
 
-In this case this task will retrieve all pages, Class1.cls and Trigger1.trigger from your organization to relative/path.
+In this case, this task will retrieve all pages, Class1.cls and Trigger1.trigger from your organization to a relative path.
 
 Command:
 
@@ -181,7 +182,7 @@ Output:
 
 Scenario:
 
-When you want to retrieve a file and it doesn't exist in your organization it shows a warning message.
+When you want to retrieve a file and it doesn’t exist in your organization, the system shows a warning message.
 
 command:
 

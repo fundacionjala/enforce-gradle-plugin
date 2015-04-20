@@ -10,7 +10,8 @@ This task deploys all code from your local code to Salesforce organization, for 
 
 
 #### **The idea behind deployment process**
-All code will be deployed to organization using a smart deploy that mean when execute the task deploy.
+All code will be deployed to organization using a smart deploy. That means that when you execute the task deploy:
+
 <ol>
 <strong>a) First step is truncate the next elements and deploy it. </strong>
     <ul>
@@ -25,7 +26,7 @@ All code will be deployed to organization using a smart deploy that mean when ex
 </ol>
 
 #### **Parameters**
-This task has two parameters called **excludes** and **folders**. You can choose folder o folders to deploy it. Also you are able to exclude files by name by folder and using wildcards.
+This task has two parameters called **excludes** and **folders**. You can choose folder o folders to deploy it. Also, you are able to exclude files by name, by folder, and using wildcards.
 
 Those parameters can be used as console commands or into your build script.
 
@@ -46,17 +47,15 @@ You can choose the folders that you want to deploy.
 
 User can deploy code excluding some files using **excludes** parameter.
 
-
- ***by folders*** if you want to exclude a folder or folders, You should write the next parameter:
+ ***By folders*** if you want to exclude a folder or folders, you should write the following parameter:
 
     $ gradle deploy -Pexcludes=classes
     $ gradle deploy -Pexcludes=classes,objects.
 
- ***by files*** if you want to exclude a file or files, You should write the next parameter:
-
+ ***By files*** if you want to exclude a file or files, you should write the following parameter:
     $ gradle deploy -Pexcludes=classes/Class1.cls
 
- ***using wildcard*** if you want to exclude using wildcard, You should write the next parameter:
+ ***using wildcard*** if you want to exclude using wildcard, you should write the next parameter:
 
     $ gradle deploy  -Pexcludes=classes/**
     $ gradle deploy  -Pexcludes=objects/*.object
@@ -191,15 +190,15 @@ Output:
 
 #### **Objective**
 
-This task uploads your code from your local repository to SalesForce organization  directly as it is.
+This task uploads your code from your local repository to SalesForce organization directly as it is.
 
 #### **Parameters**
 
 This task has three parameters called **files**, **excludes** and ***all***. 
 
-If you want to upload a file or more files you should use files parameters it uploads code by file by folder and using wildcards.
+If you want to upload a file or more files, you should use files parameters. It uploads code by file, by folder, and using wildcards.
 
-If you want to exclude some files you should use excludes parameter.
+If you want to exclude some files you should use **excludes** parameter.
 
 If you want to upload all files from your organization you should use all parameter.
 
@@ -207,27 +206,26 @@ If you want to upload all files from your organization you should use all parame
 
 ### Without parameters
 
-User can upload all source code to organization, to do this you should execute to ***upload task*** without parameters.
-
+User can upload all source code to organization, to do this you should execute ***upload task*** without any parameters.
 	$ gradle upload
 	
 Once this command is executed shows you a warning message that say all files will be uploaded and you have to confirm. To avoid that shows  this message you can use parameter ***all*** with true value by default is false.
 
 ### Using files parameter
 
-User can upload specific files from source code using ***files*** parameter, it supports folders, files and wildcards.
+A user can upload specific files from source code using ***files parameter***. It supports folders, files, and wildcards.
 
 * To upload files you should write the next command:
 
 	$ gradle upload -Pfiles=classes/Class1.cls
 	$ gradle upload -Pfiles=classes/Class1.cls,objects/Account.object
 
-* To upload folders you should write the next command:
+* To upload folders you should write the following command:
 
 	$ gradle upload -Pfiles=classes
 	$ gradle upload -Pfiles=classes,objects,triggers
 
-* To upload files using wildcards you should write the next command:
+* To upload files using wildcards you should write the following command:
 
 	$ gradle upload -Pfiles=**/*.cls
 	$ gradle upload -Pfiles=classes/**
@@ -238,17 +236,17 @@ User can upload specific files from source code using ***files*** parameter, it 
 User can deploy code excluding some files using **excludes** parameter.
 
 
- ***by folders*** if you want to exclude a folder or folders, You should write the next parameter:
+ ***By folders*** if you want to exclude a folder or folders, You should write the following parameter:
 
         $ gradle upload -Pexcludes=classes
         $ gradle upload -Pexcludes=classes,objects.
 
- ***by files*** if you want to exclude a file or files, You should write the next parameter:
+ ***By files*** if you want to exclude a file or files, You should write the following parameter:
 
         $ gradle upload -Pexcludes=classes/Class1.cls
         $ gradle upload -Pexcludes=classes/Class1.cls,objects/Object1__c.object
 
- ***using wildcard*** if you want to exclude using wildcard, You should write the next parameter:
+ ***Using wildcard*** if you want to exclude using wildcard, You should write the following parameter:
 
         $ gradle upload  -Pexcludes=classes/**
         $ gradle upload  -Pexcludes=objects/*.object
@@ -259,7 +257,7 @@ User can deploy code excluding some files using **excludes** parameter.
 
 ### Without parameters
 
-When you run this command all files are uploaded to organization.
+When you run this command, all files are uploaded to an organization.
 
 	$ gradle upload
 
@@ -279,7 +277,7 @@ Output:
     BUILD SUCCESSFUL
 ```
 
->***Note:*** Once upload task is executed without parameter is show you a message to confirm and upload all code.
+>***Note:*** Once upload task is executed without parameters, a message is shown to you to confirm and upload all code.
 
 ### Using files parameter
 
@@ -435,4 +433,4 @@ Output:
 
 ## Limitations of Upload task
 
-* ***files*** parameter doesn't support absolute paths.
+* ***files*** parameter doesn’t support absolute paths.

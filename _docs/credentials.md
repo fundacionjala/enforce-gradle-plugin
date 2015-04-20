@@ -5,17 +5,18 @@ permalink: /docs/credentials/
 ---
 ## Management credential profile
 
-To deploy code into an organization you need a credential, for so you should create an account in SalesForce.
+To deploy code to an organization, you need a credential. To do so you should create an account in SalesForce.
 
-To management your credentials there are two files called credentials.dat located one in your project directory another one in user home directory where your credentials are saved as json format with the next fields:
+
+To manage your credentials, there are two files called credentials.dat that are located, one in your project directory, and the other in user home directory where your credentials are saved on json format with the following fields:
 <ol>
 	<ul>
 		<li><strong>id</strong> is necessary to management your credential.</li>
 		<li><strong>username</strong> is a SalesForce account.</li>
-		<li><strong>password</strong> is your SalesForce password</li>
-		<li><strong>token</strong> is your SalesForce token</li>
+		<li><strong>password</strong> is your SalesForce password.</li>
+		<li><strong>token</strong> is your SalesForce token.</li>
 		<li><strong>sfdcType</strong> is a login type.</li>
-		<li><strong>type</strong> is define if your credential is encrypted or no.</li>
+		<li><strong>type</strong> defines whether  your credential is encrypted  or not..</li>
 	</ul>
 </ol>
 
@@ -44,13 +45,14 @@ This task adds a new credential into credentials.dat located in user home direct
 
 ###  By console
 
-You are able to add credentials encrypted and credentials decrypted. If you want to add a credential encrypted you should put option ***y*** in option: ***Encrypt credential(y/n, by default is encrypted):*** also, you are able to choose where will save the credentials using the option: ***Credential location (home/project by default is home):*** 
+You are able to add credentials encrypted and credentials decrypted. If you want to add a credential encrypted you should put option ***y*** in option: ***Encrypt credential(y/n, by default is encrypted):*** also, you are able to choose where will save the credentials using the option: ***Credential location (home/project by default is home):***
 
 To add a new credential you should write the next command:
 
 	$ gradle addCredential
 
 ### By parameters
+
 When you add credential by parameters it is encrypted by default also, you are able to choose the credentials.dat file where will add the credential using parameter called ***location*** by default is home directory. To add a new credential by parameter you should use the next parameters:
 
 	 -Pid is id of credential
@@ -69,6 +71,7 @@ The command to add is:
 
 
 ## UpdateCredential  task
+
 This task updates a credential from credentials.dat file located in user home directory and project directory by default is home.
 
 ### By console
@@ -79,6 +82,7 @@ To update a credential by console you should write  the next command and filling
 
 
 ### By parameters
+
 If you want to update credential from project directory you should write ***'project'*** value in parameter called  ***location*** use the next parameters:
 
 	 -Pid is id of credential.

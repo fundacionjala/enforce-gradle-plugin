@@ -22,7 +22,7 @@ This is an open source plugin
 		<li> build.gradle file </li>
 		<li> gradle.properties file (Optional) </li>
 		<li> credentials.dat file </li>
-		<li> User account in a Salesforce Organization and the related security token </li>
+		<li> User account in a Salesforce Organization  and the corresponding  security token </li>
    </ul>
 </ol>
 
@@ -39,7 +39,9 @@ This is an open source plugin
    buildscript {
        repositories {
            mavenCentral()
-           jcenter()
+           maven {
+                url "https://dl.bintray.com/fundacionjala/enforce"
+           }
        }
        dependencies {
            classpath 'org.fundacionjala.gradle.plugins.enforce:enforce-gradle-plugin:1.0.0'
@@ -77,17 +79,17 @@ This is an open source plugin
 
 <div class="note info">
   <h5>Credential support</h5>
-  <p>Managing of credentials can create and update credentials in 'credentials.dat' file it is located in HOME directory, a format was showed in Files gradle that is on last point.</p>
-   <p> 'AddCredential task' creates a credential in 'credentials.dat' file located in HOME directory it is saved as encrypted by default and its 'sfdcType' field is saved with login value by default.</p>
-   <p> 'UpdateCredential task ' updates a credential by key from 'credentials.dat' file.</p>
+  <p>Managing of credentials can create and update credentials in 'credentials.dat' file which is located  in HOME directory. A format was shown in Files gradle that is on the  last point.</p>
+  <p>'AddCredential task' creates a credential in 'credentials.dat' file located in HOME directory it is saved as encrypted by default and its 'sfdcType' field is saved with a default login value. </p>
+  <p>'UpdateCredential task ' updates a credential by key from 'credentials.dat' file.</p>
 </div>
 
-
-> **Note:** Notice that the example uses the "default" key which by convention is the one to be used by default when a task is executed. You can have several entries to different salesforce accounts but each entry needs to have an unique key.
+> **Note:** Notice that the example uses the “default” key which by convention is the one to be used by default when a task is executed. You can have several entries to different salesforce accounts but each entry needs to have an unique key.
 
 ## Project gradle tasks
 
-The gradle project contains tasks that will help on development and packaging. You have to execute the gradle tasks from the project directory it will show you all tasks runnable from root project.
+
+The gradle project contains tasks that will help on development and packaging. You have to execute the gradle tasks from the project directory. It will show you all tasks runnable from the root project.
 
 Command:
 
@@ -110,7 +112,7 @@ Output:
    * deploy - This task deploys all the project
    * undeploy - This task removes all components in your organization according to local repository
    * update - This task deploys just the files that were changed
-   * upload - This task uploads all specific files or folders as user wants
+   * upload - This task uploads  all specific files or folders as the user wants
 
 ### File Monitor tasks
 
@@ -119,12 +121,12 @@ Output:
 
 ### Help tasks
 
-   * dependencies - Displays all dependencies declared in root project 'user'.
-   * dependencyInsight - Displays the insight into a specific dependency in root project 'user'.
-   * help - Displays a help message
-   * projects - Displays the sub-projects of root project 'user'.
-   * properties - Displays the properties of root project 'user'.
-   * tasks - Displays the tasks runnable from root project 'user'.
+   * Dependencies - Displays all dependencies declared in the root project 'user'.
+   * DependencyInsight - Displays an insight into a specific dependency in the root project ‘user’.
+   * Help - Displays a help message
+   * Projects - Displays the sub-projects of the root project 'user'.
+   * Properties - Displays the properties of the root  'user'
+   * Tasks - Displays the tasks runnable from the root project ‘user’.
 
 ### Package Management tasks
 

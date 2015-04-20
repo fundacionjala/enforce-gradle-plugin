@@ -5,17 +5,17 @@ permalink: /docs/package-management/
 ---
 ## Management package
 
-Those tasks are able to install and unisntall packages.
+These tasks are able to install or uninstall packages.
 
 ## Install package task
 
-This task installs a manage package based on the following parameters:
+This task installs a management package based on the following parameters:
 
 * -Ppkg.namespace = Package namespace is required parameter.
 * -Ppkg.version = Package version is required parameter.
-* -Ppkg.password = Package password is not required and depends on source package settings(maybe the package does not require a password).
+* -Ppkg.password = Package password is not required and depends on the “source package settings” (The package may not require a password).
 
-This task uses the same credentials used in other tasks, so bellow we have an example about [Apex Lang](https://code.google.com/p/apex-lang/) package installation.
+This task uses the same credentials used in other tasks, so below we have an example about [Apex Lang](https://code.google.com/p/apex-lang/) package installation.
 
 command:
 
@@ -45,7 +45,7 @@ Once that task is completed a result message will be displayed.
 
 ##  Uninstall package task
 
-This task uninstalls a manage package based on the following parameters:
+This task uninstalls a managed package based on the following parameters:
 
 * -Ppkg.namespace = Package namespace is required parameter.
 
@@ -82,9 +82,9 @@ output:
     Total time: 2 mins 24.547 secs
 
 ```
-Once that task is completed a result message will be displayed.
+Once the task is completed, a result message will be displayed.
 
-If there target org does not have the related package installed the command will do nothing, becuase it verified an installed package before to start the process, bellow we have an execution example.
+If “target org” does not have the related package installed, the command will not respond because it verified an installed package before starting the process. Below we have an execution example:
 
 	$ gradle uninstallPackage -Ppkg.namespace=al
 
@@ -109,8 +109,8 @@ output:
     Total time: 15.179 secs
 
 ```
-As you can see an information message is displayed to notify that there is not an installed package.
+As you can see, an information message is displayed to notify that there is not an installed package.
 
 #### Limitations
 * It does not uninstall custom components associated to the package. I.E. Profiles, PermissionSets, Etc.
-* If there is org-to-org configuration over the related package, it could not be possible to be uninstalled due dependencies.
+* If there is “org-to-org” configuration over the related package, it will not be possible to be uninstalled, due to dependencies.
