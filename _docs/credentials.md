@@ -32,7 +32,11 @@ To management your credentials there are two files called credentials.dat locate
 }
 ```
 
-In this file are saved all credentials with respective fields. It should be located into project directory or user home directory as priority use file that is in project directory.
+To choose a credentials.dat file you should use parameter called ***location*** where there are two option 'project' and 'home' by default is home.
+
+The ***project*** option selected credentials.dat file located in your project directory.
+
+The ***home*** option selected credentials.dat file located in your home directory.
 
 ## AddCredential task
 
@@ -61,7 +65,7 @@ The command to add is:
 			       -Pusername=juana@gmail.com
 	                       -Ppassword=123456 
 	                       -Ptoken=as:addCredential
-						   -Plocation=project
+			       -Plocation=project
 
 
 ## UpdateCredential  task
