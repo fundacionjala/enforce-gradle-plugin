@@ -9,7 +9,7 @@ permalink: /docs/auth/
 To run deployment tasks, you need login into your organization. To do so, you have three options for authentication:
 <ul>
 	<li>Using a credential by default, To do this you should add a credential with default id.</li>
-	<li>Using an specific credential, To do this you should use credential id.</li>
+	<li>Using a specific credential, To do this you should use credential id.</li>
 	<li>Using parameters username and password also, optionally you can use user token.</li>
 </ul>
 
