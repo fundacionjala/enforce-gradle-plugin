@@ -8,9 +8,9 @@ permalink: /docs/auth/
 #### **Objective**
 To run deployment tasks, you need login into your organization. To do so, you have three options for authentication:
 <ul>
-	<li>Using a credential by default.  To do so, you should add a credential with default id.</li>
-	<li>Using a specific credential. To do so, you should use credential.</li>
-	<li>id. Using parameters as username, password, and token.</li>
+	<li>Using a credential by default, To do this you should add a credential with default id.</li>
+	<li>Using an specific credential, To do this you should use credential id.</li>
+	<li>Using parameters username and password also, optionally you can use user token.</li>
 </ul>
 
 #### **Parameter**
@@ -37,7 +37,7 @@ You are able to run tasks using a specific credential. To do so, you should use 
 
 ### Using parameters
 
-You are able to run task using parameters for credential. To do this, you should send the next parameter: username, password,  and token.
+You are able to run task using parameters of credential, to do this you should send the next parameter: *username and password and optionally token*.
 
 	$ gradle deploy -Pusername=juan.perez@jalasoft.com
 			-Ppassword=123qweJuan
