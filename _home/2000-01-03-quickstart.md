@@ -43,7 +43,7 @@ enforce {
    #=> This command in the first time break the dependencies and then upload all your code.
 {% endhighlight %}
 
-- When you want upload only changed files to your salesforce organization:
+- When you want upload only files changed to your salesforce organization:
 {% highlight bash linenos=table%}
    $ gradle update
 {% endhighlight %}
