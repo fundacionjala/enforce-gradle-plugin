@@ -5,12 +5,12 @@ title: Documentation
 
 Here you can find a comprehensive guide to EnForce tools for Salesforce, which will guide you on the process to have a Gradle script that can help you on tasks related to develop an application on Salesforce platform.
 
-## What is Enforce tools for Salesforce?
-It is a Gradle plugin which provides usefull tasks that can help on code deployment on organizations, unit test execution, reporting for unit tests and code coverage. Also there is Jenkins plugin that shows useful unit test and code coverage information.
+## What is an Enforce tool for Salesforce?
+It is a Gradle plugin which provides useful tasks that can help with code deployment to organizations, unit test execution, reporting for unit tests and code coverage. Also there is a Jenkins plugin that shows useful unit tests and code coverage information.
 
 ## Why Enforce tool does exist?
-Currently Salesforce platform provides the Migration Tool which allows upload changes to an Organization, but it has limitations due to dependency between Salesforce elements (Objects, pages, classes, components).
-Enforce tools for Salesforce tries to make easy to deploy and undeploy a project source code to a Salesforce Organization, additionally it tries to help on implement a Continuous Integration process for a Salesforce project.
+Currently Salesforce platform provides a Migration Tool which allows us to upload changes to an Organization, but it has some limitations due to the dependency among Salesforce elements (Objects, pages, classes, components).
+Enforce tools for Salesforce makes it easier to deploy and undeploy a project source code to a Salesforce Organization, additionally it helps to implement a Continuous Integration process for a Salesforce project.
 
 ## Features
 
@@ -21,5 +21,5 @@ Enforce tools for Salesforce tries to make easy to deploy and undeploy a project
 * Track local changes on project files and upload them with one task.
 * Run unit tests and provide a code coverage and unit test reports.
 * Generate compatible code coverage(Cobertura format) and unit test(JUnit format) results for CI servers.
-* A way to change the source code before the upload cycle(interceptor pattern).
+* Change the source code before the upload cycle (interceptor pattern).
 * Install or uninstall Salesforce packages.

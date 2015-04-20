@@ -15,7 +15,7 @@ The plugin will generate:
 		      <li>Danger (0% - 74%)</li>	   
 		      <li>Risk (75% - 79%)</li>	   
 		      <li>Acceptable (80% - 94%)</li>	   
-		      <li>Safe(95% - 100%)</li>	   
+		      <li>Safe (95% - 100%)</li>	   
 			</ul>
    </ul>
 </ol>		

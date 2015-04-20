@@ -11,7 +11,7 @@ This task is able to execute code apex.
 
 #### **Parameters**
 
-This task has two parameters called ***input*** and ***output*** where the first is used to set a file or inline code that you want to execute, another one is used to set a file path and get results in this file.
+This task has two parameters called ***input*** and ***output*** where the first is used to set a file or inline code that you want to execute. The other one is used to set a file path and get results in this file.
 
 ## Execute task
 
