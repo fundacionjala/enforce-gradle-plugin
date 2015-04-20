@@ -10,5 +10,6 @@ lib/
 logs/
 repo/
 .gradle/
-
+.sass-cache/
+_site/
 
