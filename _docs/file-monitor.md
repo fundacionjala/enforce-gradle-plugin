@@ -5,11 +5,11 @@ permalink: /docs/file-monitor/
 ---
 ## File monitor tasks
 
-***Status task*** let's user see what files have been changed as (new file, deleted file and updated file).
+***Status task*** lets the user see what files have been changed as (new file, deleted file and updated file).
 
 	$ gradle status
 
-***Reset task*** let's user restarted the file monitor.
+***Reset task*** lets the user restart the file monitor.
 
 	$ gradle reset
 
@@ -17,7 +17,7 @@ permalink: /docs/file-monitor/
 
 ### Changed file
 
-Task status shows files which have been added, modified or deleted. In the point above the file Force_com.app was modified but not updated to the Organization so the status of that file still on Changed file.
+Task status shows files which have been added, modified or deleted. In the point below the file Force_com.app was modified, but not updated to the Organization, so the status  of that file is still “Changed file.”
 
 command:
 

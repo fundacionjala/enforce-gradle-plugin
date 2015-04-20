@@ -5,17 +5,18 @@ permalink: /docs/credentials/
 ---
 ## Management credential profile
 
-To deploy code into an organization you need a credential, for so you should create an account in SalesForce.
+To deploy code into an organization, you need a credential. To do so you should create an account in SalesForce.
 
-To management your credentials there are two files called credentials.dat located one in your project directory another one in user home directory where your credentials are saved as json format with the next fields:
+
+To manage your credentials, there are two files called credentials.dat that are located, one in your project directory, and the other in user home directory where your credentials are saved on json format with the following fields:
 <ol>
 	<ul>
 		<li><strong>id</strong> is necessary to management your credential.</li>
 		<li><strong>username</strong> is a SalesForce account.</li>
-		<li><strong>password</strong> is your SalesForce password</li>
-		<li><strong>token</strong> is your SalesForce token</li>
+		<li><strong>password</strong> is your SalesForce password.</li>
+		<li><strong>token</strong> is your SalesForce token.</li>
 		<li><strong>sfdcType</strong> is a login type.</li>
-		<li><strong>type</strong> is define if your credential is encrypted or no.</li>
+		<li><strong>type</strong> defines whether  your credential is encrypted  or not..</li>
 	</ul>
 </ol>
 
@@ -32,22 +33,24 @@ To management your credentials there are two files called credentials.dat locate
 }
 ```
 
-In this file are saved all credentials with respective fields. It should be located into project directory or user home directory as priority use file that is in project directory.
+In this file, all credentials are saved with their corresponding fields. It should be located in the project directory or user home directory as a priority use file that is in the project directory.
 
 ## AddCredential task
 
-This task adds a new credential into credentials.dat located in user home directory. There are two ways to add credentials one is by console another one is by parameters.
+
+This task adds a new credential into credentials.dat that is located in the user home directory. There are two ways to add credentials: One is by console and the other one is by parameters.
 
 ###  By console
 
-You are able to add credentials encrypted and credentials decrypted. If you want to add a credential encrypted you should put option ***y*** in option: ***Encrypt credential(y/n, by default is encrypted):***
+
+You are able to add encrypted and decrypted credentials. If you want to add an encrypted credential, you should put the ***y*** option in the option: ***Encrypt credential(y/n, by default is encrypted):***
 
 To add a new credential you should write the next command:
 
 	$ gradle addCredential
 
 ### By parameters
-When you add credential by parameters it is encrypted by default. To add a new credential by parameter you should use the next parameters:
+When you add a credential by parameters, it is encrypted by default. To add a new credential by parameter, you should use the following parameters:
 
 	 -Pid is id of credential
 	 -Pusername is your account
@@ -64,17 +67,18 @@ The command to add is:
 
 
 ## UpdateCredential  task
-This task updates a credential from credentials.dat file located in user home directory.
+
+This task updates a credential from credentials.dat file located in the user home directory.
 
 ### By console
 
-To update a credential by console you should write  the next command and filling credentials fields by console.
+To update a credential by console, you should write the following command and fill credentials fields by console.
 
 	$ gradle updateCredential
 
 
 ### By parameters
-If you want to update credential by parameters you should use the next parameters:
+If you want to update a credential by parameters, you should use the following parameters:
 
 	 -Pid is id of credential.
 	 -Pusername is your account.
@@ -167,4 +171,4 @@ Output:
 BUILD SUCCESSFUL
 ```
 
-> **Note:** These credentials are added and updated in *credentials.dat* file that is located in user HOME directory.
+> **Note:** These credentials are added and updated in a *credentials.dat* file that is located in user HOME directory.
