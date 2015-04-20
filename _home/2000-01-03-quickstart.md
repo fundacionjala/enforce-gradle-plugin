@@ -37,13 +37,13 @@ enforce {
    #=> Creates an entry on the credentials store, credential id with 'default' value
 {% endhighlight %}
 
-- When you want upload your local code to your salesforce organization:
+- When you want to upload your local code to your salesforce organization:
 {% highlight bash linenos=table%}
    $ gradle deploy
    #=> This command in the first time break the dependencies and then upload all your code.
 {% endhighlight %}
 
-- When you want upload only files changed to your salesforce organization:
+- When you want to upload only files changed to your salesforce organization:
 {% highlight bash linenos=table%}
    $ gradle update
 {% endhighlight %}
