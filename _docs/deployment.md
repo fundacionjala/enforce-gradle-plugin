@@ -195,11 +195,13 @@ This task uploads your code from your local repository to SalesForce organizatio
 
 #### **Parameters**
 
-This task has two parameters called **files** and **excludes**. 
+This task has three parameters called **files**, **excludes** and ***all***. 
 
 If you want to upload a file or more files you should use files parameters it uploads code by file by folder and using wildcards.
 
 If you want to exclude some files you should use excludes parameter.
+
+If you want to upload all files from your organization you should use all parameter.
 
 ## Executing upload task
 
@@ -208,6 +210,8 @@ If you want to exclude some files you should use excludes parameter.
 User can upload all source code to organization, to do this you should execute to ***upload task*** without parameters.
 
 	$ gradle upload
+	
+Once this command is executed shows you a warning message that say all files will be uploaded and you have to confirm. To avoid that shows  this message you can use parameter ***all*** with true value by default is false.
 
 ### Using files parameter
 
