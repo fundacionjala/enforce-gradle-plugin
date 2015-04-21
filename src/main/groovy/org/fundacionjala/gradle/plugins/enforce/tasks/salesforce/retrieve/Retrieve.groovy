@@ -109,7 +109,7 @@ class Retrieve extends Retrieval {
     }
 
     /**
-     * Loads the files parameter
+     * Loads the files and all parameters
      */
     private void loadParameters() {
         if (!files) {
