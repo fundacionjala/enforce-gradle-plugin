@@ -22,6 +22,10 @@
 
           app.controller('controllerChartPie', function(\$scope) {
 
+              var colorDanger = '#d2322d';
+              var colorRisk = '#ed9c28';
+              var colorAcceptable = '#2aabd2';
+              var colorSafe = '#5cb85c';
               var coverage = {};
               coverage.type = "PieChart";
               coverage.data = $arrayChartCoverage
@@ -81,19 +85,19 @@
               \$scope.percentNotCovered = parseFloat(100 - \$scope.percentCovered).toFixed(2);
 
               if(\$scope.percentageCoverage >= 0 && \$scope.percentageCoverage <= 74 ) {
-                 \$scope.colorCoverage = "#d2322d";
+                 \$scope.colorCoverage = colorDanger;
               }
 
               else  if(\$scope.percentageCoverage > 74 && \$scope.percentageCoverage <= 79 ) {
-                \$scope.colorCoverage = "#ed9c28";
+                \$scope.colorCoverage = colorRisk;
               }
 
               else  if(\$scope.percentageCoverage > 79 && \$scope.percentageCoverage <= 94 ) {
-                \$scope.colorCoverage = "#2aabd2";
+                \$scope.colorCoverage = colorAcceptable;
               }
 
               else  if(\$scope.percentageCoverage > 94 && \$scope.percentageCoverage <= 100 ) {
-                \$scope.colorCoverage = "#5cb85c";
+                \$scope.colorCoverage = colorSafe;
               }
 
               \$scope.chartObject = {};
