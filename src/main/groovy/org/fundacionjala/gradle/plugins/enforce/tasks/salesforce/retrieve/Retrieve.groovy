@@ -25,6 +25,7 @@ class Retrieve extends Retrieval {
     private static final String QUESTION_TO_CONTINUE = 'Do you want to continue? (y/n) : '
     private final String FILES_RETRIEVE = 'files'
     private final String DESTINATION_FOLDER = 'destination'
+    private final String ALL_PARAMETER = 'all'
     private final String COMMA = ','
     private final String YES = 'y'
     private String option
@@ -33,6 +34,8 @@ class Retrieve extends Retrieval {
     public String destination
     public final String SLASH = '/'
     public final String BACKSLASH = '\\\\'
+    public String all = Constants.FALSE
+    public final int CODE_TO_EXIT = 0
 
     /**
      * Sets description and group task
@@ -47,7 +50,7 @@ class Retrieve extends Retrieval {
     void runTask() {
         verifyDestinationFolder()
         ManagementFile.createDirectories(projectPath)
-        verifyFiles()
+        loadParameters()
         validateContentParameter()
         if (!hasPackage() && !files) {
            retrieveWithoutPackageXml()
@@ -61,7 +64,7 @@ class Retrieve extends Retrieval {
                     loadFromPackage()
                 } else {
                     logger.warn(MESSAGE_CANCELED)
-                    System.exit(0)
+                    System.exit(CODE_TO_EXIT)
                 }
             }
             retrieveWithPackageXml()
@@ -108,11 +111,14 @@ class Retrieve extends Retrieval {
     /**
      * Loads the files parameter
      */
-    private void verifyFiles() {
+    private void loadParameters() {
         if (!files) {
             if (Util.isValidProperty(project, FILES_RETRIEVE)) {
                 files = project.property(FILES_RETRIEVE) as String
             }
+        }
+        if (Util.isValidProperty(project, ALL_PARAMETER)) {
+            all = project.property(ALL_PARAMETER) as String
         }
     }
 
@@ -176,7 +182,8 @@ class Retrieve extends Retrieval {
         if (files) {
             ArrayList<File> filesRetrieve = new ArrayList<File>()
             ArrayList<String> arrayNameArchives = files.split(COMMA)
-            arrayNameArchives.each { nameFile ->
+            arrayNameArchives.each Pall=true
+{ nameFile ->
                 filesRetrieve.push(new File(nameFile))
             }
             packageBuilder.createPackage(filesRetrieve)
@@ -268,7 +275,7 @@ class Retrieve extends Retrieval {
      */
     void showWarningMessage() {
         File[] arrayFiles = getFiles(new File(projectPath))
-        if (arrayFiles.size() > 0) {
+        if (arrayFiles.size() > 0 && all == Constants.FALSE) {
             logger.error(MESSAGE_WARNING)
             option = System.console().readLine("${'  '}${QUESTION_TO_CONTINUE}")
         } else {
