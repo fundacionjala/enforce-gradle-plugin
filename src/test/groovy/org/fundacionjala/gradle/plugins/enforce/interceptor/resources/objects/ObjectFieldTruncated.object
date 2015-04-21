@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>A single record in the result of Legislation or Legislators resulting from a successful query.</description>
+    <enableActivities>true</enableActivities>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableReports>true</enableReports>
+    <fields>
+        <fullName>API_Name__c</fullName>
+        <description>new description</description>
+        <externalId>false</externalId>
+        <inlineHelpText>new help text</inlineHelpText>
+        <label>API Name</label>
+        <length>255</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Full_Name__c</fullName>
+        <description>new description</description>
+        <externalId>false</externalId>
+        <inlineHelpText>new help text</inlineHelpText>
+        <label>Full Name</label>
+        <required>false</required>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Retrieved_At__c</fullName>
+        <description>new description</description>
+        <externalId>false</externalId>
+        <inlineHelpText>new help text</inlineHelpText>
+        <label>Retrieved At</label>
+        <required>false</required>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Saved_Search__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>new description</description>
+        <externalId>false</externalId>
+        <inlineHelpText>new help text</inlineHelpText>
+        <label>Saved Search</label>
+        <referenceTo>FGW_Saved_Search__c</referenceTo>
+        <relationshipLabel>Search Results</relationshipLabel>
+        <relationshipName>Search_Results</relationshipName>
+        <required>false</required>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>isContact__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>new description</description>
+        <externalId>false</externalId>
+        <inlineHelpText>new help text</inlineHelpText>
+        <label>isContact</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Units_Sold1__c</fullName>
+        <description>new description</description>
+        <externalId>false</externalId>
+        <label>Units Sold</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Units_Sold2__c</fullName>
+        <inlineHelpText>new help text</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Units Sold</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <label>Search Result</label>
+    <nameField>
+        <label>Search Result Name</label>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Search Results</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ReadWrite</sharingModel>
+</CustomObject>
