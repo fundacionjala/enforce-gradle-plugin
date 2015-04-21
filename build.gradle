@@ -22,6 +22,10 @@ build.doLast {
     uploadArchives.execute()
 }
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.0'
+}
+
 cobertura {
     coverageFormats << "xml"
     coverageSourceDirs << project.sourceSets.main.groovy.srcDirs
@@ -58,7 +62,6 @@ dependencies {
 
     testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
     testCompile 'cglib:cglib-nodep:2.2'
-
 }
 
 group = 'org.fundacionjala.gradle.plugins.enforce'
