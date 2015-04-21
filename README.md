@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/fundacionjala/enforce-gradle-plugin.svg)](https://travis-ci.org/fundacionjala/enforce-gradle-plugin) [![license](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](https://github.com/fundacionjala/enforce-gradle-plugin/blob/master/LICENSE)
+
 ---
 Quick start
 ---
@@ -16,9 +18,7 @@ Here you can find the enought required information to have running a Gradle proj
 buildscript {
     repositories {
         mavenCentral()
-        maven {
-                url "https://dl.bintray.com/fundacionjala/enforce"
-        }
+        jcenter()
     }
     dependencies {
         classpath 'org.fundacionjala.gradle.plugins.enforce:enforce-gradle-plugin:1.0.0'

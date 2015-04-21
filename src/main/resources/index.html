@@ -22,6 +22,10 @@
 
           app.controller('controllerChartPie', function(\$scope) {
 
+              var colorDanger = '#d2322d';
+              var colorRisk = '#ed9c28';
+              var colorAcceptable = '#2aabd2';
+              var colorSafe = '#5cb85c';
               var coverage = {};
               coverage.type = "PieChart";
               coverage.data = $arrayChartCoverage
@@ -40,7 +44,7 @@
 
               var chart1 = {};
               chart1.type = "PieChart";
-              chart1.data = $arrayChartPie
+              chart1.data = $arrayChartPie;
               chart1.options = {
                       displayExactValues: true,
                       width: 600,
@@ -55,6 +59,8 @@
                       chartArea: {left:10,top:10,bottom:0,height:"100%"}
               };
               \$scope.chart = chart1;
+              \$scope.data  = $arrayChartPie;
+
               \$scope.linesCovered;
               \$scope.percentCovered;
               \$scope.linesNotCovered;
@@ -73,13 +79,25 @@
               \$scope.totalLines =\$scope.linesCovered + \$scope.linesNotCovered;
               \$scope.percentageCoverage = 0
               if(\$scope.linesCovered + \$scope.linesNotCovered) {
-                \$scope.percentageCoverage = parseInt((\$scope.linesCovered / (\$scope.linesCovered + \$scope.linesNotCovered)) * 100);
+                \$scope.percentageCoverage = parseFloat((\$scope.linesCovered / (\$scope.linesCovered + \$scope.linesNotCovered)) * 100).toFixed(2);
               }
               \$scope.percentCovered = \$scope.percentageCoverage
-              \$scope.percentNotCovered = 100 - \$scope.percentCovered
+              \$scope.percentNotCovered = parseFloat(100 - \$scope.percentCovered).toFixed(2);
 
-              if(\$scope.percentageCoverage < 74) {
-                \$scope.colorCoverage = "red";
+              if(\$scope.percentageCoverage >= 0 && \$scope.percentageCoverage <= 74 ) {
+                 \$scope.colorCoverage = colorDanger;
+              }
+
+              else  if(\$scope.percentageCoverage > 74 && \$scope.percentageCoverage <= 79 ) {
+                \$scope.colorCoverage = colorRisk;
+              }
+
+              else  if(\$scope.percentageCoverage > 79 && \$scope.percentageCoverage <= 94 ) {
+                \$scope.colorCoverage = colorAcceptable;
+              }
+
+              else  if(\$scope.percentageCoverage > 94 && \$scope.percentageCoverage <= 100 ) {
+                \$scope.colorCoverage = colorSafe;
               }
 
               \$scope.chartObject = {};
@@ -268,12 +286,65 @@
 
 <div class="row" style="margin-top:50px;">
     <div class="col-md-12">
+
+
         <div ng-show="charts" style='border:1px solid #ddd; margin: 50px 0px 50px 0px; border-radius: 10px;'>
             <div ng-controller='controllerChartPie'>
                 <div class='row' id="idCharts">
-                    <div class = "col-md-5">
-                        <h4> Organization Coverage </h4>
-                        <p class="Coverage-Report" style="color: {{colorCoverage}}">{{percentageCoverage}}%</p>
+
+                    <div id="content-data" class="center" >
+                        <h2 class="title_report" align="center" >Code Coverage</h2>
+                        <div id="content-total-coverage">
+                            <div id="circle-coverage" style="background-color: {{colorCoverage}}">
+                                <div>{{percentageCoverage}}%</div>
+                            </div>
+                        </div>
+                        <div id="content-linear-gauge">
+
+                            <div id="block-danger" class="block-range range-danger"></div>
+                            <div id="block-risk" class="block-range range-risk"></div>
+                            <div id="block-acceptable" class="block-range range-acceptable"></div>
+                            <div id="block-safe" class="block-range range-safe"></div>
+                            <div id="block-progress" class="block-range"></div>
+
+                            <label id="lb-range-1" class="lb-range">0</label>
+                            <label id="lb-range-2" class="lb-range">74</label>
+                            <label id="lb-range-3" class="lb-range">79</label>
+                            <label id="lb-range-4" class="lb-range">94</label>
+                            <label id="lb-range-5" class="lb-range">100</label>
+
+                            <div id="block-pin" class="block-range" style="left:{{percentCovered}}%">
+                                <div class="arrowText arrowBottom"></div>
+                            </div>
+                        </div>
+
+                        <div id="content-categories">
+                            <div class="content-category">
+                                <div class="frame-category range-danger"></div>
+                                <div class="frame-label"><label class="lb-frame-1">Danger</label></div>
+                                <div class="frame-label"><label class="lb-frame-2">{{data[1][1]}} Files</label></div>
+                            </div>
+                            <div class="content-category">
+                                <div class="frame-category range-risk"></div>
+                                <div class="frame-label"><label class="lb-frame-1">Risk</label></div>
+                                <div class="frame-label"><label class="lb-frame-2">{{data[2][1]}} Files</label></div>
+                            </div>
+                            <div class="content-category">
+                                <div class="frame-category range-acceptable"></div>
+                                <div class="frame-label"><label class="lb-frame-1">Acceptable</label></div>
+                                <div class="frame-label"><label class="lb-frame-2">{{data[3][1]}} Files</label></div>
+                            </div>
+                            <div class="content-category">
+                                <div class="frame-category range-safe"></div>
+                                <div class="frame-label"><label class="lb-frame-1">Safe</label></div>
+                                <div class="frame-label"><label class="lb-frame-2">{{data[4][1]}} Files</label></div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class = "col-md-5 center">
+                        <h4 class="title_report" align="center"> Organization Coverage </h4>
                         <table class='table table-responsive'>
                             <tbody>
                             <tr>
@@ -291,19 +362,19 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class = "col-md-7">
-                        <h4> Analysis </h4>
-                        <div google-chart chart='chart'></div>
-                    </div>
                 </div>
                 <div class="row" id="idCharts">
-                    <div class = "col-md-12">
-                        <h4> Unit Test Result </h4>
+                    <div class = "col-md-12 center">
+                        <h4 class="title_report" align="center"> Unit Test Result </h4>
                         <div google-chart chart='chartObject'></div>
                     </div>
                 </div>
             </div>
         </div>
+
+
+
+
         <div ng-show="unitTest" ng-controller='controllerUnitTest'>
             <div class="row"  style="border-bottom:1px solid #ddd">
                 <div class = "col-md-8">
