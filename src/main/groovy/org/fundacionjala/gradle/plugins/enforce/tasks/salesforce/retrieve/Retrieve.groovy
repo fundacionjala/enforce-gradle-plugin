@@ -182,8 +182,7 @@ class Retrieve extends Retrieval {
         if (files) {
             ArrayList<File> filesRetrieve = new ArrayList<File>()
             ArrayList<String> arrayNameArchives = files.split(COMMA)
-            arrayNameArchives.each Pall=true
-{ nameFile ->
+            arrayNameArchives.each { nameFile ->
                 filesRetrieve.push(new File(nameFile))
             }
             packageBuilder.createPackage(filesRetrieve)
