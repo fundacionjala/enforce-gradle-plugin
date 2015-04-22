@@ -20,7 +20,7 @@ The plugin will generate:
    </ul>
 </ol>		
 
-The EnForce jenkins plugin can be downloaded [here](https://bintray.com/artifact/download/fundacionjala/enforce/enforce-jenkins-plugin.hpi).
+The EnForce jenkins plugin can be downloaded [here]( https://bintray.com/artifact/download/fundacionjala/enforce/org/fundacionjala/gradle/plugins/enforce/enforce-gradle-plugin/1.0.1/enforce-jenkins-plugin.hpi).
 
 # Prerequisites
 
