@@ -6,6 +6,8 @@
 apply plugin: 'groovy'
 apply plugin: 'maven'
 apply plugin: 'cobertura'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
 
 buildscript {
     repositories {
@@ -31,9 +33,7 @@ cobertura {
 
 repositories {
     mavenCentral()
-    maven {
-        url "https://dl.bintray.com/fundacionjala/enforce"
-    }
+    jcenter()
 }
 
 dependencies {

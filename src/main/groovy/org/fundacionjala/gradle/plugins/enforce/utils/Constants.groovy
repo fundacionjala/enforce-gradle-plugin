@@ -26,7 +26,7 @@ public class Constants {
     public static final String NULL_PARAM_EXCEPTION = "the argument %s "
     public static final String UNSUPPORTED_FOLDERS = "unsupported folders"
     public static final String JENKINS_CHART_NAME = "Code coverage"
-    public static final String EXCLUDE_IS_EMPTY = "Exclude parameter can't be empty"
+    public static final String FALSE = "false"
 
     public static final int ZERO = 0
 

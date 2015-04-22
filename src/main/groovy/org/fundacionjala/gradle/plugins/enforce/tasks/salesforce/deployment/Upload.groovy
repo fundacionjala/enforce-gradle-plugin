@@ -22,6 +22,7 @@ class Upload extends Deployment {
     private final String UPLOAD_CANCELED ='Upload all files was canceled!!'
     private final String DIR_UPLOAD_FOLDER = "upload"
     private final String FILES_TO_UPLOAD = "files"
+    private final String ALL_FILES_TO_UPLOAD = "all"
 
     public ArrayList<File> specificFilesToUpload
     public ArrayList<File> filesToUpload
@@ -31,6 +32,7 @@ class Upload extends Deployment {
     public String files
     public String option = 'y'
     public final String YES_OPTION = 'y'
+    public String all = Constants.FALSE
 
     /**
      * Sets description and group task
@@ -53,8 +55,9 @@ class Upload extends Deployment {
         createDeploymentDirectory(pathUpload)
         loadFilesChangedToUpload()
         loadParameter()
-        if (specificFilesToUpload.empty && !Util.isValidProperty(project, EXCLUDES)) {
-            logger.error("${ALL_FILES_UPLOAD}${projectPath}")
+        loadAllFiles()
+        if (specificFilesToUpload.empty && !Util.isValidProperty(project, EXCLUDES) && all == Constants.FALSE) {
+            logger.warn("${ALL_FILES_UPLOAD}${projectPath}")
             option = System.console().readLine(QUESTION_CONTINUE)
         }
         if (option == YES_OPTION) {
@@ -114,6 +117,16 @@ class Upload extends Deployment {
             return
         }
         filesChanged = objSerializer.getFileChangedExclude(fileArray)
+    }
+
+    /**
+     * Loads 'all' variable with true to upload all files from your local repository to your organization.
+     * By default the 'all' variable has the value equals to false.
+     */
+    void loadAllFiles() {
+        if (Util.isValidProperty(project, ALL_FILES_TO_UPLOAD) && !Util.isEmptyProperty(project, ALL_FILES_TO_UPLOAD)) {
+            all = project.properties[ALL_FILES_TO_UPLOAD].toString()
+        }
     }
 
     /**

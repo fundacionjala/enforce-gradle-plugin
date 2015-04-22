@@ -9,6 +9,7 @@ import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataCompone
 import org.fundacionjala.gradle.plugins.enforce.interceptor.MetadataInterceptor
 import org.fundacionjala.gradle.plugins.enforce.interceptor.commands.Workflow
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
+import org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor
 
 /**
  * Implements methods to manage interceptors and load the workflows to truncate
@@ -29,6 +30,6 @@ class WorkflowInterceptor extends MetadataInterceptor {
      */
     @Override
     void loadInterceptors() {
-        addInterceptor(org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_WORKFLOWS.id, new Workflow().execute)
+        addInterceptor(Interceptor.TRUNCATE_WORKFLOWS.id, new Workflow().execute)
     }
 }

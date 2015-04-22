@@ -18,22 +18,49 @@ class UtilTest extends Specification {
         resourcesPath = Paths.get(System.getProperty("user.dir"), 'src', 'test', 'groovy', 'org', 'fundacionjala', 'gradle', 'plugins','enforce', 'utils', 'resources').toString()
     }
 
-    def "Test should return true if email is valid"() {
+    def "Test should return true if emails are valid"() {
         given:
-            String email = 'Juan.Perez@gmail.com'
+            String emailCommon = 'Juan.Perez@gmail.com'
+            String emailWithManyDotsAfterAtSign = 'lucas.cdlv@gmail.com.lucas01.juan.com.cls'
+            String emailWithUnderscoreBeforeAtSign = 'lucas.cdlv_12312@gmail.com'
+            String emailWithUnderscoreAfterAtSign = 'lucas.cdlv@gmail.com_m.cdfre'
+            String emailWithManyDotsBeforeAtSign = 'lucas.cdlv.dev@gmail.com'
+            String emailWithHyphen = 'luc-asd@gmail.com'
+            String emailWithHyphenBeforeAndAfterAtSign = 'Liz-juan.perez.cochabamba@ohoho.com-jala.extension'
         when:
-            Boolean result = Util.validEmail(email)
+            Boolean resultEmailCommon = Util.validEmail(emailCommon)
+            Boolean resultWithManyDotsAfterAtSign = Util.validEmail(emailWithManyDotsAfterAtSign)
+            Boolean resultWithUnderscoreBeforeAtSign = Util.validEmail(emailWithUnderscoreBeforeAtSign)
+            Boolean resultWithUnderscoreAfterAtSign = Util.validEmail(emailWithUnderscoreAfterAtSign)
+            Boolean resultWithManyDotsBeforeAtSign = Util.validEmail(emailWithManyDotsBeforeAtSign)
+            Boolean resultWithHyphen = Util.validEmail(emailWithHyphen)
+            Boolean resultWithHyphenBeforeAndAfterAtSign = Util.validEmail(emailWithHyphenBeforeAndAfterAtSign)
         then:
-            result
+            resultEmailCommon
+            resultWithManyDotsAfterAtSign
+            resultWithUnderscoreBeforeAtSign
+            resultWithUnderscoreAfterAtSign
+            resultWithManyDotsBeforeAtSign
+            resultWithHyphen
+            resultWithHyphenBeforeAndAfterAtSign
     }
 
-    def "Test should return false if email is invalid"() {
+    def "Test should return false if email are invalid"() {
         given:
-            String email = 'Juan.Perezmail.com'
+            String emailWithoutAtSign = 'Juan.Perezmail.com'
+            String emailWithoutDotsAfterAtSign = 'Juan.Perezmail@com'
+            String emailWithBlankSpaceBeforeAtSign = 'pedro blanco@jalasoft.com'
+            String emailWithBlankSpaceAfterAtSign = 'juan.lucas@jala.open test.com'
         when:
-            Boolean result = Util.validEmail(email)
+            Boolean resultWithoutAtSign = Util.validEmail(emailWithoutAtSign)
+            Boolean resultWithoutDotsAfterAtSign = Util.validEmail(emailWithoutDotsAfterAtSign)
+            Boolean resultWithBlankSpaceBeforeAtSign = Util.validEmail(emailWithBlankSpaceBeforeAtSign)
+            Boolean resultWithBlankSpaceAfterAtSign = Util.validEmail(emailWithBlankSpaceAfterAtSign)
         then:
-            !result
+            !resultWithoutAtSign
+            !resultWithoutDotsAfterAtSign
+            !resultWithBlankSpaceBeforeAtSign
+            !resultWithBlankSpaceAfterAtSign
     }
 
     def "Test Should return hour format" () {
@@ -98,6 +125,13 @@ class UtilTest extends Specification {
             def extension = Util.getFileExtension(file)
         then:
             extension == "object"
+    }
+
+    def "Test should get mac address with size equals 12" () {
+        when:
+            def macAddress = Util.getMacAddress()
+        then:
+            macAddress.size() == 12
     }
 
     def cleanupSpec() {

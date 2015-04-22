@@ -5,6 +5,7 @@
 
 package org.fundacionjala.gradle.plugins.enforce.unittest.report
 
+import groovy.json.StringEscapeUtils
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import com.sforce.soap.apex.CodeCoverageResult
 import groovy.json.JsonBuilder
@@ -243,7 +244,9 @@ class InformationLoader {
             if(apexTestResult.outcome != STATE_FAIL) {
                 filter = STATE_PROGRESS_BAR_SUCCESS
             }
-            String objectJson = "{name: '${apexTestResult.methodName}', status: '${apexTestResult.outcome}', description: '${apexTestResult.stackTrace}', filter: '$filter'}"
+            String message = StringEscapeUtils.escapeJavaScript(apexTestResult.message);
+            String stackTrace = StringEscapeUtils.escapeJavaScript(apexTestResult.stackTrace);
+            String objectJson = "{name: '${apexTestResult.className}.${apexTestResult.methodName}', status: '${apexTestResult.outcome}', stackTrace: '${stackTrace}', message: '${message}', filter: '$filter'}"
             arrayJson.push(objectJson)
         }
         JsonBuilder json = new JsonBuilder()

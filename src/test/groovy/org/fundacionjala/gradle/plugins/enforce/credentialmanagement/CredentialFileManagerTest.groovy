@@ -354,4 +354,8 @@ class CredentialFileManagerTest extends Specification {
             credentialObtained.loginFormat == LoginType.TEST.value()
             credentialObtained.type == 'normal'
     }
+
+    def cleanupSpec() {
+        new File(pathSecretKeyGenerated).delete()
+    }
 }
