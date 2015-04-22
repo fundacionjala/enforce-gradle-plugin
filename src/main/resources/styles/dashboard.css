@@ -57,8 +57,7 @@
 
 
 #content-data {
-    width: 80%;
-    margin: 5% 10%;
+    width: 100%;
 }
 
 .title_report {
@@ -272,6 +271,7 @@
 }
 
 .center {
-    width: 80%;
-    margin: 5% 10%;
+    width: 100%;
+    padding: 50px 10% 20px 10%;
 }
+
