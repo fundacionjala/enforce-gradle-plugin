@@ -22,7 +22,7 @@ buildscript {
        jcenter()
    }
    dependencies {
-       classpath 'org.fundacionjala.gradle.plugins.enforce:enforce-gradle-plugin:1.0.0'
+       classpath 'org.fundacionjala.gradle.plugins.enforce:enforce-gradle-plugin:1.0.1'
    }
 }
 

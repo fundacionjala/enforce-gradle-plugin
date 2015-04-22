@@ -23,7 +23,7 @@ Enforce is a Gradle plugin, so it is required to have build.gradle file where th
            }
        }
        dependencies {
-           classpath 'org.fundacionjala.gradle.plugins.enforce:enforce-gradle-plugin:1.0.0'
+           classpath 'org.fundacionjala.gradle.plugins.enforce:enforce-gradle-plugin:1.0.1'
        }
    }
    

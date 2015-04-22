@@ -16,7 +16,7 @@ Here you can find required information  that is enough to have a Gradle project 
          }
        }
        dependencies {
-           classpath 'org.fundacionjala.gradle.plugins.enforce:enforce-gradle-plugin:1.0.0'
+           classpath 'org.fundacionjala.gradle.plugins.enforce:enforce-gradle-plugin:1.0.1'
        }
    }
 
