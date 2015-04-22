@@ -39,9 +39,7 @@ This is an open source plugin
    buildscript {
        repositories {
            mavenCentral()
-           maven {
-                url "https://dl.bintray.com/fundacionjala/enforce"
-           }
+           jcenter()
        }
        dependencies {
            classpath 'org.fundacionjala.gradle.plugins.enforce:enforce-gradle-plugin:1.0.1'

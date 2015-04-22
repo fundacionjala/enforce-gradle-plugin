@@ -6,7 +6,7 @@ permalink: /docs/development/
 
 ### Requirements
  * [Java JDK or JRE, version 7 or higher](http://java.com/en/).
- * [Gradle version 2.0 or higher](https://gradle.org/docs/current/userguide/installation.html).
+ * [Gradle version 2.0](https://gradle.org/docs/current/userguide/installation.html).
  * Internet access ([configure Gradle if you are using a Proxy](https://gradle.org/docs/current/userguide/build_environment.html)).
 
 It is desired a basic knowledge about Gradle and its plugin mechanism, as starting point you can review:
