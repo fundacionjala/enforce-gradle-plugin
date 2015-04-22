@@ -25,7 +25,7 @@ If you don’t have an xml package and you want to download classes and triggers
 
 #### **Parameters**
 
-This task has two parameters called ***files*** and ***destination***, where the first parameter is used to download  specifics files. It supports files and folders, another one is used to indicate destination of files that will be downloaded.
+This task has three parameters called ***files***, ***destination*** and ***all***, where the first parameter is used to download  specifics files. It supports files and folders, the second one is used to indicate destination of files that will be downloaded and the third one is used to avoid confirm message and overwrite existing files.
 
 ## Executing Retrieve task
 
@@ -91,8 +91,11 @@ This task retrieves the files that you want to retrieve in a specific folder of 
 When you use destination parameter you can use a relative or absolute path.
 
 >***Notes:***
->Once that task is executed successfully all the files are copied inside the your local repository replacing the existing files.
- If you want to see only the retrieved files, you can find them on a build folder as a zip file with the name zipRecovered.zip
+>Once that task is executed successfully all the files are copied inside the your local repository replacing the existing files. 
+
+>There is a warning message to confirm if you want to overwrite your local files, if you don't want to see this message you should use a parameter called ***all*** with 'true' value.
+
+>If you want to see only the retrieved files, you can find them on a build folder as a zip file with the name zipRecovered.zip
 
 ## Examples
 
@@ -115,9 +118,8 @@ Output:
             Login type: login
     ___________________________________________
 
-    Warning: your files will be replaced
-    Do you want continue? (y/n):
-    > Building 0% > :retrieve y
+    Warning: All files according to package will be downloaded
+    > Building 0% > :retrieve  Do you want to continue? (y/n) : y
     Starting retrieve...
     Waiting for retrieve result...
     Retrieve result completed
