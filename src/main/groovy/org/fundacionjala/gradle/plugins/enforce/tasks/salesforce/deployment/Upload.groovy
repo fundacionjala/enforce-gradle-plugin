@@ -32,7 +32,7 @@ class Upload extends Deployment {
     public String files
     public String option = 'y'
     public final String YES_OPTION = 'y'
-    public boolean all = false
+    public String all = Constants.FALSE
 
     /**
      * Sets description and group task
@@ -56,7 +56,7 @@ class Upload extends Deployment {
         loadFilesChangedToUpload()
         loadParameter()
         loadAllFiles()
-        if (specificFilesToUpload.empty && !Util.isValidProperty(project, EXCLUDES) && !all) {
+        if (specificFilesToUpload.empty && !Util.isValidProperty(project, EXCLUDES) && all == Constants.FALSE) {
             logger.warn("${ALL_FILES_UPLOAD}${projectPath}")
             option = System.console().readLine(QUESTION_CONTINUE)
         }
