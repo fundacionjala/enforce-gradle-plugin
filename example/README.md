@@ -21,9 +21,7 @@ You should create a file called build.gradle as:
        repositories {
            mavenLocal()
            mavenCentral()
-           maven {
-	           url "https://dl.bintray.com/fundacionjala/enforce"
-	       }
+       	   jcenter()
        }
        dependencies {
            classpath 'org.fundacionjala.gradle.plugins.enforce:enforce-gradle-plugin:1.0.1'
