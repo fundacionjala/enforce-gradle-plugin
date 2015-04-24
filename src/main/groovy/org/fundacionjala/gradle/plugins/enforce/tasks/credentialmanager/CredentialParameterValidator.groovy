@@ -5,8 +5,6 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.credentialmanager
 
-import groovy.json.JsonSlurper
-import groovy.json.internal.LazyMap
 import org.fundacionjala.gradle.plugins.enforce.credentialmanagement.CredentialMessage
 import org.fundacionjala.gradle.plugins.enforce.credentialmanagement.CredentialParameter
 import org.fundacionjala.gradle.plugins.enforce.exceptions.CredentialException
@@ -31,7 +29,7 @@ class CredentialParameterValidator {
         credential.username = project.properties[CredentialParameter.USER_NAME.value()]
         credential.password = project.properties[CredentialParameter.PASSWORD.value()]
         credential.token = getToken(project)
-        String loginInserted = project.properties[CredentialMessage.LOGIN.value()]?:null
+        String loginInserted = project.properties[CredentialMessage.LOGIN.value()] ?: null
         credential.loginFormat = getLoginType(loginInserted)
         credential.type = credentialType
         return credential
@@ -103,7 +101,7 @@ class CredentialParameterValidator {
      * @return a login type
      */
     public static String getLoginType(String loginInserted) {
-        return loginInserted?:LoginType.DEV.value()
+        return loginInserted ?: LoginType.DEV.value()
     }
 
     /**
