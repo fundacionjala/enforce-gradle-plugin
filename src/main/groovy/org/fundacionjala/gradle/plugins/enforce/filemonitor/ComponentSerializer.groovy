@@ -1,13 +1,11 @@
 package org.fundacionjala.gradle.plugins.enforce.filemonitor
 
-import java.nio.file.Paths
-
-class ComponentManager {
+class ComponentSerializer {
 
     public Map<String, ComponentTracker> components
     public srcProject
 
-    public ComponentManager(String srcProject){
+    public ComponentSerializer(String srcProject){
         components = [:]
         this.srcProject = srcProject
     }

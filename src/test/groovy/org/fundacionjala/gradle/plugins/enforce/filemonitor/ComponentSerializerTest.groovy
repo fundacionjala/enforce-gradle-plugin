@@ -2,17 +2,17 @@ package org.fundacionjala.gradle.plugins.enforce.filemonitor
 
 import spock.lang.Specification
 
-class ComponentManagerTest extends Specification {
+class ComponentSerializerTest extends Specification {
 
-    ComponentManager componentManager
+    ComponentSerializer componentManager
 
     def setup() {
-        componentManager = new ComponentManager()
+        componentManager = new ComponentSerializer()
     }
 
     def "Test Should be Initialize ComponentManager object"() {
         expect:
-        componentManager instanceof ComponentManager
+        componentManager instanceof ComponentSerializer
     }
 
     def "Test should fill components map " () {
