@@ -1,16 +1,22 @@
 package org.fundacionjala.gradle.plugins.enforce.filemonitor
 
+import java.nio.file.Paths
+
 class ComponentSerializer {
 
-    public Map<String, ComponentTracker> components
-    public srcProject
+    private final String FILE_TRACKING = '.fileTracker.data'
+    public String srcProject
+    public String fileName
 
-    public ComponentSerializer(String srcProject){
-        components = [:]
+    public ComponentSerializer(String srcProject) {
         this.srcProject = srcProject
+        fileName = Paths.get(srcProject, FILE_TRACKING).toString()
     }
 
-    public void loadComponents(ArrayList<File> files) {
-
+    void save(Map<String, ComponentTracker> components) throws IOException {
+        ObjectOutputStream oos
+        oos = new ObjectOutputStream(new FileOutputStream(fileName))
+        oos.writeObject(components)
+        oos.close()
     }
 }

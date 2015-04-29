@@ -36,5 +36,4 @@ class ComponentTrackerTest extends Specification {
         then:
             resultTracker.state == 'Not changed'
     }
-
 }

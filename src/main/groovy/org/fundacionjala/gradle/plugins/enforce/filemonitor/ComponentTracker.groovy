@@ -1,6 +1,6 @@
 package org.fundacionjala.gradle.plugins.enforce.filemonitor
 
-class ComponentTracker {
+class ComponentTracker implements Serializable {
 
     public String hash
 

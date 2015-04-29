@@ -5,5 +5,6 @@ class ObjectResultTracker extends ResultTracker {
 
     public ObjectResultTracker(String state) {
         super(state)
+        subComponentsResult = [:]
     }
 }

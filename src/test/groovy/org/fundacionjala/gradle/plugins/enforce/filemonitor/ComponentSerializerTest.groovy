@@ -1,26 +1,54 @@
 package org.fundacionjala.gradle.plugins.enforce.filemonitor
 
+import spock.lang.Shared
 import spock.lang.Specification
+
+import java.nio.file.Paths
 
 class ComponentSerializerTest extends Specification {
 
-    ComponentSerializer componentManager
+    @Shared
+    ComponentSerializer componentSerializer
+
+    @Shared
+    String srcProjectPath =  Paths.get(System.getProperty("user.dir"), "src", "test", "groovy", "org", "fundacionjala", "gradle",
+            "plugins","enforce", "filemonitor", "resources").toString()
 
     def setup() {
-        componentManager = new ComponentSerializer()
+        componentSerializer = new ComponentSerializer(srcProjectPath)
     }
 
     def "Test Should be Initialize ComponentManager object"() {
         expect:
-        componentManager instanceof ComponentSerializer
+        componentSerializer instanceof ComponentSerializer
     }
 
-    def "Test should fill components map " () {
+    def "Test should save a Map<String, ComponentTracker> object in a .fileTracker.data file" () {
         given:
-            def files = [new File('classes/Class1.cls'), new File('objects/Object1__c.object')]
+            Map<String, ComponentTracker> components = [:]
+            components.put('src/classes/Class1.cls', new ComponentTracker('classHash'))
+            components.put('src/classes/Object1__c.object', new ObjectTracker('objectHash'))
         when:
-            componentManager.loadComponents(files)
+            componentSerializer.save(components)
         then:
-            componentManager.components.size == 2
+            new File(componentSerializer.fileName).exists()
+            new File(componentSerializer.fileName).size() > 0
+    }
+
+    def "Test should read  a .fileTracker.data file and returns a Map<String, ComponentTracker> object" () {
+        given:
+        Map<String, ComponentTracker> components = [:]
+        components.put('src/classes/Class1.cls', new ComponentTracker('classHash'))
+        components.put('src/classes/Object1__c.object', new ObjectTracker('objectHash'))
+        when:
+        componentSerializer.save(components)
+        componentSerializer.read(source)
+        then:
+        new File(componentSerializer.fileName).exists()
+        new File(componentSerializer.fileName).size() > 0
+    }
+
+    def cleanupSpec() {
+        new File(componentSerializer.fileName).delete()
     }
 }
