@@ -64,7 +64,8 @@ public enum MetadataComponents {
     TRIGGERS("ApexTrigger", "trigger", "triggers"),
     PROFILES("Profile", "profile", "profiles"),
     TABS("CustomTab", "tab", "tabs"),
-    TRANSLATIONS("Translations", "translation", "translations")
+    TRANSLATIONS("Translations", "translation", "translations"),
+    CUSTOMFIELD("CustomField", "sbc", "fields")
 
     public final static Map<String, MetadataComponents> COMPONENT;
 
