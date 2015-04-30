@@ -6,7 +6,9 @@
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 
 import org.fundacionjala.gradle.plugins.enforce.EnforcePlugin
+import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.FileMonitorSerializer
+import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
 import org.fundacionjala.gradle.plugins.enforce.metadata.DeployMetadata
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
@@ -152,15 +154,20 @@ class UpdateTest extends Specification {
     def "Test should load new file" () {
         given:
             updateInstance.projectPath = SRC_PATH
-            updateInstance.objSerializer = new FileMonitorSerializer()
+            def key = "classes/class2.cls"
             def newFilePath = Paths.get(SRC_PATH, 'classes', 'class2.cls').toString()
+            Map<String, ResultTracker> fileTrackerMap = [:]
+            fileTrackerMap.put(newFilePath, new ResultTracker(ComponentStates.ADDED.value()))
+            updateInstance.objSerializer = Mock(FileMonitorSerializer)
+            updateInstance.objSerializer.getFileTrackerMap(_) >>  fileTrackerMap
+            updateInstance.objSerializer.verifyFileMap() >>  true
             FileWriter newFile = new FileWriter(newFilePath)
             newFile.write('test')
             newFile.close()
         when:
             updateInstance.loadFilesChanged()
         then:
-            updateInstance.filesChanged.get(newFilePath) == "New file"
+            updateInstance.filesChanged.get(newFilePath).state == ComponentStates.ADDED.value()
             updateInstance.filesChanged.containsKey(newFilePath) == true
     }
 

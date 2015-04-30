@@ -116,7 +116,7 @@ class Upload extends Deployment {
             objSerializer.mapRefresh(fileArray)
             return
         }
-        filesChanged = objSerializer.getFileChangedExclude(fileArray)
+        filesChanged = objSerializer.getFileTrackerMap(fileArray)
     }
 
     /**

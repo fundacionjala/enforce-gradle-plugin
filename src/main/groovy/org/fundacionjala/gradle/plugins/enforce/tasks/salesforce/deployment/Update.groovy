@@ -5,6 +5,7 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 
+import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.QueryBuilder
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.FileMonitorSerializer
 import org.fundacionjala.gradle.plugins.enforce.undeploy.SmartFilesValidator
@@ -28,7 +29,7 @@ class Update extends Deployment {
     private QueryBuilder queryBuilder
     public ToolingAPI toolingAPI
     public String pathUpdate
-    Map filesChanged
+    Map<String, ResultTracker> filesChanged
     FileMonitorSerializer objSerializer
     ArrayList<File> filesToCopy
     ArrayList<File> filesToUpdate
@@ -83,9 +84,9 @@ class Update extends Deployment {
      * Creates packages to all files which has been changed
      */
     def createPackage() {
-        filesChanged.each { nameFile, state ->
-            if (state != FileMonitorSerializer.DELETE_FILE) {
-                filesToCopy.add(new File(nameFile))
+        filesChanged.each { fileName, resultTracker ->
+            if (resultTracker.state != FileMonitorSerializer.DELETE_FILE) {
+                filesToCopy.add(new File(fileName))
             }
         }
         writePackage(Paths.get(pathUpdate, PACKAGE_NAME).toString(), filesToCopy)
@@ -96,9 +97,9 @@ class Update extends Deployment {
      */
     def createDestructive() {
         def arrayDeletedElements = new ArrayList<File>()
-        filesChanged.each { nameFile, state ->
-            if (state == FileMonitorSerializer.DELETE_FILE) {
-                arrayDeletedElements.add(new File(nameFile))
+        filesChanged.each { fileName, resultTracker ->
+            if (resultTracker.state == FileMonitorSerializer.DELETE_FILE) {
+                arrayDeletedElements.add(new File(fileName))
             }
         }
         smartFilesValidator = new SmartFilesValidator(getJsonQueries(arrayDeletedElements))
@@ -131,7 +132,7 @@ class Update extends Deployment {
             objSerializer.mapRefresh(fileArray)
             return
         }
-        filesChanged = objSerializer.getFileChangedExclude(fileArray)
+        filesChanged = objSerializer.getFileTrackerMap(fileArray)
     }
 
     /**
@@ -151,7 +152,7 @@ class Update extends Deployment {
                 throw new Exception("${Constants.INVALID_FOLDER}: ${invalidFolders}")
             }
             def auxiliaryMap = objSerializer.getFoldersFiltered(foldersName, filesChanged)
-            if (auxiliaryMap == null) {
+            if (auxiliaryMap.isEmpty()) {
                 throw new Exception(NOT_FILES_CHANGED_IN_FOLDER)
             }
             filesChanged = auxiliaryMap
@@ -180,8 +181,8 @@ class Update extends Deployment {
             logger.quiet("*********************************************")
             logger.quiet("              Status Files Changed             ")
             logger.quiet("*********************************************")
-            filesChanged.each { nameFile, status ->
-                logger.quiet("${Paths.get(nameFile).getFileName().toString()}${" - "}${status}")
+            filesChanged.each { fileName, resultTracker ->
+                logger.quiet("${Paths.get(fileName).getFileName().toString()}${" - "}${resultTracker.state}")
             }
             logger.quiet("*********************************************")
         }
@@ -215,16 +216,16 @@ class Update extends Deployment {
         def filesUpdated = new ArrayList<File>()
         def filesChangedTemp = filesChanged.clone()
 
-        filesChangedTemp.each {key, value ->
-            filesUpdated.push(new File(key.toString()))
+        filesChangedTemp.each {fileName, resultTracker ->
+            filesUpdated.push(new File(fileName.toString()))
         }
 
         ArrayList<File> filesFiltered = excludeFiles(filesUpdated)
 
-        filesChangedTemp.each {key, value ->
-            def fileChanged = new File(key.toString())
+        filesChangedTemp.each {fileName, resultTracker ->
+            def fileChanged = new File(fileName.toString())
             if (!filesFiltered.contains(fileChanged)) {
-                filesChanged.remove(key.toString())
+                filesChanged.remove(fileName.toString())
                 filesExcludes.push(fileChanged)
             }
         }
