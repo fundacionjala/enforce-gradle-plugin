@@ -63,7 +63,7 @@ public abstract class TemplateFileMonitor {
      * @return boolean result of file(pathFile).exists
      */
     public boolean verifyFileMap() {
-        new File(nameFile).exists()
+        return new File(nameFile).exists()
     }
 
     /**

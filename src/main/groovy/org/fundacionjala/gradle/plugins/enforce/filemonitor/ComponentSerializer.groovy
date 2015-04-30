@@ -19,4 +19,13 @@ class ComponentSerializer {
         oos.writeObject(components)
         oos.close()
     }
+
+    Map<String, ComponentTracker> read(sourceFile) throws IOException {
+        Map<String, ComponentTracker> result
+        ObjectInputStream ois = new ObjectInputStream(new FileInputStream(sourceFile))
+        result = (Map<String, ComponentTracker>) ois.readObject()
+        ois.close()
+        return result
+    }
+
 }

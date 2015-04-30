@@ -37,15 +37,17 @@ class ComponentSerializerTest extends Specification {
 
     def "Test should read  a .fileTracker.data file and returns a Map<String, ComponentTracker> object" () {
         given:
-        Map<String, ComponentTracker> components = [:]
-        components.put('src/classes/Class1.cls', new ComponentTracker('classHash'))
-        components.put('src/classes/Object1__c.object', new ObjectTracker('objectHash'))
+            Map<String, ComponentTracker> components = [:]
+            components.put('src/classes/Class1.cls', new ComponentTracker('classHash'))
+            components.put('src/classes/Object1__c.object', new ObjectTracker('objectHash'))
         when:
-        componentSerializer.save(components)
-        componentSerializer.read(source)
+            componentSerializer.save(components)
+            Map<String, ComponentTracker> result = componentSerializer.read(componentSerializer.fileName)
         then:
-        new File(componentSerializer.fileName).exists()
-        new File(componentSerializer.fileName).size() > 0
+            result.size() == components.size()
+            result.each {String relativePath, ComponentTracker componentTracker ->
+                components.get(relativePath).hash == componentTracker.hash
+            }
     }
 
     def cleanupSpec() {
