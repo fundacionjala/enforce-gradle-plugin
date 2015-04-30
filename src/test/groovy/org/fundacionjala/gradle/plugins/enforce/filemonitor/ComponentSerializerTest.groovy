@@ -26,8 +26,8 @@ class ComponentSerializerTest extends Specification {
     def "Test should save a Map<String, ComponentTracker> object in a .fileTracker.data file" () {
         given:
             Map<String, ComponentTracker> components = [:]
-            components.put('src/classes/Class1.cls', new ComponentTracker('classHash'))
-            components.put('src/classes/Object1__c.object', new ObjectTracker('objectHash'))
+            components.put('src/classes/Class1.cls', new ComponentTracker('src/classes/Class1.cls', 'classHash'))
+            components.put('src/classes/Object1__c.object', new ObjectTracker('src/classes/Object1__c.object', 'objectHash'))
         when:
             componentSerializer.save(components)
         then:
@@ -38,8 +38,8 @@ class ComponentSerializerTest extends Specification {
     def "Test should read  a .fileTracker.data file and returns a Map<String, ComponentTracker> object" () {
         given:
             Map<String, ComponentTracker> components = [:]
-            components.put('src/classes/Class1.cls', new ComponentTracker('classHash'))
-            components.put('src/classes/Object1__c.object', new ObjectTracker('objectHash'))
+            components.put('src/classes/Class1.cls', new ComponentTracker('src/classes/Class1.cls', 'classHash'))
+            components.put('src/classes/Object1__c.object', new ObjectTracker('src/classes/Object1__c.object', 'objectHash'))
         when:
             componentSerializer.save(components)
             Map<String, ComponentTracker> result = componentSerializer.read(componentSerializer.fileName)

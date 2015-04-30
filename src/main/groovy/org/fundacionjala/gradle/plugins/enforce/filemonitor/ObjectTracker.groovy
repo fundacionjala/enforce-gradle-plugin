@@ -4,8 +4,8 @@ class ObjectTracker extends ComponentTracker {
 
     public Map<String, String> subComponents
 
-    public ObjectTracker(String hash) {
-        super(hash)
+    public ObjectTracker(String fileName, String hash) {
+        super(fileName, hash)
         subComponents = [:]
     }
 

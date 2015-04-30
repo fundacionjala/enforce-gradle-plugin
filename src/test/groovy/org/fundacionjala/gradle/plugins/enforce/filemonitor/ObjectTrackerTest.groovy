@@ -12,9 +12,9 @@ class ObjectTrackerTest extends Specification {
     ObjectTracker currentObjectTracker
 
     def setup() {
-        oldObjectTracker = new ObjectTracker('fileHash')
+        oldObjectTracker = new ObjectTracker('fieldAPIName', 'fileHash')
         oldObjectTracker.subComponents = ['fieldAPIName':'fieldHash']
-        currentObjectTracker = new ObjectTracker('fileHashDifferent')
+        currentObjectTracker = new ObjectTracker('fieldAPIName', 'fileHashDifferent')
         currentObjectTracker.subComponents = ['fieldAPIName':'fieldHashDifferent']
     }
 
@@ -25,7 +25,7 @@ class ObjectTrackerTest extends Specification {
 
     def "Test should return an instance of ObjectResultTracker" () {
         given:
-            ObjectTracker currentObjectTracker = new ObjectTracker('fileHash')
+            ObjectTracker currentObjectTracker = new ObjectTracker('src/classes/Class1.cls', 'fileHash')
         when:
             ResultTracker resultTracker = oldObjectTracker.compare(currentObjectTracker)
         then:
@@ -41,8 +41,8 @@ class ObjectTrackerTest extends Specification {
 
     def "Test should be able to comparate a component tracker if It hasn't changed" () {
         given:
-            ObjectTracker oldObjectTracker = new ObjectTracker('lkiujhytgfr')
-            ObjectTracker currentObjectTracker = new ObjectTracker('lkiujhytgfr')
+            ObjectTracker oldObjectTracker = new ObjectTracker('src/classes/Class1.cls', 'lkiujhytgfr')
+            ObjectTracker currentObjectTracker = new ObjectTracker('src/classes/Class1.cls', 'lkiujhytgfr')
         when:
             ResultTracker resultTracker = oldObjectTracker.compare(currentObjectTracker)
         then:

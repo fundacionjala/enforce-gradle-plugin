@@ -19,8 +19,8 @@ class ComponentTrackerTest extends Specification {
 
     def "Test should be able to comparate a component tracker if It has changed" () {
         given:
-            ComponentTracker componentTrackerOld = new ComponentTracker('lkiujhytgfr')
-            ComponentTracker componentTrackerNew = new ComponentTracker('qweasdzxcrt')
+            ComponentTracker componentTrackerOld = new ComponentTracker('src/classes/Class1.cls', 'lkiujhytgfr')
+            ComponentTracker componentTrackerNew = new ComponentTracker('src/classes/Class1.cls', 'qweasdzxcrt')
         when:
             ResultTracker resultTracker = componentTrackerOld.compare(componentTrackerNew)
         then:
@@ -29,8 +29,8 @@ class ComponentTrackerTest extends Specification {
 
     def "Test should be able to comparate a component tracker if It hasn't changed" () {
         given:
-            ComponentTracker componentTrackerOld = new ComponentTracker('lkiujhytgfr')
-            ComponentTracker componentTrackerNew = new ComponentTracker('lkiujhytgfr')
+            ComponentTracker componentTrackerOld = new ComponentTracker('src/classes/Class1.cls', 'lkiujhytgfr')
+            ComponentTracker componentTrackerNew = new ComponentTracker('src/classes/Class1.cls', 'lkiujhytgfr')
         when:
             ResultTracker resultTracker = componentTrackerOld.compare(componentTrackerNew)
         then:
