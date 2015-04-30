@@ -1,6 +1,6 @@
 package org.fundacionjala.gradle.plugins.enforce.filemonitor
 
-class ComponentTracker implements Serializable {
+class ComponentTracker implements Serializable, ComponentComparable<ComponentTracker> {
 
     public String hash
 
@@ -14,9 +14,9 @@ class ComponentTracker implements Serializable {
 
     public ResultTracker compare(ComponentTracker componentTracker) {
         ResultTracker resultTracker = new ResultTracker()
-        resultTracker.state = ComponentStates.NOT_CHANGED.value()
+        resultTracker.state = ComponentStates.NOT_CHANGED
         if (componentTracker.hash != hash) {
-            resultTracker.state = ComponentStates.CHANGED.value()
+            resultTracker.state = ComponentStates.CHANGED
         }
         return resultTracker
     }

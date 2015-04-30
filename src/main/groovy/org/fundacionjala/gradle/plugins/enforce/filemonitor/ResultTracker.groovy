@@ -2,9 +2,13 @@ package org.fundacionjala.gradle.plugins.enforce.filemonitor
 
 class ResultTracker {
 
-    public String state
+    public ComponentStates state
 
-    public ResultTracker(String state) {
+    public ResultTracker() {
+
+    }
+
+    public ResultTracker(ComponentStates state) {
         this.state = state
     }
 }

@@ -38,7 +38,7 @@ class ComponentMonitorTest extends Specification{
             Map result = componentMonitor.getFilesChanged(oldFiles, currentFiles)
         then:
             result.containsKey(fileNameClass)
-            result.get(fileNameClass).state == 'Changed'
+            result.get(fileNameClass).state == ComponentStates.CHANGED
     }
 
     def "Test should return a map with files were added" () {
@@ -49,7 +49,7 @@ class ComponentMonitorTest extends Specification{
             Map result = componentMonitor.getFilesChanged(oldFiles, currentFiles)
         then:
             result.containsKey(newClassPath)
-            result.get(newClassPath).state == 'Added'
+            result.get(newClassPath).state == ComponentStates.ADDED
     }
 
     def "Test should return a map with files were deleted" () {
@@ -60,7 +60,7 @@ class ComponentMonitorTest extends Specification{
             Map result = componentMonitor.getFilesChanged(oldFiles, currentFiles)
         then:
             result.containsKey(deletedClassPath)
-            result.get(deletedClassPath).state == 'Deleted'
+            result.get(deletedClassPath).state == ComponentStates.DELETED
     }
 
     def "Test should return a map with updated, added and deleted files" () {
@@ -76,13 +76,13 @@ class ComponentMonitorTest extends Specification{
             Map result = componentMonitor.getFilesChanged(oldFiles, currentFiles)
         then:
             result.containsKey(updateClassPath)
-            result.get(updateClassPath).state == 'Changed'
+            result.get(updateClassPath).state == ComponentStates.CHANGED
 
             result.containsKey(deletedClassPath)
-            result.get(deletedClassPath).state == 'Deleted'
+            result.get(deletedClassPath).state == ComponentStates.DELETED
 
             result.containsKey(newClassPath)
-            result.get(newClassPath).state == 'Added'
+            result.get(newClassPath).state == ComponentStates.ADDED
     }
 
     def "Test shouldn't save the files that weren't updated, added or deleted" () {

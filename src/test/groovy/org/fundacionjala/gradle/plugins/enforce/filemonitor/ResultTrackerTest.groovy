@@ -16,4 +16,11 @@ class ResultTrackerTest extends Specification {
         expect:
         resultTracker instanceof ResultTracker
     }
+
+    def "Test should verify if the state is saved in the ResultTracker object" () {
+        when:
+            ResultTracker result = new ResultTracker(ComponentStates.ADDED)
+        then:
+            result.state == ComponentStates.ADDED
+    }
 }

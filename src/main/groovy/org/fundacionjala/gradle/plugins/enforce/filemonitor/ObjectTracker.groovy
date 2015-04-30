@@ -12,9 +12,9 @@ class ObjectTracker extends ComponentTracker {
     @Override
     public ResultTracker compare(ComponentTracker componentTracker) {
         ObjectResultTracker objectResultTracker = new ObjectResultTracker()
-        objectResultTracker.state = ComponentStates.NOT_CHANGED.value()
+        objectResultTracker.state = ComponentStates.NOT_CHANGED
         if (componentTracker.hash != hash) {
-            objectResultTracker.state = ComponentStates.CHANGED.value()
+            objectResultTracker.state = ComponentStates.CHANGED
             ObjectTracker objectTracker = (ObjectTracker) componentTracker
             objectResultTracker.subComponentsResult = getChangedFields(objectTracker)
         }
@@ -25,18 +25,18 @@ class ObjectTracker extends ComponentTracker {
         Map<String, String> result = [:]
         objectTracker.subComponents.each { String fieldAPIName, String fieldHash ->
             if (!this.subComponents.containsKey(fieldAPIName)) {
-                result.put(fieldAPIName, ComponentStates.ADDED.value())
+                result.put(fieldAPIName, ComponentStates.ADDED)
             }
 
             if (this.subComponents.containsKey(fieldAPIName) &&
                     !this.subComponents.get(fieldAPIName).toString().equals(fieldHash)) {
-                result.put(fieldAPIName, ComponentStates.CHANGED.value())
+                result.put(fieldAPIName, ComponentStates.CHANGED)
             }
         }
 
         this.subComponents.each { String fieldAPIName, String fieldHash ->
             if(!objectTracker.subComponents.containsKey(fieldAPIName)) {
-                result.put(fieldAPIName, ComponentStates.DELETED.value());
+                result.put(fieldAPIName, ComponentStates.DELETED);
             }
         }
 

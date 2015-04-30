@@ -21,14 +21,14 @@ class ComponentMonitor {
         currentFiles.each { String relativePath, ComponentTracker currentComponentTracker ->
             ResultTracker resultTracker
             if (!oldFiles.containsKey(relativePath)) {
-                resultTracker = new ResultTracker(ComponentStates.ADDED.value())
+                resultTracker = new ResultTracker(ComponentStates.ADDED)
                 result.put(relativePath, resultTracker)
             }
 
             if (oldFiles.containsKey(relativePath) && currentFiles.containsKey(relativePath)) {
                 ComponentTracker oldComponentTracker = oldFiles.get(relativePath)
                 resultTracker = oldComponentTracker.compare(currentComponentTracker)
-                if(resultTracker.state == ComponentStates.CHANGED.value()) {
+                if(resultTracker.state == ComponentStates.CHANGED) {
                     result.put(relativePath, resultTracker)
                 }
             }
@@ -36,7 +36,7 @@ class ComponentMonitor {
 
         oldFiles.each { String relativePath, ComponentTracker oldComponentTracker->
             if(!currentFiles.containsKey(relativePath)) {
-                ResultTracker resultTracker = new ResultTracker(ComponentStates.DELETED.value())
+                ResultTracker resultTracker = new ResultTracker(ComponentStates.DELETED)
                 result.put(relativePath, resultTracker)
             }
         }

@@ -36,7 +36,7 @@ class ObjectTrackerTest extends Specification {
         when:
             ResultTracker resultTracker = oldObjectTracker.compare(currentObjectTracker)
         then:
-            resultTracker.state == 'Changed'
+            resultTracker.state == ComponentStates.CHANGED
     }
 
     def "Test should be able to comparate a component tracker if It hasn't changed" () {
@@ -46,16 +46,16 @@ class ObjectTrackerTest extends Specification {
         when:
             ResultTracker resultTracker = oldObjectTracker.compare(currentObjectTracker)
         then:
-            resultTracker.state == 'Not changed'
+            resultTracker.state == ComponentStates.NOT_CHANGED
     }
 
     def "Test should return ResultTracker with a map that contains fields changed in a ObjectTracker" () {
         when:
             ObjectResultTracker objectResultTracker = (ObjectResultTracker)oldObjectTracker.compare(currentObjectTracker)
         then:
-            objectResultTracker.state == 'Changed'
+            objectResultTracker.state == ComponentStates.CHANGED
             objectResultTracker.subComponentsResult.containsKey('fieldAPIName')
-            objectResultTracker.subComponentsResult.get('fieldAPIName') == 'Changed'
+            objectResultTracker.subComponentsResult.get('fieldAPIName') == ComponentStates.CHANGED
     }
 
     def "Test should return ResultTracker with a map that contains fields added in a ObjectTracker" () {
@@ -65,9 +65,9 @@ class ObjectTrackerTest extends Specification {
         when:
             ObjectResultTracker objectResultTracker = (ObjectResultTracker)oldObjectTracker.compare(currentObjectTracker)
         then:
-            objectResultTracker.state == 'Changed'
+            objectResultTracker.state == ComponentStates.CHANGED
             objectResultTracker.subComponentsResult.containsKey(addedFieldAPIName)
-            objectResultTracker.subComponentsResult.get(addedFieldAPIName) == 'Added'
+            objectResultTracker.subComponentsResult.get(addedFieldAPIName) == ComponentStates.ADDED
     }
 
     def "Test should return ResultTracker with a map that contains fields deleted in a ObjectTracker" () {
@@ -76,9 +76,9 @@ class ObjectTrackerTest extends Specification {
         when:
             ObjectResultTracker objectResultTracker = (ObjectResultTracker)oldObjectTracker.compare(currentObjectTracker)
         then:
-            objectResultTracker.state == 'Changed'
+            objectResultTracker.state == ComponentStates.CHANGED
             objectResultTracker.subComponentsResult.containsKey('fieldAPIName')
-            objectResultTracker.subComponentsResult.get('fieldAPIName') == 'Deleted'
+            objectResultTracker.subComponentsResult.get('fieldAPIName') == ComponentStates.DELETED
     }
 
     def "Test shouldn't return ResultTracker with a map that contains fields deleted in a ObjectTracker" () {
@@ -104,12 +104,12 @@ class ObjectTrackerTest extends Specification {
             ObjectResultTracker objectResultTracker = (ObjectResultTracker)oldObjectTracker.compare(currentObjectTracker)
         then:
             objectResultTracker.subComponentsResult.containsKey(addedFieldAPIName)
-            objectResultTracker.subComponentsResult.get(addedFieldAPIName) == 'Added'
+            objectResultTracker.subComponentsResult.get(addedFieldAPIName) == ComponentStates.ADDED
 
             objectResultTracker.subComponentsResult.containsKey(updatedFieldAPIName)
-            objectResultTracker.subComponentsResult.get(updatedFieldAPIName) == 'Changed'
+            objectResultTracker.subComponentsResult.get(updatedFieldAPIName) == ComponentStates.CHANGED
 
             objectResultTracker.subComponentsResult.containsKey(deletedFieldAPIName)
-            objectResultTracker.subComponentsResult.get(deletedFieldAPIName) == 'Deleted'
+            objectResultTracker.subComponentsResult.get(deletedFieldAPIName) == ComponentStates.DELETED
     }
 }

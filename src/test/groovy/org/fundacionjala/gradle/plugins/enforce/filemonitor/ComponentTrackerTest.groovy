@@ -24,7 +24,7 @@ class ComponentTrackerTest extends Specification {
         when:
             ResultTracker resultTracker = componentTrackerOld.compare(componentTrackerNew)
         then:
-            resultTracker.state == 'Changed'
+            resultTracker.state == ComponentStates.CHANGED
     }
 
     def "Test should be able to comparate a component tracker if It hasn't changed" () {
@@ -34,6 +34,6 @@ class ComponentTrackerTest extends Specification {
         when:
             ResultTracker resultTracker = componentTrackerOld.compare(componentTrackerNew)
         then:
-            resultTracker.state == 'Not changed'
+            resultTracker.state == ComponentStates.NOT_CHANGED
     }
 }
