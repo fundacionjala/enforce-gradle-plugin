@@ -24,17 +24,27 @@ class ObjectParserTest extends Specification {
         objectParser instanceof ObjectParser
     }
 
-    def "Test should return an ObjectTracker that contain a map with filed name and its hash" () {
+    def "Testshould return an ObjectTracker that contain a map with field name and its hash" () {
         given:
             String objectPath = Paths.get(srcProjectPath, 'objects', 'Object1__c.object')
-            String customField = "${'<fields><fullName>Field1__c</fullName><externalId>false</externalId>'}${'<label>Field1</label><length>10</length><required>false</required>'}${'<type>Text</type><unique>false</unique></fields>'}"
-            MD5 md5 = new MD5()
-            md5.Update(customField)
-            def fieldHash = md5.asHex()
         when:
             Map<String, String> result = objectParser.parseByObjectXML(new File (objectPath))
         then:
-            result.containsKey('fields/field1__c')
-            result.get('fields/field1__c') == fieldHash
+            result.containsKey('fields/Field1__c')
+            result.get('fields/Field1__c') != null
+    }
+
+    def "Test should return ObjectTracker that contain a map with fields name and their hash" () {
+        given:
+            String objectPath = Paths.get(srcProjectPath, 'objects', 'Evernote__Contact_Note__c.object')
+        when:
+            Map<String, String> result = objectParser.parseByObjectXML(new File (objectPath))
+        then:
+            result.containsKey('fieldSets/Enforce_Fieldset')
+            result.containsKey('fields/Enforce_Number_Field__c')
+            result.containsKey('fields/Enforce_User__c')
+            result.get('fieldSets/Enforce_Fieldset') != null
+            result.get('fields/Enforce_Number_Field__c') != null
+            result.get('fields/Enforce_User__c') != null
     }
 }

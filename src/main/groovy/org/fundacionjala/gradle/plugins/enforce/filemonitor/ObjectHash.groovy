@@ -1,29 +1,29 @@
 package org.fundacionjala.gradle.plugins.enforce.filemonitor
 
-class ObjectTracker extends ComponentTracker {
+class ObjectHash extends ComponentHash {
 
     public Map<String, String> subComponents
 
-    public ObjectTracker(String fileName, String hash) {
+    public ObjectHash(String fileName, String hash, Map<String, String> subComponents) {
         super(fileName, hash)
-        subComponents = [:]
+        this.subComponents = subComponents
     }
 
     @Override
-    public ResultTracker compare(ComponentTracker componentTracker) {
+    public ResultTracker compare(ComponentHash componentHash) {
         ObjectResultTracker objectResultTracker = new ObjectResultTracker()
         objectResultTracker.state = ComponentStates.NOT_CHANGED
-        if (componentTracker.hash != hash) {
+        if (componentHash.hash != hash) {
             objectResultTracker.state = ComponentStates.CHANGED
-            ObjectTracker objectTracker = (ObjectTracker) componentTracker
-            objectResultTracker.subComponentsResult = getChangedFields(objectTracker)
+            ObjectHash objectHash = (ObjectHash) componentHash
+            objectResultTracker.subComponentsResult = getChangedFields(objectHash)
         }
         return objectResultTracker
     }
 
-    private Map<String, String> getChangedFields(ObjectTracker objectTracker) {
+    private Map<String, String> getChangedFields(ObjectHash objectHash) {
         Map<String, String> result = [:]
-        objectTracker.subComponents.each { String fieldAPIName, String fieldHash ->
+        objectHash.subComponents.each { String fieldAPIName, String fieldHash ->
             if (!this.subComponents.containsKey(fieldAPIName)) {
                 result.put(fieldAPIName, ComponentStates.ADDED)
             }
@@ -35,7 +35,7 @@ class ObjectTracker extends ComponentTracker {
         }
 
         this.subComponents.each { String fieldAPIName, String fieldHash ->
-            if(!objectTracker.subComponents.containsKey(fieldAPIName)) {
+            if(!objectHash.subComponents.containsKey(fieldAPIName)) {
                 result.put(fieldAPIName, ComponentStates.DELETED);
             }
         }

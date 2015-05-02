@@ -8,24 +8,25 @@ import java.nio.file.Paths
 
 class ComponentMonitor {
 
-    //Map<String, ComponentTracker> currentFileHashCode
-    //Map<String, ComponentTracker> recoveryFileHashCode
+    public Map<String, ComponentHash> currentFileHashCode
+    public Map<String, ComponentHash> recoveryFileHashCode
     public String srcProject
 
-    public ComponentMonitor() {
-
+    public ComponentMonitor(String srcProject) {
+        this.srcProject = srcProject
     }
 
-    /*public final Map<String, ResultTracker> getFileChangedExclude(ArrayList<File> arrayFiles) throws Exception {
-        recoveryFileHashCode = readMap(nameFile)
-        currentFileHashCode = loadSignatureForFilesInDirectory(arrayFiles)
+    public final Map<String, ResultTracker> getComponentChanged(ArrayList<File> arrayFiles) throws Exception {
+        ComponentSerializer componentSerializer = new ComponentSerializer(srcProject)
+        recoveryFileHashCode = componentSerializer.read(componentSerializer.sourcePath)
+        currentFileHashCode = getComponentsSignature(arrayFiles)
 
-        return mapFilesChanged
-    }*/
+        return getFilesChanged(recoveryFileHashCode, currentFileHashCode)
+    }
 
-    public Map<String, ResultTracker> getFilesChanged(Map<String, ComponentTracker> oldFiles, Map<String, ComponentTracker> currentFiles) {
+    public Map<String, ResultTracker> getFilesChanged(Map<String, ComponentHash> oldFiles, Map<String, ComponentHash> currentFiles) {
         Map<String, ResultTracker> result = [:]
-        currentFiles.each { String relativePath, ComponentTracker currentComponentTracker ->
+        currentFiles.each { String relativePath, ComponentHash currentComponentHash ->
             ResultTracker resultTracker
             if (!oldFiles.containsKey(relativePath)) {
                 resultTracker = new ResultTracker(ComponentStates.ADDED)
@@ -33,15 +34,15 @@ class ComponentMonitor {
             }
 
             if (oldFiles.containsKey(relativePath) && currentFiles.containsKey(relativePath)) {
-                ComponentTracker oldComponentTracker = oldFiles.get(relativePath)
-                resultTracker = oldComponentTracker.compare(currentComponentTracker)
+                ComponentHash oldComponentHash = oldFiles.get(relativePath)
+                resultTracker = oldComponentHash.compare(currentComponentHash)
                 if(resultTracker.state == ComponentStates.CHANGED) {
                     result.put(relativePath, resultTracker)
                 }
             }
         }
 
-        oldFiles.each { String relativePath, ComponentTracker oldComponentTracker->
+        oldFiles.each { String relativePath, ComponentHash oldComponentHash->
             if(!currentFiles.containsKey(relativePath)) {
                 ResultTracker resultTracker = new ResultTracker(ComponentStates.DELETED)
                 result.put(relativePath, resultTracker)
@@ -50,19 +51,19 @@ class ComponentMonitor {
         return result
     }
 
-    public Map<String, ComponentTracker> getComponentsSignature(ArrayList<File> files) {
-        Map<String, ComponentTracker> result = [:]
+    public Map<String, ComponentHash> getComponentsSignature(ArrayList<File> files) {
+        Map<String, ComponentHash> result = [:]
         files.each {File file->
-            ComponentTracker componentTracker
+            ComponentHash componentHash
             String signature = MD5.asHex(MD5.getHash(file))
             String relativePath = getPathRelative(file)
-
             if (Util.getFileExtension(file) == Constants.OBJECT_EXTENSION) {
-                componentTracker = new ObjectTracker(relativePath, signature)
+                ObjectParser objectParser = new ObjectParser()
+                componentHash = new ObjectHash(relativePath, signature, objectParser.parseByObjectXML(file))
             } else {
-                componentTracker = new ComponentTracker(relativePath, signature)
+                componentHash = new ComponentHash(relativePath, signature)
             }
-            result.put(relativePath, componentTracker)
+            result.put(relativePath, componentHash)
         }
         return result
     }

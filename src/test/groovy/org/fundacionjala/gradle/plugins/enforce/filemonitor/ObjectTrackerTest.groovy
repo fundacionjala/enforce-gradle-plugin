@@ -6,26 +6,30 @@ import spock.lang.Specification
 class ObjectTrackerTest extends Specification {
 
     @Shared
-    ObjectTracker oldObjectTracker
+    ObjectHash oldObjectTracker
 
     @Shared
-    ObjectTracker currentObjectTracker
+    ObjectHash currentObjectTracker
+
+    @Shared
+    Map<String, String> subComponents
 
     def setup() {
-        oldObjectTracker = new ObjectTracker('fieldAPIName', 'fileHash')
+        subComponents = [:]
+        oldObjectTracker = new ObjectHash('fieldAPIName', 'fileHash',subComponents)
         oldObjectTracker.subComponents = ['fieldAPIName':'fieldHash']
-        currentObjectTracker = new ObjectTracker('fieldAPIName', 'fileHashDifferent')
+        currentObjectTracker = new ObjectHash('fieldAPIName', 'fileHashDifferent', subComponents)
         currentObjectTracker.subComponents = ['fieldAPIName':'fieldHashDifferent']
     }
 
     def "Test should be instance of ObjectTracker"() {
         expect:
-        oldObjectTracker instanceof ObjectTracker
+        oldObjectTracker instanceof ObjectHash
     }
 
     def "Test should return an instance of ObjectResultTracker" () {
         given:
-            ObjectTracker currentObjectTracker = new ObjectTracker('src/classes/Class1.cls', 'fileHash')
+            ObjectHash currentObjectTracker = new ObjectHash('src/classes/Class1.cls', 'fileHash', subComponents)
         when:
             ResultTracker resultTracker = oldObjectTracker.compare(currentObjectTracker)
         then:
@@ -41,8 +45,8 @@ class ObjectTrackerTest extends Specification {
 
     def "Test should be able to comparate a component tracker if It hasn't changed" () {
         given:
-            ObjectTracker oldObjectTracker = new ObjectTracker('src/classes/Class1.cls', 'lkiujhytgfr')
-            ObjectTracker currentObjectTracker = new ObjectTracker('src/classes/Class1.cls', 'lkiujhytgfr')
+            ObjectHash oldObjectTracker = new ObjectHash('src/classes/Class1.cls', 'lkiujhytgfr',subComponents)
+            ObjectHash currentObjectTracker = new ObjectHash('src/classes/Class1.cls', 'lkiujhytgfr', subComponents)
         when:
             ResultTracker resultTracker = oldObjectTracker.compare(currentObjectTracker)
         then:

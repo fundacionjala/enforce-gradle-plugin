@@ -5,25 +5,24 @@ import java.nio.file.Paths
 class ComponentSerializer {
 
     private final String FILE_TRACKING = '.fileTracker.data'
-    public String srcProject
-    public String fileName
+    public String sourcePath
 
-    public ComponentSerializer(String srcProject) {
-        this.srcProject = srcProject
-        fileName = Paths.get(srcProject, FILE_TRACKING).toString()
+    public ComponentSerializer(String sourcePath) {
+        this.sourcePath = sourcePath
     }
 
-    void save(Map<String, ComponentTracker> components) throws IOException {
+
+    void save(Map<String, ComponentHash> components) throws IOException {
         ObjectOutputStream oos
-        oos = new ObjectOutputStream(new FileOutputStream(fileName))
+        oos = new ObjectOutputStream(new FileOutputStream(sourcePath))
         oos.writeObject(components)
         oos.close()
     }
 
-    Map<String, ComponentTracker> read(sourceFile) throws IOException {
-        Map<String, ComponentTracker> result
-        ObjectInputStream ois = new ObjectInputStream(new FileInputStream(sourceFile))
-        result = (Map<String, ComponentTracker>) ois.readObject()
+    Map<String, ComponentHash> read(String sourcePath) throws IOException {
+        Map<String, ComponentHash> result
+        ObjectInputStream ois = new ObjectInputStream(new FileInputStream(sourcePath))
+        result = (Map<String, ComponentHash>) ois.readObject()
         ois.close()
         return result
     }
