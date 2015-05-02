@@ -91,51 +91,89 @@ class PackageGeneratorTest extends Specification {
             def fieldsChanged = packageGenerator.getSubcomponents(ComponentStates.CHANGED)
 
         then:
-            fieldsAdded[0].name ==  "ObjectFile.fieldTwo"
-            fieldsAdded[1].name ==  "ObjectUtil.fieldFive"
+            fieldsAdded[0].name ==  "ObjectFile.fieldTwo.sbc"
+            fieldsAdded[1].name ==  "ObjectUtil.fieldFive.sbc"
 
-            fieldsChanged[0].name == "ObjectFile.fieldOne"
-            fieldsChanged[1].name == "ObjectFile.fieldThree"
-            fieldsChanged[2].name == "ObjectUtil.fieldFour"
+            fieldsChanged[0].name == "ObjectFile.fieldOne.sbc"
+            fieldsChanged[1].name == "ObjectFile.fieldThree.sbc"
+            fieldsChanged[2].name == "ObjectUtil.fieldFour.sbc"
     }
 
     def "Test should build a package for subcomponents"() {
         given:
-        PackageGenerator packageGenerator = new PackageGenerator()
-        Map<String, ResultTracker> fileTrackerMap = [:]
-        def newFilePath1 = "classes/File.cls"
-        def newFilePath2 = "classes/Util.cls"
-        def newFilePath3 = "objects/ObjectFile.object"
-        def newFilePath4 = "objects/ObjectUtil.object"
-        fileTrackerMap.put(newFilePath1, new ResultTracker(ComponentStates.ADDED.value()))
-        fileTrackerMap.put(newFilePath2, new ResultTracker(ComponentStates.CHANGED.value()))
-        Map<String, String> subComponentResult = [:]
-        subComponentResult.put("fields/fieldOne",ComponentStates.CHANGED.value())
-        subComponentResult.put("fields/fieldTwo",ComponentStates.ADDED.value())
-        subComponentResult.put("fields/fieldThree",ComponentStates.CHANGED.value())
-        ObjectResultTracker objectResultTracker = new ObjectResultTracker(ComponentStates.ADDED.value())
-        objectResultTracker.subComponentsResult = subComponentResult
-        fileTrackerMap.put(newFilePath3, objectResultTracker)
-        fileTrackerMap.put(newFilePath4, new ObjectResultTracker(ComponentStates.CHANGED.value()))
+            PackageGenerator packageGenerator = new PackageGenerator()
+            Map<String, ResultTracker> fileTrackerMap = [:]
+            def newFilePathAdded = "classes/File.cls"
+            def newFilePathAdded2 = "classes/Util.cls"
+            def newObjectPathChanged = "objects/ObjectFile.object"
+            def newObjectPathAdded   = "objects/ObjectUtil.object"
+            fileTrackerMap.put(newFilePathAdded, new ResultTracker(ComponentStates.ADDED.value()))
+            fileTrackerMap.put(newFilePathAdded2, new ResultTracker(ComponentStates.CHANGED.value()))
 
-        packageGenerator.fileTrackerMap = fileTrackerMap
-        def stringWriter = new StringWriter()
+            Map<String, String> subComponentResult = [:]
+            subComponentResult.put("fields/fieldOne",ComponentStates.CHANGED.value())
+            subComponentResult.put("fields/fieldTwo",ComponentStates.ADDED.value())
+            subComponentResult.put("fields/fieldThree",ComponentStates.CHANGED.value())
+
+            ObjectResultTracker objectResultTrackerChanged = new ObjectResultTracker(ComponentStates.CHANGED.value())
+            objectResultTrackerChanged.subComponentsResult = subComponentResult
+            fileTrackerMap.put(newObjectPathChanged, objectResultTrackerChanged)
+            fileTrackerMap.put(newObjectPathAdded  , new ObjectResultTracker(ComponentStates.ADDED.value()))
+
+            packageGenerator.fileTrackerMap = fileTrackerMap
+            def stringWriter = new StringWriter()
 
         when:
-        packageGenerator.buildPackage(stringWriter)
+            packageGenerator.buildPackage(stringWriter)
 
         then:
-        packageGenerator.packageBuilder.metaPackage.types[0].members[0] == "File"
-        packageGenerator.packageBuilder.metaPackage.types[0].members[1] == "Util"
-        packageGenerator.packageBuilder.metaPackage.types[0].name == "ApexClass"
-        packageGenerator.packageBuilder.metaPackage.types[1].members[0] == "ObjectFile"
-        packageGenerator.packageBuilder.metaPackage.types[1].members[1] == "ObjectUtil"
-        packageGenerator.packageBuilder.metaPackage.types[1].name == "CustomObject"
+            packageGenerator.packageBuilder.metaPackage.types[0].members[0] == "File"
+            packageGenerator.packageBuilder.metaPackage.types[0].members[1] == "Util"
+            packageGenerator.packageBuilder.metaPackage.types[0].name == "ApexClass"
+            packageGenerator.packageBuilder.metaPackage.types[1].members[0] == "ObjectUtil"
+            packageGenerator.packageBuilder.metaPackage.types[1].members[1] == "ObjectFile"
+            packageGenerator.packageBuilder.metaPackage.types[1].name == "CustomObject"
 
-        packageGenerator.packageBuilder.metaPackage.types[2].members[0] == "ObjectFile.fieldTwo"
-        packageGenerator.packageBuilder.metaPackage.types[2].members[1] == "ObjectFile.fieldOne"
-        packageGenerator.packageBuilder.metaPackage.types[2].members[2] == "ObjectFile.fieldThree"
-        packageGenerator.packageBuilder.metaPackage.types[2].name == "CustomField"
+            packageGenerator.packageBuilder.metaPackage.types[2].members[0] == "ObjectFile.fieldTwo"
+            packageGenerator.packageBuilder.metaPackage.types[2].members[1] == "ObjectFile.fieldOne"
+            packageGenerator.packageBuilder.metaPackage.types[2].members[2] == "ObjectFile.fieldThree"
+            packageGenerator.packageBuilder.metaPackage.types[2].name == "CustomField"
+    }
+
+    def "Test should build a package from deleted files"() {
+        given:
+            PackageGenerator packageGenerator = new PackageGenerator()
+
+            Map<String, String> subComponentResult = [:]
+            subComponentResult.put("fields/fieldOne",ComponentStates.DELETED.value())
+            subComponentResult.put("fields/fieldTwo",ComponentStates.DELETED.value())
+
+
+            ObjectResultTracker objectResultTracker = new ObjectResultTracker(ComponentStates.CHANGED.value());
+            objectResultTracker.subComponentsResult = subComponentResult;
+
+            def newFilePath = "classes/File.cls"
+            def newObjectPathChanged  = "objects/ObjectFileChanged.object"
+            def newObjectPathDeleted = "objects/ObjectFileDeleted.object"
+            Map<String, ResultTracker> fileTrackerMap = [:]
+            fileTrackerMap.put(newFilePath, new ResultTracker(ComponentStates.DELETED.value()))
+            fileTrackerMap.put(newObjectPathDeleted, new ResultTracker(ComponentStates.DELETED.value()))
+            fileTrackerMap.put(newObjectPathChanged, objectResultTracker)
+            packageGenerator.fileTrackerMap = fileTrackerMap
+            def stringWriter = new StringWriter()
+
+        when:
+            packageGenerator.buildDestructive(stringWriter)
+
+        then:
+            packageGenerator.packageBuilder.metaPackage.types[0].members[0] == "File"
+            packageGenerator.packageBuilder.metaPackage.types[0].name == "ApexClass"
+            packageGenerator.packageBuilder.metaPackage.types[1].members[0] == "ObjectFileDeleted"
+            packageGenerator.packageBuilder.metaPackage.types[1].name == "CustomObject"
+
+            packageGenerator.packageBuilder.metaPackage.types[2].members[0] == "ObjectFileChanged.fieldOne"
+            packageGenerator.packageBuilder.metaPackage.types[2].members[1] == "ObjectFileChanged.fieldTwo"
+
     }
 
 }

@@ -14,13 +14,4 @@ class ComponentSerializerTest extends Specification {
         expect:
         componentManager instanceof ComponentSerializer
     }
-
-    def "Test should fill components map " () {
-        given:
-            def files = [new File('classes/Class1.cls'), new File('objects/Object1__c.object')]
-        when:
-            componentManager.loadComponents(files)
-        then:
-            componentManager.components.size == 2
-    }
 }
