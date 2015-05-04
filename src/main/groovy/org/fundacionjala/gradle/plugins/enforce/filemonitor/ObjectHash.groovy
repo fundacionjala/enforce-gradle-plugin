@@ -1,5 +1,8 @@
 package org.fundacionjala.gradle.plugins.enforce.filemonitor
 
+/**
+ * This class represents the state of the object component and its sub components
+ */
 class ObjectHash extends ComponentHash {
 
     public Map<String, String> subComponents
@@ -9,6 +12,11 @@ class ObjectHash extends ComponentHash {
         this.subComponents = subComponents
     }
 
+    /**
+     * Compares and returns all changes  given two ObjectHash
+     * @param aomponentHash is a ObjectHash to compare all differences
+     * @return a ObjectResultTracker if there are changes, contains all changes in its sub components
+     */
     @Override
     public ResultTracker compare(ComponentHash componentHash) {
         ObjectResultTracker objectResultTracker = new ObjectResultTracker()
@@ -21,6 +29,12 @@ class ObjectHash extends ComponentHash {
         return objectResultTracker
     }
 
+    /**
+     * Returns a map that contains all states of the changes, if the sub component was modified, deleted or added
+     * @param objectHash is a ObjectHash to find all differences
+     * @return a Map<String, String> that contains as key the custom field type/fullName and value
+     * the hash code of the custom field's content
+     */
     private Map<String, String> getChangedFields(ObjectHash objectHash) {
         Map<String, String> result = [:]
         objectHash.subComponents.each { String fieldAPIName, String fieldHash ->

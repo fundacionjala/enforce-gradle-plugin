@@ -14,3 +14,4 @@ repo/
 _site/
 *.fileTracker.data
 *file.data
+src/test/groovy/org/fundacionjala/gradle/plugins/enforce/tasks/credentialmanager/resources/secretKeyGenerated.text

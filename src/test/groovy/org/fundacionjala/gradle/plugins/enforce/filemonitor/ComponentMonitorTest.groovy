@@ -317,5 +317,6 @@ class ComponentMonitorTest extends Specification{
         new File(Paths.get(srcProjectPath, 'objects', 'Object1FieldDeleted__c.object').toString()).delete()
         new File(Paths.get(srcProjectPath, 'objects', 'Object1FieldAdded__c.object').toString()).delete()
         new File(Paths.get(srcProjectPath, 'objects', 'Object1FieldChanged__c.object').toString()).delete()
+        new File(Paths.get('resources').toString()).delete()
     }
 }

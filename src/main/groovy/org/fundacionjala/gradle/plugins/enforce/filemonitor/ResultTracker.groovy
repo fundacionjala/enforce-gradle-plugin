@@ -1,5 +1,8 @@
 package org.fundacionjala.gradle.plugins.enforce.filemonitor
 
+/**
+ * This class contains the state when you compare two componentHash objects
+ */
 class ResultTracker {
 
     public ComponentStates state
