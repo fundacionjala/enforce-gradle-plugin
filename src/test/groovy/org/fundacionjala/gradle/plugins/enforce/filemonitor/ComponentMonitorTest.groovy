@@ -1,6 +1,9 @@
 package org.fundacionjala.gradle.plugins.enforce.filemonitor
 
 import com.twmacinta.util.MD5
+import groovy.util.slurpersupport.GPathResult
+import groovy.util.slurpersupport.NodeChild
+import groovy.xml.XmlUtil
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -206,5 +209,113 @@ class ComponentMonitorTest extends Specification{
         then:
             result.containsKey('resources/objects/Evernote__Contact_Note__c.object')
             result.get('resources/objects/Evernote__Contact_Note__c.object').state == ComponentStates.ADDED
+    }
+
+    def "Test should return a map with files that have had changed" () {
+        given:
+            def everNoteChanged = Paths.get(srcProjectPath, 'objects', 'EverNoteChanged__c.object').toString()
+            def object2 = Paths.get(srcProjectPath, 'objects', 'Object2__c.object').toString()
+            def everNoteChangedContent = new File(Paths.get(srcProjectPath, 'objects', 'Evernote__Contact_Note__c.object').toString()).text
+            new File(everNoteChanged).write(everNoteChangedContent)
+            ArrayList<File> files = [new File(everNoteChanged), new File(object2)]
+            Map<String, ComponentHash> componentsHash = componentMonitor.getComponentsSignature(files)
+            ComponentSerializer componentSerializer = new ComponentSerializer('resources')
+            componentSerializer.save(componentsHash)
+            XmlSlurper xmlSlurper = new XmlSlurper()
+            GPathResult  objectParsed = xmlSlurper.parseText(new File(everNoteChanged).text)
+            objectParsed.enableEnhancedLookup = true
+            XmlUtil xmlUtil = new XmlUtil()
+            String xmlString = xmlUtil.serialize(objectParsed)
+            new File(everNoteChanged).write(xmlString)
+        when:
+            Map<String, ResultTracker> result = componentMonitor.getComponentChanged(files)
+        then:
+            result.containsKey('resources/objects/EverNoteChanged__c.object')
+            result.get('resources/objects/EverNoteChanged__c.object').state == ComponentStates.CHANGED
+    }
+
+    def "Test should return a map with fields that have had deleted" () {
+        given:
+            def object1 = Paths.get(srcProjectPath, 'objects', 'Object1__c.object').toString()
+            def object1FieldDeleted = Paths.get(srcProjectPath, 'objects', 'Object1FieldDeleted__c.object').toString()
+            def object1Content = new File(object1).text
+            new File(object1FieldDeleted).write(object1Content)
+            ArrayList<File> files = [new File(object1), new File(object1FieldDeleted)]
+            Map<String, ComponentHash> componentsHash = componentMonitor.getComponentsSignature(files)
+            ComponentSerializer componentSerializer = new ComponentSerializer('resources')
+            componentSerializer.save(componentsHash)
+            def xmlSlurper = new XmlSlurper()
+            def objectParsed = xmlSlurper.parse(new File(object1FieldDeleted))
+            def list = objectParsed.fields.list()
+            list.remove(0)
+            objectParsed.fields = list
+            XmlUtil xmlUtil = new XmlUtil()
+            String xmlString = xmlUtil.serialize(objectParsed)
+            new File(object1FieldDeleted).write(xmlString)
+        when:
+            Map<String, ResultTracker> result = componentMonitor.getComponentChanged(files)
+        then:
+            result.containsKey('resources/objects/Object1FieldDeleted__c.object')
+            result.get('resources/objects/Object1FieldDeleted__c.object').state == ComponentStates.CHANGED
+            result.get('resources/objects/Object1FieldDeleted__c.object').subComponentsResult.containsKey('fields/Field1__c')
+            result.get('resources/objects/Object1FieldDeleted__c.object').subComponentsResult.get('fields/Field1__c') == ComponentStates.DELETED
+    }
+    def "Test should return a map with fields that have had added" () {
+        given:
+            def object1 = Paths.get(srcProjectPath, 'objects', 'Object1__c.object').toString()
+            def object1FieldAdded = Paths.get(srcProjectPath, 'objects', 'Object1FieldAdded__c.object').toString()
+            def object1Content = new File(object1).text
+            new File(object1FieldAdded).write(object1Content)
+            ArrayList<File> files = [new File(object1), new File(object1FieldAdded)]
+            Map<String, ComponentHash> componentsHash = componentMonitor.getComponentsSignature(files)
+            ComponentSerializer componentSerializer = new ComponentSerializer('resources')
+            componentSerializer.save(componentsHash)
+            def xmlSlurper = new XmlSlurper()
+            def objectParsed = xmlSlurper.parse(new File(object1FieldAdded))
+            def fieldSetValue = "${'<fieldSets><fullName>Enforce_Fieldset</fullName>'}${'<description>Enforce_Fieldset</description></fieldSets>'}"
+            NodeChild newNode = new XmlSlurper().parseText(fieldSetValue)
+            objectParsed.appendNode(newNode)
+            XmlUtil xmlUtil = new XmlUtil()
+            String xmlString = xmlUtil.serialize(objectParsed)
+            new File(object1FieldAdded).write(xmlString)
+        when:
+            Map<String, ResultTracker> result = componentMonitor.getComponentChanged(files)
+        then:
+            result.containsKey('resources/objects/Object1FieldAdded__c.object')
+            result.get('resources/objects/Object1FieldAdded__c.object').state == ComponentStates.CHANGED
+            result.get('resources/objects/Object1FieldAdded__c.object').subComponentsResult.containsKey('fieldSets/Enforce_Fieldset')
+            result.get('resources/objects/Object1FieldAdded__c.object').subComponentsResult.get('fieldSets/Enforce_Fieldset') == ComponentStates.ADDED
+    }
+
+    def "Test should return a map with fields that have had changed" () {
+        given:
+            def object1 = Paths.get(srcProjectPath, 'objects', 'Object1__c.object').toString()
+            def objectFieldChanged = Paths.get(srcProjectPath, 'objects', 'Object1FieldChanged__c.object').toString()
+            def object1Content = new File(object1).text
+            new File(objectFieldChanged).write(object1Content)
+            ArrayList<File> files = [new File(object1), new File(objectFieldChanged)]
+            Map<String, ComponentHash> componentsHash = componentMonitor.getComponentsSignature(files)
+            ComponentSerializer componentSerializer = new ComponentSerializer('resources')
+            componentSerializer.save(componentsHash)
+            def xmlSlurper = new XmlSlurper()
+            def objectParsed = xmlSlurper.parse(new File(objectFieldChanged))
+            objectParsed.fields[0].length = 5
+            XmlUtil xmlUtil = new XmlUtil()
+            String xmlString = xmlUtil.serialize(objectParsed)
+            new File(objectFieldChanged).write(xmlString)
+        when:
+            Map<String, ResultTracker> result = componentMonitor.getComponentChanged(files)
+        then:
+            result.containsKey('resources/objects/Object1FieldChanged__c.object')
+            result.get('resources/objects/Object1FieldChanged__c.object').state == ComponentStates.CHANGED
+            result.get('resources/objects/Object1FieldChanged__c.object').subComponentsResult.containsKey('fields/Field1__c')
+            result.get('resources/objects/Object1FieldChanged__c.object').subComponentsResult.get('fields/Field1__c') == ComponentStates.CHANGED
+    }
+
+    def cleanupSpec() {
+        new File(Paths.get(srcProjectPath, 'objects', 'EverNoteChanged__c.object').toString()).delete()
+        new File(Paths.get(srcProjectPath, 'objects', 'Object1FieldDeleted__c.object').toString()).delete()
+        new File(Paths.get(srcProjectPath, 'objects', 'Object1FieldAdded__c.object').toString()).delete()
+        new File(Paths.get(srcProjectPath, 'objects', 'Object1FieldChanged__c.object').toString()).delete()
     }
 }

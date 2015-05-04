@@ -16,7 +16,7 @@ class ComponentMonitor {
         this.srcProject = srcProject
     }
 
-    public final Map<String, ResultTracker> getComponentChanged(ArrayList<File> arrayFiles) throws Exception {
+    public Map<String, ResultTracker> getComponentChanged(ArrayList<File> arrayFiles) throws Exception {
         ComponentSerializer componentSerializer = new ComponentSerializer(srcProject)
         recoveryFileHashCode = componentSerializer.read(componentSerializer.sourcePath)
         currentFileHashCode = getComponentsSignature(arrayFiles)
