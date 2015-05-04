@@ -74,7 +74,8 @@ class Update extends Deployment {
         showFilesExcludes()
         truncate(pathUpdate)
         executeDeploy(pathUpdate)
-        objSerializer.saveMapUpdated(filesChanged)
+        //objSerializer.saveMapUpdated(filesChanged)
+        packageGenerator.saveFileTrackerMap()
     }
 
     def truncate(String pathToTruncate){
