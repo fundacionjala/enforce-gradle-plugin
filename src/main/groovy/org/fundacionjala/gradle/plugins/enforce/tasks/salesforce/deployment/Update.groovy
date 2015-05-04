@@ -5,12 +5,12 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageGenerator
-import org.fundacionjala.gradle.plugins.enforce.wsc.rest.QueryBuilder
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.FileMonitorSerializer
 import org.fundacionjala.gradle.plugins.enforce.undeploy.SmartFilesValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageGenerator
+import org.fundacionjala.gradle.plugins.enforce.wsc.rest.QueryBuilder
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
 
 import java.nio.file.Paths
@@ -78,7 +78,7 @@ class Update extends Deployment {
         packageGenerator.saveFileTrackerMap()
     }
 
-    def truncate(String pathToTruncate){
+    def truncate(String pathToTruncate) {
         interceptorsToExecute += interceptors
         truncateComponents(pathToTruncate)
     }
@@ -224,7 +224,7 @@ class Update extends Deployment {
     /**
      * ExcludeFiles from filesExcludes map
      */
-    private void excludeFilesFromFilesChanged () {
+    private void excludeFilesFromFilesChanged() {
         /*def filesUpdated = new ArrayList<File>()
         def filesChangedTemp = filesChanged.clone()
 

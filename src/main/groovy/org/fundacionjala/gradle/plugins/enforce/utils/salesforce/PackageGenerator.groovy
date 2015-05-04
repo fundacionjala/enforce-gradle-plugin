@@ -65,7 +65,7 @@ class PackageGenerator {
         return filesPackage
     }
 
-    public ArrayList<File> getSubcomponents(ComponentStates subComponentStatus) {
+    public ArrayList<File> getSubComponents(ComponentStates subComponentStatus) {
         ArrayList<File> filesResult = []
         File file
         fileTrackerMap.each { fileName, resultTracker ->
@@ -82,15 +82,18 @@ class PackageGenerator {
     }
 
     public void buildPackage(Writer writer) {
-        ArrayList<File> files = getFiles(ComponentStates.ADDED) + getFiles(ComponentStates.CHANGED) + getSubcomponents(ComponentStates.ADDED) + getSubcomponents(ComponentStates.CHANGED)
+        ArrayList<File> files = getFiles(ComponentStates.ADDED) + getFiles(ComponentStates.CHANGED) + getSubComponents(ComponentStates.ADDED) + getSubComponents(ComponentStates.CHANGED)
         packageBuilder.createPackage(files)
         packageBuilder.write(writer)
     }
 
-    public void buildDestructive(Writer writer) {
-        ArrayList<File> files = getFiles(ComponentStates.DELETED) + getSubcomponents(ComponentStates.DELETED)
-
+    public void buildDestructive(Writer writer){
         smartFilesValidator = new SmartFilesValidator(SmartFilesValidator.getJsonQueries(files, credential))
+        buildDestructive(writer, smartFilesValidator)
+    }
+
+    public void buildDestructive(Writer writer, smartFilesValidator) {
+        ArrayList<File> files = getFiles(ComponentStates.DELETED) + getSubComponents(ComponentStates.DELETED)
         files = smartFilesValidator.filterFilesAccordingOrganization(files)
 
         packageBuilder.createPackage(files)

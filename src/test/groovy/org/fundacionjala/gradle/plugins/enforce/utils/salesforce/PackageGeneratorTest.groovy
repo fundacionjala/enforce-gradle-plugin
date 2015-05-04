@@ -4,6 +4,8 @@ import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.FileMonitorSerializer
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ObjectResultTracker
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
+import org.fundacionjala.gradle.plugins.enforce.undeploy.SmartFilesValidator
+import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -24,7 +26,7 @@ class PackageGeneratorTest extends Specification {
         fileTrackerMap.put(newFilePath, new ResultTracker(ComponentStates.ADDED.value()))
         packageGenerator.fileMonitorSerializer.getFileTrackerMap(_) >> fileTrackerMap
         when:
-        packageGenerator.init('', [])
+        packageGenerator.init('', [], new Credential())
         then:
         packageGenerator.fileTrackerMap.get(newFilePath).state == ComponentStates.ADDED.value()
     }
@@ -87,8 +89,8 @@ class PackageGeneratorTest extends Specification {
             packageGenerator.fileTrackerMap = fileTrackerMap
 
         when:
-            def fieldsAdded  = packageGenerator.getSubcomponents(ComponentStates.ADDED)
-            def fieldsChanged = packageGenerator.getSubcomponents(ComponentStates.CHANGED)
+            def fieldsAdded  = packageGenerator.getSubComponents(ComponentStates.ADDED)
+            def fieldsChanged = packageGenerator.getSubComponents(ComponentStates.CHANGED)
 
         then:
             fieldsAdded[0].name ==  "ObjectFile.fieldTwo.sbc"
@@ -143,6 +145,7 @@ class PackageGeneratorTest extends Specification {
     def "Test should build a package from deleted files"() {
         given:
             PackageGenerator packageGenerator = new PackageGenerator()
+            SmartFilesValidator smartFilesValidator = Mock(SmartFilesValidator)
 
             Map<String, String> subComponentResult = [:]
             subComponentResult.put("fields/fieldOne",ComponentStates.DELETED.value())
@@ -160,10 +163,11 @@ class PackageGeneratorTest extends Specification {
             fileTrackerMap.put(newObjectPathDeleted, new ResultTracker(ComponentStates.DELETED.value()))
             fileTrackerMap.put(newObjectPathChanged, objectResultTracker)
             packageGenerator.fileTrackerMap = fileTrackerMap
+            smartFilesValidator.filterFilesAccordingOrganization(_) >> packageGenerator.getFiles(ComponentStates.DELETED) + packageGenerator.getSubComponents(ComponentStates.DELETED)
             def stringWriter = new StringWriter()
 
         when:
-            packageGenerator.buildDestructive(stringWriter)
+            packageGenerator.buildDestructive(stringWriter, smartFilesValidator)
 
         then:
             packageGenerator.packageBuilder.metaPackage.types[0].members[0] == "File"
@@ -173,6 +177,7 @@ class PackageGeneratorTest extends Specification {
 
             packageGenerator.packageBuilder.metaPackage.types[2].members[0] == "ObjectFileChanged.fieldOne"
             packageGenerator.packageBuilder.metaPackage.types[2].members[1] == "ObjectFileChanged.fieldTwo"
+            packageGenerator.packageBuilder.metaPackage.types[2].name == "CustomField"
 
     }
 
