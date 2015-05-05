@@ -5,11 +5,12 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 
-import org.fundacionjala.gradle.plugins.enforce.wsc.rest.QueryBuilder
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.FileMonitorSerializer
 import org.fundacionjala.gradle.plugins.enforce.undeploy.SmartFilesValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageGenerator
+import org.fundacionjala.gradle.plugins.enforce.wsc.rest.QueryBuilder
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
 
 import java.nio.file.Paths
@@ -34,6 +35,7 @@ class Update extends Deployment {
     ArrayList<File> filesToUpdate
     String folders
     ArrayList<File> filesExcludes
+    PackageGenerator packageGenerator
 
     /**
      * Sets description and group task
@@ -47,6 +49,7 @@ class Update extends Deployment {
         filesToCopy = new ArrayList<File>()
         filesToUpdate = new ArrayList<File>()
         filesExcludes = new ArrayList<File>()
+        packageGenerator = new PackageGenerator()
         interceptorsToExecute = [org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.REMOVE_DEPRECATE.id]
     }
 
@@ -71,10 +74,11 @@ class Update extends Deployment {
         showFilesExcludes()
         truncate(pathUpdate)
         executeDeploy(pathUpdate)
-        objSerializer.saveMapUpdated(filesChanged)
+        //objSerializer.saveMapUpdated(filesChanged)
+        packageGenerator.saveFileTrackerMap()
     }
 
-    def truncate(String pathToTruncate){
+    def truncate(String pathToTruncate) {
         interceptorsToExecute += interceptors
         truncateComponents(pathToTruncate)
     }
@@ -83,33 +87,39 @@ class Update extends Deployment {
      * Creates packages to all files which has been changed
      */
     def createPackage() {
-        filesChanged.each { nameFile, state ->
+        /*filesChanged.each { nameFile, state ->
             if (state != FileMonitorSerializer.DELETE_FILE) {
                 filesToCopy.add(new File(nameFile))
             }
         }
-        writePackage(Paths.get(pathUpdate, PACKAGE_NAME).toString(), filesToCopy)
+        writePackage(Paths.get(pathUpdate, PACKAGE_NAME).toString(), filesToCopy)*/
+        packageGenerator.buildPackage(Paths.get(pathUpdate, PACKAGE_NAME).toString())
     }
 
     /**
      * Creates package to all files which has been deleted
      */
     def createDestructive() {
-        def arrayDeletedElements = new ArrayList<File>()
+        /*def arrayDeletedElements = new ArrayList<File>()
         filesChanged.each { nameFile, state ->
             if (state == FileMonitorSerializer.DELETE_FILE) {
                 arrayDeletedElements.add(new File(nameFile))
             }
         }
+
         smartFilesValidator = new SmartFilesValidator(getJsonQueries(arrayDeletedElements))
         arrayDeletedElements = smartFilesValidator.filterFilesAccordingOrganization(arrayDeletedElements)
-        writePackage(Paths.get(pathUpdate, FILE_NAME_DESTRUCTIVE).toString(), arrayDeletedElements)
+
+       writePackage(Paths.get(pathUpdate, FILE_NAME_DESTRUCTIVE).toString(), arrayDeletedElements)*/
+
+        packageGenerator.buildDestructive(Paths.get(pathUpdate, FILE_NAME_DESTRUCTIVE).toString())
     }
 
     /**
      * Gets queries according files given
      * @returns queries on String format
      */
+    /*
     def getJsonQueries(ArrayList<File> files) {
         toolingAPI = new ToolingAPI(credential)
         queryBuilder = new QueryBuilder()
@@ -119,19 +129,21 @@ class Update extends Deployment {
             jsonQueries.push(toolingAPI.httpAPIClient.executeQuery(query as String))
         }
         return jsonQueries
-    }
+    }*/
 
     /**
      * Loads all files which has been changed on filesChanged
      */
     def loadFilesChanged() {
-        objSerializer.setSrcProject(projectPath)
-        ArrayList<File> fileArray = fileManager.getValidElements(projectPath, excludeFilesToMonitor)
-        if (!objSerializer.verifyFileMap()) {
+        //objSerializer.setSrcProject(projectPath)
+        ArrayList<File> validatedFiles = fileManager.getValidElements(projectPath, excludeFilesToMonitor)
+        /*if (!objSerializer.verifyFileMap()) {
             objSerializer.mapRefresh(fileArray)
             return
         }
-        filesChanged = objSerializer.getFileChangedExclude(fileArray)
+        filesChanged = objSerializer.getFileChangedExclude(fileArray)*/
+
+        packageGenerator.init(projectPath, validatedFiles, credential)
     }
 
     /**
@@ -143,18 +155,19 @@ class Update extends Deployment {
         }
 
         if (folders) {
-            ArrayList<String> invalidFolders = new ArrayList<String>()
+
             ArrayList<String> foldersName = folders.split(Constants.COMMA)
+            ArrayList<String> invalidFolders = Util.getInvalidFolders(foldersName)
             validateFolders(foldersName)
-            invalidFolders = Util.getInvalidFolders(foldersName)
             if (!invalidFolders.empty) {
                 throw new Exception("${Constants.INVALID_FOLDER}: ${invalidFolders}")
             }
-            def auxiliaryMap = objSerializer.getFoldersFiltered(foldersName, filesChanged)
+            /*def auxiliaryMap = objSerializer.getFoldersFiltered(foldersName, filesChanged)
             if (auxiliaryMap == null) {
                 throw new Exception(NOT_FILES_CHANGED_IN_FOLDER)
             }
-            filesChanged = auxiliaryMap
+            filesChanged = auxiliaryMap*/
+            packageGenerator.updateFileTrackerMap(foldersName)
         }
     }
 
@@ -211,22 +224,25 @@ class Update extends Deployment {
     /**
      * ExcludeFiles from filesExcludes map
      */
-    private void excludeFilesFromFilesChanged () {
-        def filesUpdated = new ArrayList<File>()
+    private void excludeFilesFromFilesChanged() {
+        /*def filesUpdated = new ArrayList<File>()
         def filesChangedTemp = filesChanged.clone()
 
         filesChangedTemp.each {key, value ->
             filesUpdated.push(new File(key.toString()))
-        }
+        }*/
 
-        ArrayList<File> filesFiltered = excludeFiles(filesUpdated)
+        //ArrayList<File> filesFiltered = excludeFiles(filesUpdated)
+        ArrayList<File> filesFiltered = excludeFiles(packageGenerator.getFiles())
 
-        filesChangedTemp.each {key, value ->
+        /*filesChangedTemp.each {key, value ->
             def fileChanged = new File(key.toString())
             if (!filesFiltered.contains(fileChanged)) {
                 filesChanged.remove(key.toString())
                 filesExcludes.push(fileChanged)
             }
-        }
+        }*/
+        filesExcludes = packageGenerator.excludeFiles(filesFiltered)
+
     }
 }
