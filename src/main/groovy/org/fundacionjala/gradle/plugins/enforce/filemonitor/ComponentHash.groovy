@@ -1,6 +1,6 @@
 package org.fundacionjala.gradle.plugins.enforce.filemonitor
 
-class ComponentHash implements Serializable, ComponentComparable<ComponentHash> {
+public class ComponentHash implements Serializable, ComponentComparable<ComponentHash> {
     public String fileName
     public String hash
 

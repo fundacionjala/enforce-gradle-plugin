@@ -39,6 +39,9 @@ class ComponentMonitorTest extends Specification{
         currentClassTracker.hash = 'rtyfghvbn'
         oldFiles.put(fileNameClass, oldClassTracker)
         currentFiles.put(fileNameClass, currentClassTracker)
+        def fileTrackerPath = Paths.get(srcProjectPath, '.fileTracker.data').toString()
+        ComponentSerializer componentSerializer = new ComponentSerializer(fileTrackerPath)
+        componentMonitor.componentSerializer = componentSerializer
     }
 
     def "Test should return a map with files changed" () {
@@ -170,8 +173,7 @@ class ComponentMonitorTest extends Specification{
             def object2 = Paths.get(srcProjectPath, 'objects', 'Object2__c.object').toString()
             ArrayList<File> files = [new File(object1), new File(object2)]
             Map<String, ComponentHash> componentsHash = componentMonitor.getComponentsSignature(files)
-            ComponentSerializer componentSerializer = new ComponentSerializer('resources')
-            componentSerializer.save(componentsHash)
+            componentMonitor.componentSerializer.save(componentsHash)
         when:
             Map<String, ResultTracker> result = componentMonitor.getComponentChanged(files)
         then:
@@ -219,8 +221,7 @@ class ComponentMonitorTest extends Specification{
             new File(everNoteChanged).write(everNoteChangedContent)
             ArrayList<File> files = [new File(everNoteChanged), new File(object2)]
             Map<String, ComponentHash> componentsHash = componentMonitor.getComponentsSignature(files)
-            ComponentSerializer componentSerializer = new ComponentSerializer('resources')
-            componentSerializer.save(componentsHash)
+            componentMonitor.componentSerializer.save(componentsHash)
             XmlSlurper xmlSlurper = new XmlSlurper()
             GPathResult  objectParsed = xmlSlurper.parseText(new File(everNoteChanged).text)
             objectParsed.enableEnhancedLookup = true
@@ -242,8 +243,7 @@ class ComponentMonitorTest extends Specification{
             new File(object1FieldDeleted).write(object1Content)
             ArrayList<File> files = [new File(object1), new File(object1FieldDeleted)]
             Map<String, ComponentHash> componentsHash = componentMonitor.getComponentsSignature(files)
-            ComponentSerializer componentSerializer = new ComponentSerializer('resources')
-            componentSerializer.save(componentsHash)
+            componentMonitor.componentSerializer.save(componentsHash)
             def xmlSlurper = new XmlSlurper()
             def objectParsed = xmlSlurper.parse(new File(object1FieldDeleted))
             def list = objectParsed.fields.list()
@@ -268,8 +268,7 @@ class ComponentMonitorTest extends Specification{
             new File(object1FieldAdded).write(object1Content)
             ArrayList<File> files = [new File(object1), new File(object1FieldAdded)]
             Map<String, ComponentHash> componentsHash = componentMonitor.getComponentsSignature(files)
-            ComponentSerializer componentSerializer = new ComponentSerializer('resources')
-            componentSerializer.save(componentsHash)
+            componentMonitor.componentSerializer.save(componentsHash)
             def xmlSlurper = new XmlSlurper()
             def objectParsed = xmlSlurper.parse(new File(object1FieldAdded))
             def fieldSetValue = "${'<fieldSets><fullName>Enforce_Fieldset</fullName>'}${'<description>Enforce_Fieldset</description></fieldSets>'}"
@@ -295,8 +294,7 @@ class ComponentMonitorTest extends Specification{
             new File(objectFieldChanged).write(object1Content)
             ArrayList<File> files = [new File(object1), new File(objectFieldChanged)]
             Map<String, ComponentHash> componentsHash = componentMonitor.getComponentsSignature(files)
-            ComponentSerializer componentSerializer = new ComponentSerializer('resources')
-            componentSerializer.save(componentsHash)
+            componentMonitor.componentSerializer.save(componentsHash)
             def xmlSlurper = new XmlSlurper()
             def objectParsed = xmlSlurper.parse(new File(objectFieldChanged))
             objectParsed.fields[0].length = 5

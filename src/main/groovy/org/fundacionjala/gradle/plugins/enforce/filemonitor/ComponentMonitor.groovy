@@ -16,7 +16,8 @@ class ComponentMonitor {
 
     public ComponentMonitor(String srcProject) {
         this.srcProject = srcProject
-        this.componentSerializer = new ComponentSerializer(srcProject)
+        this.fileName = Paths.get(srcProject, FILE_TRACKING).toString()
+        this.componentSerializer = new ComponentSerializer(fileName)
         currentFileHashCode = [:]
         recoveryFileHashCode = [:]
     }
@@ -139,7 +140,6 @@ class ComponentMonitor {
                 recoveryFileHashCode.put(fileName, currentFileHashCode.get(fileName))
             }
         }
-
         componentSerializer.save(recoveryFileHashCode)
     }
 }
