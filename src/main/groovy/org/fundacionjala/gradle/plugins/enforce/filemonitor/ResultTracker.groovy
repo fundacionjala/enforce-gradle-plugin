@@ -14,4 +14,9 @@ class ResultTracker {
     public ResultTracker(ComponentStates state) {
         this.state = state
     }
+
+    @Override
+    public String toString() {
+        return state.value()
+    }
 }

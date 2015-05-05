@@ -1,5 +1,6 @@
 package org.fundacionjala.gradle.plugins.enforce.utils.salesforce
 
+import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentMonitor
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.FileMonitorSerializer
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ObjectResultTracker
@@ -62,24 +63,24 @@ class PackageGeneratorTest extends Specification {
     def "Test should get the subcomponentes according to status field"() {
         given:
             PackageGenerator packageGenerator = new PackageGenerator()
-            packageGenerator.fileMonitorSerializer = Mock(FileMonitorSerializer)
+            packageGenerator.componentMonitor = Mock(ComponentMonitor)
 
             def newFilePathObject1 = "objects/ObjectFile.object"
             def newFilePathObject2 = "objects/ObjectUtil.object"
 
-            Map<String, String> subComponentResult1 = [:]
-            subComponentResult1.put("fields/fieldOne",ComponentStates.CHANGED.value())
-            subComponentResult1.put("fields/fieldTwo",ComponentStates.ADDED.value())
-            subComponentResult1.put("fields/fieldThree",ComponentStates.CHANGED.value())
+            Map<String, ComponentStates> subComponentResult1 = [:]
+            subComponentResult1.put("fields/fieldOne",ComponentStates.CHANGED)
+            subComponentResult1.put("fields/fieldTwo",ComponentStates.ADDED)
+            subComponentResult1.put("fields/fieldThree",ComponentStates.CHANGED)
 
-            ObjectResultTracker objectResultTracker1 = new ObjectResultTracker(ComponentStates.CHANGED.value())
+            ObjectResultTracker objectResultTracker1 = new ObjectResultTracker(ComponentStates.CHANGED)
             objectResultTracker1.subComponentsResult = subComponentResult1;
 
-            Map<String, String> subComponentResult2 = [:]
-            subComponentResult2.put("fields/fieldFour",ComponentStates.CHANGED.value())
-            subComponentResult2.put("fields/fieldFive",ComponentStates.ADDED.value())
+            Map<String, ComponentStates> subComponentResult2 = [:]
+            subComponentResult2.put("fields/fieldFour",ComponentStates.CHANGED)
+            subComponentResult2.put("fields/fieldFive",ComponentStates.ADDED)
 
-            ObjectResultTracker objectResultTracker2 = new ObjectResultTracker(ComponentStates.CHANGED.value())
+            ObjectResultTracker objectResultTracker2 = new ObjectResultTracker(ComponentStates.CHANGED)
             objectResultTracker2.subComponentsResult = subComponentResult2
 
             Map<String, ResultTracker> fileTrackerMap = [:]

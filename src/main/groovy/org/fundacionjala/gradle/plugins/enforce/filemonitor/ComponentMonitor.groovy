@@ -22,6 +22,11 @@ class ComponentMonitor {
         recoveryFileHashCode = [:]
     }
 
+    public ComponentMonitor() {
+        currentFileHashCode = [:]
+        recoveryFileHashCode = [:]
+    }
+
     public Map<String, ResultTracker> getComponentChanged(ArrayList<File> arrayFiles) throws Exception {
         recoveryFileHashCode = componentSerializer.read()
         currentFileHashCode = getComponentsSignature(arrayFiles)

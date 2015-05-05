@@ -6,10 +6,19 @@ package org.fundacionjala.gradle.plugins.enforce.filemonitor
  * the state for all sub Components.
  */
 class ObjectResultTracker extends ResultTracker {
-    Map<String, String> subComponentsResult
+    Map<String, ComponentStates> subComponentsResult
 
     public ObjectResultTracker(ComponentStates state) {
         super(state)
         subComponentsResult = [:]
+    }
+
+    @Override
+    public String toString() {
+        String result = '';
+        subComponentsResult.each { field,  fieldState ->
+            result += field + ' -> '+ fieldState.value() + '\n\t'
+        }
+        return state.value() + '\n\t' + result
     }
 }

@@ -29,13 +29,6 @@ class FilesStatus extends FileMonitorTask {
      */
     @Override
     void runTask() {
-        /*if (fileMonitorSerializer.verifyFileMap()) {
-            filesChangedMap = fileMonitorSerializer.getFileChangedExclude(fileArray)
-            displayFileChanged()
-        } else {
-            Map initMapSave = fileMonitorSerializer.loadSignatureForFilesInDirectory(fileArray)
-            fileMonitorSerializer.saveMap(initMapSave)
-        }*/
         if (componentMonitor.verifyFileMap()) {
             filesChangedMap = componentMonitor.getComponentChanged(fileArray)
             displayFileChanged()
@@ -56,7 +49,7 @@ class FilesStatus extends FileMonitorTask {
             println "              Status Files Changed             "
             println "*********************************************"
             filesChangedMap.each { String componentPath, ResultTracker resultTracker ->
-                println "${Paths.get(componentPath).getFileName()}${" - "}${resultTracker.state.value()}"
+                println "${Paths.get(componentPath).getFileName()}${" - "}${resultTracker.toString()}"
             }
             println "*********************************************"
         }

@@ -5,6 +5,7 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 
+import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.FileMonitorSerializer
 import org.fundacionjala.gradle.plugins.enforce.undeploy.SmartFilesValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
@@ -25,12 +26,8 @@ class Update extends Deployment {
     private final String FILE_NAME_DESTRUCTIVE = "destructiveChanges.xml"
     private final String NOT_FILES_CHANGED = "There are not files changed"
     private final String NOT_FILES_CHANGED_IN_FOLDER = "There are not files changed in folders selected"
-    private SmartFilesValidator smartFilesValidator
-    private QueryBuilder queryBuilder
-    public ToolingAPI toolingAPI
     public String pathUpdate
     Map filesChanged
-    FileMonitorSerializer objSerializer
     ArrayList<File> filesToCopy
     ArrayList<File> filesToUpdate
     String folders
@@ -45,7 +42,6 @@ class Update extends Deployment {
     Update() {
         super(DESCRIPTION_OF_TASK, Constants.DEPLOYMENT)
         filesChanged = [:]
-        objSerializer = new FileMonitorSerializer()
         filesToCopy = new ArrayList<File>()
         filesToUpdate = new ArrayList<File>()
         filesExcludes = new ArrayList<File>()
@@ -64,7 +60,7 @@ class Update extends Deployment {
         verifyParameter()
         excludeFilesFromFilesChanged()
         showFilesChanged()
-        if (filesChanged.isEmpty()) {
+        if (packageGenerator.fileTrackerMap.isEmpty()) {
             logger.quiet(NOT_FILES_CHANGED)
             return
         }
@@ -74,7 +70,6 @@ class Update extends Deployment {
         showFilesExcludes()
         truncate(pathUpdate)
         executeDeploy(pathUpdate)
-        //objSerializer.saveMapUpdated(filesChanged)
         packageGenerator.saveFileTrackerMap()
     }
 
@@ -87,12 +82,11 @@ class Update extends Deployment {
      * Creates packages to all files which has been changed
      */
     def createPackage() {
-        /*filesChanged.each { nameFile, state ->
-            if (state != FileMonitorSerializer.DELETE_FILE) {
+        packageGenerator.fileTrackerMap.each { nameFile, resultTracker ->
+            if (resultTracker.state != ComponentStates.DELETED) {
                 filesToCopy.add(new File(nameFile))
             }
         }
-        writePackage(Paths.get(pathUpdate, PACKAGE_NAME).toString(), filesToCopy)*/
         packageGenerator.buildPackage(Paths.get(pathUpdate, PACKAGE_NAME).toString())
     }
 
@@ -189,12 +183,12 @@ class Update extends Deployment {
      * Prints files changed
      */
     def showFilesChanged() {
-        if (filesChanged.size() > 0) {
+        if (packageGenerator.fileTrackerMap.size() > 0) {
             logger.quiet("*********************************************")
             logger.quiet("              Status Files Changed             ")
             logger.quiet("*********************************************")
-            filesChanged.each { nameFile, status ->
-                logger.quiet("${Paths.get(nameFile).getFileName().toString()}${" - "}${status}")
+            packageGenerator.fileTrackerMap.each { nameFile, status ->
+                logger.quiet("${Paths.get(nameFile).getFileName().toString()}${" - "}${status.toString()}")
             }
             logger.quiet("*********************************************")
         }

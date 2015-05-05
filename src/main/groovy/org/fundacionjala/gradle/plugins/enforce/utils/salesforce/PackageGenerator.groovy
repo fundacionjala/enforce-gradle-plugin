@@ -1,5 +1,7 @@
 package org.fundacionjala.gradle.plugins.enforce.utils.salesforce
 
+import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentMonitor
+import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentSerializer
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.FileMonitorSerializer
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ObjectResultTracker
@@ -13,24 +15,27 @@ import java.nio.file.Paths
 class PackageGenerator {
 
     PackageBuilder packageBuilder
-    FileMonitorSerializer fileMonitorSerializer
+    //FileMonitorSerializer fileMonitorSerializer
+    ComponentMonitor componentMonitor
     Map<String, ResultTracker> fileTrackerMap
     SmartFilesValidator smartFilesValidator
     Credential credential;
 
     public PackageGenerator() {
         packageBuilder = new PackageBuilder()
-        fileMonitorSerializer = new FileMonitorSerializer()
+        //componentMonitor = new ComponentMonitor()
+        //fileMonitorSerializer = new FileMonitorSerializer()
     }
 
     public init(String projectPath, ArrayList<File> files, Credential credential) {
         this.credential = credential
-        fileMonitorSerializer.setSrcProject(projectPath)
-        if (!fileMonitorSerializer.verifyFileMap()) {
-            fileMonitorSerializer.mapRefresh(files)
+        componentMonitor = new ComponentMonitor(projectPath)
+        if (!componentMonitor.verifyFileMap()) {
+            componentMonitor.saveCurrentComponents(files)
             return
         }
-        fileTrackerMap = fileMonitorSerializer.getFileTrackerMap(files)
+        //fileTrackerMap = componentMonitor.getFileTrackerMap(files)
+        fileTrackerMap = componentMonitor.getComponentChanged(files)
     }
 
     public ArrayList<File> getFiles() {
@@ -47,7 +52,7 @@ class PackageGenerator {
     }
 
     public void saveFileTrackerMap(){
-        fileMonitorSerializer.saveMapUpdated(fileTrackerMap)
+        componentMonitor.saveMapUpdated(fileTrackerMap)
     }
 
     public void buildDestructive(String path) {
@@ -58,7 +63,7 @@ class PackageGenerator {
     public ArrayList<File> getFiles(ComponentStates status) {
         ArrayList<File> filesPackage = []
         fileTrackerMap.each { fileName, resultTracker ->
-            if (resultTracker.state == status.value()) {
+            if (resultTracker.state == status) {
                 filesPackage.add(new File(fileName))
             }
         }
@@ -69,9 +74,9 @@ class PackageGenerator {
         ArrayList<File> filesResult = []
         File file
         fileTrackerMap.each { fileName, resultTracker ->
-            if (resultTracker instanceof ObjectResultTracker && resultTracker.state == ComponentStates.CHANGED.value()) {
+            if (resultTracker instanceof ObjectResultTracker && resultTracker.state == ComponentStates.CHANGED) {
                 resultTracker.subComponentsResult.each { subComponentName, statusField ->
-                    if (statusField == subComponentStatus.value()) {
+                    if (statusField == subComponentStatus) {
                         file = new File("${Paths.get(subComponentName).parent.fileName}/${Util.getFileName(Paths.get(fileName).fileName.toString())}.${Paths.get(subComponentName).fileName}.sbc")
                         filesResult.add(file)
                     }
@@ -83,11 +88,13 @@ class PackageGenerator {
 
     public void buildPackage(Writer writer) {
         ArrayList<File> files = getFiles(ComponentStates.ADDED) + getFiles(ComponentStates.CHANGED) + getSubComponents(ComponentStates.ADDED) + getSubComponents(ComponentStates.CHANGED)
+        println files
         packageBuilder.createPackage(files)
         packageBuilder.write(writer)
     }
 
     public void buildDestructive(Writer writer){
+        ArrayList<File> files = getFiles(ComponentStates.DELETED) + getSubComponents(ComponentStates.DELETED)
         smartFilesValidator = new SmartFilesValidator(SmartFilesValidator.getJsonQueries(files, credential))
         buildDestructive(writer, smartFilesValidator)
     }
@@ -101,7 +108,7 @@ class PackageGenerator {
     }
 
     public void updateFileTrackerMap(ArrayList<String> folders) {
-        fileTrackerMap = fileMonitorSerializer.getFoldersFiltered(folders, fileTrackerMap)
+        fileTrackerMap = componentMonitor.getFoldersFiltered(folders, fileTrackerMap)
     }
 
     public ArrayList<File> excludeFiles(ArrayList<File> files) {

@@ -52,7 +52,8 @@ class ComponentSerializerTest extends Specification {
             Map<String, ComponentHash> result = componentSerializer.read()
         then:
             result.size() == components.size()
-            result.each {String relativePath, ComponentHash componentTracker ->
+            result.each {String relativePath, componentTracker ->
+                println componentTracker.getClass()
                 components.get(relativePath).hash == componentTracker.hash
             }
     }

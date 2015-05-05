@@ -23,6 +23,6 @@ class Reset extends FileMonitorTask{
 
     @Override
     void runTask() {
-        fileMonitorSerializer.mapRefresh(fileArray)
+        componentMonitor.saveCurrentComponents(fileArray)
     }
 }

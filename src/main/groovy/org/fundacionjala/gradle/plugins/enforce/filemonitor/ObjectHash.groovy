@@ -5,7 +5,7 @@ package org.fundacionjala.gradle.plugins.enforce.filemonitor
  */
 class ObjectHash extends ComponentHash {
 
-    public Map<String, String> subComponents
+    Map<String, String> subComponents
 
     public ObjectHash(String fileName, String hash, Map<String, String> subComponents) {
         super(fileName, hash)
