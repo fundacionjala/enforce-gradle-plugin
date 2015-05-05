@@ -3,8 +3,6 @@ package org.fundacionjala.gradle.plugins.enforce.filemonitor
 import java.nio.file.Paths
 
 class ComponentSerializer {
-
-    private final String FILE_TRACKING = '.fileTracker.data'
     public String sourcePath
 
     public ComponentSerializer(String sourcePath) {
@@ -19,12 +17,11 @@ class ComponentSerializer {
         oos.close()
     }
 
-    Map<String, ComponentHash> read(String sourcePath) throws IOException {
+    Map<String, ComponentHash> read() throws IOException {
         Map<String, ComponentHash> result
         ObjectInputStream ois = new ObjectInputStream(new FileInputStream(sourcePath))
         result = (Map<String, ComponentHash>) ois.readObject()
         ois.close()
         return result
     }
-
 }

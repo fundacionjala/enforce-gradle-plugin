@@ -312,6 +312,91 @@ class ComponentMonitorTest extends Specification{
             result.get('resources/objects/Object1FieldChanged__c.object').subComponentsResult.get('fields/Field1__c') == ComponentStates.CHANGED
     }
 
+    def "Test select files changed according folders"() {
+        given:
+            def arrayFolders = ["classes"]
+            def mapFilesChanged = ["classes/class1.cls": "file Changed", "triggers/trigger1.trigger": "file Changed"]
+        when:
+            def mapResult = componentMonitor.getFoldersFiltered(arrayFolders, mapFilesChanged)
+        then:
+            mapResult == ["classes/class1.cls": "file Changed"]
+    }
+
+    def "Test verify exist map"() {
+        when:
+            String fileTrackerFile = Paths.get(srcProjectPath, '.fileTrackerTest.data')
+            new File(fileTrackerFile).write('test')
+            componentMonitor.fileName = fileTrackerFile
+        then:
+            componentMonitor.verifyFileMap()
+            new File(fileTrackerFile).delete()
+    }
+
+    def "Test verify not exist map "() {
+        when:
+            String fileTrackerFile = Paths.get(srcProjectPath, '.fileTrackerTest.data')
+            componentMonitor.fileName = fileTrackerFile
+        then:
+            !componentMonitor.verifyFileMap()
+    }
+
+    def "Test set a project path"() {
+        given:
+            def sourceProject = "src"
+            def fileName = '.fileTracker.data'
+        when:
+            componentMonitor.setSrcProject(sourceProject)
+        then:
+            componentMonitor.srcProject == sourceProject
+            componentMonitor.fileName == Paths.get(sourceProject, fileName).toString()
+    }
+
+    def "Test get relative path"() {
+        given:
+            File fileRelativePath = new File("user/project/src/class/class1")
+        when:
+            def relativePath = componentMonitor.getPathRelative(fileRelativePath)
+        then:
+            relativePath == Paths.get("resources", "class", "class1").toString()
+    }
+
+    def "Test should update the map to save it "() {
+        given:
+            String class1Path = 'src/classes/Class1.cls'
+            String class2Path = 'src/classes/Class2.cls'
+            String class3Path = 'src/classes/Class3.cls'
+            String newClassPath = 'src/classes/NewClass.cls'
+            Map<String, ComponentHash> recoveryFileHashCode = [:]
+                recoveryFileHashCode.put(class1Path, new ComponentHash(class1Path, 'hashClass1'))
+                recoveryFileHashCode.put(class2Path, new ComponentHash(class1Path, 'hashClass2'))
+                recoveryFileHashCode.put(class3Path, new ComponentHash(class1Path, 'hashClass3'))
+
+            Map<String, ComponentHash> currentFileHashCode = [:]
+                currentFileHashCode.put(class1Path, new ComponentHash(newClassPath,'hashClassChanged'))
+                currentFileHashCode.put(newClassPath, new ComponentHash(newClassPath,'hashNewClass'))
+                currentFileHashCode.put(class3Path, new ComponentHash(newClassPath,'hashClass3'))
+
+
+            Map<String, ResultTracker> mapFilesChanged = [:]
+                mapFilesChanged.put(class1Path, new ResultTracker(ComponentStates.CHANGED))
+                mapFilesChanged.put(class2Path, new ResultTracker(ComponentStates.DELETED))
+                mapFilesChanged.put(newClassPath, new ResultTracker(ComponentStates.ADDED))
+
+            componentMonitor.recoveryFileHashCode = recoveryFileHashCode
+            componentMonitor.currentFileHashCode = currentFileHashCode
+
+        when:
+            componentMonitor.saveMapUpdated(mapFilesChanged)
+        then:
+            !componentMonitor.recoveryFileHashCode.containsKey(class2Path)
+            componentMonitor.recoveryFileHashCode.containsKey(class1Path)
+            componentMonitor.recoveryFileHashCode.containsKey(class3Path)
+            componentMonitor.recoveryFileHashCode.containsKey(newClassPath)
+            componentMonitor.recoveryFileHashCode.get(class1Path).hash == 'hashClassChanged'
+            componentMonitor.recoveryFileHashCode.get(class3Path).hash == 'hashClass3'
+            componentMonitor.recoveryFileHashCode.get(newClassPath).hash == 'hashNewClass'
+    }
+
     def cleanupSpec() {
         new File(Paths.get(srcProjectPath, 'objects', 'EverNoteChanged__c.object').toString()).delete()
         new File(Paths.get(srcProjectPath, 'objects', 'Object1FieldDeleted__c.object').toString()).delete()

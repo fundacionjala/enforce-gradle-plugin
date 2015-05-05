@@ -7,18 +7,22 @@ import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import java.nio.file.Paths
 
 class ComponentMonitor {
-
+    private final String FILE_TRACKING = '.fileTracker.data'
     public Map<String, ComponentHash> currentFileHashCode
     public Map<String, ComponentHash> recoveryFileHashCode
     public String srcProject
+    public String fileName
+    ComponentSerializer componentSerializer
 
     public ComponentMonitor(String srcProject) {
         this.srcProject = srcProject
+        this.componentSerializer = new ComponentSerializer(srcProject)
+        currentFileHashCode = [:]
+        recoveryFileHashCode = [:]
     }
 
     public Map<String, ResultTracker> getComponentChanged(ArrayList<File> arrayFiles) throws Exception {
-        ComponentSerializer componentSerializer = new ComponentSerializer(srcProject)
-        recoveryFileHashCode = componentSerializer.read(componentSerializer.sourcePath)
+        recoveryFileHashCode = componentSerializer.read()
         currentFileHashCode = getComponentsSignature(arrayFiles)
 
         return getFilesChanged(recoveryFileHashCode, currentFileHashCode)
@@ -77,5 +81,65 @@ class ComponentMonitor {
         String nameFile = file.getName()
         String folderFile = file.getParentFile().getName()
         Paths.get(srcProject, folderFile, nameFile).toString()
+    }
+
+    public void setSrcProject(String srcProject) {
+        fileName = Paths.get(srcProject, FILE_TRACKING).toString()
+        this.srcProject = srcProject
+    }
+
+    /**
+     * Verify if file directory exists
+     * @return boolean result of file(pathFile).exists
+     */
+    public boolean verifyFileMap() {
+        return new File(fileName).exists()
+    }
+
+    /**
+     * Start file monitor
+     * @param arrayFiles create a file tracking according array files
+     */
+    public void saveCurrentComponents(ArrayList<File> arrayFiles) {
+        currentFileHashCode = getComponentsSignature(arrayFiles)
+        componentSerializer.save(currentFileHashCode)
+    }
+
+    /**
+     * Update changed value hasCode file
+     * @throws IOException if no cant write in the disk
+     */
+    public Map getFoldersFiltered(ArrayList<String> folders, Map<String, ResultTracker> mapFilesChanged) {
+        Map foldersFiltered = [:]
+
+        mapFilesChanged.each { fileName, resultTracker ->
+
+            String parentFile = new File(fileName).getParentFile().getName()
+            folders.each { nameFolder ->
+
+                if (parentFile == nameFolder) {
+                    foldersFiltered.put(fileName, resultTracker)
+                }
+            }
+        }
+
+        return foldersFiltered
+    }
+
+    /**
+     * Save only elements changed in the map
+     * @param mapFileChanged is the files changed
+     */
+    public void saveMapUpdated(Map<String, ResultTracker> mapFileChanged) {
+        mapFileChanged.each { String fileName, ResultTracker resultTracker ->
+            if (resultTracker.state == ComponentStates.DELETED) {
+                recoveryFileHashCode.remove(fileName)
+            }
+            else {
+                recoveryFileHashCode.put(fileName, currentFileHashCode.get(fileName))
+            }
+        }
+
+        componentSerializer.save(recoveryFileHashCode)
     }
 }

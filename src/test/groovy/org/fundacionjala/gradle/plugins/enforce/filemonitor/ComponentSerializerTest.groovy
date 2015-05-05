@@ -49,7 +49,7 @@ class ComponentSerializerTest extends Specification {
             components.put('src/classes/Object1__c.object', new ObjectHash('src/classes/Object1__c.object', 'objectHash', subComponents))
         when:
             componentSerializer.save(components)
-            Map<String, ComponentHash> result = componentSerializer.read(fileName)
+            Map<String, ComponentHash> result = componentSerializer.read()
         then:
             result.size() == components.size()
             result.each {String relativePath, ComponentHash componentTracker ->
