@@ -41,10 +41,10 @@ class PackageGeneratorTest extends Specification {
         def newFilePath2 = "classes/Util.cls"
         def newFilePath3 = "objects/ObjectFile.object"
         def newFilePath4 = "objects/ObjectUtil.object"
-        fileTrackerMap.put(newFilePath1, new ResultTracker(ComponentStates.ADDED.value()))
-        fileTrackerMap.put(newFilePath2, new ResultTracker(ComponentStates.CHANGED.value()))
-        fileTrackerMap.put(newFilePath3, new ObjectResultTracker(ComponentStates.ADDED.value()))
-        fileTrackerMap.put(newFilePath4, new ObjectResultTracker(ComponentStates.CHANGED.value()))
+        fileTrackerMap.put(newFilePath1, new ResultTracker(ComponentStates.ADDED))
+        fileTrackerMap.put(newFilePath2, new ResultTracker(ComponentStates.CHANGED))
+        fileTrackerMap.put(newFilePath3, new ObjectResultTracker(ComponentStates.ADDED))
+        fileTrackerMap.put(newFilePath4, new ObjectResultTracker(ComponentStates.CHANGED))
         packageGenerator.fileTrackerMap = fileTrackerMap
         def stringWriter = new StringWriter()
 
@@ -110,18 +110,18 @@ class PackageGeneratorTest extends Specification {
             def newFilePathAdded2 = "classes/Util.cls"
             def newObjectPathChanged = "objects/ObjectFile.object"
             def newObjectPathAdded   = "objects/ObjectUtil.object"
-            fileTrackerMap.put(newFilePathAdded, new ResultTracker(ComponentStates.ADDED.value()))
-            fileTrackerMap.put(newFilePathAdded2, new ResultTracker(ComponentStates.CHANGED.value()))
+            fileTrackerMap.put(newFilePathAdded, new ResultTracker(ComponentStates.ADDED))
+            fileTrackerMap.put(newFilePathAdded2, new ResultTracker(ComponentStates.CHANGED))
 
-            Map<String, String> subComponentResult = [:]
-            subComponentResult.put("fields/fieldOne",ComponentStates.CHANGED.value())
-            subComponentResult.put("fields/fieldTwo",ComponentStates.ADDED.value())
-            subComponentResult.put("fields/fieldThree",ComponentStates.CHANGED.value())
+            Map<String, ComponentStates> subComponentResult = [:]
+            subComponentResult.put("fields/fieldOne",ComponentStates.CHANGED)
+            subComponentResult.put("fields/fieldTwo",ComponentStates.ADDED)
+            subComponentResult.put("fields/fieldThree",ComponentStates.CHANGED)
 
-            ObjectResultTracker objectResultTrackerChanged = new ObjectResultTracker(ComponentStates.CHANGED.value())
+            ObjectResultTracker objectResultTrackerChanged = new ObjectResultTracker(ComponentStates.CHANGED)
             objectResultTrackerChanged.subComponentsResult = subComponentResult
             fileTrackerMap.put(newObjectPathChanged, objectResultTrackerChanged)
-            fileTrackerMap.put(newObjectPathAdded  , new ObjectResultTracker(ComponentStates.ADDED.value()))
+            fileTrackerMap.put(newObjectPathAdded  , new ObjectResultTracker(ComponentStates.ADDED))
 
             packageGenerator.fileTrackerMap = fileTrackerMap
             def stringWriter = new StringWriter()
@@ -148,20 +148,20 @@ class PackageGeneratorTest extends Specification {
             PackageGenerator packageGenerator = new PackageGenerator()
             SmartFilesValidator smartFilesValidator = Mock(SmartFilesValidator)
 
-            Map<String, String> subComponentResult = [:]
-            subComponentResult.put("fields/fieldOne",ComponentStates.DELETED.value())
-            subComponentResult.put("fields/fieldTwo",ComponentStates.DELETED.value())
+            Map<String, ComponentStates> subComponentResult = [:]
+            subComponentResult.put("fields/fieldOne",ComponentStates.DELETED)
+            subComponentResult.put("fields/fieldTwo",ComponentStates.DELETED)
 
 
-            ObjectResultTracker objectResultTracker = new ObjectResultTracker(ComponentStates.CHANGED.value());
+            ObjectResultTracker objectResultTracker = new ObjectResultTracker(ComponentStates.CHANGED);
             objectResultTracker.subComponentsResult = subComponentResult;
 
             def newFilePath = "classes/File.cls"
             def newObjectPathChanged  = "objects/ObjectFileChanged.object"
             def newObjectPathDeleted = "objects/ObjectFileDeleted.object"
             Map<String, ResultTracker> fileTrackerMap = [:]
-            fileTrackerMap.put(newFilePath, new ResultTracker(ComponentStates.DELETED.value()))
-            fileTrackerMap.put(newObjectPathDeleted, new ResultTracker(ComponentStates.DELETED.value()))
+            fileTrackerMap.put(newFilePath, new ResultTracker(ComponentStates.DELETED))
+            fileTrackerMap.put(newObjectPathDeleted, new ResultTracker(ComponentStates.DELETED))
             fileTrackerMap.put(newObjectPathChanged, objectResultTracker)
             packageGenerator.fileTrackerMap = fileTrackerMap
             smartFilesValidator.filterFilesAccordingOrganization(_) >> packageGenerator.getFiles(ComponentStates.DELETED) + packageGenerator.getSubComponents(ComponentStates.DELETED)
