@@ -50,7 +50,7 @@ class ObjectHash extends ComponentHash {
 
         this.subComponents.each { String fieldAPIName, String fieldHash ->
             if(!objectHash.subComponents.containsKey(fieldAPIName)) {
-                result.put(fieldAPIName, ComponentStates.DELETED);
+                result.put(fieldAPIName, ComponentStates.DELETED)
             }
         }
 
