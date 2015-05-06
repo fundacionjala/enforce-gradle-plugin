@@ -5,6 +5,8 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.filemonitor
 
+import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentMonitor
+import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentSerializer
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.FileMonitorSerializer
 import org.fundacionjala.gradle.plugins.enforce.tasks.ForceTask
 
@@ -14,9 +16,7 @@ import java.nio.file.Paths
  * Base of the file monitor tasks
  */
 abstract class FileMonitorTask extends ForceTask {
-
-    private final String FILE_TRACKING = '/.fileTracker.data'
-    FileMonitorSerializer fileMonitorSerializer
+    ComponentMonitor componentMonitor
     public static final String GROUP_FILE_MONITOR_TASK = "File Monitor"
     ArrayList<File> fileArray
 
@@ -34,8 +34,7 @@ abstract class FileMonitorTask extends ForceTask {
      */
     @Override
     void executeTask() {
-        def pathFileTracker = Paths.get(projectPath, FILE_TRACKING).toString()
-        fileMonitorSerializer = new FileMonitorSerializer(pathFileTracker)
+        componentMonitor = new ComponentMonitor(projectPath)
         fileArray = fileManager.getValidElements(projectPath, excludeFilesToMonitor)
         runTask()
     }

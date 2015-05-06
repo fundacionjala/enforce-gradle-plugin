@@ -5,6 +5,8 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.filemonitor
 
+import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
+
 import java.nio.file.Paths
 
 /**
@@ -27,12 +29,12 @@ class FilesStatus extends FileMonitorTask {
      */
     @Override
     void runTask() {
-        if (fileMonitorSerializer.verifyFileMap()) {
-            filesChangedMap = fileMonitorSerializer.getFileChangedExclude(fileArray)
+        if (componentMonitor.verifyFileMap()) {
+            filesChangedMap = componentMonitor.getComponentChanged(fileArray)
             displayFileChanged()
         } else {
-            Map initMapSave = fileMonitorSerializer.loadSignatureForFilesInDirectory(fileArray)
-            fileMonitorSerializer.saveMap(initMapSave)
+            Map initMapSave = componentMonitor.getComponentsSignature(fileArray)
+            componentMonitor.componentSerializer.save(initMapSave)
         }
     }
 
@@ -46,8 +48,8 @@ class FilesStatus extends FileMonitorTask {
             println "*********************************************"
             println "              Status Files Changed             "
             println "*********************************************"
-            filesChangedMap.each { key, value ->
-                println "${Paths.get(key).getFileName()}${" - "}${value}"
+            filesChangedMap.each { String componentPath, ResultTracker resultTracker ->
+                println "${Paths.get(componentPath).getFileName()}${" - "}${resultTracker.toString()}"
             }
             println "*********************************************"
         }

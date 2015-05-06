@@ -6,11 +6,13 @@
 package org.fundacionjala.gradle.plugins.enforce.undeploy
 
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
+import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.QueryBuilder
 import groovy.json.JsonSlurper
 import groovy.util.logging.Log
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
+import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
 
 /**
  * Validates files according salesForce json queries
@@ -132,5 +134,20 @@ class SmartFilesValidator {
         QueryBuilder.defaultComponents.each { typeFile ->
             foldersSupported.push(MetadataComponents.getDirectoryByName(typeFile))
         }
+    }
+
+    /**
+     * Gets queries according files given
+     * @returns queries on String format
+     */
+    public static  ArrayList<String> getJsonQueries(ArrayList<File> files, Credential credential) {
+        ToolingAPI toolingAPI = new ToolingAPI(credential)
+        QueryBuilder queryBuilder = new QueryBuilder()
+        ArrayList<String> jsonQueries = []
+        def queries = queryBuilder.createQueriesFromListOfFiles(files)
+        queries.each {query ->
+            jsonQueries.push(toolingAPI.httpAPIClient.executeQuery(query as String))
+        }
+        return jsonQueries
     }
 }

@@ -63,7 +63,7 @@ public abstract class TemplateFileMonitor {
      * @return boolean result of file(pathFile).exists
      */
     public boolean verifyFileMap() {
-        new File(nameFile).exists()
+        return new File(nameFile).exists()
     }
 
     /**
@@ -172,16 +172,16 @@ public abstract class TemplateFileMonitor {
      * Update changed value hasCode file
      * @throws IOException if no cant write in the disk
      */
-    public Map getFoldersFiltered(ArrayList<String> folders, Map mapFilesChanged) {
+    public Map getFoldersFiltered(ArrayList<String> folders, Map<String, ResultTracker> mapFilesChanged) {
         Map auxiliaryMap = [:]
 
-        mapFilesChanged.each { nameFile, state ->
+        mapFilesChanged.each { fileName, resultTracker ->
 
-            String parentFile = new File(nameFile).getParentFile().getName()
+            String parentFile = new File(fileName).getParentFile().getName()
             folders.each { nameFolder ->
 
                 if (parentFile == nameFolder) {
-                    auxiliaryMap.put(nameFile, state)
+                    auxiliaryMap.put(fileName, resultTracker)
                 }
             }
         }
@@ -216,4 +216,8 @@ public abstract class TemplateFileMonitor {
      * @return a map with information names files and codeHash
      */
     public abstract Map readMap(source) throws IOException, ClassNotFoundException
+
+    public Map<String, ResultTracker> getFileTrackerMap(ArrayList<File> files) {
+
+    }
 }
