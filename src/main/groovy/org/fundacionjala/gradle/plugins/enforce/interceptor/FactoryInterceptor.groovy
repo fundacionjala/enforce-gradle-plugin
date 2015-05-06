@@ -6,14 +6,8 @@
 package org.fundacionjala.gradle.plugins.enforce.interceptor
 
 import com.jalasoft.sfdc.devtool.interceptor.interceptors.*
-import org.fundacionjala.gradle.plugins.enforce.interceptor.interceptors.ObjectInterceptor
-import org.fundacionjala.gradle.plugins.enforce.interceptor.interceptors.WorkflowInterceptor
+import org.fundacionjala.gradle.plugins.enforce.interceptor.interceptors.*
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
-import org.fundacionjala.gradle.plugins.enforce.interceptor.interceptors.ClassInterceptor
-import org.fundacionjala.gradle.plugins.enforce.interceptor.interceptors.ComponentInterceptor
-import org.fundacionjala.gradle.plugins.enforce.interceptor.interceptors.PageInterceptor
-import org.fundacionjala.gradle.plugins.enforce.interceptor.interceptors.TabInterceptor
-import org.fundacionjala.gradle.plugins.enforce.interceptor.interceptors.TriggerInterceptor
 
 /**
  * Creates a new salesforce component interceptor

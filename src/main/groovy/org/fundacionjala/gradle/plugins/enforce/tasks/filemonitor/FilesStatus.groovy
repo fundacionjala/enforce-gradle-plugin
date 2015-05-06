@@ -5,8 +5,6 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.filemonitor
 
-import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
-
 import java.nio.file.Paths
 
 /**
@@ -48,7 +46,7 @@ class FilesStatus extends FileMonitorTask {
             println "*********************************************"
             println "              Status Files Changed             "
             println "*********************************************"
-            filesChangedMap.each { String componentPath, ResultTracker resultTracker ->
+            filesChangedMap.each { componentPath, resultTracker ->
                 println "${Paths.get(componentPath).getFileName()}${" - "}${resultTracker.toString()}"
             }
             println "*********************************************"

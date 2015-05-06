@@ -5,12 +5,12 @@
 
 package org.fundacionjala.gradle.plugins.enforce.unittest.report
 
-import groovy.json.StringEscapeUtils
-import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import com.sforce.soap.apex.CodeCoverageResult
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
+import groovy.json.StringEscapeUtils
 import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexRunTestResult
+import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 
 /**
  * Process information to coverage for the report

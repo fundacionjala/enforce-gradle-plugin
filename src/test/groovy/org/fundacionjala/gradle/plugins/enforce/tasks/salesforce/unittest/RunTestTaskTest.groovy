@@ -5,15 +5,14 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.unittest
 
+import org.fundacionjala.gradle.plugins.enforce.EnforcePlugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.testfixtures.ProjectBuilder
-import org.fundacionjala.gradle.plugins.enforce.EnforcePlugin
 import spock.lang.Shared
 import spock.lang.Specification
 
 import java.nio.file.Paths
-
 
 class RunTestTaskTest extends Specification {
     static final RUN_TEST_TASK_NAME = "runTest"

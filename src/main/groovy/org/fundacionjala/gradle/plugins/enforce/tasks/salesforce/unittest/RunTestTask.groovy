@@ -5,23 +5,23 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.unittest
 
+import com.sforce.soap.apex.*
+import groovy.json.JsonBuilder
+import groovy.json.JsonSlurper
+import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.SalesforceTask
 import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexClasses
 import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexRunTestResult
 import org.fundacionjala.gradle.plugins.enforce.unittest.RunTestListener
 import org.fundacionjala.gradle.plugins.enforce.unittest.TestResultReport
 import org.fundacionjala.gradle.plugins.enforce.unittest.report.HtmlManager
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
+import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
-import com.sforce.soap.apex.*
-import groovy.json.JsonBuilder
-import groovy.json.JsonSlurper
+import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
+import org.fundacionjala.gradle.plugins.enforce.wsc.soap.ApexAPI
 import org.gradle.api.file.FileTree
 import org.gradle.api.logging.LogLevel
 import org.gradle.logging.ProgressLoggerFactory
-import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.SalesforceTask
-import org.fundacionjala.gradle.plugins.enforce.utils.Util
-import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
-import org.fundacionjala.gradle.plugins.enforce.wsc.soap.ApexAPI
 
 import java.nio.file.Paths
 

@@ -5,11 +5,11 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 
-import org.fundacionjala.gradle.plugins.enforce.filemonitor.FileMonitorSerializer
+import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentMonitor
+import org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor
 import org.fundacionjala.gradle.plugins.enforce.utils.AnsiColor
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
-import org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor
 
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -21,7 +21,6 @@ import java.nio.file.StandardCopyOption
 class Deploy extends Deployment {
     private static final String DESCRIPTION_OF_TASK = 'This task deploys all the project'
     private final String FOLDERS_DEPLOY = "folders"
-    private final String FILE_TRACKING = '/.fileTracker.data'
     private final String FOLDER_DEPLOY = 'deploy'
     private final String TURN_OFF_TRUNCATE = 'turnOffTruncate'
     private final String TRUNCATE_DEPRECATE = 'deprecate'
@@ -171,10 +170,9 @@ class Deploy extends Deployment {
      * Updates a file tracker
      */
     def updateFileTracker() {
-        String pathFileTracker = Paths.get(projectPath, FILE_TRACKING)
-        FileMonitorSerializer fileMonitorSerializer = new FileMonitorSerializer(pathFileTracker)
-        Map initMapSave = fileMonitorSerializer.loadSignatureForFilesInDirectory(fileManager.getValidElements(projectPath, excludeFilesToMonitor))
-        fileMonitorSerializer.saveMap(initMapSave)
+        ComponentMonitor componentMonitor = new ComponentMonitor(projectPath)
+        Map initMapSave = componentMonitor.getComponentsSignature(fileManager.getValidElements(projectPath, excludeFilesToMonitor))
+        componentMonitor.componentSerializer.save(initMapSave)
     }
 
     /**

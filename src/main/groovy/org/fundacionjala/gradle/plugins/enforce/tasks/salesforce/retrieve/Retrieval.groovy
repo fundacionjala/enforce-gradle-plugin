@@ -8,11 +8,11 @@ package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.retrieve
 import org.fundacionjala.gradle.plugins.enforce.metadata.RetrieveMetadata
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.SalesforceTask
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
+import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.ZipFileManager
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.Package
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageBuilder
-import org.fundacionjala.gradle.plugins.enforce.utils.Util
 
 import java.nio.file.Paths
 

@@ -5,10 +5,11 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 
-import org.gradle.api.file.FileTree
-import org.fundacionjala.gradle.plugins.enforce.filemonitor.FileMonitorSerializer
+import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageGenerator
+import org.gradle.api.file.FileTree
 
 import java.nio.file.Paths
 
@@ -26,9 +27,8 @@ class Upload extends Deployment {
 
     public ArrayList<File> specificFilesToUpload
     public ArrayList<File> filesToUpload
-    public FileMonitorSerializer objSerializer
+    public PackageGenerator packageGenerator
     public String pathUpload
-    public Map filesChanged
     public String files
     public String option = 'y'
     public final String YES_OPTION = 'y'
@@ -40,9 +40,8 @@ class Upload extends Deployment {
     Upload() {
         super(DESCRIPTION_OF_TASK, Constants.DEPLOYMENT)
         specificFilesToUpload = new ArrayList<File>()
-        objSerializer = new FileMonitorSerializer()
+        packageGenerator = new PackageGenerator()
         filesToUpload = new ArrayList<File>()
-        filesChanged = [:]
         interceptorsToExecute = []
     }
 
@@ -81,15 +80,16 @@ class Upload extends Deployment {
      * Saves on file monitor the files which has been updated
      */
     void saveMapOfFilesChanged() {
-        if (filesChanged.isEmpty()) {
+        if (packageGenerator.fileTrackerMap.isEmpty()) {
             return
         }
 
         if (specificFilesToUpload.empty) {
-            objSerializer.saveMapUpdated(filesChanged)
+            packageGenerator.saveFileTrackerMap()
             return
         }
-        objSerializer.saveMapUpdated(filterMapFilesChanged())
+        packageGenerator.fileTrackerMap = filterMapFilesChanged()
+        packageGenerator.saveFileTrackerMap()
     }
 
     /**
@@ -97,26 +97,21 @@ class Upload extends Deployment {
      * @return
      */
     Map filterMapFilesChanged() {
-        Map auxiliaryMap = [:]
-        specificFilesToUpload.each { file ->
-            if (filesChanged.get(file.toString())) {
-                auxiliaryMap.put(file.toString(), filesChanged.get(file.toString()))
+        Map<String, ResultTracker> fileChanged = [:]
+        specificFilesToUpload.each { File file ->
+            if (packageGenerator.fileTrackerMap.get(file.toString())) {
+                fileChanged.put(file.toString(), packageGenerator.fileTrackerMap.get(file.toString()))
             }
         }
-        return auxiliaryMap
+        return fileChanged
     }
 
     /**
      * Loads all files which has been changed to be updated once user execute upload Task
      */
     void loadFilesChangedToUpload() {
-        objSerializer.setSrcProject(projectPath)
-        ArrayList<File> fileArray = fileManager.getValidElements(projectPath, excludeFilesToMonitor)
-        if (!objSerializer.verifyFileMap()) {
-            objSerializer.mapRefresh(fileArray)
-            return
-        }
-        filesChanged = objSerializer.getFileChangedExclude(fileArray)
+        ArrayList<File> validatedFiles = fileManager.getValidElements(projectPath, excludeFilesToMonitor)
+        packageGenerator.init(projectPath, validatedFiles, credential)
     }
 
     /**

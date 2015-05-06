@@ -5,10 +5,10 @@
 
 package org.fundacionjala.gradle.plugins.enforce.unittest
 
-import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexRunTestResult
-import org.fundacionjala.gradle.plugins.enforce.unittest.coverage.Component
 import org.custommonkey.xmlunit.Diff
 import org.custommonkey.xmlunit.XMLUnit
+import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexRunTestResult
+import org.fundacionjala.gradle.plugins.enforce.unittest.coverage.Component
 import spock.lang.Shared
 import spock.lang.Specification
 

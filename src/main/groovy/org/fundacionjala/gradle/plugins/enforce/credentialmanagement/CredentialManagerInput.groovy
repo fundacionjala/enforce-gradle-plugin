@@ -5,9 +5,9 @@
 
 package org.fundacionjala.gradle.plugins.enforce.credentialmanagement
 
-import org.fundacionjala.gradle.plugins.enforce.exceptions.CredentialException
 import groovy.json.JsonSlurper
 import groovy.json.internal.LazyMap
+import org.fundacionjala.gradle.plugins.enforce.exceptions.CredentialException
 import org.fundacionjala.gradle.plugins.enforce.utils.AnsiColor
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential

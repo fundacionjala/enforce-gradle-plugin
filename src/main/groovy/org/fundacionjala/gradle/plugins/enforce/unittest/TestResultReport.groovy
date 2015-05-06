@@ -5,7 +5,6 @@
 
 package org.fundacionjala.gradle.plugins.enforce.unittest
 
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 import groovy.json.JsonSlurper
 import groovy.xml.MarkupBuilder
 import groovy.xml.XmlUtil
@@ -13,6 +12,7 @@ import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexRunTestResult
 import org.fundacionjala.gradle.plugins.enforce.unittest.coverage.Component
 import org.fundacionjala.gradle.plugins.enforce.unittest.coverage.CoverageElement
 import org.fundacionjala.gradle.plugins.enforce.unittest.report.InformationLoader
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 
 import java.nio.file.Paths
 

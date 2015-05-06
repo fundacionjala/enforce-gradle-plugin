@@ -2,11 +2,9 @@ package org.fundacionjala.gradle.plugins.enforce.utils.salesforce
 
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentMonitor
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
-import org.fundacionjala.gradle.plugins.enforce.filemonitor.FileMonitorSerializer
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ObjectResultTracker
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
 import org.fundacionjala.gradle.plugins.enforce.undeploy.SmartFilesValidator
-import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -17,47 +15,29 @@ class PackageGeneratorTest extends Specification {
     @Shared
     String RESOURCE_PATH = "${ROOT_PATH}/src/test/groovy/org/fundacionjala/gradle/plugins/enforce/utils/resources"
 
-    def "Test should load a mock of file tracker map"() {
-        given:
-        PackageGenerator packageGenerator = new PackageGenerator()
-        packageGenerator.fileMonitorSerializer = Mock(FileMonitorSerializer)
-        packageGenerator.fileMonitorSerializer.verifyFileMap() >> true
-        def newFilePath = "classes/File.cls"
-        Map<String, ResultTracker> fileTrackerMap = [:]
-        fileTrackerMap.put(newFilePath, new ResultTracker(ComponentStates.ADDED.value()))
-        packageGenerator.fileMonitorSerializer.getFileTrackerMap(_) >> fileTrackerMap
-        when:
-        packageGenerator.init('', [], new Credential())
-        then:
-        packageGenerator.fileTrackerMap.get(newFilePath).state == ComponentStates.ADDED.value()
-    }
-
-
     def "Test should build a package from new and changed files"() {
         given:
-        PackageGenerator packageGenerator = new PackageGenerator()
-        Map<String, ResultTracker> fileTrackerMap = [:]
-        def newFilePath1 = "classes/File.cls"
-        def newFilePath2 = "classes/Util.cls"
-        def newFilePath3 = "objects/ObjectFile.object"
-        def newFilePath4 = "objects/ObjectUtil.object"
-        fileTrackerMap.put(newFilePath1, new ResultTracker(ComponentStates.ADDED.value()))
-        fileTrackerMap.put(newFilePath2, new ResultTracker(ComponentStates.CHANGED.value()))
-        fileTrackerMap.put(newFilePath3, new ObjectResultTracker(ComponentStates.ADDED.value()))
-        fileTrackerMap.put(newFilePath4, new ObjectResultTracker(ComponentStates.CHANGED.value()))
-        packageGenerator.fileTrackerMap = fileTrackerMap
-        def stringWriter = new StringWriter()
-
+            PackageGenerator packageGenerator = new PackageGenerator()
+            Map<String, ResultTracker> fileTrackerMap = [:]
+            def newFilePath1 = "classes/File.cls"
+            def newFilePath2 = "classes/Util.cls"
+            def newFilePath3 = "objects/ObjectFile.object"
+            def newFilePath4 = "objects/ObjectUtil.object"
+            fileTrackerMap.put(newFilePath1, new ResultTracker(ComponentStates.ADDED))
+            fileTrackerMap.put(newFilePath2, new ResultTracker(ComponentStates.CHANGED))
+            fileTrackerMap.put(newFilePath3, new ObjectResultTracker(ComponentStates.ADDED))
+            fileTrackerMap.put(newFilePath4, new ObjectResultTracker(ComponentStates.CHANGED))
+            packageGenerator.fileTrackerMap = fileTrackerMap
+            def stringWriter = new StringWriter()
         when:
-        packageGenerator.buildPackage(stringWriter)
-
+            packageGenerator.buildPackage(stringWriter)
         then:
-        packageGenerator.packageBuilder.metaPackage.types[0].members[0] == "File"
-        packageGenerator.packageBuilder.metaPackage.types[0].members[1] == "Util"
-        packageGenerator.packageBuilder.metaPackage.types[0].name == "ApexClass"
-        packageGenerator.packageBuilder.metaPackage.types[1].members[0] == "ObjectFile"
-        packageGenerator.packageBuilder.metaPackage.types[1].members[1] == "ObjectUtil"
-        packageGenerator.packageBuilder.metaPackage.types[1].name == "CustomObject"
+            packageGenerator.packageBuilder.metaPackage.types[0].members[0] == "File"
+            packageGenerator.packageBuilder.metaPackage.types[0].members[1] == "Util"
+            packageGenerator.packageBuilder.metaPackage.types[0].name == "ApexClass"
+            packageGenerator.packageBuilder.metaPackage.types[1].members[0] == "ObjectFile"
+            packageGenerator.packageBuilder.metaPackage.types[1].members[1] == "ObjectUtil"
+            packageGenerator.packageBuilder.metaPackage.types[1].name == "CustomObject"
     }
 
     def "Test should get the subcomponentes according to status field"() {
@@ -110,18 +90,18 @@ class PackageGeneratorTest extends Specification {
             def newFilePathAdded2 = "classes/Util.cls"
             def newObjectPathChanged = "objects/ObjectFile.object"
             def newObjectPathAdded   = "objects/ObjectUtil.object"
-            fileTrackerMap.put(newFilePathAdded, new ResultTracker(ComponentStates.ADDED.value()))
-            fileTrackerMap.put(newFilePathAdded2, new ResultTracker(ComponentStates.CHANGED.value()))
+            fileTrackerMap.put(newFilePathAdded, new ResultTracker(ComponentStates.ADDED))
+            fileTrackerMap.put(newFilePathAdded2, new ResultTracker(ComponentStates.CHANGED))
 
-            Map<String, String> subComponentResult = [:]
-            subComponentResult.put("fields/fieldOne",ComponentStates.CHANGED.value())
-            subComponentResult.put("fields/fieldTwo",ComponentStates.ADDED.value())
-            subComponentResult.put("fields/fieldThree",ComponentStates.CHANGED.value())
+            Map<String, ComponentStates> subComponentResult = [:]
+            subComponentResult.put("fields/fieldOne",ComponentStates.CHANGED)
+            subComponentResult.put("fields/fieldTwo",ComponentStates.ADDED)
+            subComponentResult.put("fields/fieldThree",ComponentStates.CHANGED)
 
-            ObjectResultTracker objectResultTrackerChanged = new ObjectResultTracker(ComponentStates.CHANGED.value())
+            ObjectResultTracker objectResultTrackerChanged = new ObjectResultTracker(ComponentStates.CHANGED)
             objectResultTrackerChanged.subComponentsResult = subComponentResult
             fileTrackerMap.put(newObjectPathChanged, objectResultTrackerChanged)
-            fileTrackerMap.put(newObjectPathAdded  , new ObjectResultTracker(ComponentStates.ADDED.value()))
+            fileTrackerMap.put(newObjectPathAdded  , new ObjectResultTracker(ComponentStates.ADDED))
 
             packageGenerator.fileTrackerMap = fileTrackerMap
             def stringWriter = new StringWriter()
@@ -148,20 +128,20 @@ class PackageGeneratorTest extends Specification {
             PackageGenerator packageGenerator = new PackageGenerator()
             SmartFilesValidator smartFilesValidator = Mock(SmartFilesValidator)
 
-            Map<String, String> subComponentResult = [:]
-            subComponentResult.put("fields/fieldOne",ComponentStates.DELETED.value())
-            subComponentResult.put("fields/fieldTwo",ComponentStates.DELETED.value())
+            Map<String, ComponentStates> subComponentResult = [:]
+            subComponentResult.put("fields/fieldOne",ComponentStates.DELETED)
+            subComponentResult.put("fields/fieldTwo",ComponentStates.DELETED)
 
 
-            ObjectResultTracker objectResultTracker = new ObjectResultTracker(ComponentStates.CHANGED.value());
+            ObjectResultTracker objectResultTracker = new ObjectResultTracker(ComponentStates.CHANGED);
             objectResultTracker.subComponentsResult = subComponentResult;
 
             def newFilePath = "classes/File.cls"
             def newObjectPathChanged  = "objects/ObjectFileChanged.object"
             def newObjectPathDeleted = "objects/ObjectFileDeleted.object"
             Map<String, ResultTracker> fileTrackerMap = [:]
-            fileTrackerMap.put(newFilePath, new ResultTracker(ComponentStates.DELETED.value()))
-            fileTrackerMap.put(newObjectPathDeleted, new ResultTracker(ComponentStates.DELETED.value()))
+            fileTrackerMap.put(newFilePath, new ResultTracker(ComponentStates.DELETED))
+            fileTrackerMap.put(newObjectPathDeleted, new ResultTracker(ComponentStates.DELETED))
             fileTrackerMap.put(newObjectPathChanged, objectResultTracker)
             packageGenerator.fileTrackerMap = fileTrackerMap
             smartFilesValidator.filterFilesAccordingOrganization(_) >> packageGenerator.getFiles(ComponentStates.DELETED) + packageGenerator.getSubComponents(ComponentStates.DELETED)
@@ -182,4 +162,16 @@ class PackageGeneratorTest extends Specification {
 
     }
 
+    def "Test should exclude a file called Class1.cls from fileTrackerMap"() {
+        given:
+            PackageGenerator packageGenerator = new PackageGenerator()
+            Map<String, ResultTracker> fileTrackerMap = ['classes/Class1.cls': new ResultTracker(ComponentStates.ADDED),
+                                                         'classes/Class2.cls': new ResultTracker(ComponentStates.CHANGED)]
+            packageGenerator.fileTrackerMap = fileTrackerMap
+            ArrayList<File> files = [new File('classes/Class2.cls')]
+        when:
+            ArrayList<File> result = packageGenerator.excludeFiles(files)
+        then:
+            result == [new File('classes/Class1.cls')]
+    }
 }

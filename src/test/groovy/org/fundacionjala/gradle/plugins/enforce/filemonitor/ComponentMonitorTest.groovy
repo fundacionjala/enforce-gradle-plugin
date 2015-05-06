@@ -358,7 +358,7 @@ class ComponentMonitorTest extends Specification{
             relativePath == Paths.get("resources", "class", "class1").toString()
     }
 
-    def "Test should update the map to save it "() {
+    def "Test should update the map with subComponents"() {
         given:
             String class1Path = 'src/classes/Class1.cls'
             String class2Path = 'src/classes/Class2.cls'
@@ -393,6 +393,52 @@ class ComponentMonitorTest extends Specification{
             componentMonitor.recoveryFileHashCode.get(class1Path).hash == 'hashClassChanged'
             componentMonitor.recoveryFileHashCode.get(class3Path).hash == 'hashClass3'
             componentMonitor.recoveryFileHashCode.get(newClassPath).hash == 'hashNewClass'
+    }
+
+    def "Test should update the map to save it "() {
+        given:
+            String object1Path = 'src/objects/object1__c.object'
+            Map<String, ComponentHash> recoveryFileHashCode = [:]
+            Map<String, String> subComponentsRecovery = [:]
+            subComponentsRecovery.put('fields/Field1__c', 'field1Hash')
+            subComponentsRecovery.put('fields/Field2__c', 'field2Hash')
+            subComponentsRecovery.put('fields/Field3__c', 'field3Hash')
+            recoveryFileHashCode.put(object1Path, new ObjectHash(object1Path, 'ObjectHash', subComponentsRecovery))
+
+            Map<String, ComponentHash> currentFileHashCode = [:]
+            Map<String, String> subComponentsCurrent = [:]
+            subComponentsCurrent.put('fields/Field1__c', 'field1HashChanged')
+            subComponentsCurrent.put('fields/Field3__c', 'field3Hash')
+            subComponentsCurrent.put('fields/Field4__c', 'field4Hash')
+            currentFileHashCode.put(object1Path, new ObjectHash(object1Path, 'objectHashChanged', subComponentsCurrent))
+
+
+            Map<String, ResultTracker> mapFilesChanged = [:]
+            Map<String, ComponentStates> objectResultSubComponents = [:]
+            objectResultSubComponents.put('fields/Field1__c', ComponentStates.CHANGED)
+            objectResultSubComponents.put('fields/Field2__c', ComponentStates.DELETED)
+            objectResultSubComponents.put('fields/Field4__c', ComponentStates.ADDED)
+            ObjectResultTracker objectResultTracker = new ObjectResultTracker(ComponentStates.CHANGED)
+            objectResultTracker.subComponentsResult = objectResultSubComponents
+            mapFilesChanged.put(object1Path, objectResultTracker)
+
+            componentMonitor.recoveryFileHashCode = recoveryFileHashCode
+            componentMonitor.currentFileHashCode = currentFileHashCode
+
+        when:
+            componentMonitor.saveMapUpdated(mapFilesChanged)
+        then:
+            componentMonitor.recoveryFileHashCode.containsKey(object1Path)
+            componentMonitor.recoveryFileHashCode.get(object1Path).hash == 'objectHashChanged'
+            componentMonitor.recoveryFileHashCode.get(object1Path).subComponents.containsKey('fields/Field1__c')
+            !componentMonitor.recoveryFileHashCode.get(object1Path).subComponents.containsKey('fields/Field2__c')
+            componentMonitor.recoveryFileHashCode.get(object1Path).subComponents.containsKey('fields/Field3__c')
+            componentMonitor.recoveryFileHashCode.get(object1Path).subComponents.containsKey('fields/Field4__c')
+            componentMonitor.recoveryFileHashCode.get(object1Path).subComponents.get('fields/Field1__c') == 'field1HashChanged'
+            componentMonitor.recoveryFileHashCode.get(object1Path).subComponents.get('fields/Field3__c') == 'field3Hash'
+            componentMonitor.recoveryFileHashCode.get(object1Path).subComponents.get('fields/Field4__c') == 'field4Hash'
+
+
     }
 
     def cleanupSpec() {

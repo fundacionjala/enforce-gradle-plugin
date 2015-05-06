@@ -5,14 +5,15 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 
-import org.fundacionjala.gradle.plugins.enforce.filemonitor.FileMonitorSerializer
+import org.fundacionjala.gradle.plugins.enforce.EnforcePlugin
+import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
+import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
+import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
+import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.LoginType
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.fundacionjala.gradle.plugins.enforce.EnforcePlugin
-import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
-import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -30,8 +31,8 @@ class UploadTest extends Specification {
 
     @Shared
     def SRC_PATH = Paths.get(System.getProperty("user.dir"), "src", "test", "groovy", "org",
-                                                "fundacionjala", "gradle", "plugins","enforce",
-                                                "tasks", "salesforce", "resources").toString()
+            "fundacionjala", "gradle", "plugins", "enforce",
+            "tasks", "salesforce", "resources").toString()
 
     @Shared
     Credential credential
@@ -53,7 +54,7 @@ class UploadTest extends Specification {
         credential.type = 'normal'
     }
 
-    def "Test shouldn't create a package xml file if specificFilesToUpload Array is empty " () {
+    def "Test shouldn't create a package xml file if specificFilesToUpload Array is empty "() {
         given:
             uploadInstance.pathUpload = Paths.get(SRC_PATH, 'build').toString()
             uploadInstance.specificFilesToUpload = []
@@ -63,7 +64,7 @@ class UploadTest extends Specification {
             !new File(Paths.get(SRC_PATH, 'build', 'package.xml').toString()).exists()
     }
 
-    def "Test should create a package xml file" () {
+    def "Test should create a package xml file"() {
         given:
             uploadInstance.pathUpload = Paths.get(SRC_PATH, 'build').toString()
             uploadInstance.specificFilesToUpload = [new File(Paths.get(SRC_PATH, "src", "classes", "Class1.cls").toString()),
@@ -76,7 +77,7 @@ class UploadTest extends Specification {
             new File(Paths.get(SRC_PATH, 'build', 'package.xml').toString()).exists()
     }
 
-    def "Test should copy files to upload" () {
+    def "Test should copy files to upload"() {
         given:
             uploadInstance.pathUpload = Paths.get(SRC_PATH, 'build').toString()
             uploadInstance.specificFilesToUpload = [new File(Paths.get(SRC_PATH, "src", "classes", "Class1.cls").toString()),
@@ -85,84 +86,44 @@ class UploadTest extends Specification {
         when:
             uploadInstance.copyFilesToUpload()
         then:
-            new File(Paths.get(SRC_PATH, 'build',  "classes", "Class1.cls").toString()).exists()
-            new File(Paths.get(SRC_PATH, 'build',  "classes", "Class1.cls-meta.xml").toString()).exists()
-            new File(Paths.get(SRC_PATH, 'build',  "objects", "Object1__c.object").toString()).exists()
+            new File(Paths.get(SRC_PATH, 'build', "classes", "Class1.cls").toString()).exists()
+            new File(Paths.get(SRC_PATH, 'build', "classes", "Class1.cls-meta.xml").toString()).exists()
+            new File(Paths.get(SRC_PATH, 'build', "objects", "Object1__c.object").toString()).exists()
     }
 
-    def "Test should return a map with changed files" () {
+    def "Test should return a map with changed files"() {
         given:
             def changedFilePath = Paths.get(SRC_PATH, "classes", "class1.cls").toString()
             uploadInstance.specificFilesToUpload = [new File(changedFilePath),
                                                     new File(Paths.get(SRC_PATH, "classes", "class1.cls-meta.xml").toString()),
                                                     new File(Paths.get(SRC_PATH, "objects", "object1.object").toString())]
-            uploadInstance.filesChanged.put(changedFilePath, "New file")
+            uploadInstance.packageGenerator.fileTrackerMap = [:]
+            uploadInstance.packageGenerator.fileTrackerMap.put(changedFilePath, new ResultTracker(ComponentStates.ADDED))
             def filesChangedExpect = [:]
-            filesChangedExpect.put(changedFilePath, "New file")
+            filesChangedExpect.put(changedFilePath, new ResultTracker(ComponentStates.ADDED))
         when:
             def filesChangedToUpload = uploadInstance.filterMapFilesChanged()
         then:
-            filesChangedToUpload == filesChangedExpect
+            filesChangedToUpload.containsKey(changedFilePath)
+            filesChangedExpect.containsKey(changedFilePath)
+            filesChangedToUpload.get(changedFilePath).state == filesChangedExpect.get(changedFilePath).state
     }
 
-    def "Test should return a empty Map if there isn't changed file" () {
+    def "Test should return a empty Map if there isn't changed file"() {
         given:
             def changedFilePath = Paths.get(SRC_PATH, "classes", "class2.cls").toString()
             uploadInstance.specificFilesToUpload = [new File(Paths.get(SRC_PATH, "classes", "class1.cls").toString()),
                                                     new File(Paths.get(SRC_PATH, "classes", "class1.cls-meta.xml").toString()),
                                                     new File(Paths.get(SRC_PATH, "objects", "object1.object").toString())]
-            uploadInstance.filesChanged.put(changedFilePath, "")
+            uploadInstance.packageGenerator.fileTrackerMap = [:]
+            uploadInstance.packageGenerator.fileTrackerMap.put(changedFilePath, "")
         when:
             def filesChangedToUpload = uploadInstance.filterMapFilesChanged()
         then:
             filesChangedToUpload == [:]
     }
 
-    def "Test should save in a map changed files" () {
-        given:
-            uploadInstance.objSerializer = new FileMonitorSerializer()
-            def changedFilePath = Paths.get(SRC_PATH, "src", "classes", "Class1.cls").toString()
-            uploadInstance.specificFilesToUpload = [new File(Paths.get(SRC_PATH, "src", "classes", "Class1.cls").toString()),
-                                                    new File(Paths.get(SRC_PATH, "src", "classes", "Class1.cls-meta.xml").toString()),
-                                                    new File(Paths.get(SRC_PATH, "src", "objects", "Object1__c.object").toString())]
-            uploadInstance.filesChanged.put(changedFilePath, "Changed file")
-            uploadInstance.objSerializer.recoveryFileHashCode = [:]
-            uploadInstance.objSerializer.currentFileHashCode = [:]
-            uploadInstance.objSerializer.currentFileHashCode.put(changedFilePath, "Changed file")
-            uploadInstance.objSerializer.nameFile = Paths.get(SRC_PATH, '.fileTracker.data').toString()
-        when:
-            uploadInstance.saveMapOfFilesChanged()
-        then:
-            uploadInstance.objSerializer.recoveryFileHashCode == uploadInstance.filterMapFilesChanged()
-    }
-
-    def "Test shouldn't save anything if filesChanged is empty " () {
-        given:
-            uploadInstance.filesChanged = [:]
-            uploadInstance.objSerializer = new FileMonitorSerializer()
-        when:
-            uploadInstance.saveMapOfFilesChanged()
-        then:
-            uploadInstance.objSerializer.recoveryFileHashCode == null
-    }
-
-    def "Test should save in a map changed files if specificFilesToUpload map is empty" () {
-        given:
-            uploadInstance.objSerializer = new FileMonitorSerializer()
-            def changedFilePath = Paths.get(SRC_PATH, "src", "classes", "Class1.cls").toString()
-            uploadInstance.specificFilesToUpload = []
-            uploadInstance.filesChanged.put(changedFilePath, "Changed file")
-            uploadInstance.objSerializer.recoveryFileHashCode = [:]
-            uploadInstance.objSerializer.currentFileHashCode = [:]
-            uploadInstance.objSerializer.currentFileHashCode.put(changedFilePath, "Changed file")
-            uploadInstance.objSerializer.nameFile = Paths.get(SRC_PATH, '.fileTracker.data').toString()
-        when:
-            uploadInstance.saveMapOfFilesChanged()
-        then:
-            uploadInstance.objSerializer.recoveryFileHashCode == uploadInstance.filesChanged
-    }
-
-    def "Test should return an exception if there is a invalid folder" () {
+    def "Test should return an exception if there is a invalid folder"() {
         given:
             def foldersName = ['classes', 'invalid']
         when:
@@ -171,16 +132,16 @@ class UploadTest extends Specification {
             thrown(Exception)
     }
 
-    def "Test should return an exception if there is a invalid file" () {
+    def "Test should return an exception if there is a invalid file"() {
         given:
-            def filesName = ["classes${File.separator}Class1.txy","triggers${File.separator}TriggerOne.trigger"]
+            def filesName = ["classes${File.separator}Class1.txy", "triggers${File.separator}TriggerOne.trigger"]
         when:
             uploadInstance.validateFiles(filesName)
         then:
             thrown(Exception)
     }
 
-    def "Test should fill specificFilesToUpload with files sent" () {
+    def "Test should fill specificFilesToUpload with files sent"() {
         given:
             uploadInstance.files = "classes${File.separator}class1.cls,objects${File.separator}Object1__c.object"
             uploadInstance.projectPath = SRC_PATH
@@ -193,7 +154,7 @@ class UploadTest extends Specification {
             uploadInstance.specificFilesToUpload.sort() == [classFile, objectFile, classFileXml].sort()
     }
 
-    def "Test should fill specificFilesToUpload with folders sent" () {
+    def "Test should fill specificFilesToUpload with folders sent"() {
         given:
             uploadInstance.files = 'classes,triggers'
             uploadInstance.projectPath = SRC_PATH
@@ -207,7 +168,7 @@ class UploadTest extends Specification {
             uploadInstance.specificFilesToUpload.sort() == [classFile, triggerFile, classFileXml, triggerFileXml].sort()
     }
 
-    def "Test should fill specificFilesToUpload with folders and files sent" () {
+    def "Test should fill specificFilesToUpload with folders and files sent"() {
         given:
             uploadInstance.files = "classes,triggers${File.separator}LunesTrigger.trigger"
             uploadInstance.projectPath = SRC_PATH
@@ -221,9 +182,9 @@ class UploadTest extends Specification {
             uploadInstance.specificFilesToUpload.sort() == [classFile, triggerFile, classFileXml, triggerFileXml].sort()
     }
 
-    def "Test should fill specificFilesToUpload array following a wildcard sent '*/class1.cls,objects/Object1__c.object' " () {
+    def "Test should fill specificFilesToUpload array following a wildcard sent '*/class1.cls,objects/Object1__c.object' "() {
         given:
-            uploadInstance.files ="*${File.separator}class1.cls,objects${File.separator}Object1__c.object"
+            uploadInstance.files = "*${File.separator}class1.cls,objects${File.separator}Object1__c.object"
             uploadInstance.projectPath = SRC_PATH
         when:
             uploadInstance.loadParameter()
@@ -234,39 +195,39 @@ class UploadTest extends Specification {
             uploadInstance.specificFilesToUpload.sort() == [classFile, objectFile, classFileXml].sort()
     }
 
-    def "Test should fill specificFilesToUpload array following a wildcard sent 'objects/*.object' " () {
+    def "Test should fill specificFilesToUpload array following a wildcard sent 'objects/*.object' "() {
         given:
-            uploadInstance.files ="objects${File.separator}*.object"
+            uploadInstance.files = "objects${File.separator}*.object"
             uploadInstance.projectPath = SRC_PATH
+            new File(Paths.get(SRC_PATH, 'objects', 'object1.object').toString())
         when:
             uploadInstance.loadParameter()
         then:
             uploadInstance.specificFilesToUpload.sort() == [new File(Paths.get(SRC_PATH, 'objects', 'Account.object').toString()),
-                                                            new File(Paths.get(SRC_PATH, 'objects', 'object1.object').toString()),
                                                             new File(Paths.get(SRC_PATH, 'objects', 'Object1__c.object').toString()),
                                                             new File(Paths.get(SRC_PATH, 'objects', 'Object2__c.object').toString())].sort()
     }
 
-    def "Test should fill specificFilesToUpload array following a wildcard sent '**/*Account*/**' " () {
+    def "Test should fill specificFilesToUpload array following a wildcard sent '**/*Account*/**' "() {
         given:
-            uploadInstance.files ="**${File.separator}*Account*${File.separator}**"
+            uploadInstance.files = "**${File.separator}*Account*${File.separator}**"
             uploadInstance.projectPath = SRC_PATH
         when:
             uploadInstance.loadParameter()
         then:
             uploadInstance.specificFilesToUpload.sort() == [new File(Paths.get(SRC_PATH, 'objects', 'Account.object').toString()),
-                                                            new File(Paths.get(SRC_PATH, 'src', 'objects', 'Account.object').toString())].sort()
+                                                        new File(Paths.get(SRC_PATH, 'src', 'objects', 'Account.object').toString())].sort()
     }
 
-    def "Test should fill specificFilesToUpload array following a wildcard sent '**/*.cls' " () {
+    def "Test should fill specificFilesToUpload array following a wildcard sent '**/*.cls' "() {
         given:
-            uploadInstance.files ="**${File.separator}*.cls"
+            uploadInstance.files = "**${File.separator}*.cls"
             uploadInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
         when:
             uploadInstance.loadParameter()
         then:
             uploadInstance.specificFilesToUpload.sort() == [new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString()),
-                                                            new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls-meta.xml').toString())].sort()
+                                                        new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls-meta.xml').toString())].sort()
     }
 
     def cleanupSpec() {

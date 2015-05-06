@@ -1,9 +1,7 @@
 package org.fundacionjala.gradle.plugins.enforce.utils.salesforce
 
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentMonitor
-import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentSerializer
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
-import org.fundacionjala.gradle.plugins.enforce.filemonitor.FileMonitorSerializer
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ObjectResultTracker
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
 import org.fundacionjala.gradle.plugins.enforce.undeploy.SmartFilesValidator
@@ -13,13 +11,11 @@ import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import java.nio.file.Paths
 
 class PackageGenerator {
-
     PackageBuilder packageBuilder
-    //FileMonitorSerializer fileMonitorSerializer
     ComponentMonitor componentMonitor
     Map<String, ResultTracker> fileTrackerMap
     SmartFilesValidator smartFilesValidator
-    Credential credential;
+    Credential credential
 
     public PackageGenerator() {
         packageBuilder = new PackageBuilder()
@@ -27,14 +23,13 @@ class PackageGenerator {
         //fileMonitorSerializer = new FileMonitorSerializer()
     }
 
-    public init(String projectPath, ArrayList<File> files, Credential credential) {
+    public void init(String projectPath, ArrayList<File> files, Credential credential) {
         this.credential = credential
         componentMonitor = new ComponentMonitor(projectPath)
         if (!componentMonitor.verifyFileMap()) {
             componentMonitor.saveCurrentComponents(files)
             return
         }
-        //fileTrackerMap = componentMonitor.getFileTrackerMap(files)
         fileTrackerMap = componentMonitor.getComponentChanged(files)
     }
 
@@ -88,7 +83,6 @@ class PackageGenerator {
 
     public void buildPackage(Writer writer) {
         ArrayList<File> files = getFiles(ComponentStates.ADDED) + getFiles(ComponentStates.CHANGED) + getSubComponents(ComponentStates.ADDED) + getSubComponents(ComponentStates.CHANGED)
-        println files
         packageBuilder.createPackage(files)
         packageBuilder.write(writer)
     }
@@ -112,8 +106,9 @@ class PackageGenerator {
     }
 
     public ArrayList<File> excludeFiles(ArrayList<File> files) {
+        Map<String, ResultTracker> fileTrackerMapClone = fileTrackerMap.clone() as Map<String, ResultTracker>
         ArrayList<File> excludedFiles = []
-        fileTrackerMap.each { fileName, resultTracker ->
+        fileTrackerMapClone.each { fileName, resultTracker ->
             def fileChanged = new File(fileName.toString())
             if (!files.contains(fileChanged)) {
                 fileTrackerMap.remove(fileName.toString())

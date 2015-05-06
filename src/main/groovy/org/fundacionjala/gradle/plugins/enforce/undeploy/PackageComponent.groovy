@@ -5,9 +5,9 @@
 
 package org.fundacionjala.gradle.plugins.enforce.undeploy
 
-import org.gradle.api.GradleException
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 import org.fundacionjala.gradle.plugins.enforce.wsc.Connector
+import org.gradle.api.GradleException
 
 /**
  * This class represents all components that are in a local org

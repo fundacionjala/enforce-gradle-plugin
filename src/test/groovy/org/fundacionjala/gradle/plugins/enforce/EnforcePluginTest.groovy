@@ -5,11 +5,10 @@
 
 package org.fundacionjala.gradle.plugins.enforce
 
+import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import spock.lang.Specification
-
 
 class EnforcePluginTest extends Specification {
 
