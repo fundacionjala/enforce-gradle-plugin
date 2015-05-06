@@ -88,7 +88,6 @@ class PackageGenerator {
 
     public void buildPackage(Writer writer) {
         ArrayList<File> files = getFiles(ComponentStates.ADDED) + getFiles(ComponentStates.CHANGED) + getSubComponents(ComponentStates.ADDED) + getSubComponents(ComponentStates.CHANGED)
-        println files
         packageBuilder.createPackage(files)
         packageBuilder.write(writer)
     }
