@@ -2,11 +2,9 @@ package org.fundacionjala.gradle.plugins.enforce.utils.salesforce
 
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentMonitor
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
-import org.fundacionjala.gradle.plugins.enforce.filemonitor.FileMonitorSerializer
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ObjectResultTracker
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
 import org.fundacionjala.gradle.plugins.enforce.undeploy.SmartFilesValidator
-import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -164,4 +162,16 @@ class PackageGeneratorTest extends Specification {
 
     }
 
+    def "Test should exclude a file called Class1.cls from fileTrackerMap"() {
+        given:
+            PackageGenerator packageGenerator = new PackageGenerator()
+            Map<String, ResultTracker> fileTrackerMap = ['classes/Class1.cls': new ResultTracker(ComponentStates.ADDED),
+                                                         'classes/Class2.cls': new ResultTracker(ComponentStates.CHANGED)]
+            packageGenerator.fileTrackerMap = fileTrackerMap
+            ArrayList<File> files = [new File('classes/Class2.cls')]
+        when:
+            ArrayList<File> result = packageGenerator.excludeFiles(files)
+        then:
+            result == [new File('classes/Class1.cls')]
+    }
 }

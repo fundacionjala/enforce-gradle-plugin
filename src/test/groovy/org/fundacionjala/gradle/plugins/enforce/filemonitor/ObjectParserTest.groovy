@@ -1,6 +1,5 @@
 package org.fundacionjala.gradle.plugins.enforce.filemonitor
 
-import com.twmacinta.util.MD5
 import spock.lang.Shared
 import spock.lang.Specification
 

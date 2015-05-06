@@ -5,18 +5,18 @@
 
 package org.fundacionjala.gradle.plugins.enforce.wsc.soap
 
-import org.fundacionjala.gradle.plugins.enforce.exceptions.deploy.DeployException
-import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
-import org.fundacionjala.gradle.plugins.enforce.wsc.ForceAPI
-import org.fundacionjala.gradle.plugins.enforce.wsc.LoginType
 import com.sforce.soap.metadata.DeployDetails
 import com.sforce.soap.metadata.DeployMessage
 import com.sforce.soap.metadata.DeployResult
 import com.sforce.soap.partner.GetUserInfoResult
 import com.sforce.soap.partner.LoginResult
 import com.sforce.soap.partner.PartnerConnection
+import org.fundacionjala.gradle.plugins.enforce.exceptions.deploy.DeployException
 import org.fundacionjala.gradle.plugins.enforce.exceptions.deploy.InfoDeploy
 import org.fundacionjala.gradle.plugins.enforce.wsc.Connector
+import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
+import org.fundacionjala.gradle.plugins.enforce.wsc.ForceAPI
+import org.fundacionjala.gradle.plugins.enforce.wsc.LoginType
 import spock.lang.Shared
 import spock.lang.Specification
 

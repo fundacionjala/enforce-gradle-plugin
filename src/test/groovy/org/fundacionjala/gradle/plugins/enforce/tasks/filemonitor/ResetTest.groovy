@@ -6,13 +6,12 @@
 package org.fundacionjala.gradle.plugins.enforce.tasks.filemonitor
 
 import com.twmacinta.util.MD5
-import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentMonitor
-import org.gradle.testfixtures.ProjectBuilder
 import org.fundacionjala.gradle.plugins.enforce.EnforcePlugin
-import org.fundacionjala.gradle.plugins.enforce.filemonitor.FileMonitorSerializer
+import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentMonitor
+import org.gradle.api.Project
+import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Shared
 import spock.lang.Specification
-import org.gradle.api.Project
 
 import java.nio.file.Paths
 
@@ -57,6 +56,7 @@ class ResetTest extends Specification {
     }
 
     def cleanupSpec() {
-        new File(Paths.get(SRC_PATH).toString()).deleteDir()
+       new File(Paths.get(SRC_PATH).toString()).deleteDir()
+
     }
 }

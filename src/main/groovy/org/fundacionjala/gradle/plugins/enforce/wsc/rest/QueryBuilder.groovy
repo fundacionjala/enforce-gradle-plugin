@@ -5,10 +5,10 @@
 
 package org.fundacionjala.gradle.plugins.enforce.wsc.rest
 
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 import groovy.util.logging.Log
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageBuilder
 
 /**

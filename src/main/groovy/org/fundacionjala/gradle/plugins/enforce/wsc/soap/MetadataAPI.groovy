@@ -5,12 +5,12 @@
 
 package org.fundacionjala.gradle.plugins.enforce.wsc.soap
 
-import org.fundacionjala.gradle.plugins.enforce.wsc.InspectorResults
 import com.sforce.soap.metadata.*
 import org.fundacionjala.gradle.plugins.enforce.exceptions.deploy.DeployException
 import org.fundacionjala.gradle.plugins.enforce.exceptions.deploy.InfoDeploy
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.ForceAPI
+import org.fundacionjala.gradle.plugins.enforce.wsc.InspectorResults
 
 /**
  * This class wraps Metadata Api and exposes WSDL methods

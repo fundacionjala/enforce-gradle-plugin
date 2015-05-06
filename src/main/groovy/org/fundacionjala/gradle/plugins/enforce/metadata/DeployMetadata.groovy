@@ -5,9 +5,9 @@
 
 package org.fundacionjala.gradle.plugins.enforce.metadata
 
+import com.sforce.soap.metadata.DeployResult
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.soap.MetadataAPI
-import com.sforce.soap.metadata.DeployResult
 
 /**
  * Deploys an org using metadata API

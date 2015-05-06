@@ -5,11 +5,11 @@
 
 package org.fundacionjala.gradle.plugins.enforce.credentialmanagement
 
-import org.fundacionjala.gradle.plugins.enforce.exceptions.CredentialException
-import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import groovy.json.internal.LazyMap
+import org.fundacionjala.gradle.plugins.enforce.exceptions.CredentialException
+import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 
 /**
  * Reads and writes credentials in credentials file

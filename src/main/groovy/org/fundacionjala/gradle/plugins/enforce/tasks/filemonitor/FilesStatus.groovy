@@ -5,8 +5,6 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.filemonitor
 
-import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
-
 import java.nio.file.Paths
 
 /**

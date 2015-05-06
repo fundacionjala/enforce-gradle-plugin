@@ -5,18 +5,17 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 
+import org.custommonkey.xmlunit.Diff
+import org.custommonkey.xmlunit.XMLUnit
 import org.fundacionjala.gradle.plugins.enforce.EnforcePlugin
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentMonitor
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentSerializer
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
-import org.fundacionjala.gradle.plugins.enforce.filemonitor.FileMonitorSerializer
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
 import org.fundacionjala.gradle.plugins.enforce.metadata.DeployMetadata
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.LoginType
-import org.custommonkey.xmlunit.Diff
-import org.custommonkey.xmlunit.XMLUnit
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Shared
@@ -116,24 +115,24 @@ class UpdateTest extends Specification {
 
     def "Test should create a package XML file" () {
         given:
-        updateInstance.packageGenerator.fileTrackerMap = ['classes/Class1.cls':new ResultTracker(ComponentStates.ADDED)]
-        updateInstance.pathUpdate = Paths.get(SRC_PATH, 'build', 'update').toString()
-        updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
+            updateInstance.packageGenerator.fileTrackerMap = ['classes/Class1.cls':new ResultTracker(ComponentStates.ADDED)]
+            updateInstance.pathUpdate = Paths.get(SRC_PATH, 'build', 'update').toString()
+            updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
         when:
-        updateInstance.createPackage()
+            updateInstance.createPackage()
         then:
-        new File(Paths.get(Paths.get(SRC_PATH, 'build', 'update', 'package.xml').toString()).toString()).exists()
+            new File(Paths.get(Paths.get(SRC_PATH, 'build', 'update', 'package.xml').toString()).toString()).exists()
     }
 
     def "Test should create a package XML file empty if status is deleted" () {
         given:
-        updateInstance.packageGenerator.fileTrackerMap = ['classes/Class1.cls':new ResultTracker(ComponentStates.ADDED)]
-        updateInstance.pathUpdate = Paths.get(SRC_PATH, 'build', 'update').toString()
-        updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
+            updateInstance.packageGenerator.fileTrackerMap = ['classes/Class1.cls':new ResultTracker(ComponentStates.ADDED)]
+            updateInstance.pathUpdate = Paths.get(SRC_PATH, 'build', 'update').toString()
+            updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
         when:
-        updateInstance.createPackage()
+            updateInstance.createPackage()
         then:
-        new File(Paths.get(Paths.get(SRC_PATH, 'build', 'update', 'package.xml').toString()).toString()).exists()
+            new File(Paths.get(Paths.get(SRC_PATH, 'build', 'update', 'package.xml').toString()).toString()).exists()
     }
 
     def "Test should create a package empty" () {
@@ -179,14 +178,14 @@ class UpdateTest extends Specification {
 
     def "Test should copy changed files" () {
         given:
-        updateInstance.filesToCopy = [new File(Paths.get(SRC_PATH, 'classes', 'class1.cls').toString()),
-                                      new File(Paths.get(SRC_PATH, 'classes', 'class1.cls-meta.xml').toString())]
-        updateInstance.pathUpdate = Paths.get(SRC_PATH, 'build').toString()
+            updateInstance.filesToCopy = [new File(Paths.get(SRC_PATH, 'classes', 'class1.cls').toString()),
+                                          new File(Paths.get(SRC_PATH, 'classes', 'class1.cls-meta.xml').toString())]
+            updateInstance.pathUpdate = Paths.get(SRC_PATH, 'build').toString()
         when:
-        updateInstance.copyFilesChanged()
+            updateInstance.copyFilesChanged()
         then:
-        new File(Paths.get(SRC_PATH, 'build', 'classes', 'class1.cls').toString()).exists()
-        new File(Paths.get(SRC_PATH, 'build', 'classes', 'class1.cls-meta.xml').toString()).exists()
+            new File(Paths.get(SRC_PATH, 'build', 'classes', 'class1.cls').toString()).exists()
+            new File(Paths.get(SRC_PATH, 'build', 'classes', 'class1.cls-meta.xml').toString()).exists()
     }
 
     def "Integration test should show a message if there are not changes"() {

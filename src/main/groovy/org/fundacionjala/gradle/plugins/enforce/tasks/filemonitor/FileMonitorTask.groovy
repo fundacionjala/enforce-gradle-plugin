@@ -6,11 +6,7 @@
 package org.fundacionjala.gradle.plugins.enforce.tasks.filemonitor
 
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentMonitor
-import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentSerializer
-import org.fundacionjala.gradle.plugins.enforce.filemonitor.FileMonitorSerializer
 import org.fundacionjala.gradle.plugins.enforce.tasks.ForceTask
-
-import java.nio.file.Paths
 
 /**
  * Base of the file monitor tasks

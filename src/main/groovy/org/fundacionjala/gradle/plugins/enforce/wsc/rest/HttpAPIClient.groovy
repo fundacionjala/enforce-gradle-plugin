@@ -6,6 +6,7 @@
 package org.fundacionjala.gradle.plugins.enforce.wsc.rest
 
 import groovyx.net.http.HTTPBuilder
+
 import static groovyx.net.http.ContentType.JSON
 import static groovyx.net.http.ContentType.TEXT
 import static groovyx.net.http.Method.GET
