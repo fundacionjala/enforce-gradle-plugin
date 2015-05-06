@@ -238,11 +238,11 @@ class UploadTest extends Specification {
         given:
             uploadInstance.files ="objects${File.separator}*.object"
             uploadInstance.projectPath = SRC_PATH
+            new File(Paths.get(SRC_PATH, 'objects', 'object1.object').toString())
         when:
             uploadInstance.loadParameter()
         then:
             uploadInstance.specificFilesToUpload.sort() == [new File(Paths.get(SRC_PATH, 'objects', 'Account.object').toString()),
-                                                            new File(Paths.get(SRC_PATH, 'objects', 'object1.object').toString()),
                                                             new File(Paths.get(SRC_PATH, 'objects', 'Object1__c.object').toString()),
                                                             new File(Paths.get(SRC_PATH, 'objects', 'Object2__c.object').toString())].sort()
     }

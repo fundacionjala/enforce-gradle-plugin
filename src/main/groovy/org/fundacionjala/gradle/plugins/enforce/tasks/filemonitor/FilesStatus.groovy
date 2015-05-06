@@ -48,7 +48,7 @@ class FilesStatus extends FileMonitorTask {
             println "*********************************************"
             println "              Status Files Changed             "
             println "*********************************************"
-            filesChangedMap.each { String componentPath, ResultTracker resultTracker ->
+            filesChangedMap.each { componentPath, resultTracker ->
                 println "${Paths.get(componentPath).getFileName()}${" - "}${resultTracker.toString()}"
             }
             println "*********************************************"

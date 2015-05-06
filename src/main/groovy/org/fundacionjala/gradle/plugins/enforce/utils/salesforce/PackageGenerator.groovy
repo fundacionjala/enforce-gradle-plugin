@@ -19,7 +19,7 @@ class PackageGenerator {
     ComponentMonitor componentMonitor
     Map<String, ResultTracker> fileTrackerMap
     SmartFilesValidator smartFilesValidator
-    Credential credential;
+    Credential credential
 
     public PackageGenerator() {
         packageBuilder = new PackageBuilder()
@@ -27,14 +27,13 @@ class PackageGenerator {
         //fileMonitorSerializer = new FileMonitorSerializer()
     }
 
-    public init(String projectPath, ArrayList<File> files, Credential credential) {
+    public void init(String projectPath, ArrayList<File> files, Credential credential) {
         this.credential = credential
         componentMonitor = new ComponentMonitor(projectPath)
         if (!componentMonitor.verifyFileMap()) {
             componentMonitor.saveCurrentComponents(files)
             return
         }
-        //fileTrackerMap = componentMonitor.getFileTrackerMap(files)
         fileTrackerMap = componentMonitor.getComponentChanged(files)
     }
 
