@@ -2,10 +2,13 @@ package org.fundacionjala.gradle.plugins.enforce.filemonitor
 
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
+import groovy.json.StringEscapeUtils
 import groovy.json.internal.LazyMap
 
 public class ComponentSerializer implements Serializable{
     public String sourcePath
+    private  final String BACK_SLASH = "\\\\"
+    private  final String DOUBLE_BACK_SLASH = "\\\\\\\\"
 
     public ComponentSerializer(String sourcePath) {
         this.sourcePath = sourcePath
@@ -13,9 +16,11 @@ public class ComponentSerializer implements Serializable{
 
     void save(Map<String, ComponentHash> components) throws IOException {
         File fileTracker = new File(sourcePath)
-        def jsonBuilder = new JsonBuilder()
+        JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder(components)
-        fileTracker.text = jsonBuilder.toPrettyString()
+        String content = jsonBuilder.toString().replaceAll(DOUBLE_BACK_SLASH, BACK_SLASH)
+        content = content.replaceAll(BACK_SLASH, DOUBLE_BACK_SLASH)
+        fileTracker.text = content
     }
 
     public Map<String, ComponentHash> read() throws IOException {
