@@ -32,7 +32,7 @@ class ObjectParser {
             if (!fieldValue.toString().isEmpty()) {
                 fieldValue.each { subComponent ->
                     MD5 md5 = new MD5()
-                    md5.Update(fieldValue.toString())
+                    md5.Update(subComponent.toString())
                     String fieldName = "${customField}/${subComponent.fullName}"
                     String signature = md5.asHex()
                     result.put(fieldName, signature)

@@ -14,7 +14,7 @@ import org.fundacionjala.gradle.plugins.enforce.tasks.ForceTask
 abstract class FileMonitorTask extends ForceTask {
     ComponentMonitor componentMonitor
     public static final String GROUP_FILE_MONITOR_TASK = "File Monitor"
-    ArrayList<File> fileArray
+    ArrayList<File> sourceComponents
 
     /**
      * Sets description and group task
@@ -31,7 +31,7 @@ abstract class FileMonitorTask extends ForceTask {
     @Override
     void executeTask() {
         componentMonitor = new ComponentMonitor(projectPath)
-        fileArray = fileManager.getValidElements(projectPath, excludeFilesToMonitor)
+        sourceComponents = fileManager.getValidElements(projectPath, excludeFilesToMonitor)
         runTask()
     }
 
