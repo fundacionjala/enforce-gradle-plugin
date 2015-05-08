@@ -50,9 +50,11 @@ class SmartFilesValidator {
             if (json.entityTypeName != null) {
                 files = new ArrayList<String>()
                 for (Object record in json.records) {
-                    files.push(record.Name as String)
+                    String recordName = record.FullName?:record.Name
+                    files.push(recordName)
                 }
-                queryResult.put(json.entityTypeName as String, files)
+                String key = json.records.size() > 0 ?json.records[0]['attributes'].type:json.entityTypeName
+                queryResult.put(key, files)
             }
         }
     }
@@ -72,7 +74,7 @@ class SmartFilesValidator {
      * @param files contains all files to be evaluated
      * @return files selected
      */
-    public filterFilesAccordingOrganization(ArrayList<File> files) {
+    public ArrayList<File> filterFilesAccordingOrganization(ArrayList<File> files) {
         if (files == null) {
             throw new NullPointerException(String.format(Constants.NULL_PARAM_EXCEPTION, "files"))
         }

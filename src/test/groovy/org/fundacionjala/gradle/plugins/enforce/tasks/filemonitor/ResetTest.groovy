@@ -44,7 +44,7 @@ class ResetTest extends Specification {
             fileWriter.write('test')
             def pathFileTracker = Paths.get(SRC_PATH, 'src', '.fileTracker.data').toString()
             new File(pathFileTracker).createNewFile()
-            instanceReset.fileArray = [new File(class1Path)]
+            instanceReset.sourceComponents = [new File(class1Path)]
             instanceReset.componentMonitor = new ComponentMonitor(Paths.get(SRC_PATH, 'src').toString())
             def signature = MD5.asHex(MD5.getHash(new File(class1Path)))
         when:

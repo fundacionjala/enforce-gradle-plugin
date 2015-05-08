@@ -1,6 +1,6 @@
 package org.fundacionjala.gradle.plugins.enforce.filemonitor
 
-public class ComponentHash /*implements ComponentComparable<ComponentHash>*/ {
+public class ComponentHash implements ComponentComparable<ComponentHash> {
     String fileName
     String hash
 

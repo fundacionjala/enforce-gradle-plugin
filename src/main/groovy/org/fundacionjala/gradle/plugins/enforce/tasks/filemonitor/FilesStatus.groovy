@@ -11,7 +11,6 @@ import java.nio.file.Paths
  * Create a file tracker and display files status
  */
 class FilesStatus extends FileMonitorTask {
-
     private static final String DESCRIPTION_STATUS = "You can display elements that were changed"
     Map filesChangedMap
 
@@ -28,11 +27,10 @@ class FilesStatus extends FileMonitorTask {
     @Override
     void runTask() {
         if (componentMonitor.verifyFileMap()) {
-            filesChangedMap = componentMonitor.getComponentChanged(fileArray)
+            filesChangedMap = componentMonitor.getComponentChanged(sourceComponents)
             displayFileChanged()
         } else {
-            Map initMapSave = componentMonitor.getComponentsSignature(fileArray)
-            componentMonitor.componentSerializer.save(initMapSave)
+            componentMonitor.saveCurrentComponents(sourceComponents)
         }
     }
 

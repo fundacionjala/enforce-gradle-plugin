@@ -31,6 +31,10 @@ class Util {
         fileName.replaceFirst(PATTERN_FILE_EXT, '')
     }
 
+    public static String getDeveloperName(String fullName){
+        return fullName.substring(fullName.indexOf('.') + 1, fullName.length() - 7)
+    }
+
     /**
      * Verifies if the property exist and if it is not empty string
      * @param name the property typeName

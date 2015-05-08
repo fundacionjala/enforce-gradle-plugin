@@ -9,7 +9,6 @@ package org.fundacionjala.gradle.plugins.enforce.tasks.filemonitor
  * Resets file monitor tracker
  */
 class Reset extends FileMonitorTask{
-
     private static final String DESCRIPTION_REFRESH = "Reset the file monitor"
 
     /**
@@ -23,6 +22,6 @@ class Reset extends FileMonitorTask{
 
     @Override
     void runTask() {
-        componentMonitor.saveCurrentComponents(fileArray)
+        componentMonitor.saveCurrentComponents(sourceComponents)
     }
 }
