@@ -18,10 +18,12 @@ import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageBuilder
 class QueryBuilder {
 
     private final String SELECT_NAME = 'SELECT Name FROM'
+    private final String SELECT_FULL_NAME = 'SELECT FullName FROM'
     private final String WHERE_NAME = 'WHERE Name ='
+    private final String WHERE_FULL_NAME = 'WHERE DeveloperName ='
     private final String THERE_IS_NOT_PACKAGE = "There isn't a package xml file in this path: "
     public static final ArrayList<String> defaultComponents = ['ApexClass', 'ApexComponent', 'ApexPage', 'ApexTrigger', 'StaticResource',
-                                                               'Profile', 'EmailTemplate']
+                                                               'Profile', 'EmailTemplate', 'CustomField', 'CompactLayout', 'RecordType','ValidationRule']
 
     /**
      * Gets queries of components from package xml file
@@ -56,9 +58,13 @@ class QueryBuilder {
             String folderName = file.getParentFile().getName()
             MetadataComponents component = MetadataComponents.getComponentByFolder(folderName)
             if (component && isDefaultComponent(component.getTypeName())) {
-                queries.add("""${SELECT_NAME} ${component.getTypeName()} ${WHERE_NAME} '${
-                    Util.getFileName(file.getName())
-                }'""")
+                String query = component.getExtension() != 'sbc'?
+                    """${SELECT_NAME} ${component.getTypeName()} ${WHERE_NAME} '${
+                    Util.getFileName(file.getName())}'""" :
+                    """${SELECT_FULL_NAME} ${component.getTypeName()} ${WHERE_FULL_NAME} '${
+                        Util.getDeveloperName(file.getName())
+                    }'"""
+                queries.add(query)
             } else {
                 invalidFolders.add(folderName)
             }

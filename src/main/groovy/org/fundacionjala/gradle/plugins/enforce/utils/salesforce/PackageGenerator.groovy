@@ -19,8 +19,7 @@ class PackageGenerator {
 
     public PackageGenerator() {
         packageBuilder = new PackageBuilder()
-        //componentMonitor = new ComponentMonitor()
-        //fileMonitorSerializer = new FileMonitorSerializer()
+        componentMonitor = new ComponentMonitor()
     }
 
     public void init(String projectPath, ArrayList<File> files, Credential credential) {
@@ -93,7 +92,7 @@ class PackageGenerator {
         buildDestructive(writer, smartFilesValidator)
     }
 
-    public void buildDestructive(Writer writer, smartFilesValidator) {
+    public void buildDestructive(Writer writer, SmartFilesValidator smartFilesValidator) {
         ArrayList<File> files = getFiles(ComponentStates.DELETED) + getSubComponents(ComponentStates.DELETED)
         files = smartFilesValidator.filterFilesAccordingOrganization(files)
 

@@ -8,9 +8,16 @@ import groovy.util.slurpersupport.GPathResult
  */
 class ObjectParser {
 
-    ArrayList<String> customFields = ['ActionOverride', 'BusinessProcess', 'CompactLayout' , 'CustomField',
-                                      'FieldSet', 'HistoryRetentionPolicy', 'ListView', 'RecordType', 'SearchLayouts',
-                                      'SharingReason', 'SharingRecalculation', 'ValidationRule', 'Weblink', 'fields', 'fieldSets']
+    ArrayList<String> customFields = ['fields', 'fieldSets', 'compactLayouts', 'businessProcesses', 'listViews',
+                                      'recordTypes', 'sharingReasons', 'validationRules', 'webLinks']
+    //DOESN'T EXIST fullName
+    //actionOverrides
+    //searchLayouts
+    //sharingRecalculations
+
+    //INVALID
+    //HistoryRetentionPolicy
+
 
     public ObjectParser() {
 

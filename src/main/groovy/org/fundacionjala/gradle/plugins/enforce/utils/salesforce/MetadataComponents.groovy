@@ -65,7 +65,10 @@ public enum MetadataComponents {
     PROFILES("Profile", "profile", "profiles"),
     TABS("CustomTab", "tab", "tabs"),
     TRANSLATIONS("Translations", "translation", "translations"),
-    FIELDS("CustomField", "sbc", "fields")
+    FIELDS("CustomField", "sbc", "fields"),
+    COMPACTLAYOUTS("CompactLayout", "sbc", "compactLayouts"),
+    RECORDTYPES("RecordType", "sbc", "recordTypes"),
+    VALIDATIONRULES("ValidationRule", "sbc", "validationRules")
 
     public final static Map<String, MetadataComponents> COMPONENT;
 
