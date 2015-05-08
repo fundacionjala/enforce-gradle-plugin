@@ -181,8 +181,8 @@ class UndeployTest extends Specification {
             undeployInstance.unDeployPackagePath = unDeployPath
             undeployInstance.credential = credential
         when:
-            def jsonString1 = """{"entityTypeName":"ApexClass","records": [{"Name" : "Class1"},{"Name" : "Class2"}]"""
-            def jsonString2 = """{"entityTypeName":"ApexTrigger","records": [{"Name" : "Trigger2"}]"""
+            def jsonString1 = """{"entityTypeName":"ApexClass","records": [{"Name" : "Class1","attributes":{"type":"ApexClass"}},{"Name" : "Class2", "attributes":{"type":"ApexClass"}}]"""
+            def jsonString2 = """{"entityTypeName":"ApexTrigger","records": [{"Name" : "Trigger2", "attributes":{"type":"ApexTrigger"}}]"""
             def jsonArrays = new ArrayList<String>()
             jsonArrays.push(jsonString1)
             jsonArrays.push(jsonString2)
