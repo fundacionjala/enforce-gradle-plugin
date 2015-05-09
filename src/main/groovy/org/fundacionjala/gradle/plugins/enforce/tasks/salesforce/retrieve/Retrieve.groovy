@@ -217,7 +217,7 @@ class Retrieve extends Retrieval {
         if (hasPackage()) {
             filesToCopy.remove(new File(Paths.get(unPackageFolder, Constants.PACKAGE_FILE_NAME).toString()))
         }
-        fileManager.copy(filesToCopy, projectPath)
+        fileManager.copy(unPackageFolder, filesToCopy, projectPath)
     }
 
     /**

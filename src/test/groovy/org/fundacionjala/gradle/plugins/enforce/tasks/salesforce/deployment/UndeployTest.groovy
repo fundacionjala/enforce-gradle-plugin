@@ -105,7 +105,7 @@ class UndeployTest extends Specification {
             undeployInstance.folderUnDeploy = undeployDirectory
             undeployInstance.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
             undeployInstance.createDeploymentDirectory(undeployDirectory)
-            undeployInstance.fileManager.copy(undeployInstance.filesToTruncate, undeployDirectory)
+            undeployInstance.fileManager.copy(SRC_PATH, undeployInstance.filesToTruncate, undeployDirectory)
             undeployInstance.poll = 200
             undeployInstance.waitTime = 10
             undeployInstance.credential = credential
