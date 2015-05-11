@@ -125,6 +125,8 @@ class HtmlManager {
                 SimpleTemplateEngine engine = new SimpleTemplateEngine()
                 Writable template = engine.createTemplate(fileTemplate).make(binding)
                 fileContent = template.toString()
+
+
             } else {
                 fileContent = reportResourceManager.getFileTemplateError()
             }
