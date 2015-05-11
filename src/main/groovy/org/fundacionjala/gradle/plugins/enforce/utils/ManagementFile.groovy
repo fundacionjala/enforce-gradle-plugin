@@ -133,7 +133,7 @@ class ManagementFile {
     }
 
     /**
-     *
+     * Validates the file based in the folder name who belongs, following the saleforce definitions
      * @param folderName
      * @param file
      * @return
@@ -147,7 +147,7 @@ class ManagementFile {
     }
 
     /**
-     * Copy array file in the path copy
+     * Copies array file in the path copy
      * @parem basePath is to get the relative path of the project based for basePath
      * @param arrayFiles the files should be copy in the path copy
      * @param pathCopy is the parent path
@@ -172,7 +172,7 @@ class ManagementFile {
     }
 
     /**
-     * create a Folder or Folders children based in the basePath source path.
+     * Creates a Folder or Folders children based in the basePath source path.
      * @param basePath is the base path where It will create the folder
      * @param folderPath contains the folder and folder children to create them.
      */
@@ -198,7 +198,7 @@ class ManagementFile {
     }
 
     /**
-     * Copy files valid for salesforce
+     * Copies files valid for salesforce
      * @param pathFrom is the path source
      * @param pathTo is the path copy
      */
@@ -213,7 +213,7 @@ class ManagementFile {
     }
 
     /**
-     * Copy files valid for salesforce
+     * Copies files valid for salesforce
      * @param pathFrom is the path source
      * @param pathTo is the path copy
      */
@@ -228,7 +228,7 @@ class ManagementFile {
     }
 
     /**
-     * Copy files valid for salesforce
+     * Copies files valid for salesforce
      * @param fileFrom is the array files
      * @param pathTo is the path copy
      */
@@ -237,7 +237,7 @@ class ManagementFile {
     }
 
     /**
-     * Create a new directory according path
+     * Creates a new directory according path
      * @param path is the path for new directory
      */
     public static void createNewDirectory(String path) {
@@ -272,7 +272,7 @@ class ManagementFile {
     }
 
     /**
-     * Iterate only folders and put in the array folders not deployed
+     * Iterates only folders and put in the array folders not deployed
      * @param Path is the source path
      * @return array of the folders not deployed
      */
