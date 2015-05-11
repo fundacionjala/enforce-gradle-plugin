@@ -57,13 +57,13 @@ class ManagementFileTest extends Specification {
     def "Test get valid elements with path source"() {
         when:
             ArrayList<File> arrayResult = managementFile.getValidElements(targetPath)
-            ArrayList<File> arrayExpected = [new File(Paths.get(targetPath, 'classes/class1.cls').toString()),
-                                             new File(Paths.get(targetPath, 'classes/class1.cls-meta.xml').toString()),
-                                             new File(Paths.get(targetPath, 'objects/Account.object').toString()),
-                                             new File(Paths.get(targetPath, 'objects/Object1__c.object').toString()),
-                                             new File(Paths.get(targetPath, 'objects/Object2__c.object').toString()),
-                                             new File(Paths.get(targetPath, 'reports/testFolder/testReport.report').toString()),
-                                             new File(Paths.get(targetPath, 'reports/testFolder-meta.xml').toString()),
+            ArrayList<File> arrayExpected = [new File(Paths.get(targetPath, 'classes', 'class1.cls').toString()),
+                                             new File(Paths.get(targetPath, 'classes', 'class1.cls-meta.xml').toString()),
+                                             new File(Paths.get(targetPath, 'objects', 'Account.object').toString()),
+                                             new File(Paths.get(targetPath, 'objects', 'Object1__c.object').toString()),
+                                             new File(Paths.get(targetPath, 'objects', 'Object2__c.object').toString()),
+                                             new File(Paths.get(targetPath, 'reports', 'testFolder', 'testReport.report').toString()),
+                                             new File(Paths.get(targetPath, 'reports', 'testFolder-meta.xml').toString()),
                                              new File(Paths.get(targetPath, 'package.xml').toString())]
         then:
             arrayResult.sort() == arrayExpected.sort()
@@ -75,11 +75,11 @@ class ManagementFileTest extends Specification {
         when:
         ArrayList<File> arrayResult = managementFile.getValidElements(targetPath, typesToExclude)
         then:
-        arrayResult.sort() == [new File(Paths.get(targetPath, 'classes/class1.cls').toString()),
-                               new File(Paths.get(targetPath, 'objects/Account.object').toString()),
-                               new File(Paths.get(targetPath, 'objects/Object1__c.object').toString()),
-                               new File(Paths.get(targetPath, 'objects/Object2__c.object').toString()),
-                               new File(Paths.get(targetPath, 'reports/testFolder/testReport.report').toString())].sort()
+        arrayResult.sort() == [new File(Paths.get(targetPath, 'classes', 'class1.cls').toString()),
+                               new File(Paths.get(targetPath, 'objects', 'Account.object').toString()),
+                               new File(Paths.get(targetPath, 'objects', 'Object1__c.object').toString()),
+                               new File(Paths.get(targetPath, 'objects', 'Object2__c.object').toString()),
+                               new File(Paths.get(targetPath, 'reports', 'testFolder', 'testReport.report').toString())].sort()
     }
 
     def "Test should return all the files because there isn't files to exclude"() {
@@ -88,14 +88,14 @@ class ManagementFileTest extends Specification {
         when:
         ArrayList<File> arrayResult = managementFile.getValidElements(targetPath, typesToExclude)
         then:
-        arrayResult.sort() == [new File(Paths.get(targetPath, 'classes/class1.cls').toString()),
-                               new File(Paths.get(targetPath, 'classes/class1.cls-meta.xml').toString()),
-                               new File(Paths.get(targetPath, 'objects/Account.object').toString()),
-                               new File(Paths.get(targetPath, 'objects/Object1__c.object').toString()),
-                               new File(Paths.get(targetPath, 'objects/Object2__c.object').toString()),
+        arrayResult.sort() == [new File(Paths.get(targetPath, 'classes', 'class1.cls').toString()),
+                               new File(Paths.get(targetPath, 'classes', 'class1.cls-meta.xml').toString()),
+                               new File(Paths.get(targetPath, 'objects', 'Account.object').toString()),
+                               new File(Paths.get(targetPath, 'objects', 'Object1__c.object').toString()),
+                               new File(Paths.get(targetPath, 'objects', 'Object2__c.object').toString()),
                                new File(Paths.get(targetPath, 'package.xml').toString()),
-                               new File(Paths.get(targetPath, 'reports/testFolder/testReport.report').toString()),
-                               new File(Paths.get(targetPath, 'reports/testFolder-meta.xml').toString())].sort()
+                               new File(Paths.get(targetPath, 'reports', 'testFolder', 'testReport.report').toString()),
+                               new File(Paths.get(targetPath, 'reports', 'testFolder-meta.xml').toString())].sort()
     }
 
     def "Test should return only a class, the others are excluded"() {
@@ -104,7 +104,7 @@ class ManagementFileTest extends Specification {
         when:
             ArrayList<File> arrayResult = managementFile.getValidElements(targetPath, typesToExclude)
         then:
-            arrayResult.sort() == [new File(Paths.get(targetPath, 'classes/class1.cls').toString())].sort()
+            arrayResult.sort() == [new File(Paths.get(targetPath, 'classes', 'class1.cls').toString())].sort()
     }
 
     def "Test copy from source path"() {
@@ -310,7 +310,7 @@ class ManagementFileTest extends Specification {
 
     def "Test should create the directories if it doesn't exist"(){
         expect:
-        Path path = Paths.get(targetPath, 'test/testOne/testTwo/testThree')
+        Path path = Paths.get(targetPath, 'test', 'testOne', 'testTwo', 'testThree')
         ManagementFile.createDirectories(path.toString())
         new File(path.toString()).exists()
     }
