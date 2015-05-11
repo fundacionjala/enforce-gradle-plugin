@@ -102,10 +102,7 @@ class RunTestListener {
      */
     public void writeApexTestItems(ApexTestItem apexTestItems) {
         boolean testsCompleted
-        String messages
-        String messagesResult
         String messageTest
-        String className
 
         apexTestItems.apexTestResults.each { apexTestResult ->
 
