@@ -27,7 +27,9 @@ class ObjectFormula {
      */
     Closure execute = { file ->
         if (!file) return
-        Matcher fieldMatcher = file.text =~ FIELDS_REGEX
+
+        String objectFormula = file.text
+        Matcher fieldMatcher = objectFormula =~ FIELDS_REGEX
         fieldMatcher.each { fieldIt->
             String field = fieldIt[CONTENT_MATCHED_INDEX]
             String formula
@@ -47,34 +49,35 @@ class ObjectFormula {
                 switch (type) {
                     case FormulaType.PERCENT.value():
                         replacement = field.replace(formula, String.format(TAG_FORMULA, NUMBER_BY_DEFAULT))
-                        file.text = file.text.replace(target, replacement)
+                        objectFormula = objectFormula.replace(target, replacement)
                         break
                     case FormulaType.NUMBER.value():
                         replacement = field.replace(formula, String.format(TAG_FORMULA, NUMBER_BY_DEFAULT))
-                        file.text = file.text.replace(target, replacement)
+                        objectFormula = objectFormula.replace(target, replacement)
                         break
                     case FormulaType.TIME.value():
                         replacement = field.replace(formula, String.format(TAG_FORMULA, DATE_BY_DEFAULT))
-                        file.text = file.text.replace(target, replacement)
+                        objectFormula = objectFormula.replace(target, replacement)
                         break
                     case FormulaType.DATE.value():
                         replacement = field.replace(formula, String.format(TAG_FORMULA, DATE_BY_DEFAULT))
-                        file.text = file.text.replace(target, replacement)
+                        objectFormula = objectFormula.replace(target, replacement)
                         break
                     case FormulaType.CURRENCY.value():
                         replacement = field.replace(formula, String.format(TAG_FORMULA, NUMBER_BY_DEFAULT))
-                        file.text = file.text.replace(target, replacement)
+                        objectFormula = objectFormula.replace(target, replacement)
                         break
                     case FormulaType.CHECKBOK.value():
                         replacement = field.replace(formula, String.format(TAG_FORMULA, CHECKBOK_BY_DEFAULT))
-                        file.text = file.text.replace(target, replacement)
+                        objectFormula = objectFormula.replace(target, replacement)
                         break
                     case FormulaType.TEXT.value():
                         replacement = field.replace(formula, String.format(TAG_FORMULA, "\"\""))
-                        file.text = file.text.replace(target, replacement)
+                        objectFormula = objectFormula.replace(target, replacement)
                         break
                 }
             }
         }
+        file.text = objectFormula
     }
 }
