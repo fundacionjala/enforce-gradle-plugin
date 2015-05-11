@@ -86,7 +86,7 @@ class Deploy extends Deployment {
             }
             ArrayList<File> filesByFolders = fileManager.getFilesByFolders(projectPath, foldersName)
             filesByFolders = excludeFiles(filesByFolders)
-            fileManager.copy(filesByFolders, folderDeploy)
+            fileManager.copy(projectPath, filesByFolders, folderDeploy)
             writePackage(packagePathDeploy, filesByFolders)
             deployToSalesForce()
         }

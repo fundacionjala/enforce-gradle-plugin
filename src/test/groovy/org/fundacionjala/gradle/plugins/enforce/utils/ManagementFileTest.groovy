@@ -256,8 +256,10 @@ class ManagementFileTest extends Specification {
                                          new File(Paths.get(targetPath, 'classes', 'class1.cls-meta.xml').toString()),
                                          new File(Paths.get(targetPath, 'objects', 'Account.object').toString()),
                                          new File(Paths.get(targetPath, 'objects', 'Object1__c.object').toString()),
-                                         new File(Paths.get(targetPath, 'objects', 'Object2__c.object').toString())]
-            def arrayFolders = ['classes', 'objects']
+                                         new File(Paths.get(targetPath, 'objects', 'Object2__c.object').toString()),
+                                         new File(Paths.get(targetPath, 'reports', 'testFolder','testReport.report').toString()),
+                                         new File(Paths.get(targetPath, 'reports', 'testFolder-meta.xml').toString())]
+            def arrayFolders = ['classes', 'objects', 'reports']
         when:
             def arrayResult = managementFile.getFilesByFolders(targetPath, arrayFolders)
         then:
