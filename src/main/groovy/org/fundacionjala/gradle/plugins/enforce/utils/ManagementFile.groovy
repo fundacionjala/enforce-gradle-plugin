@@ -23,7 +23,9 @@ class ManagementFile {
     final String ERROR_GETTING_SOURCE_CODE_PATH = "ManagementFile: It's necessary send in constructor source path of user code"
     private File sourcePath
     private final String DOES_NOT_EXIT = 'does not exist'
-
+    private final SLASH = '/'
+    private final BACKSLASH = '\\\\'
+    private final REPORT_FOLDER = 'reports'
     ArrayList<File> validFiles
 
     /**
@@ -64,6 +66,10 @@ class ManagementFile {
                             if (xmlFile) {
                                 arrayValidFiles.push(xmlFile)
                             }
+                        } else if (folder.getName().equals(REPORT_FOLDER)) {
+                            if (file.isDirectory()) {
+                                arrayValidFiles.addAll(getFilesByReportFolder(folder.getName(), file))
+                            }
                         }
                     }
                 }
@@ -73,6 +79,24 @@ class ManagementFile {
             }
         }
         return arrayValidFiles
+    }
+
+    /**
+     * Gets valid files by a folder
+     * @param parentName is the folder parent name
+     * @param file is the Folder from gets valid files
+     * @return an array of valid files
+     */
+    private ArrayList<File> getFilesByReportFolder(String parentName, File file) {
+        ArrayList<File> result = [:]
+        file.eachFile { File reportFile ->
+            File xmlReportFile = getValidateXmlFile(file)
+            if (validateFileByFolder(parentName, reportFile.getName()) && xmlReportFile) {
+                result.push(reportFile)
+                result.push(xmlReportFile)
+            }
+        }
+        return result;
     }
 
     /**
@@ -109,7 +133,7 @@ class ManagementFile {
     }
 
     /**
-     *
+     * Validates the file based in the folder name who belongs, following the saleforce definitions
      * @param folderName
      * @param file
      * @return
@@ -123,30 +147,58 @@ class ManagementFile {
     }
 
     /**
-     * Copy array file in the path copy
+     * Copies array file in the path copy
+     * @parem basePath is to get the relative path of the project based for basePath
      * @param arrayFiles the files should be copy in the path copy
      * @param pathCopy is the parent path
      */
-    private void copyArrayFiles(ArrayList<File> arrayFiles, String pathCopy) {
+    private void copyArrayFiles(String basePath, ArrayList<File> arrayFiles, String pathCopy) {
 
         validFiles = arrayFiles
         if (new File(pathCopy).exists()) {
             arrayFiles.each { file ->
-
                 String pathFolder = pathCopy
                 String fileName = file.getName()
                 if (!fileName.equals(PACKAGE_XML)) {
-                    pathFolder = Paths.get(pathFolder, file.getParentFile().getName()).toString()
-                    new File(pathFolder).mkdir()
+                    String relativePath = file.getAbsolutePath().replace(basePath, '')
+                    String filterFileName = new StringBuilder(SLASH).append(file.getName())
+                    String folderPath = relativePath.replace(filterFileName, '')
+                    createFolder(pathFolder, folderPath)
+                    pathFolder = Paths.get(pathFolder, folderPath).toString()
                 }
-
-                Files.copy(file.toPath(), Paths.get(pathFolder, fileName), StandardCopyOption.REPLACE_EXISTING)
+                Files.copy(file.toPath(), Paths.get(pathFolder, file.getName()), StandardCopyOption.REPLACE_EXISTING)
             }
         }
     }
 
     /**
-     * Copy files valid for salesforce
+     * Creates a Folder or Folders children based in the basePath source path.
+     * @param basePath is the base path where It will create the folder
+     * @param folderPath contains the folder and folder children to create them.
+     */
+    private void createFolder(String basePath, String folderPath) {
+        String path = basePath
+        String[] subFolders = [:]
+        if (folderPath.contains(SLASH)) {
+            subFolders = folderPath.split(SLASH)
+        } else if (folderPath.contains(BACKSLASH)) {
+            subFolders = folderPath.split(BACKSLASH)
+        }
+
+        if (subFolders.size() == 0) {
+            path = Paths.get(path, folderPath).toString()
+            new File(path).mkdir()
+            return
+        }
+
+        subFolders.each { String folderName ->
+            path = Paths.get(path, folderName).toString()
+            new File(path).mkdir()
+        }
+    }
+
+    /**
+     * Copies files valid for salesforce
      * @param pathFrom is the path source
      * @param pathTo is the path copy
      */
@@ -157,11 +209,11 @@ class ManagementFile {
         if (!new File(pathTo).exists()) {
             throw new Exception("${pathTo} ${DOES_NOT_EXIT}")
         }
-        copyArrayFiles(getValidElements(pathFrom), pathTo)
+        copyArrayFiles(pathFrom, getValidElements(pathFrom), pathTo)
     }
 
     /**
-     * Copy files valid for salesforce
+     * Copies files valid for salesforce
      * @param pathFrom is the path source
      * @param pathTo is the path copy
      */
@@ -172,20 +224,20 @@ class ManagementFile {
         if (!new File(pathTo).exists()) {
             throw new Exception("${pathTo} ${DOES_NOT_EXIT}")
         }
-        copyArrayFiles(getValidElements(pathFrom), pathTo)
+        copyArrayFiles(pathFrom, getValidElements(pathFrom), pathTo)
     }
 
     /**
-     * Copy files valid for salesforce
+     * Copies files valid for salesforce
      * @param fileFrom is the array files
      * @param pathTo is the path copy
      */
-    void copy(ArrayList<File> fileFrom, String pathTo) {
-        copyArrayFiles(fileFrom, pathTo)
+    void copy(String basePath, ArrayList<File> fileFrom, String pathTo) {
+        copyArrayFiles(basePath, fileFrom, pathTo)
     }
 
     /**
-     * Create a new directory according path
+     * Creates a new directory according path
      * @param path is the path for new directory
      */
     public static void createNewDirectory(String path) {
@@ -220,7 +272,7 @@ class ManagementFile {
     }
 
     /**
-     * Iterate only folders and put in the array folders not deployed
+     * Iterates only folders and put in the array folders not deployed
      * @param Path is the source path
      * @return array of the folders not deployed
      */

@@ -100,7 +100,7 @@ class Deploy extends Deployment {
         if (codeTruncateOn) {
             ArrayList<File> filesToTruncate = excludeFiles(fileManager.getFilesByFolders(projectPath, FOLDERS_TO_TRUNCATE))
             Files.copy(Paths.get(projectPath, PACKAGE_NAME), Paths.get(packagePathDeploy), StandardCopyOption.REPLACE_EXISTING)
-            fileManager.copy(filesToTruncate, folderDeploy)
+            fileManager.copy(projectPath, filesToTruncate, folderDeploy)
             writePackage(packagePathDeploy, filesToTruncate)
             truncateComponents()
             componentDeploy.startMessage = DEPLOYING_TRUNCATED_CODE
@@ -108,7 +108,7 @@ class Deploy extends Deployment {
             executeDeploy(folderDeploy)
             createDeploymentDirectory(folderDeploy)
         }
-        fileManager.copy(excludeFiles(fileManager.getValidElements(projectPath)), folderDeploy)
+        fileManager.copy(projectPath, excludeFiles(fileManager.getValidElements(projectPath)), folderDeploy)
         componentDeploy.startMessage = DEPLOYING_CODE
         componentDeploy.successMessage = DEPLOYING_CODE_SUCCESSFULLY
         deployToSalesForce()
