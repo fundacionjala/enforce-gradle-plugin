@@ -23,9 +23,9 @@ class ManagementFile {
     final String ERROR_GETTING_SOURCE_CODE_PATH = "ManagementFile: It's necessary send in constructor source path of user code"
     private File sourcePath
     private final String DOES_NOT_EXIT = 'does not exist'
-    private final SLASH = '/'
-    private final BACKSLASH = '\\\\'
-    private final REPORT_FOLDER = 'reports'
+    private final String SLASH = '/'
+    private final String BACKSLASH = '\\\\'
+    private final String REPORT_FOLDER = 'reports'
     ArrayList<File> validFiles
 
     /**
@@ -161,8 +161,8 @@ class ManagementFile {
                 String fileName = file.getName()
                 if (!fileName.equals(PACKAGE_XML)) {
                     String relativePath = file.getAbsolutePath().replace(basePath, '')
-                    String filterFileName = new StringBuilder(SLASH).append(file.getName())
-                    String folderPath = relativePath.replace(filterFileName, '')
+//                    String filterFileName = new StringBuilder(SLASH).append(file.getName())
+                    String folderPath = relativePath.replace(file.getName(), '')
                     createFolder(pathFolder, folderPath)
                     pathFolder = Paths.get(pathFolder, folderPath).toString()
                 }
@@ -181,7 +181,7 @@ class ManagementFile {
         String[] subFolders = [:]
         if (folderPath.contains(SLASH)) {
             subFolders = folderPath.split(SLASH)
-        } else if (folderPath.contains(BACKSLASH)) {
+        } else if (folderPath.contains('\\')) {
             subFolders = folderPath.split(BACKSLASH)
         }
 
@@ -192,8 +192,10 @@ class ManagementFile {
         }
 
         subFolders.each { String folderName ->
-            path = Paths.get(path, folderName).toString()
-            new File(path).mkdir()
+            if (!folderName.isEmpty()) {
+                path = Paths.get(path, folderName).toString()
+                new File(path).mkdir()
+            }
         }
     }
 
