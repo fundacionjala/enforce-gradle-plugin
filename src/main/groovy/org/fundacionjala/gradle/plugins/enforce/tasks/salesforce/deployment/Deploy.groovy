@@ -189,7 +189,7 @@ class Deploy extends Deployment {
     def truncateComponents() {
         String srcPath = Paths.get(buildFolderPath, FOLDER_DEPLOY).toString()
         interceptorsToExecute = [Interceptor.TRUNCATE_CLASSES.id, Interceptor.TRUNCATE_FIELD_SETS.id, Interceptor.TRUNCATE_ACTION_OVERRIDES.id,
-                                 Interceptor.TRUNCATE_FIELD.id,Interceptor.TRUNCATE_FORMULAS.id, Interceptor.TRUNCATE_WEB_LINKS.id,
+                                 Interceptor.TRUNCATE_FIELD.id, Interceptor.TRUNCATE_FORMULAS.id, Interceptor.TRUNCATE_WEB_LINKS.id,
                                  Interceptor.TRUNCATE_PAGES.id, Interceptor.TRUNCATE_TRIGGERS.id, Interceptor.TRUNCATE_WORKFLOWS.id,
                                  Interceptor.TRUNCATE_COMPONENTS.id]
         interceptorsToExecute += interceptors
