@@ -14,8 +14,7 @@ class Component {
     public static final String EMPTY_COMPONENT = '<apex:component></apex:component>'
     private final String COMPONENT_REGEX = /<apex:component.*>(.*([^\n]*?\n+?)*?.*)<\/apex:component>/
     private final String ATTRIBUTE_REGEX = /<apex:attribute([^\n]*?\n+?)*?.*\/>/
-    private
-    final String ATTRIBUTE_BY_DEFAULT = "<apex:attribute name=%s type=\"Object\" required=\"true\" description=\"Description\"/>"
+    private final String ATTRIBUTE_BY_DEFAULT = "<apex:attribute name=%s type=\"Object\" required=\"true\" description=\"Description\"/>"
     private final String NAME_ATTRIBUTE = "name"
     private final int INDEX_COMPONENT = 1
     private final int INDEX_ATTRIBUTE = 0
