@@ -13,6 +13,7 @@ div.container-table-unit-test .table-body {
 div.container-table-unit-test table {
     width: 100%;
     margin-bottom: 0;
+    table-layout:fixed;
 }
 
 div.container-table-unit-test table thead {
@@ -24,8 +25,16 @@ div.container-table-unit-test table tbody {
     overflow: hidden;
 }
 
+div.container-table-unit-test table .column-nro-1 abbr {
+    cursor: default;
+    border-bottom: none;
+}
+
 div.container-table-unit-test table .column-nro-1 {
-    width: 20%;
+    width: 30%;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow: ellipsis;
 }
 
 div.container-table-unit-test table .column-nro-2 {
@@ -37,5 +46,5 @@ div.container-table-unit-test table .column-nro-3 {
 }
 
 div.container-table-unit-test table .column-nro-4 {
-    width: 40%;
+    width: 30%;
 }
