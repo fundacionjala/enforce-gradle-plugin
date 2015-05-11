@@ -24,6 +24,7 @@ class ManagementFile {
     private File sourcePath
     private final String DOES_NOT_EXIT = 'does not exist'
     private final SLASH = '/'
+    private final BACKSLASH = '\\\\'
     private final REPORT_FOLDER = 'reports'
     ArrayList<File> validFiles
 
@@ -67,15 +68,7 @@ class ManagementFile {
                             }
                         } else if (folder.getName().equals(REPORT_FOLDER)) {
                             if (file.isDirectory()) {
-                                file.eachFile { File reportFile ->
-                                    if (validateFileByFolder(folder.getName(), reportFile.getName())) {
-                                        File xmlReportFile = getValidateXmlFile(file)
-                                        if (xmlReportFile) {
-                                            arrayValidFiles.push(reportFile)
-                                            arrayValidFiles.push(xmlReportFile)
-                                        }
-                                    }
-                                }
+                                arrayValidFiles.addAll(getFilesByReportFolder(folder.getName(), file))
                             }
                         }
                     }
@@ -86,6 +79,24 @@ class ManagementFile {
             }
         }
         return arrayValidFiles
+    }
+
+    /**
+     * Gets valid files by a folder
+     * @param parentName is the folder parent name
+     * @param file is the Folder from gets valid files
+     * @return an array of valid files
+     */
+    private ArrayList<File> getFilesByReportFolder(String parentName, File file) {
+        ArrayList<File> result = [:]
+        file.eachFile { File reportFile ->
+            File xmlReportFile = getValidateXmlFile(file)
+            if (validateFileByFolder(parentName, reportFile.getName()) && xmlReportFile) {
+                result.push(reportFile)
+                result.push(xmlReportFile)
+            }
+        }
+        return result;
     }
 
     /**
@@ -137,6 +148,7 @@ class ManagementFile {
 
     /**
      * Copy array file in the path copy
+     * @parem basePath is to get the relative path of the project based for basePath
      * @param arrayFiles the files should be copy in the path copy
      * @param pathCopy is the parent path
      */
@@ -160,20 +172,26 @@ class ManagementFile {
     }
 
     /**
-     * create a Folder or Folders
+     * create a Folder or Folders children based in the basePath source path.
      * @param basePath is the base path where It will create the folder
-     * @param folderPath contains the folder and folder children to create.
+     * @param folderPath contains the folder and folder children to create them.
      */
     private void createFolder(String basePath, String folderPath) {
         String path = basePath
-        if(!folderPath.contains(SLASH)) {
+        String[] subFolders = [:]
+        if (folderPath.contains(SLASH)) {
+            subFolders = folderPath.split(SLASH)
+        } else if (folderPath.contains(BACKSLASH)) {
+            subFolders = folderPath.split(BACKSLASH)
+        }
+
+        if (subFolders.size() == 0) {
             path = Paths.get(path, folderPath).toString()
             new File(path).mkdir()
             return
         }
 
-        String[] subFolders = folderPath.split(SLASH)
-        subFolders.each {String folderName ->
+        subFolders.each { String folderName ->
             path = Paths.get(path, folderName).toString()
             new File(path).mkdir()
         }
