@@ -42,8 +42,8 @@ app.controller('controllerReportCoverage', function(\$scope) {
     \$scope.totalLines = \$scope.linesCovered + \$scope.linesNotCovered;
     \$scope.percentCoverage = 0
 
-    if (\$scope.linesCovered + \$scope.linesNotCovered) {
-        \$scope.percentCoverage = parseFloat((\$scope.linesCovered / (\$scope.linesCovered + \$scope.linesNotCovered)) * 100).toFixed(2);
+    if (\$scope.totalLines) {
+        \$scope.percentCoverage = parseFloat((\$scope.linesCovered / (\$scope.totalLines)) * 100).toFixed(2);
         \$scope.percentNotCoverage = parseFloat(100 - \$scope.percentCoverage).toFixed(2);
     }
 
