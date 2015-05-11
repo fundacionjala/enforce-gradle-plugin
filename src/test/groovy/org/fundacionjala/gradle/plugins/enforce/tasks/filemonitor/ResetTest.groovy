@@ -6,6 +6,7 @@
 package org.fundacionjala.gradle.plugins.enforce.tasks.filemonitor
 
 import com.twmacinta.util.MD5
+import groovy.json.JsonSlurper
 import org.fundacionjala.gradle.plugins.enforce.EnforcePlugin
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentMonitor
 import org.gradle.api.Project
@@ -53,6 +54,17 @@ class ResetTest extends Specification {
             fileWriter.close()
         then:
             instanceReset.componentMonitor.componentSerializer.read().get(class1Path).hash == signature
+    }
+
+    def "Test should delete a old fileTracker file and create a new fileTracker with jsonFormat" () {
+        given:
+            String fileTrackerPath =  Paths.get(SRC_PATH, '.fileTracker.data')
+            new File(fileTrackerPath).write('components tracked')
+            instanceReset.projectPath = SRC_PATH
+        when:
+            instanceReset.removeFileTracker()
+        then:
+            !new File(fileTrackerPath).exists()
     }
 
     def cleanupSpec() {

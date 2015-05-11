@@ -52,13 +52,50 @@ class ComponentSerializerTest extends Specification {
             Map<String, ComponentHash> result = componentSerializer.read()
         then:
             result.size() == components.size()
-            result.each {String relativePath, componentTracker ->
-                println componentTracker.getClass()
+            result.each {String relativePath, ComponentHash componentTracker ->
                 components.get(relativePath).hash == componentTracker.hash
             }
     }
 
+    def "Test should read  a .fileTracker.data oldFormat file and returns a Map<String, ComponentTracker> object" () {
+        given:
+            Map<String, String> components = [:]
+            String fileNameTest = Paths.get(srcProjectPath, '.fileTrackerOldFormat.data')
+            componentSerializer = new ComponentSerializer(fileNameTest)
+            components.put('src/classes/Class1.cls', 'Class1Hash')
+            components.put('src/classes/Object1__c.object', 'Object1Hash')
+            ObjectOutputStream oos
+            oos = new ObjectOutputStream(new FileOutputStream(fileNameTest))
+            oos.writeObject(components)
+            oos.close()
+        when:
+            Map<String, ComponentHash> result = componentSerializer.read()
+        then:
+            result.containsKey('src/classes/Class1.cls')
+            result.containsKey('src/classes/Object1__c.object')
+            result.get('src/classes/Class1.cls').hash == 'Class1Hash'
+            result.get('src/classes/Object1__c.object').hash == 'Object1Hash'
+    }
+
+    def "Test should read  a .fileTracker.data new format file and returns a Map<String, ComponentTracker> object" () {
+        given:
+            Map<String, ComponentHash> components = [:]
+            String fileNameTest = Paths.get(srcProjectPath, '.fileTrackerOldFormat.data')
+            componentSerializer = new ComponentSerializer(fileNameTest)
+            components.put('src/classes/Class1.cls', new ComponentHash('src/classes/Class1.cls', 'classHash'))
+            components.put('src/classes/Object1__c.object', new ObjectHash('src/classes/Object1__c.object', 'objectHash', subComponents))
+        when:
+            componentSerializer.save(components)
+            Map<String, ComponentHash> result = componentSerializer.read()
+        then:
+            result.containsKey('src/classes/Class1.cls')
+            result.containsKey('src/classes/Object1__c.object')
+            result.get('src/classes/Class1.cls').hash == 'classHash'
+            result.get('src/classes/Object1__c.object').hash == 'objectHash'
+    }
+
     def cleanupSpec() {
         new File(fileName).delete()
+        new File(Paths.get(srcProjectPath, '.fileTrackerOldFormat.data').toString()).delete()
     }
 }
