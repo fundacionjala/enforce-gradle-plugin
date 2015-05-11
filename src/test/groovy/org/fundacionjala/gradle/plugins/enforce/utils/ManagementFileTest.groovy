@@ -107,8 +107,7 @@ class ManagementFileTest extends Specification {
             arrayResult.sort() == [new File(Paths.get(targetPath, 'classes', 'class1.cls').toString())].sort()
     }
 
-    def "Test copy from source path"() {
-
+    def "Test should copy from source path"() {
         given:
             def pathFrom = targetPath
 
