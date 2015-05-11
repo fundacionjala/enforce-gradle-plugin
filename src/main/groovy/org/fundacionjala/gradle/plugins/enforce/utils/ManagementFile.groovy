@@ -313,6 +313,10 @@ class ManagementFile {
                         if (xmlFile.exists()) {
                             filesByFolder.push(xmlFile)
                         }
+                    } else if (folder.getName().equals(REPORT_FOLDER)) {
+                        if (file.isDirectory()) {
+                            filesByFolder.addAll(getFilesByReportFolder(folder.getName(), file))
+                        }
                     }
                 }
             }
