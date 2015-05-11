@@ -68,6 +68,11 @@ class MetadataComponentsTest extends Specification {
         }
     }
 
+    def "Test get a CustomPermission extension"() {
+        expect:
+        MetadataComponents.getComponent("customPermissions").getExtension() == "customPermission"
+    }
+
     def "Test a component by folder"() {
         expect:
         MetadataComponents.getComponentByFolder("classes").typeName == "ApexClass"

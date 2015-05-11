@@ -14,6 +14,13 @@ class ComponentMonitor {
     public String fileName
     ComponentSerializer componentSerializer
 
+    /**
+     * Sets a source project directory
+     * Builds a .fileTracker.data path
+     * Creates and instance of ComponentSerializer class
+     * Initializes currentHashCode map and recoveryFileHashCode map
+     * @param srcProject is project directory
+     */
     public ComponentMonitor(String srcProject) {
         this.srcProject = srcProject
         this.fileName = Paths.get(srcProject, FILE_TRACKING).toString()
@@ -22,11 +29,19 @@ class ComponentMonitor {
         recoveryFileHashCode = [:]
     }
 
+    /**
+     * Initializes currentHashCode map and recoveryFileHashCode map
+     */
     public ComponentMonitor() {
         currentFileHashCode = [:]
         recoveryFileHashCode = [:]
     }
 
+    /**
+     * Gets a map with components that were changed
+     * @param arrayFiles are components of the project directory
+     * @return a map of components with their status changed, added or deleted
+     */
     public Map<String, ResultTracker> getComponentChanged(ArrayList<File> arrayFiles) throws Exception {
         recoveryFileHashCode = componentSerializer.read()
         currentFileHashCode = getComponentsSignature(arrayFiles)
@@ -34,6 +49,12 @@ class ComponentMonitor {
         return getFilesChanged(recoveryFileHashCode, currentFileHashCode)
     }
 
+    /**
+     * Gets a map with components that were changed
+     * @param oldFiles is a map of components with their  old componentHash
+     * @param currentFiles is a map of components with their  current componentHash
+     * @return a map of components with their status as changed, added or deleted
+     */
     public Map<String, ResultTracker> getFilesChanged(Map<String, ComponentHash> oldFiles, Map<String, ComponentHash> currentFiles) {
         Map<String, ResultTracker> result = [:]
         currentFiles.each { String relativePath, ComponentHash currentComponentHash ->
@@ -61,6 +82,11 @@ class ComponentMonitor {
         return result
     }
 
+    /**
+     * Gets components with their componentHash
+     * @param files is array files
+     * @return a map of components with their name and its componentHash
+     */
     public Map<String, ComponentHash> getComponentsSignature(ArrayList<File> files) {
         Map<String, ComponentHash> result = [:]
         files.each {File file->

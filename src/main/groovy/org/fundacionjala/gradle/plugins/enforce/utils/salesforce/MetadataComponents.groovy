@@ -68,7 +68,8 @@ public enum MetadataComponents {
     FIELDS("CustomField", "sbc", "fields"),
     COMPACTLAYOUTS("CompactLayout", "sbc", "compactLayouts"),
     RECORDTYPES("RecordType", "sbc", "recordTypes"),
-    VALIDATIONRULES("ValidationRule", "sbc", "validationRules")
+    VALIDATIONRULES("ValidationRule", "sbc", "validationRules"),
+    CUSTOMPERMISSIONS("CustomPermission", "customPermission", "customPermissions")
 
     public final static Map<String, MetadataComponents> COMPONENT;
 
