@@ -28,7 +28,8 @@ class ObjectField {
         if (!file) {
             return
         }
-        Matcher fieldMatcher = file.text =~ FIELDS_REGEX
+        String objectField = file.text
+        Matcher fieldMatcher = objectField =~ FIELDS_REGEX
         fieldMatcher.each { fieldIt ->
             String field = fieldIt[FIELD_INDEX]
             if (field) {
@@ -41,8 +42,9 @@ class ObjectField {
                 helpTextMatcher.each { helpTextIt ->
                     newField = newField.replace(helpTextIt[HELP_TEXT_INDEX].toString(), HELP_TEXT_TAG)
                 }
-                file.text = file.text.replace(field, newField)
+                objectField = objectField.replace(field, newField)
             }
         }
+        file.text = objectField
     }
 }
