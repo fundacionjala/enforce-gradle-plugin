@@ -69,6 +69,11 @@ public enum MetadataComponents {
     COMPACTLAYOUTS("CompactLayout", "sbc", "compactLayouts"),
     RECORDTYPES("RecordType", "sbc", "recordTypes"),
     VALIDATIONRULES("ValidationRule", "sbc", "validationRules"),
+    BUSINESSPROCESSES("BusinessProcess", "sbc", "businessProcesses"),
+    FIELDSETS("FieldSet", "sbc", "fieldSets"),
+    LISTVIEWS("ListView", "sbc", "listViews"),
+    SHARINGREASON("SharingReason", "sbc", "SharingReason"),
+    OBJECTWEBLINKS("Weblink", "sbc", "webLinks"),
     CUSTOMPERMISSIONS("CustomPermission", "customPermission", "customPermissions")
 
     public final static Map<String, MetadataComponents> COMPONENT;
