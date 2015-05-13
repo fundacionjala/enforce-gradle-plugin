@@ -18,6 +18,8 @@ import org.fundacionjala.gradle.plugins.enforce.wsc.Connector
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 
+import java.nio.file.Paths
+
 /**
  *  Builds a Package instance from package XML and write a package XML file from a package instance
  */
@@ -169,8 +171,8 @@ class PackageBuilder {
      * Creates package from an array files
      * @param files contains files which will be the body of package
      */
-    public void createPackage(ArrayList<File> files) {
-        ArrayList<String> folders = selectFolders(files)
+    public void createPackage(ArrayList<File> files, String basePath='') {
+        ArrayList<String> folders = selectFolders(files, basePath)
         ArrayList<PackageTypeMembers> packageData = []
         PackageTypeMembers packageTypeMembers
         ArrayList<String> invalidFolders = []
@@ -224,18 +226,18 @@ class PackageBuilder {
      * @param files contains all files
      * @return folders
      */
-    private ArrayList<String> selectFolders(ArrayList<File> files) {
+    public ArrayList<String> selectFolders(ArrayList<File> files, String basePath) {
         ArrayList<String> folders = []
-        files.each { file ->
-            MetadataComponents component = MetadataComponents.getComponentByFolder(file.name)
-            if (component && !folders.contains(file.name)) {
-                folders.push(file.name)
-            } else {
-                if (!folders.contains(file.getParentFile().getName())) {
-                    folders.push(file.getParentFile().getName())
-                }
+        println '++++Base Path: ' + basePath
+        files.each { File file ->
+            println 'file:' + file.getAbsolutePath()
+            String relativePath = file.getAbsolutePath().replace(basePath, '')
+            String folderName = Paths.get(relativePath).getName(0)
+            if(!folders.contains(folderName)) {
+                folders.push(folderName)
             }
         }
+
         return folders
     }
 

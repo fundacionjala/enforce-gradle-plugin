@@ -51,7 +51,7 @@ class Retrieve extends Retrieval {
         verifyDestinationFolder()
         ManagementFile.createDirectories(projectPath)
         loadParameters()
-        validateContentParameter()
+        //validateContentParameter()
         if (!hasPackage() && !files) {
            retrieveWithoutPackageXml()
         } else {
@@ -78,9 +78,9 @@ class Retrieve extends Retrieval {
         ArrayList<File> filesRetrieve = new ArrayList<File>()
         ArrayList<String> arrayNameArchives = files.split(COMMA)
         arrayNameArchives.each { nameFile ->
-            filesRetrieve.push(new File(nameFile))
+            filesRetrieve.push(new File(Paths.get(projectPath, nameFile).toString()))
         }
-        packageBuilder.createPackage(filesRetrieve)
+        packageBuilder.createPackage(filesRetrieve, projectPath)
     }
 
     /**
@@ -183,9 +183,9 @@ class Retrieve extends Retrieval {
             ArrayList<File> filesRetrieve = new ArrayList<File>()
             ArrayList<String> arrayNameArchives = files.split(COMMA)
             arrayNameArchives.each { nameFile ->
-                filesRetrieve.push(new File(nameFile))
+                filesRetrieve.push(new File(Paths.get(projectPath, nameFile).toString()))
             }
-            packageBuilder.createPackage(filesRetrieve)
+            packageBuilder.createPackage(filesRetrieve, projectPath)
         } else {
             FileReader packageFileReader = new FileReader(Paths.get(projectPath, Constants.PACKAGE_FILE_NAME).toString())
             packageBuilder.read(packageFileReader)

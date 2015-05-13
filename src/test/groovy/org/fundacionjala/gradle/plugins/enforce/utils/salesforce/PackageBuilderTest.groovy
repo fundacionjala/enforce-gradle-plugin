@@ -164,7 +164,7 @@ class PackageBuilderTest extends Specification {
                          new File(Paths.get(RESOURCE_PATH, 'web', 'InvalidClass.cls').toString())]
         def listResult
         when:
-        listResult = packageBuilder.selectFolders(listFiles)
+        listResult = packageBuilder.selectFolders(listFiles, RESOURCE_PATH)
         then:
         listResult == ['classes', 'objects', 'web']
     }
@@ -180,7 +180,7 @@ class PackageBuilderTest extends Specification {
         ]
         def listResult
         when:
-        listResult = packageBuilder.selectFolders(listFiles)
+        listResult = packageBuilder.selectFolders(listFiles, RESOURCE_PATH)
         then:
         listResult == ['classes']
 
@@ -214,7 +214,7 @@ class PackageBuilderTest extends Specification {
                          new File(Paths.get(RESOURCE_PATH, 'invalidFolder', 'Object1__c.object').toString()),
                          new File(Paths.get(RESOURCE_PATH, 'web', 'Object1__c.object').toString())]
         when:
-        packageBuilder.createPackage(listFiles)
+        packageBuilder.createPackage(listFiles, RESOURCE_PATH)
         then:
         packageBuilder.metaPackage.types[0].members[0] == 'class1'
         packageBuilder.metaPackage.types[0].members[1] == 'class1'
@@ -331,5 +331,19 @@ class PackageBuilderTest extends Specification {
         then:
         xmlDiff.similar()
 
+   }
+
+    def "Test should support valid folder names"() {
+        given:
+            def packageBuilder = new PackageBuilder()
+            ArrayList<File> files = [new File(Paths.get(RESOURCE_PATH, 'reports', 'testFolder', 'Myreport1.report').toString()),
+                                     new File(Paths.get(RESOURCE_PATH, 'reports', 'testFolder', 'Myreport2.report').toString()),
+                                     new File(Paths.get(RESOURCE_PATH, 'reports', 'testFolder1', 'AnotherReport.report').toString()),
+                                     new File(Paths.get(RESOURCE_PATH, 'objects', 'Object1__c.object').toString()),
+                                     new File(Paths.get(RESOURCE_PATH, 'classes', 'Class1.cls').toString())]
+        when:
+            ArrayList<String> result = packageBuilder.selectFolders(files, RESOURCE_PATH)
+        then:
+            result.sort() ==  ['reports', 'objects', 'classes'].sort()
     }
 }

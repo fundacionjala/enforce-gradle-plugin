@@ -82,7 +82,7 @@ class PackageGenerator {
 
     public void buildPackage(Writer writer) {
         ArrayList<File> files = getFiles(ComponentStates.ADDED) + getFiles(ComponentStates.CHANGED) + getSubComponents(ComponentStates.ADDED) + getSubComponents(ComponentStates.CHANGED)
-        packageBuilder.createPackage(files)
+        packageBuilder.createPackage(files, componentMonitor.srcProject)
         packageBuilder.write(writer)
     }
 
@@ -96,7 +96,7 @@ class PackageGenerator {
         ArrayList<File> files = getFiles(ComponentStates.DELETED) + getSubComponents(ComponentStates.DELETED)
         files = smartFilesValidator.filterFilesAccordingOrganization(files)
 
-        packageBuilder.createPackage(files)
+        packageBuilder.createPackage(files, componentMonitor.srcProject)
         packageBuilder.write(writer)
     }
 
