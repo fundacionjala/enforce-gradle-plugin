@@ -57,6 +57,7 @@ class Deploy extends Deployment {
         folderDeploy = Paths.get(buildFolderPath, FOLDER_DEPLOY).toString()
         packagePathDeploy = Paths.get(folderDeploy, PACKAGE_NAME).toString()
         createDeploymentDirectory(folderDeploy)
+        logger.debug('Created folder  Deploy at: ' + folderDeploy)
         if (Util.isValidProperty(project, FOLDERS_DEPLOY)) {
             deployByFolder()
         } else {
@@ -97,21 +98,26 @@ class Deploy extends Deployment {
     def deployTruncateFiles() {
         checkStatusTruncate()
         displayFolderNoDeploy()
+        logger.debug('Displayed message')
         if (codeTruncateOn) {
             ArrayList<File> filesToTruncate = excludeFiles(fileManager.getFilesByFolders(projectPath, FOLDERS_TO_TRUNCATE))
             Files.copy(Paths.get(projectPath, PACKAGE_NAME), Paths.get(packagePathDeploy), StandardCopyOption.REPLACE_EXISTING)
             fileManager.copy(filesToTruncate, folderDeploy)
+            logger.debug('All files copied to deploy...')
             writePackage(packagePathDeploy, filesToTruncate)
+            logger.debug('Created package...')
             truncateComponents()
             componentDeploy.startMessage = DEPLOYING_TRUNCATED_CODE
             componentDeploy.successMessage = DEPLOYING_TRUNCATED_CODE_SUCCESSFULLY
             executeDeploy(folderDeploy)
             createDeploymentDirectory(folderDeploy)
+            logger.debug('Truncated components...')
         }
         fileManager.copy(excludeFiles(fileManager.getValidElements(projectPath)), folderDeploy)
         componentDeploy.startMessage = DEPLOYING_CODE
         componentDeploy.successMessage = DEPLOYING_CODE_SUCCESSFULLY
         deployToSalesForce()
+        logger.debug('Deployed components...')
     }
 
     /**
