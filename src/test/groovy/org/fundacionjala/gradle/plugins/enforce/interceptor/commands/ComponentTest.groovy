@@ -55,7 +55,7 @@ class ComponentTest extends Specification {
         when:
         componentContent.execute(file)
         then:
-        file.text == expectedContent
+        file.text.replaceAll("\\s*","") == expectedContent.replaceAll("\\s*","")
     }
     def cleanupSpec() {
         new File(TRUNCATED_PATH).deleteDir()

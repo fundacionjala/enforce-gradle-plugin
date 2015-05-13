@@ -91,6 +91,7 @@ abstract class SalesforceTask extends ForceTask {
         println("\tLogin type: ${credential.loginFormat}")
         println("___________________________________________  ")
         println AnsiColor.ANSI_RESET.value()
+        logger.debug('after show credentials')
     }
 
     /**
@@ -150,7 +151,9 @@ abstract class SalesforceTask extends ForceTask {
         poll = project.enforce.poll
         waitTime = project.enforce.waitTime
         loadCredential()
+        logger.debug('Finished load credential')
         fileManager.createDirectory(buildFolderPath)
+        logger.debug('Created directory at: ' + buildFolderPath)
         runTask()
     }
 
