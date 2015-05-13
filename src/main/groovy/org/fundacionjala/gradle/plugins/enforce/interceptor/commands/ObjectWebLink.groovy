@@ -27,7 +27,8 @@ class ObjectWebLink {
      */
     Closure execute = { file ->
         if (!file) return
-        Matcher webLinkMatcher = file.text =~ WEB_LINK_REGEX
+        String objectWebLink = file.text
+        Matcher webLinkMatcher = objectWebLink =~ WEB_LINK_REGEX
         webLinkMatcher.each { webLinkIt->
             String webLink = webLinkIt[CONTENT_MATCHED_INDEX]
             String url
@@ -47,15 +48,16 @@ class ObjectWebLink {
                 switch (type) {
                     case LinkType.JAVASCRIPT.value():
                         replacement = webLink.replace(url, String.format(TAG_URL, URL_JS_BY_DEFAULT))
-                        file.text = file.text.replace(target, replacement)
+                        objectWebLink = objectWebLink.replace(target, replacement)
                         break
                     case LinkType.URL.value():
                         replacement = webLink.replace(url, String.format(TAG_URL, URL_BY_DEFAULT))
-                        file.text = file.text.replace(target, replacement)
+                        objectWebLink = objectWebLink.replace(target, replacement)
                         break
                 }
             }
         }
+        file.text = objectWebLink
     }
 
 }

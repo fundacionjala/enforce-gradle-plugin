@@ -34,15 +34,29 @@ class ComponentTest extends Specification {
     }
 
 
-    def "Should truncate a component"() {
-        setup:
-        File file = new File("${TRUNCATED_PATH}/Component1.component")
+    def "Should truncate a simple component"() {
+        given:
+        def expectedContent = '''<apex:component >\n</apex:component>'''
+        File file = new File("${TRUNCATED_PATH}/ComponentContent.component")
         when:
         componentContent.execute(file)
         then:
-        file.text == Component.EMPTY_COMPONENT
+        file.text == expectedContent
     }
-
+    def "Should truncate a component with attributes"() {
+        given:
+        def expectedContent = '''<!-- MyComponent -->
+<apex:component controller="MyComponentController" allowDML="true">
+<apex:attribute name="record" type="Object" required="true" description="Description"/>
+<apex:attribute name=" myObject " type="Object" required="true" description="Description"/>
+<apex:attribute name="myClass" type="Object" required="true" description="Description"/>
+</apex:component>'''
+        File file = new File("${TRUNCATED_PATH}/NewComponentContent.component")
+        when:
+        componentContent.execute(file)
+        then:
+        file.text == expectedContent
+    }
     def cleanupSpec() {
         new File(TRUNCATED_PATH).deleteDir()
     }
