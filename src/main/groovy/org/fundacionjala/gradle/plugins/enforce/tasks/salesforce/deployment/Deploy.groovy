@@ -56,8 +56,8 @@ class Deploy extends Deployment {
     void runTask() {
         folderDeploy = Paths.get(buildFolderPath, FOLDER_DEPLOY).toString()
         packagePathDeploy = Paths.get(folderDeploy, PACKAGE_NAME).toString()
+        logger.debug('Creating folder  Deploy at: ' + folderDeploy)
         createDeploymentDirectory(folderDeploy)
-        logger.debug('Created folder  Deploy at: ' + folderDeploy)
         if (Util.isValidProperty(project, FOLDERS_DEPLOY)) {
             deployByFolder()
         } else {
@@ -98,26 +98,24 @@ class Deploy extends Deployment {
     def deployTruncateFiles() {
         checkStatusTruncate()
         displayFolderNoDeploy()
-        logger.debug('Displayed message')
         if (codeTruncateOn) {
             ArrayList<File> filesToTruncate = excludeFiles(fileManager.getFilesByFolders(projectPath, FOLDERS_TO_TRUNCATE))
             Files.copy(Paths.get(projectPath, PACKAGE_NAME), Paths.get(packagePathDeploy), StandardCopyOption.REPLACE_EXISTING)
+            logger.debug('Copying files to deploy')
             fileManager.copy(filesToTruncate, folderDeploy)
-            logger.debug('All files copied to deploy...')
+            logger.debug('Generating package')
             writePackage(packagePathDeploy, filesToTruncate)
-            logger.debug('Created package...')
             truncateComponents()
             componentDeploy.startMessage = DEPLOYING_TRUNCATED_CODE
             componentDeploy.successMessage = DEPLOYING_TRUNCATED_CODE_SUCCESSFULLY
+            logger.debug("Deploying to truncate components from: $folderDeploy")
             executeDeploy(folderDeploy)
             createDeploymentDirectory(folderDeploy)
-            logger.debug('Truncated components...')
         }
         fileManager.copy(excludeFiles(fileManager.getValidElements(projectPath)), folderDeploy)
         componentDeploy.startMessage = DEPLOYING_CODE
         componentDeploy.successMessage = DEPLOYING_CODE_SUCCESSFULLY
         deployToSalesForce()
-        logger.debug('Deployed components...')
     }
 
     /**
@@ -145,8 +143,10 @@ class Deploy extends Deployment {
         if (deprecateTruncateOn) {
             interceptorsToExecute = [Interceptor.REMOVE_DEPRECATE.id]
             interceptorsToExecute += interceptors
+            logger.debug("Truncating components from: $folderDeploy")
             truncateComponents(folderDeploy)
         }
+        logger.debug("Deploying all components from: $folderDeploy")
         executeDeploy(folderDeploy)
         updateFileTracker()
     }
@@ -177,7 +177,9 @@ class Deploy extends Deployment {
      */
     def updateFileTracker() {
         ComponentMonitor componentMonitor = new ComponentMonitor(projectPath)
+        logger.debug('Getting components signatures')
         Map initMapSave = componentMonitor.getComponentsSignature(fileManager.getValidElements(projectPath, excludeFilesToMonitor))
+        logger.debug('Saving initial file tracker')
         componentMonitor.componentSerializer.save(initMapSave)
     }
 
@@ -191,6 +193,7 @@ class Deploy extends Deployment {
                                  Interceptor.TRUNCATE_PAGES.id, Interceptor.TRUNCATE_TRIGGERS.id, Interceptor.TRUNCATE_WORKFLOWS.id,
                                  Interceptor.TRUNCATE_COMPONENTS.id]
         interceptorsToExecute += interceptors
+        logger.debug("Truncating components at: $srcPath")
         truncateComponents(srcPath)
     }
 }
