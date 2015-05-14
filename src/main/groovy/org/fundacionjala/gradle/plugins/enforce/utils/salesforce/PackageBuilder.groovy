@@ -228,9 +228,7 @@ class PackageBuilder {
      */
     public ArrayList<String> selectFolders(ArrayList<File> files, String basePath) {
         ArrayList<String> folders = []
-        println '++++Base Path: ' + basePath
         files.each { File file ->
-            println 'file:' + file.getAbsolutePath()
             String relativePath = file.getAbsolutePath().replace(basePath, '')
             String folderName = Paths.get(relativePath).getName(0)
             if(!folders.contains(folderName)) {
