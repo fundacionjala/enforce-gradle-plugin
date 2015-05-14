@@ -8,15 +8,19 @@
 package org.fundacionjala.gradle.plugins.enforce.interceptor
 
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
+import groovy.util.logging.Slf4j
 
 /**
  * This class manages all components created from source path
  */
+@Slf4j
 class InterceptorManager {
 
     Map<String, MetadataInterceptor> interceptors
     List truncatedDirectories = ['classes', 'objects', 'triggers', 'pages', 'components', 'workflows', 'tabs']
     List<String> interceptorsToExecute
+
+
     /**
      * Creates a new interceptor management from source path
      * @param sourcePath the source directory path
@@ -102,7 +106,8 @@ class InterceptorManager {
      * Executes the truncate method of all the component interceptors
      */
     public void executeTruncate() {
-        this.interceptors.values().each { interceptor ->
+        this.interceptors.each {String component, MetadataInterceptor interceptor ->
+            log.debug "----------------------" + component + "----------------------"
             interceptor.executeInterceptors()
         }
     }
