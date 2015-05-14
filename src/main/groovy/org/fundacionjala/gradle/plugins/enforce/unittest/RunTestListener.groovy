@@ -102,10 +102,7 @@ class RunTestListener {
      */
     public void writeApexTestItems(ApexTestItem apexTestItems) {
         boolean testsCompleted
-        String messages
-        String messagesResult
         String messageTest
-        String className
 
         apexTestItems.apexTestResults.each { apexTestResult ->
 
@@ -114,11 +111,11 @@ class RunTestListener {
             if ((apexTestResult.getOutcome().equals("Fail") || apexTestResult.getOutcome().equals("CompileFail")) &&
                 !methodInClass.containsKey(key)) {
                 methodInClass.put(key, apexTestResult.getMethodName())
-                className = apexClasses.getClass(apexTestResult.getApexClassId()).name
+                apexTestResult.className = apexClasses.getClass(apexTestResult.getApexClassId()).name
                 String errorMessage = apexTestResult.message?"\r\t\tMessage: ${apexTestResult.message}":""
                 errorMessage = apexTestResult.stackTrace?"${errorMessage}\n\r\t\tStacktrace: ${apexTestResult.stackTrace}":errorMessage
                 if(!errorMessage.empty) {
-                    messageTest = "\r\t${className}.${apexTestResult.getMethodName()}\n${errorMessage}\n\n"
+                    messageTest = "\r\t${apexTestResult.className}.${apexTestResult.getMethodName()}\n${errorMessage}\n\n"
                     outputStream.write(Util.getBytes(messageTest, CHARSET_UTF_8))
                     outputStream.flush()
                 }
