@@ -4,10 +4,11 @@
  */
 
 package org.fundacionjala.gradle.plugins.enforce.interceptor
-
+import groovy.util.logging.Slf4j
 /**
  * This class provides a skeletal implementation of the interceptor for all metadata types supported
  */
+@Slf4j
 abstract class MetadataInterceptor {
     List<String> interceptorsToExecute
     List<File> files
@@ -59,6 +60,7 @@ abstract class MetadataInterceptor {
                 if (interceptorsToExecute.contains(interceptorName) ||
                         (!interceptorsToExecute.contains(interceptorName) &&
                                 interceptorName.isNumber() && interceptorName.toInteger() == interceptor.hashCode())) {
+                    log.debug "$interceptorName --> $file.name"
                     executeInterceptor(interceptor, file)
                 }
             }

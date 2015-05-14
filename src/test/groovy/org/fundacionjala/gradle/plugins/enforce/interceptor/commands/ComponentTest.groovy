@@ -41,20 +41,20 @@ class ComponentTest extends Specification {
         when:
         componentContent.execute(file)
         then:
-        file.text == expectedContent
+        file.text.replaceAll("\\s*","") == expectedContent.replaceAll("\\s*","")
     }
     def "Should truncate a component with attributes"() {
         given:
-        def expectedContent = '''<!-- MyComponent -->
-<apex:component controller="MyComponentController" allowDML="true">
-<apex:attribute name="record" type="Object" required="true" description="Description"/>
-<apex:attribute name=" myObject " type="Object" required="true" description="Description"/>
-<apex:attribute name="myClass" type="Object" required="true" description="Description"/>
+        def expectedContent = '''<apex:component>
+<apex:attribute name="record" type="Object" required="false" description="Description"/>
+<apex:attribute name=" myObject " type="Object" required="false" description="Description"/>
+<apex:attribute name="myClass" type="Object" required="false" description="Description"/>
 </apex:component>'''
         File file = new File("${TRUNCATED_PATH}/NewComponentContent.component")
         when:
         componentContent.execute(file)
         then:
+        true
         file.text.replaceAll("\\s*","") == expectedContent.replaceAll("\\s*","")
     }
     def cleanupSpec() {
