@@ -161,7 +161,6 @@ class ManagementFile {
                 String fileName = file.getName()
                 if (!fileName.equals(PACKAGE_XML)) {
                     String relativePath = file.getAbsolutePath().replace(basePath, '')
-//                    String filterFileName = new StringBuilder(SLASH).append(file.getName())
                     String folderPath = relativePath.replace(file.getName(), '')
                     createFolder(pathFolder, folderPath)
                     pathFolder = Paths.get(pathFolder, folderPath).toString()

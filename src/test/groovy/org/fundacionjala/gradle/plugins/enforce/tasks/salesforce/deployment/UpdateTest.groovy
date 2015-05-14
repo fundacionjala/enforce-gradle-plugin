@@ -117,6 +117,7 @@ class UpdateTest extends Specification {
     def "Test should create a package XML file" () {
         given:
             updateInstance.packageGenerator.fileTrackerMap = ['classes/Class1.cls':new ResultTracker(ComponentStates.ADDED)]
+            updateInstance.packageGenerator.projectPath = Paths.get(SRC_PATH, 'src').toString()
             updateInstance.pathUpdate = Paths.get(SRC_PATH, 'build', 'update').toString()
             updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
         when:
@@ -128,6 +129,7 @@ class UpdateTest extends Specification {
     def "Test should create a package XML file empty if status is deleted" () {
         given:
             updateInstance.packageGenerator.fileTrackerMap = ['classes/Class1.cls':new ResultTracker(ComponentStates.ADDED)]
+            updateInstance.packageGenerator.projectPath = Paths.get(SRC_PATH, 'src').toString()
             updateInstance.pathUpdate = Paths.get(SRC_PATH, 'build', 'update').toString()
             updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
         when:
@@ -213,6 +215,7 @@ class UpdateTest extends Specification {
 
     def "Integration test should update (New file)"() {
         given:
+            updateInstance.packageGenerator.projectPath = Paths.get(SRC_PATH, 'src').toString()
             updateInstance.packageGenerator.fileTrackerMap = [:]
             def class1Cls = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString())
             def object1__c = new File(Paths.get(SRC_PATH, 'src', 'objects', 'Object1__c.object').toString())
@@ -242,6 +245,7 @@ class UpdateTest extends Specification {
             def destructiveExpect = "${"<?xml version='1.0' encoding='UTF-8'?>"}${"<Package xmlns='http://soap.sforce.com/2006/04/metadata'>"}${"<version>32.0</version>"}${"</Package>"}"
         when:
             updateInstance.runTask()
+            println 'package ' + new File(Paths.get(SRC_PATH, 'build', 'update', 'package.xml').toString()).exists()
             def packageXml =  new File(Paths.get(SRC_PATH, 'build', 'update', 'package.xml').toString()).text
             def destructiveXml =  new File(Paths.get(SRC_PATH, 'build', 'update', 'destructiveChanges.xml').toString()).text
             def class2Xml =  new File(Paths.get(SRC_PATH, 'build', 'update', 'classes', 'Class2.cls-meta.xml').toString()).text

@@ -27,6 +27,7 @@ class PackageGeneratorTest extends Specification {
             fileTrackerMap.put(newFilePath2, new ResultTracker(ComponentStates.CHANGED))
             fileTrackerMap.put(newFilePath3, new ObjectResultTracker(ComponentStates.ADDED))
             fileTrackerMap.put(newFilePath4, new ObjectResultTracker(ComponentStates.CHANGED))
+            packageGenerator.projectPath = RESOURCE_PATH
             packageGenerator.fileTrackerMap = fileTrackerMap
             def stringWriter = new StringWriter()
         when:
@@ -66,7 +67,7 @@ class PackageGeneratorTest extends Specification {
             Map<String, ResultTracker> fileTrackerMap = [:]
             fileTrackerMap.put(newFilePathObject1,objectResultTracker1)
             fileTrackerMap.put(newFilePathObject2,objectResultTracker2)
-
+            packageGenerator.projectPath = RESOURCE_PATH
             packageGenerator.fileTrackerMap = fileTrackerMap
 
         when:
@@ -102,7 +103,7 @@ class PackageGeneratorTest extends Specification {
             objectResultTrackerChanged.subComponentsResult = subComponentResult
             fileTrackerMap.put(newObjectPathChanged, objectResultTrackerChanged)
             fileTrackerMap.put(newObjectPathAdded  , new ObjectResultTracker(ComponentStates.ADDED))
-
+            packageGenerator.projectPath = RESOURCE_PATH
             packageGenerator.fileTrackerMap = fileTrackerMap
             def stringWriter = new StringWriter()
 
@@ -143,6 +144,7 @@ class PackageGeneratorTest extends Specification {
             fileTrackerMap.put(newFilePath, new ResultTracker(ComponentStates.DELETED))
             fileTrackerMap.put(newObjectPathDeleted, new ResultTracker(ComponentStates.DELETED))
             fileTrackerMap.put(newObjectPathChanged, objectResultTracker)
+            packageGenerator.projectPath = RESOURCE_PATH
             packageGenerator.fileTrackerMap = fileTrackerMap
             smartFilesValidator.filterFilesAccordingOrganization(_) >> packageGenerator.getFiles(ComponentStates.DELETED) + packageGenerator.getSubComponents(ComponentStates.DELETED)
             def stringWriter = new StringWriter()

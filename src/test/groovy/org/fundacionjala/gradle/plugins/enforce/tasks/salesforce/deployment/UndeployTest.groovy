@@ -102,6 +102,7 @@ class UndeployTest extends Specification {
             undeployInstance.unDeployPackagePath = Paths.get(undeployDirectory,'package.xml').toString()
             undeployInstance.filesToTruncate = [new File(Paths.get(SRC_PATH,'src', 'classes','Class1.cls').toString()),
                                                 new File(Paths.get(SRC_PATH,'src', 'classes','Class1.cls-meta.xml').toString())]
+            undeployInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
             undeployInstance.folderUnDeploy = undeployDirectory
             undeployInstance.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
             undeployInstance.createDeploymentDirectory(undeployDirectory)
