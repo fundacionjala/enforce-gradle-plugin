@@ -3,3 +3,12 @@ before_install:
   - gradle wrapper
 jdk:
   - oraclejdk7
+notifications:
+  email:
+    - Alejandro.Ruiz@jalasoft.com
+    - Alex.Ventura@jalasoft.com
+    - alex.rv11@gmail.com
+    - Marcelo.Oporto@jalasoft.com
+    - Marco.Cadima@jalasoft.com
+    - Rodrigo.Ruiz@jalasoft.com
+    - ruiz.ac@gmail.com
