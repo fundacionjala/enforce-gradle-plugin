@@ -124,6 +124,19 @@ public enum MetadataComponents {
         return metadataComponent
     }
 
+    public static MetadataComponents getComponentByName(String name) {
+
+        MetadataComponents metadataComponent
+        for (MetadataComponents component : values()) {
+            if (component.getTypeName() == name) {
+                metadataComponent = component
+                break
+            }
+        }
+        return metadataComponent
+    }
+
+
     public static String getExtensionByFolder(String folder) {
 
         String extensionByFolder
