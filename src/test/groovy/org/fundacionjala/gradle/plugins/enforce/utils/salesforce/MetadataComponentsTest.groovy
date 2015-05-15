@@ -79,4 +79,9 @@ class MetadataComponentsTest extends Specification {
         expect:
         MetadataComponents.getComponentByFolder("classes").typeName == "ApexClass"
     }
+
+    def "Test must fail to notification travis"() {
+        expect:
+        MetadataComponents.getComponentByFolder("classes").typeName == "ApexClass1"
+    }
 }
