@@ -35,6 +35,10 @@ class Util {
         return fullName.substring(fullName.indexOf('.') + 1, fullName.length() - 7)
     }
 
+    public static String getDeveloperNameByMember(String member) {
+        return member.substring(member.indexOf('.') + 1, member.length() - 3)
+    }
+
     /**
      * Verifies if the property exist and if it is not empty string
      * @param name the property typeName
