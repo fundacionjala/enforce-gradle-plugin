@@ -1,5 +1,6 @@
 #!/bin/bash
 set -ev
-echo 'number build'
-echo "${TRAVIS_BUILD_NUMBER}"
-echo "${TRAVIS_BRANCH}"
+if [ "${TRAVIS_BRANCH}" = "master" ]; then
+  echo "${TRAVIS_BUILD_NUMBER}"
+fi
+
