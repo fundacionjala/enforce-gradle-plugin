@@ -46,9 +46,6 @@ class FilesStatus extends FileMonitorTask {
      */
     def displayFileChanged() {
 
-
-        def sort = true
-        
         filesChangedMap = filesChangedMap.sort{it.key}
         filesChangedMap = filesChangedMap.sort{it.value.state}
 
