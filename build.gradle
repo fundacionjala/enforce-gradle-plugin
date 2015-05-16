@@ -8,13 +8,19 @@ apply plugin: 'maven'
 apply plugin: 'cobertura'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
 
 buildscript {
     repositories {
         mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath "net.saliman:gradle-cobertura-plugin:2.0.0"
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.1'
     }
 }
 
@@ -60,16 +66,63 @@ dependencies {
 
     testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
     testCompile 'cglib:cglib-nodep:2.2'
+
+    testCompile 'junit:junit:4.7'
 }
 
 group = 'org.fundacionjala.gradle.plugins.enforce'
-version = '1.0.0'
+version = '1.0.'+String.valueOf(Integer.valueOf("$System.env.TRAVIS_BUILD_NUMBER") - 64)
 
 
-uploadArchives {
+/*uploadArchives {
     repositories {
         mavenDeployer {
             repository url: "file://${System.properties['user.home']}/.m2/repository"
         }
+    }
+}*/
+
+
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            if (plugins.hasPlugin('war')) {
+                from components.web
+            } else {
+                from components.java
+            }
+
+            artifact sourcesJar
+        }
+    }
+}
+
+bintray {
+    user = bintray_username
+    key = bintray_api_key
+
+    publications = ['mavenJava']
+    dryRun = false
+    publish = true
+    pkg {
+        repo = bintray_repo
+        userOrg = bintray_user_org
+        name = bintray_package
+        websiteUrl = 'https://github.com/fundacionjala/enforce-gradle-plugin'
+        issueTrackerUrl = 'https://github.com/fundacionjala/enforce-gradle-plugin/issues'
+        vcsUrl = 'https://github.com/fundacionjala/enforce-gradle-plugin.git'
+        licenses = ['MIT']
+        labels = ['sfdc', 'integration ', 'continuous', 'jenkins', 'gradle']
+        publicDownloadNumbers = true
     }
 }
