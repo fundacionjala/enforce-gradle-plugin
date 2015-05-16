@@ -5,7 +5,6 @@
 
 package org.fundacionjala.gradle.plugins.enforce.wsc.soap
 
-import org.fundacionjala.gradle.plugins.enforce.wsc.LoginType
 import com.sforce.soap.apex.DebuggingInfo_element
 import com.sforce.soap.apex.ExecuteAnonymousResult
 import com.sforce.soap.apex.SoapConnection
@@ -15,6 +14,7 @@ import com.sforce.soap.partner.PartnerConnection
 import org.fundacionjala.gradle.plugins.enforce.wsc.Connector
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.ForceAPI
+import org.fundacionjala.gradle.plugins.enforce.wsc.LoginType
 import spock.lang.Shared
 import spock.lang.Specification
 

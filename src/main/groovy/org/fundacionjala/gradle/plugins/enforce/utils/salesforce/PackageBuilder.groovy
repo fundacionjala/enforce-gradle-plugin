@@ -5,8 +5,6 @@
 
 package org.fundacionjala.gradle.plugins.enforce.utils.salesforce
 
-import org.fundacionjala.gradle.plugins.enforce.utils.Constants
-import org.fundacionjala.gradle.plugins.enforce.wsc.Connector
 import com.sforce.soap.metadata.PackageTypeMembers
 import groovy.util.logging.Log
 import groovy.util.slurpersupport.GPathResult
@@ -14,7 +12,9 @@ import groovy.xml.DOMBuilder
 import groovy.xml.MarkupBuilder
 import groovy.xml.XmlUtil
 import groovy.xml.dom.DOMCategory
+import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
+import org.fundacionjala.gradle.plugins.enforce.wsc.Connector
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 

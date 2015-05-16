@@ -12,10 +12,10 @@ import org.fundacionjala.gradle.plugins.enforce.tasks.ForceTask
 import org.fundacionjala.gradle.plugins.enforce.tasks.credentialmanager.CredentialParameterValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.AnsiColor
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
-import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
-import org.gradle.api.GradleException
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageBuilder
+import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
+import org.gradle.api.GradleException
 
 import java.nio.file.Paths
 
@@ -91,6 +91,7 @@ abstract class SalesforceTask extends ForceTask {
         println("\tLogin type: ${credential.loginFormat}")
         println("___________________________________________  ")
         println AnsiColor.ANSI_RESET.value()
+        logger.debug('after show credentials')
     }
 
     /**
@@ -150,7 +151,9 @@ abstract class SalesforceTask extends ForceTask {
         poll = project.enforce.poll
         waitTime = project.enforce.waitTime
         loadCredential()
+        logger.debug('Finished load credential')
         fileManager.createDirectory(buildFolderPath)
+        logger.debug('Created directory at: ' + buildFolderPath)
         runTask()
     }
 

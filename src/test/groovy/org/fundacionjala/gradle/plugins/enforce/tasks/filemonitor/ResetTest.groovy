@@ -6,12 +6,13 @@
 package org.fundacionjala.gradle.plugins.enforce.tasks.filemonitor
 
 import com.twmacinta.util.MD5
-import org.gradle.testfixtures.ProjectBuilder
+import groovy.json.JsonSlurper
 import org.fundacionjala.gradle.plugins.enforce.EnforcePlugin
-import org.fundacionjala.gradle.plugins.enforce.filemonitor.FileMonitorSerializer
+import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentMonitor
+import org.gradle.api.Project
+import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Shared
 import spock.lang.Specification
-import org.gradle.api.Project
 
 import java.nio.file.Paths
 
@@ -44,18 +45,30 @@ class ResetTest extends Specification {
             fileWriter.write('test')
             def pathFileTracker = Paths.get(SRC_PATH, 'src', '.fileTracker.data').toString()
             new File(pathFileTracker).createNewFile()
-            instanceReset.fileArray = [new File(class1Path)]
-            instanceReset.fileMonitorSerializer = new FileMonitorSerializer(pathFileTracker)
+            instanceReset.sourceComponents = [new File(class1Path)]
+            instanceReset.componentMonitor = new ComponentMonitor(Paths.get(SRC_PATH, 'src').toString())
             def signature = MD5.asHex(MD5.getHash(new File(class1Path)))
         when:
             instanceReset.runTask()
             fileWriter.write('new change')
             fileWriter.close()
         then:
-            instanceReset.fileMonitorSerializer.readMap(pathFileTracker).get(class1Path) == signature
+            instanceReset.componentMonitor.componentSerializer.read().get(class1Path).hash == signature
+    }
+
+    def "Test should delete a old fileTracker file and create a new fileTracker with jsonFormat" () {
+        given:
+            String fileTrackerPath =  Paths.get(SRC_PATH, '.fileTracker.data')
+            new File(fileTrackerPath).write('components tracked')
+            instanceReset.projectPath = SRC_PATH
+        when:
+            instanceReset.removeFileTracker()
+        then:
+            !new File(fileTrackerPath).exists()
     }
 
     def cleanupSpec() {
-        new File(Paths.get(SRC_PATH).toString()).deleteDir()
+       new File(Paths.get(SRC_PATH).toString()).deleteDir()
+
     }
 }

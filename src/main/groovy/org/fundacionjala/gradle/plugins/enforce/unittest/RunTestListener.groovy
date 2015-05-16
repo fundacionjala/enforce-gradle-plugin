@@ -5,14 +5,14 @@
 
 package org.fundacionjala.gradle.plugins.enforce.unittest
 
-import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexClasses
-import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexTestItem
 import org.cometd.bayeux.Channel
 import org.cometd.bayeux.Message
 import org.cometd.bayeux.client.ClientSessionChannel
 import org.cometd.bayeux.client.ClientSessionChannel.MessageListener
 import org.fundacionjala.gradle.plugins.enforce.streaming.StreamingClient
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.unittest.RunTestTask
+import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexClasses
+import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexTestItem
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.wsc.soap.ToolingAPI
 

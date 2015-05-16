@@ -13,9 +13,9 @@ import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponent
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.QueryBuilder
+import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
 import org.gradle.api.GradleException
 import org.gradle.api.file.FileTree
-import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
 
 import java.nio.file.Files
 import java.nio.file.Paths

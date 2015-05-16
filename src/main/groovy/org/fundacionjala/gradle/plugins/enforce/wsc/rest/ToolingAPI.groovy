@@ -5,11 +5,11 @@
 
 package org.fundacionjala.gradle.plugins.enforce.wsc.rest
 
-import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexTestItem
+import groovy.json.JsonSlurper
 import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexRunTestResult
+import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexTestItem
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.ForceAPI
-import groovy.json.JsonSlurper
 
 /**
  * A wrapper around http client that execute queries

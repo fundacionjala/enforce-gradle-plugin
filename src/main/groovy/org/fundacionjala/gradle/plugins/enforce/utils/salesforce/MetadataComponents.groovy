@@ -64,7 +64,17 @@ public enum MetadataComponents {
     TRIGGERS("ApexTrigger", "trigger", "triggers"),
     PROFILES("Profile", "profile", "profiles"),
     TABS("CustomTab", "tab", "tabs"),
-    TRANSLATIONS("Translations", "translation", "translations")
+    TRANSLATIONS("Translations", "translation", "translations"),
+    FIELDS("CustomField", "sbc", "fields"),
+    COMPACTLAYOUTS("CompactLayout", "sbc", "compactLayouts"),
+    RECORDTYPES("RecordType", "sbc", "recordTypes"),
+    VALIDATIONRULES("ValidationRule", "sbc", "validationRules"),
+    BUSINESSPROCESSES("BusinessProcess", "sbc", "businessProcesses"),
+    FIELDSETS("FieldSet", "sbc", "fieldSets"),
+    LISTVIEWS("ListView", "sbc", "listViews"),
+    SHARINGREASON("SharingReason", "sbc", "SharingReason"),
+    OBJECTWEBLINKS("Weblink", "sbc", "webLinks"),
+    CUSTOMPERMISSIONS("CustomPermission", "customPermission", "customPermissions")
 
     public final static Map<String, MetadataComponents> COMPONENT;
 
@@ -102,6 +112,11 @@ public enum MetadataComponents {
         return COMPONENT.get(name.toUpperCase());
     }
 
+    /**
+     * Gets a MetadataComponent by folder
+     * @param folder is a component folder
+     * @return a MetadataComponent
+     */
     public static MetadataComponents getComponentByFolder(String folder) {
 
         MetadataComponents metadataComponent
@@ -114,6 +129,28 @@ public enum MetadataComponents {
         return metadataComponent
     }
 
+    /**
+     * Gets a MetadataComponent by name
+     * @param name is component name
+     * @return a MetadataComponent object
+     */
+    public static MetadataComponents getComponentByName(String name) {
+
+        MetadataComponents metadataComponent
+        for (MetadataComponents component : values()) {
+            if (component.getTypeName() == name) {
+                metadataComponent = component
+                break
+            }
+        }
+        return metadataComponent
+    }
+
+    /**
+     * Gets a extension of component by folder
+     * @param folder is a component folder
+     * @return a extension of component
+     */
     public static String getExtensionByFolder(String folder) {
 
         String extensionByFolder
@@ -126,6 +163,11 @@ public enum MetadataComponents {
         return extensionByFolder
     }
 
+    /**
+     * Gets a extension of component by name
+     * @param name is component name
+     * @return a extension o component
+     */
     public static String getExtensionByName(String name) {
 
         String extensionByName
@@ -138,6 +180,11 @@ public enum MetadataComponents {
         return extensionByName
     }
 
+    /**
+     * Gets a directory of component by name
+     * @param name is a component name
+     * @return a directory of component
+     */
     public static String getDirectoryByName(String name) {
 
         String directory
@@ -150,6 +197,11 @@ public enum MetadataComponents {
         return directory
     }
 
+    /**
+     * Validates a component extension
+     * @param extension is a component extension
+     * @return true if extension is valid
+     */
     public static boolean validExtension(String extension) {
         for (MetadataComponents input : values()) {
             if (input.getExtension() == extension) {
@@ -159,6 +211,11 @@ public enum MetadataComponents {
         return false
     }
 
+    /**
+     * Validates a component folder
+     * @param folderName is a component folder
+     * @return true if folder is valid
+     */
     public static boolean validFolder(String folderName) {
         for (MetadataComponents input : values()) {
             if (input.name() == folderName.toUpperCase()) {

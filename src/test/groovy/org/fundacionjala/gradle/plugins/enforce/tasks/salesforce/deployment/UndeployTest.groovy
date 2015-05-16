@@ -5,18 +5,18 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 
-import org.fundacionjala.gradle.plugins.enforce.undeploy.PackageComponent
 import org.custommonkey.xmlunit.Diff
 import org.custommonkey.xmlunit.XMLUnit
-import org.gradle.api.Project
-import org.gradle.api.Task
-import org.gradle.testfixtures.ProjectBuilder
 import org.fundacionjala.gradle.plugins.enforce.EnforcePlugin
 import org.fundacionjala.gradle.plugins.enforce.metadata.DeployMetadata
+import org.fundacionjala.gradle.plugins.enforce.undeploy.PackageComponent
 import org.fundacionjala.gradle.plugins.enforce.undeploy.SmartFilesValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.LoginType
+import org.gradle.api.Project
+import org.gradle.api.Task
+import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -181,8 +181,8 @@ class UndeployTest extends Specification {
             undeployInstance.unDeployPackagePath = unDeployPath
             undeployInstance.credential = credential
         when:
-            def jsonString1 = """{"entityTypeName":"ApexClass","records": [{"Name" : "Class1"},{"Name" : "Class2"}]"""
-            def jsonString2 = """{"entityTypeName":"ApexTrigger","records": [{"Name" : "Trigger2"}]"""
+            def jsonString1 = """{"entityTypeName":"ApexClass","records": [{"Name" : "Class1","attributes":{"type":"ApexClass"}},{"Name" : "Class2", "attributes":{"type":"ApexClass"}}]"""
+            def jsonString2 = """{"entityTypeName":"ApexTrigger","records": [{"Name" : "Trigger2", "attributes":{"type":"ApexTrigger"}}]"""
             def jsonArrays = new ArrayList<String>()
             jsonArrays.push(jsonString1)
             jsonArrays.push(jsonString2)

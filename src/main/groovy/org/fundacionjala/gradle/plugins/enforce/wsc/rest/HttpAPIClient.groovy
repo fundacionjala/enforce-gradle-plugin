@@ -6,6 +6,7 @@
 package org.fundacionjala.gradle.plugins.enforce.wsc.rest
 
 import groovyx.net.http.HTTPBuilder
+
 import static groovyx.net.http.ContentType.JSON
 import static groovyx.net.http.ContentType.TEXT
 import static groovyx.net.http.Method.GET
@@ -46,7 +47,6 @@ class HttpAPIClient {
      * @return the result from server in JSON format
      */
     public String executeQuery(String soql) {
-
         String resultQuery = ""
         HTTPBuilder http = new HTTPBuilder(getEndPoint(host))
         http.request( GET, JSON ) {

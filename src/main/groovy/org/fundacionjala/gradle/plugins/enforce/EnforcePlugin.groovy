@@ -5,22 +5,22 @@
 
 package org.fundacionjala.gradle.plugins.enforce
 
+import org.fundacionjala.gradle.plugins.enforce.tasks.credentialmanager.CredentialAdder
+import org.fundacionjala.gradle.plugins.enforce.tasks.credentialmanager.CredentialUpdater
+import org.fundacionjala.gradle.plugins.enforce.tasks.filemonitor.FilesStatus
 import org.fundacionjala.gradle.plugins.enforce.tasks.filemonitor.Reset
+import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment.Deploy
+import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment.Undeploy
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment.Update
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment.Upload
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.execute.ApexExecutor
+import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.managepackage.InstallPackageTask
+import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.managepackage.UninstallPackageTask
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.retrieve.Retrieve
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.unittest.RunTestTask
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.fundacionjala.gradle.plugins.enforce.tasks.credentialmanager.CredentialAdder
-import org.fundacionjala.gradle.plugins.enforce.tasks.credentialmanager.CredentialUpdater
-import org.fundacionjala.gradle.plugins.enforce.tasks.filemonitor.FilesStatus
-import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment.Deploy
-import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment.Undeploy
-import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.managepackage.InstallPackageTask
-import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.managepackage.UninstallPackageTask
 
 /**
  * This class creates a Force Plugin that represents an extension to Gradle.

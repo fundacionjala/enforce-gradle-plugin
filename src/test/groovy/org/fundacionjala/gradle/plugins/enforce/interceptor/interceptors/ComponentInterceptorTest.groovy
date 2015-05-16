@@ -24,7 +24,7 @@ class ComponentInterceptorTest extends Specification {
         when:
             componentInterceptor.loadFiles(path)
         then:
-            componentInterceptor.files.size() == 1
+            componentInterceptor.files.size() == 2
 
     }
 }

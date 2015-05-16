@@ -134,6 +134,20 @@ class UtilTest extends Specification {
             macAddress.size() == 12
     }
 
+    def "Test should get developerName from a fullName" () {
+        when:
+        def developerName = Util.getDeveloperName('TwilioConfig__c.AuthTokenAPI__c.sbc')
+        then:
+        developerName == 'AuthTokenAPI'
+    }
+
+    def "Test should get developerName from a member" () {
+        when:
+            def developerName = Util.getDeveloperNameByMember('TwilioConfig__c.AuthTokenAPI__c')
+        then:
+            developerName == 'AuthTokenAPI'
+    }
+
     def cleanupSpec() {
         new File(Paths.get(resourcesPath, 'triggers').toString()).deleteDir()
     }

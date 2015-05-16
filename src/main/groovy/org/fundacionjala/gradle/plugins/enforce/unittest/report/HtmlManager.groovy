@@ -5,11 +5,11 @@
 
 package org.fundacionjala.gradle.plugins.enforce.unittest.report
 
-import org.fundacionjala.gradle.plugins.enforce.utils.Constants
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 import com.sforce.soap.apex.CodeCoverageResult
 import groovy.text.SimpleTemplateEngine
 import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexRunTestResult
+import org.fundacionjala.gradle.plugins.enforce.utils.Constants
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 
 import java.nio.file.Paths
 

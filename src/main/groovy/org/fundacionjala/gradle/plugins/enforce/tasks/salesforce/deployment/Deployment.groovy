@@ -5,14 +5,14 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 
+import org.fundacionjala.gradle.plugins.enforce.interceptor.InterceptorManager
 import org.fundacionjala.gradle.plugins.enforce.metadata.DeployMetadata
+import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.SalesforceTask
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
+import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 import org.gradle.api.file.FileTree
 import org.gradle.api.tasks.bundling.Zip
-import org.fundacionjala.gradle.plugins.enforce.interceptor.InterceptorManager
-import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.SalesforceTask
-import org.fundacionjala.gradle.plugins.enforce.utils.Util
 
 import java.nio.file.Paths
 
@@ -54,8 +54,10 @@ abstract class Deployment extends SalesforceTask {
      */
     def executeDeploy(String sourcePath) {
         String fileName = new File(sourcePath).getName()
+        logger.debug("Crating zip file at: $buildFolderPath/$fileName")
         String pathZipToDeploy = createZip(sourcePath, buildFolderPath, fileName)
         componentDeploy.setPath(pathZipToDeploy)
+        logger.debug('Deploying components')
         componentDeploy.deploy(poll, waitTime, credential)
     }
 
@@ -64,10 +66,14 @@ abstract class Deployment extends SalesforceTask {
      * @param dirToTruncate the directory path to truncate
      */
     def truncateComponents(String dirToTruncate) {
+        logger.debug('Loading files to truncate')
         componentManager.loadFiles(dirToTruncate)
+        logger.debug('Adding interceptors')
         componentManager.addInterceptors(interceptorsToExecute)
         componentManager.addInterceptorsRegistered(project.property(Constants.FORCE_EXTENSION).interceptors as Map)
+        logger.debug('Validating interceptors')
         componentManager.validateInterceptors()
+        logger.debug('Executing truncate process')
         componentManager.executeTruncate()
     }
 

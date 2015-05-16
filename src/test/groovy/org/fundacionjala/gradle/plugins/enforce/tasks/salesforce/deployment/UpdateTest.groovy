@@ -5,14 +5,17 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 
+import org.custommonkey.xmlunit.Diff
+import org.custommonkey.xmlunit.XMLUnit
 import org.fundacionjala.gradle.plugins.enforce.EnforcePlugin
-import org.fundacionjala.gradle.plugins.enforce.filemonitor.FileMonitorSerializer
+import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentMonitor
+import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentSerializer
+import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
+import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
 import org.fundacionjala.gradle.plugins.enforce.metadata.DeployMetadata
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.LoginType
-import org.custommonkey.xmlunit.Diff
-import org.custommonkey.xmlunit.XMLUnit
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Shared
@@ -29,10 +32,16 @@ class UpdateTest extends Specification {
 
     @Shared
     def SRC_PATH = Paths.get(System.getProperty("user.dir"), "src", "test", "groovy", "org",
-                   "fundacionjala", "gradle", "plugins","enforce","tasks", "salesforce", "resources").toString()
+            "fundacionjala", "gradle", "plugins","enforce","tasks", "salesforce", "resources").toString()
 
     @Shared
     Credential credential
+
+    @Shared
+    ComponentSerializer componentSerializer
+
+    @Shared
+    ComponentMonitor componentMonitor
 
     def setup() {
         project = ProjectBuilder.builder().build()
@@ -42,10 +51,10 @@ class UpdateTest extends Specification {
         updateInstance.fileManager = new ManagementFile(SRC_PATH)
         updateInstance.createDeploymentDirectory(Paths.get(SRC_PATH, 'build').toString())
         updateInstance.createDeploymentDirectory(Paths.get(SRC_PATH, 'build', 'update').toString())
-        FileMonitorSerializer fileMonitorSerializer = new FileMonitorSerializer()
-        fileMonitorSerializer.setSrcProject(SRC_PATH)
+        def fileTrackerPath = Paths.get(SRC_PATH,'.fileTracker.data').toString()
+        componentSerializer = new ComponentSerializer(fileTrackerPath)
+        componentMonitor = new ComponentMonitor(SRC_PATH)
         def class1 = new File(Paths.get(SRC_PATH, 'classes', 'class1.cls').toString())
-        def object = new File(Paths.get(SRC_PATH, 'objects', 'object1.object').toString())
 
         def class1Cls = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString())
         def class1ClsXml = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls-meta.xml').toString())
@@ -54,8 +63,8 @@ class UpdateTest extends Specification {
         def trigger = new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger').toString())
         def triggerXml = new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger-meta.xml').toString())
 
-        def mapMock = fileMonitorSerializer.loadSignatureForFilesInDirectory([class1, object, class1Cls, class1ClsXml, object1__c, object1__c, account, trigger, triggerXml])
-        fileMonitorSerializer.saveMap(mapMock)
+        def mapMock = componentMonitor.getComponentsSignature([class1, class1Cls, class1ClsXml, object1__c, object1__c, account, trigger, triggerXml])
+        componentSerializer.save(mapMock)
 
         credential = new Credential()
         credential.id = 'id'
@@ -68,45 +77,45 @@ class UpdateTest extends Specification {
 
     def "Test should show files changed" () {
         given:
-        updateInstance.filesChanged = ["two.txt":"New file"]
+        updateInstance.packageGenerator.fileTrackerMap = ["two.txt":"New file"]
 
         when:
-            def stdOut = System.out
-            def os = new ByteArrayOutputStream()
-            System.out = new PrintStream(os)
+        def stdOut = System.out
+        def os = new ByteArrayOutputStream()
+        System.out = new PrintStream(os)
 
-            updateInstance.showFilesChanged()
-            def array = os.toByteArray()
-            def is = new ByteArrayInputStream(array)
-            System.out = stdOut
-            def lineAux = is.readLines()
+        updateInstance.showFilesChanged()
+        def array = os.toByteArray()
+        def is = new ByteArrayInputStream(array)
+        System.out = stdOut
+        def lineAux = is.readLines()
         then:
-            lineAux[0].contains("*********************************************")
-            lineAux[1].contains("              Status Files Changed             ")
-            lineAux[2].contains("*********************************************")
-            lineAux[3].contains("two.txt - New file")
-            lineAux[4].contains("*********************************************")
+        lineAux[0].contains("*********************************************")
+        lineAux[1].contains("              Status Files Changed             ")
+        lineAux[2].contains("*********************************************")
+        lineAux[3].contains("two.txt - New file")
+        lineAux[4].contains("*********************************************")
     }
 
     def "Test should show nothing" () {
         given:
-            updateInstance.filesChanged = [:]
+        updateInstance.packageGenerator.fileTrackerMap = [:]
         when:
-            def stdOut = System.out
-            def os = new ByteArrayOutputStream()
-            System.out = new PrintStream(os)
-            updateInstance.showFilesChanged()
-            def array = os.toByteArray()
-            def is = new ByteArrayInputStream(array)
-            System.out = stdOut
-            def lineAux = is.readLines()
+        def stdOut = System.out
+        def os = new ByteArrayOutputStream()
+        System.out = new PrintStream(os)
+        updateInstance.showFilesChanged()
+        def array = os.toByteArray()
+        def is = new ByteArrayInputStream(array)
+        System.out = stdOut
+        def lineAux = is.readLines()
         then:
-            lineAux == []
+        lineAux == []
     }
 
     def "Test should create a package XML file" () {
         given:
-            updateInstance.filesChanged = ['classes/Class1.cls':"New file"]
+            updateInstance.packageGenerator.fileTrackerMap = ['classes/Class1.cls':new ResultTracker(ComponentStates.ADDED)]
             updateInstance.pathUpdate = Paths.get(SRC_PATH, 'build', 'update').toString()
             updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
         when:
@@ -117,7 +126,7 @@ class UpdateTest extends Specification {
 
     def "Test should create a package XML file empty if status is deleted" () {
         given:
-            updateInstance.filesChanged = ['Class1.cls':"Deleted file"]
+            updateInstance.packageGenerator.fileTrackerMap = ['classes/Class1.cls':new ResultTracker(ComponentStates.ADDED)]
             updateInstance.pathUpdate = Paths.get(SRC_PATH, 'build', 'update').toString()
             updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
         when:
@@ -128,7 +137,7 @@ class UpdateTest extends Specification {
 
     def "Test should create a package empty" () {
         given:
-            updateInstance.filesChanged = [:]
+            updateInstance.packageGenerator.fileTrackerMap = [:]
             updateInstance.pathUpdate = Paths.get(SRC_PATH, 'build', 'update').toString()
             updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
         when:
@@ -139,10 +148,11 @@ class UpdateTest extends Specification {
 
     def "Test should create a destructive XML file" () {
         given:
-            updateInstance.filesChanged = ['classes/Class1.cls':"Deleted file"]
+            updateInstance.packageGenerator.fileTrackerMap = ['classes/Class1.cls':new ResultTracker(ComponentStates.DELETED)]
             updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
             updateInstance.pathUpdate = Paths.get(SRC_PATH, 'build', 'update').toString()
             updateInstance.credential = credential
+            updateInstance.packageGenerator.credential = credential
         when:
             updateInstance.createDestructive()
         then:
@@ -152,16 +162,18 @@ class UpdateTest extends Specification {
     def "Test should load new file" () {
         given:
             updateInstance.projectPath = SRC_PATH
-            updateInstance.objSerializer = new FileMonitorSerializer()
-            def newFilePath = Paths.get(SRC_PATH, 'classes', 'class2.cls').toString()
+            updateInstance.packageGenerator.componentMonitor = new ComponentMonitor(SRC_PATH)
+            def newFilePath = Paths.get(SRC_PATH, 'classes', 'Class2.cls').toString()
             FileWriter newFile = new FileWriter(newFilePath)
             newFile.write('test')
             newFile.close()
+            updateInstance.credential = credential
         when:
             updateInstance.loadFilesChanged()
         then:
-            updateInstance.filesChanged.get(newFilePath) == "New file"
-            updateInstance.filesChanged.containsKey(newFilePath) == true
+            updateInstance.packageGenerator.fileTrackerMap.containsKey(newFilePath)
+            updateInstance.packageGenerator.fileTrackerMap.get(newFilePath).state == ComponentStates.ADDED
+
     }
 
     def "Test should copy changed files" () {
@@ -180,7 +192,7 @@ class UpdateTest extends Specification {
         given:
             updateInstance.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
             updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
-            updateInstance.filesChanged = [:]
+            updateInstance.packageGenerator.fileTrackerMap = [:]
             updateInstance.componentDeploy = new DeployMetadata()
             updateInstance.poll = 200
             updateInstance.waitTime = 10
@@ -200,15 +212,15 @@ class UpdateTest extends Specification {
 
     def "Integration test should update (New file)"() {
         given:
-            FileMonitorSerializer fileMonitorSerializer = new FileMonitorSerializer()
-            fileMonitorSerializer.setSrcProject(Paths.get(SRC_PATH, 'src').toString())
+            updateInstance.packageGenerator.fileTrackerMap = [:]
             def class1Cls = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString())
             def object1__c = new File(Paths.get(SRC_PATH, 'src', 'objects', 'Object1__c.object').toString())
             def account = new File(Paths.get(SRC_PATH, 'src', 'objects', 'Account.object').toString())
             def trigger = new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger').toString())
-            def mapMock = fileMonitorSerializer.loadSignatureForFilesInDirectory([class1Cls, object1__c, account, trigger])
-            fileMonitorSerializer.saveMap(mapMock)
-
+            componentMonitor.srcProject = Paths.get(SRC_PATH,'src').toString()
+            componentSerializer.sourcePath = Paths.get(SRC_PATH,'src','.fileTracker.data').toString()
+            def mapMock = componentMonitor.getComponentsSignature([class1Cls, object1__c, account, trigger])
+            componentSerializer.save(mapMock)
             updateInstance.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
             updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
             def newFilePath = Paths.get(SRC_PATH, 'src', 'classes', 'Class2.cls').toString()
@@ -227,7 +239,6 @@ class UpdateTest extends Specification {
             updateInstance.credential = credential
             def packageExpect = "${"<?xml version='1.0' encoding='UTF-8'?>"}${"<Package xmlns='http://soap.sforce.com/2006/04/metadata'>"}${"<types><members>Class2</members><name>ApexClass</name></types><version>32.0</version></Package>"}"
             def destructiveExpect = "${"<?xml version='1.0' encoding='UTF-8'?>"}${"<Package xmlns='http://soap.sforce.com/2006/04/metadata'>"}${"<version>32.0</version>"}${"</Package>"}"
-
         when:
             updateInstance.runTask()
             def packageXml =  new File(Paths.get(SRC_PATH, 'build', 'update', 'package.xml').toString()).text
@@ -242,12 +253,12 @@ class UpdateTest extends Specification {
             destructiveXmlDifference.similar()
             classXmlDifference.similar()
             class2Content == new File(Paths.get(SRC_PATH, 'build', 'update', 'classes', 'Class2.cls').toString()).text
-        }
-
+    }
     def cleanupSpec() {
         new File(Paths.get(SRC_PATH, 'build').toString()).deleteDir()
-        new File(Paths.get(SRC_PATH, 'classes', 'class2.cls').toString()).delete()
+        new File(Paths.get(SRC_PATH, 'classes', 'Class2.cls').toString()).delete()
         new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class2.cls').toString()).delete()
         new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class2.cls-meta.xml').toString()).delete()
+        new File(Paths.get(SRC_PATH, 'src', '.fileTracker.data').toString()).delete()
     }
 }

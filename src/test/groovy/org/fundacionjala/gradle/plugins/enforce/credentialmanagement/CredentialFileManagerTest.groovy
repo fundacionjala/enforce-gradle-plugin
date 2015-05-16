@@ -5,9 +5,9 @@
 
 package org.fundacionjala.gradle.plugins.enforce.credentialmanagement
 
+import groovy.json.JsonSlurper
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.LoginType
-import groovy.json.JsonSlurper
 import spock.lang.Shared
 import spock.lang.Specification
 

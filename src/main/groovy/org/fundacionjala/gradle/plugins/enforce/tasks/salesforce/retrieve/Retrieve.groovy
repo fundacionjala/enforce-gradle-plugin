@@ -5,9 +5,9 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.retrieve
 
-import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import com.sforce.soap.metadata.PackageTypeMembers
 import org.fundacionjala.gradle.plugins.enforce.utils.AnsiColor
+import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageBuilder

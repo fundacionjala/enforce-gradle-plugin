@@ -5,19 +5,16 @@
 
 package org.fundacionjala.gradle.plugins.enforce.interceptor.interceptors
 
-import org.fundacionjala.gradle.plugins.enforce.interceptor.commands.ObjectField
-import org.fundacionjala.gradle.plugins.enforce.interceptor.commands.ObjectFieldSet
-import org.fundacionjala.gradle.plugins.enforce.interceptor.commands.ObjectFormula
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
-import org.fundacionjala.gradle.plugins.enforce.interceptor.MetadataInterceptor
-import org.fundacionjala.gradle.plugins.enforce.interceptor.commands.ObjectActionOverride
-import org.fundacionjala.gradle.plugins.enforce.interceptor.commands.ObjectWebLink
-import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
 import org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor
-
+import org.fundacionjala.gradle.plugins.enforce.interceptor.MetadataInterceptor
+import org.fundacionjala.gradle.plugins.enforce.interceptor.commands.*
+import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
+import groovy.util.logging.Slf4j
 /**
  * Implements methods to manage interceptors and load the objects to truncate
  */
+@Slf4j
 class ObjectInterceptor extends MetadataInterceptor {
 
     /**
