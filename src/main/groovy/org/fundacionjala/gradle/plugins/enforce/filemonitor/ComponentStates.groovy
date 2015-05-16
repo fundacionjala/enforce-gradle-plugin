@@ -1,8 +1,8 @@
 package org.fundacionjala.gradle.plugins.enforce.filemonitor
 
 enum ComponentStates {
+     ADDED('Added'),
     CHANGED('Changed'),
-    ADDED('Added'),
     DELETED('Deleted'),
     NOT_CHANGED('Not changed')
 
