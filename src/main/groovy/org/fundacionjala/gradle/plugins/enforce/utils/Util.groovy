@@ -31,8 +31,22 @@ class Util {
         fileName.replaceFirst(PATTERN_FILE_EXT, '')
     }
 
+    /**
+     * Gets a developer name of full name
+     * @param fullName is a tag of custom field
+     * @return developerName of custom field
+     */
     public static String getDeveloperName(String fullName){
         return fullName.substring(fullName.indexOf('.') + 1, fullName.length() - 7)
+    }
+
+    /**
+     * Gets a developerName of member
+     * @param member is member tag of package xml file
+     * @return developerName of custom field
+     */
+    public static String getDeveloperNameByMember(String member) {
+        return member.substring(member.indexOf('.') + 1, member.length() - 3)
     }
 
     /**
@@ -164,7 +178,7 @@ class Util {
     public static ArrayList<String> getInvalidFolders(ArrayList<String> foldersName) {
         ArrayList<String> invalidFolders = new ArrayList<String>()
         foldersName.each { String folderName ->
-            if (!MetadataComponents.validFolder(folderName)) {
+            if (!MetadataComponents.validFolder(folderName) || folderName.contains('.')) {
                 invalidFolders.push(folderName)
             }
         }
@@ -180,8 +194,10 @@ class Util {
         ArrayList<String> emptyFolders = new ArrayList<String>()
         foldersName.each { String folderName ->
             File file = new File(Paths.get(projectPath, folderName).toString())
-            if (file.exists() && file.list().length == 0) {
-                emptyFolders.push(folderName)
+            if (file.isDirectory()) {
+                if (file.exists() && file.list().length == 0 ) {
+                    emptyFolders.push(folderName)
+                }
             }
         }
         return emptyFolders

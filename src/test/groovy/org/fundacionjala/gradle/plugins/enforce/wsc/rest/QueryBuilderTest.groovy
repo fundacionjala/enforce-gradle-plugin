@@ -42,8 +42,30 @@ class QueryBuilderTest extends Specification {
             def packagePath = Paths.get(wscPath, 'resources', 'packageTest.xml').toString()
         when:
             def componentsObtained = queryBuilder.getComponents(new FileReader(packagePath))
+            def componentsName = new ArrayList<String>()
+            componentsObtained.each { component ->
+                componentsName.add(component.name)
+            }
+            componentsName = componentsName.sort()
         then:
-            componentsObtained.sort() == ['ApexClass', 'ApexComponent', 'ApexPage', 'ApexTrigger', 'CustomObject', 'StaticResource'].sort()
+            componentsName.get(0) == 'ApexClass'
+            componentsName.get(1) == 'ApexComponent'
+            componentsName.get(2) == 'ApexPage'
+            componentsName.get(3) == 'ApexTrigger'
+            componentsName.get(4) == 'CustomObject'
+            componentsName.get(5) == 'StaticResource'
+    }
+
+    def "Test should return an array with queries that have fields" () {
+        given:
+            def packagePath = Paths.get(wscPath, 'resources', 'packageWithFields.xml').toString()
+        when:
+            def queries = queryBuilder.createQueryFromPackage(packagePath)
+        then:
+            queries.sort() == ['SELECT Name FROM ApexClass', 'SELECT Name FROM ApexComponent',
+                               "${'SELECT FullName FROM CustomField WHERE DeveloperName = '}${"'Field11'"}",
+                               "${'SELECT FullName FROM CustomField WHERE DeveloperName = '}${"'Field22'"}",
+                               "${'SELECT FullName FROM CustomField WHERE DeveloperName = '}${"'Field33'"}",].sort()
     }
 
     def "Test should return an array with queries" () {
