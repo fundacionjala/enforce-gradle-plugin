@@ -70,7 +70,7 @@ dependencies {
 }
 
 group = 'org.fundacionjala.gradle.plugins.enforce'
-version = '1.0.'+String.valueOf(Integer.valueOf("$System.env.TRAVIS_BUILD_NUMBER") - 71)
+version = '1.0.'+String.valueOf(Integer.valueOf("$System.env.TRAVIS_BUILD_NUMBER") - 77)
 
 
 /*uploadArchives {
