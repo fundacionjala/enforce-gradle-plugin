@@ -58,8 +58,14 @@ dependencies {
     testCompile 'cglib:cglib-nodep:2.2'
 
 }
-System.env.VERSION_NUMBER += 1
-println "VERSION_NUMBER:"+"$System.env.VERSION_NUMBER"
+
+def number_version_file = new File(version_number)
+def version += Integer.valueOf(number_version_file.text) + 1
+println "VERSION_NUMBER:" + version
+number_version_file.text = version
+
+
+
 
 group = 'org.fundacionjala.gradle.plugins.enforce'
 version = '1.0.0'
