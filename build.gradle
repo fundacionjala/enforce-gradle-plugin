@@ -59,6 +59,8 @@ dependencies {
 
 }
 
+println "$System.env.VERSION_NUMBER"
+
 group = 'org.fundacionjala.gradle.plugins.enforce'
 version = '1.0.0'
 
