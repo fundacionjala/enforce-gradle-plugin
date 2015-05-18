@@ -60,9 +60,9 @@ dependencies {
 }
 
 def number_version_file = new File(version_number)
-def version += Integer.valueOf(number_version_file.text) + 1
-println "VERSION_NUMBER:" + version
-number_version_file.text = version
+def new_version += Integer.valueOf(number_version_file.text) + 1
+println "VERSION_NUMBER:" + new_version
+number_version_file.text = new_version
 
 
 
