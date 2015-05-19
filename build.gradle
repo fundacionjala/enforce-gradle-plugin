@@ -62,7 +62,7 @@ dependencies {
 def number_version_file = new File("version_number")
 int current_version = Integer.valueOf(number_version_file.text) + 1
 println "VERSION_NUMBER:" + current_version
-number_version_file.text = current_version
+number_version_file.text = current_version 
 
 
 
