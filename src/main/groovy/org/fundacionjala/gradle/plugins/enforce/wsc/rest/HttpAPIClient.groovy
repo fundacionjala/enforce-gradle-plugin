@@ -47,7 +47,6 @@ class HttpAPIClient {
      * @return the result from server in JSON format
      */
     public String executeQuery(String soql) {
-
         String resultQuery = ""
         HTTPBuilder http = new HTTPBuilder(getEndPoint(host))
         http.request( GET, JSON ) {
