@@ -6,6 +6,7 @@
     <meta name='viewport' content='width=device-width, initial-scale=1' />
     <link rel='stylesheet' href='styles/bootstrap.min.css' />
     <link href="styles/dashboard.css" rel="stylesheet">
+    <link href="styles/reports.css" rel="stylesheet">
     <script src='scripts/angular.min.js'></script>
     <script src='scripts/jquery.min.js'></script>
     <script src='scripts/bootstrap.min.js'></script>
@@ -15,122 +16,137 @@
 </head>
 <body ng-app='MyApp'>
 <script type='text/javascript'>
-            var app = angular.module("MyApp", ['googlechart']);
-    </script>
+    var app = angular.module("MyApp", ['googlechart']);
+</script>
 
 <script type='text/javascript'>
+app.controller('controllerReportCoverage', function(\$scope) {
 
-          app.controller('controllerChartPie', function(\$scope) {
+    var colorDanger = '#D2322D';
+    var colorRisk =  '#ED9C28';
+    var colorAcceptable = '#2AABD2';
+    var colorSafe = '#5CB85C';
+    var coverageDataLines = $arrayChartCoverage
 
-              var colorDanger = '#d2322d';
-              var colorRisk = '#ed9c28';
-              var colorAcceptable = '#2aabd2';
-              var colorSafe = '#5cb85c';
-              var coverage = {};
-              coverage.type = "PieChart";
-              coverage.data = $arrayChartCoverage
-              coverage.options = {
-                      displayExactValues: true,
-                      width: 400,
-                      height: 200,
-                      is3D: true,
-                      slices: {
-                          0: { color: '#5cb85c'},
-                          1: { color: '#d2322d' }
-                      },
-                      chartArea: {left:10,top:10,bottom:0,height:"100%"}
-              };
-              \$scope.chartCoverage = coverage;
+    \$scope.linesCovered;
+    \$scope.percentCoverage;
+    \$scope.linesNotCovered;
+    \$scope.percentNotCoverage;
+    \$scope.totalLines;
+    \$scope.colorCoverage = '#000000';
 
-              var chart1 = {};
-              chart1.type = "PieChart";
-              chart1.data = $arrayChartPie;
-              chart1.options = {
-                      displayExactValues: true,
-                      width: 600,
-                      height: 200,
-                      is3D: true,
-                      slices: {
-                          0: { color: '#d2322d' },
-                          1: { color: '#ed9c28'},
-                          2: { color: '#2aabd2'},
-                          4: { color: '#5cb85c'}
-                      },
-                      chartArea: {left:10,top:10,bottom:0,height:"100%"}
-              };
-              \$scope.chart = chart1;
-              \$scope.data  = $arrayChartPie;
+    \$scope.chartCoverage = coverageDataLines;
+    \$scope.dataRanges  = $arrayChartPie;
+    \$scope.linesCovered = coverageDataLines[1][1];
+    \$scope.linesNotCovered = coverageDataLines[2][1];
+    \$scope.totalLines = \$scope.linesCovered + \$scope.linesNotCovered;
+    \$scope.percentCoverage = 0
 
-              \$scope.linesCovered;
-              \$scope.percentCovered;
-              \$scope.linesNotCovered;
-              \$scope.percentNotCovered;
-              \$scope.totalLines;
-              \$scope.colorCoverage = "green"
-              for (var info in coverage.data) {
-                  var arrayData = coverage.data[info]
-                  if(arrayData[0] === "Covered") {
-                    \$scope.linesCovered = arrayData[1]
-                  }
-                  if(arrayData[0] === "Not Covered") {
-                     \$scope.linesNotCovered = arrayData[1]
-                  }
-              }
-              \$scope.totalLines =\$scope.linesCovered + \$scope.linesNotCovered;
-              \$scope.percentageCoverage = 0
-              if(\$scope.linesCovered + \$scope.linesNotCovered) {
-                \$scope.percentageCoverage = parseFloat((\$scope.linesCovered / (\$scope.linesCovered + \$scope.linesNotCovered)) * 100).toFixed(2);
-              }
-              \$scope.percentCovered = \$scope.percentageCoverage
-              \$scope.percentNotCovered = parseFloat(100 - \$scope.percentCovered).toFixed(2);
+    if (\$scope.totalLines) {
+        \$scope.percentCoverage = parseFloat((\$scope.linesCovered / (\$scope.totalLines)) * 100).toFixed(2);
+        \$scope.percentNotCoverage = parseFloat(100 - \$scope.percentCoverage).toFixed(2);
+    }
 
-              if(\$scope.percentageCoverage >= 0 && \$scope.percentageCoverage <= 74 ) {
-                 \$scope.colorCoverage = colorDanger;
-              }
+    if (\$scope.percentCoverage <= 74 ) {
+        \$scope.colorCoverage = colorDanger;
+    }
+    else if (\$scope.percentCoverage <= 79 ) {
+        \$scope.colorCoverage = colorRisk;
+    }
+    else if (\$scope.percentCoverage <= 94 ) {
+        \$scope.colorCoverage = colorAcceptable;
+    }
+    else if (\$scope.percentCoverage <= 100 ) {
+        \$scope.colorCoverage = colorSafe;
+    }
 
-              else  if(\$scope.percentageCoverage > 74 && \$scope.percentageCoverage <= 79 ) {
-                \$scope.colorCoverage = colorRisk;
-              }
+    \$scope.chartUnitTestResult = {};
 
-              else  if(\$scope.percentageCoverage > 79 && \$scope.percentageCoverage <= 94 ) {
-                \$scope.colorCoverage = colorAcceptable;
-              }
+    \$scope.chartUnitTestResult.data = [
+        ['unit test', '', { role: 'style' }, { role: 'annotation' }],
+        ['Success', $unitTestPass, 'green', '$unitTestPass'],
+        ['Fail', $unitTestFail, 'red', '$unitTestFail']];
 
-              else  if(\$scope.percentageCoverage > 94 && \$scope.percentageCoverage <= 100 ) {
-                \$scope.colorCoverage = colorSafe;
-              }
-
-              \$scope.chartObject = {};
-
-              \$scope.chartObject.data = [
-                  ['unit test', '', { role: 'style' }, { role: 'annotation' }],
-                  ['Success', $unitTestPass, 'green', '$unitTestPass'],
-                  ['Fail', $unitTestFail, 'red', '$unitTestFail']];
-
-              \$scope.chartObject.type = 'BarChart';
-              \$scope.chartObject.options = {
-                  title: "Total Unit Tests: "+ ($unitTestPass + $unitTestFail) ,
-                  width: 1000,
-                  height: 300,
-                  legend: { position: "none" }
-              }
-          });
-    </script>
+    \$scope.chartUnitTestResult.type = 'BarChart';
+    \$scope.chartUnitTestResult.options = {
+        title: "Total Unit Tests: "+ ($unitTestPass + $unitTestFail) ,
+        width: 1000,
+        height: 300,
+        legend: { position: "none" }
+    }
+});
+</script>
 
 <script type='text/javascript'>
-      app.controller('controllerUnitTest', function(\$scope) {
+    app.controller('controllerUnitTest', function(\$scope) {
         \$scope.files = $arrayUnitTest;
-        \$scope.orderByField='name';
-        \$scope.danger=true;
-        \$scope.success=false;
+        \$scope.orderByField = 'name';
+        \$scope.danger = true;
+        \$scope.success = false;
         \$scope.allUnitTest = $unitTestPass + $unitTestFail;
         \$scope.valueButtonSuccess = "btn btn-success";
         \$scope.\$watch('success', function() {
-          if (\$scope.success == true) {
-              \$scope.valueButtonSuccess = "btn btn-success";
-          } else {
-              \$scope.valueButtonSuccess = "btn btn-default";
-          }
+        if (\$scope.success == true) {
+            \$scope.valueButtonSuccess = "btn btn-success";
+        }
+        else {
+            \$scope.valueButtonSuccess = "btn btn-default";
+        }
+        });
+
+        \$scope.valueButtonDanger = "btn btn-danger";
+        \$scope.\$watch('danger', function() {
+            if (\$scope.danger == true) {
+                \$scope.valueButtonDanger = "btn btn-danger";
+            }
+            else {
+                \$scope.valueButtonDanger = "btn btn-default";
+            }
+        });
+
+        \$scope.getStatusColor = function(file) {
+        if(file.status === 'Fail') {
+            return 'danger';
+        }
+
+        return 'success';
+        };
+    });
+  </script>
+
+<script type='text/javascript'>
+    app.controller('controllerClass', function(\$scope) {
+        \$scope.files = $arrayClass
+        \$scope.orderByField = 'name';
+        \$scope.danger = true;
+        \$scope.warning = true;
+        \$scope.info = true;
+        \$scope.success = true;
+        \$scope.valueButtonSuccess = "btn btn-success";
+        \$scope.\$watch('success', function() {
+            if (\$scope.success == true) {
+                \$scope.valueButtonSuccess = "btn btn-success";
+            } else {
+                \$scope.valueButtonSuccess = "btn btn-default";
+            }
+        });
+
+        \$scope.valueButtonInfo = "btn btn-info";
+        \$scope.\$watch('info', function() {
+            if (\$scope.info == true) {
+                \$scope.valueButtonInfo = "btn btn-info";
+            } else {
+                \$scope.valueButtonInfo = "btn btn-default";
+            }
+        });
+
+        \$scope.valueButtonWarning = "btn btn-warning";
+        \$scope.\$watch('warning', function() {
+            if (\$scope.warning == true) {
+                \$scope.valueButtonWarning = "btn btn-warning";
+            } else {
+                \$scope.valueButtonWarning = "btn btn-default";
+            }
         });
 
         \$scope.valueButtonDanger = "btn btn-danger";
@@ -141,130 +157,72 @@
                 \$scope.valueButtonDanger = "btn btn-default";
             }
         });
-
-        \$scope.getStatusColor = function(file) {
-            if(file.status === 'Fail') {
-                return 'danger';
-            }
-
-            return 'success';
-        };
-
-      });
-  </script>
-
+    });
+</script>
 <script type='text/javascript'>
-        app.controller('controllerClass', function(\$scope) {
-            \$scope.files = $arrayClass
-            \$scope.orderByField='name';
-            \$scope.danger=true;
-            \$scope.warning=true;
-            \$scope.info=true;
-            \$scope.success=true;
-            \$scope.valueButtonSuccess = "btn btn-success";
-            \$scope.\$watch('success', function() {
-                if (\$scope.success == true) {
-                    \$scope.valueButtonSuccess = "btn btn-success";
-                } else {
-                    \$scope.valueButtonSuccess = "btn btn-default";
-                }
-            });
+    app.controller('controllerTrigger', function(\$scope) {
+        \$scope.orderByField='name';
+        \$scope.files = $arrayTrigger
+        \$scope.danger=true;
+        \$scope.warning=true;
+        \$scope.info=true;
+        \$scope.success=true;
 
-
-            \$scope.valueButtonInfo = "btn btn-info";
-            \$scope.\$watch('info', function() {
-                if (\$scope.info == true) {
-                    \$scope.valueButtonInfo = "btn btn-info";
-                } else {
-                    \$scope.valueButtonInfo = "btn btn-default";
-                }
-            });
-
-            \$scope.valueButtonWarning = "btn btn-warning";
-            \$scope.\$watch('warning', function() {
-                if (\$scope.warning == true) {
-                    \$scope.valueButtonWarning = "btn btn-warning";
-                } else {
-                    \$scope.valueButtonWarning = "btn btn-default";
-                }
-            });
-
-            \$scope.valueButtonDanger = "btn btn-danger";
-            \$scope.\$watch('danger', function() {
-                if (\$scope.danger == true) {
-                    \$scope.valueButtonDanger = "btn btn-danger";
-                } else {
-                    \$scope.valueButtonDanger = "btn btn-default";
-                }
-            });
-
-         });
-    </script>
-<script type='text/javascript'>
-        app.controller('controllerTrigger', function(\$scope) {
-            \$scope.orderByField='name';
-            \$scope.files = $arrayTrigger
-            \$scope.danger=true;
-            \$scope.warning=true;
-            \$scope.info=true;
-            \$scope.success=true;
-
-            \$scope.valueButtonSuccess = "btn btn-success";
-            \$scope.\$watch('success', function() {
-                if (\$scope.success == true) {
+        \$scope.valueButtonSuccess = "btn btn-success";
+        \$scope.\$watch('success', function() {
+            if (\$scope.success == true) {
                 \$scope.valueButtonSuccess = "btn btn-success";
-                } else {
+            } else {
                 \$scope.valueButtonSuccess = "btn btn-default";
-                }
-            });
-
-
-            \$scope.valueButtonInfo = "btn btn-info";
-            \$scope.\$watch('info', function() {
-                if (\$scope.info == true) {
-                \$scope.valueButtonInfo = "btn btn-info";
-                } else {
-                \$scope.valueButtonInfo = "btn btn-default";
-                }
-            });
-
-            \$scope.valueButtonWarning = "btn btn-warning";
-            \$scope.\$watch('warning', function() {
-                if (\$scope.warning == true) {
-                \$scope.valueButtonWarning = "btn btn-warning";
-                } else {
-                \$scope.valueButtonWarning = "btn btn-default";
-                }
-            });
-
-            \$scope.valueButtonDanger = "btn btn-danger";
-            \$scope.\$watch('danger', function() {
-                if (\$scope.danger == true) {
-                \$scope.valueButtonDanger = "btn btn-danger";
-                } else {
-                \$scope.valueButtonDanger = "btn btn-default";
-                }
-            });
+            }
         });
-    </script>
+
+
+        \$scope.valueButtonInfo = "btn btn-info";
+        \$scope.\$watch('info', function() {
+            if (\$scope.info == true) {
+                \$scope.valueButtonInfo = "btn btn-info";
+            } else {
+                \$scope.valueButtonInfo = "btn btn-default";
+            }
+        });
+
+        \$scope.valueButtonWarning = "btn btn-warning";
+        \$scope.\$watch('warning', function() {
+            if (\$scope.warning == true) {
+                \$scope.valueButtonWarning = "btn btn-warning";
+            } else {
+                \$scope.valueButtonWarning = "btn btn-default";
+            }
+        });
+
+        \$scope.valueButtonDanger = "btn btn-danger";
+        \$scope.\$watch('danger', function() {
+            if (\$scope.danger == true) {
+                \$scope.valueButtonDanger = "btn btn-danger";
+            } else {
+                \$scope.valueButtonDanger = "btn btn-default";
+            }
+        });
+    });
+</script>
 <script type='text/javascript'>
-      app.controller('controllerChart', function(\$scope) {
-          \$scope.charts = true;
-          \$scope.coverage = false;
-          \$scope.unitTest = false;
+    app.controller('controllerChart', function(\$scope) {
+        \$scope.charts = true;
+        \$scope.coverage = false;
+        \$scope.unitTest = false;
 
-          \$scope.chartsActive = "active";
-          \$scope.coverageActive = "";
-          \$scope.unitTestActive = "";
-
-      });
+        \$scope.chartsActive = "active";
+        \$scope.coverageActive = "";
+        \$scope.unitTestActive = "";
+    });
   </script>
 
 
-<div class='container' ng-controller='controllerChart'>
+<div class='mean-container container' ng-controller='controllerChart'>
 
 <nav class="navbar navbar-default navbar-fixed-top">
-    <div class="container">
+    <div class="mean-container container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
                 <span class="sr-only">Toggle navigation</span>
@@ -289,14 +247,14 @@
 
 
         <div ng-show="charts" style='border:1px solid #ddd; margin: 50px 0px 50px 0px; border-radius: 10px;'>
-            <div ng-controller='controllerChartPie'>
+            <div ng-controller='controllerReportCoverage'>
                 <div class='row' id="idCharts">
 
                     <div id="content-data" class="center" >
                         <h2 class="title_report" align="center" >Code Coverage</h2>
                         <div id="content-total-coverage">
                             <div id="circle-coverage" style="background-color: {{colorCoverage}}">
-                                <div>{{percentageCoverage}}%</div>
+                                <div>{{percentCoverage}}%</div>
                             </div>
                         </div>
                         <div id="content-linear-gauge">
@@ -313,7 +271,7 @@
                             <label id="lb-range-4" class="lb-range">94</label>
                             <label id="lb-range-5" class="lb-range">100</label>
 
-                            <div id="block-pin" class="block-range" style="left:{{percentCovered}}%">
+                            <div id="block-pin" class="block-range" style="left:{{percentCoverage}}%">
                                 <div class="arrowText arrowBottom"></div>
                             </div>
                         </div>
@@ -322,22 +280,22 @@
                             <div class="content-category">
                                 <div class="frame-category range-danger"></div>
                                 <div class="frame-label"><label class="lb-frame-1">Danger</label></div>
-                                <div class="frame-label"><label class="lb-frame-2">{{data[1][1]}} Files</label></div>
+                                <div class="frame-label"><label class="lb-frame-2">{{dataRanges[1][1]}} Files</label></div>
                             </div>
                             <div class="content-category">
                                 <div class="frame-category range-risk"></div>
                                 <div class="frame-label"><label class="lb-frame-1">Risk</label></div>
-                                <div class="frame-label"><label class="lb-frame-2">{{data[2][1]}} Files</label></div>
+                                <div class="frame-label"><label class="lb-frame-2">{{dataRanges[2][1]}} Files</label></div>
                             </div>
                             <div class="content-category">
                                 <div class="frame-category range-acceptable"></div>
                                 <div class="frame-label"><label class="lb-frame-1">Acceptable</label></div>
-                                <div class="frame-label"><label class="lb-frame-2">{{data[3][1]}} Files</label></div>
+                                <div class="frame-label"><label class="lb-frame-2">{{dataRanges[3][1]}} Files</label></div>
                             </div>
                             <div class="content-category">
                                 <div class="frame-category range-safe"></div>
                                 <div class="frame-label"><label class="lb-frame-1">Safe</label></div>
-                                <div class="frame-label"><label class="lb-frame-2">{{data[4][1]}} Files</label></div>
+                                <div class="frame-label"><label class="lb-frame-2">{{dataRanges[4][1]}} Files</label></div>
                             </div>
                         </div>
                     </div>
@@ -348,11 +306,11 @@
                             <tbody>
                             <tr>
                                 <td>Lines covered:</td>
-                                <td>{{linesCovered}} ({{percentCovered}})%</td>
+                                <td>{{linesCovered}} ({{percentCoverage}})%</td>
                             </tr>
                             <tr>
                                 <td>Lines not covered:</td>
-                                <td>{{linesNotCovered}} ({{percentNotCovered}})%</td>
+                                <td>{{linesNotCovered}} ({{percentNotCoverage}})%</td>
                             </tr>
                             <tr>
                                 <td>Total lines:</td>
@@ -365,7 +323,7 @@
                 <div class="row" id="idCharts">
                     <div class = "col-md-12 center">
                         <h4 class="title_report" align="center"> Unit Test Result </h4>
-                        <div google-chart chart='chartObject'></div>
+                        <div google-chart chart='chartUnitTestResult'></div>
                     </div>
                 </div>
             </div>
@@ -406,33 +364,38 @@
                 <div class='table-responsive'>
                     <table class='table table-bordered'>
                         <thead>
-                        <th class="center-text"> <a href="#" ng-click="orderByField='name'; reverse = !reverse">
-                            Unit Test<span ng-show="orderByField == 'name'"><span ng-show="!reverse" class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span><span ng-show="reverse" class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span></span>
-                        </a></th>
-                        <th class="center-text"> <a href="#" ng-click="orderByField='status'; reverse = !reverse">
-                            State <span ng-show="orderByField == 'status'"><span ng-show="!reverse" class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span><span ng-show="reverse" class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span></span>
-                        </a></th>
-                        <th class="center-text"> <a href="#" ng-click="orderByField='description'; reverse = !reverse">
-                            StackTrace <span ng-show="orderByField == 'description'"><span ng-show="!reverse" class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span><span ng-show="reverse" class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span></span>
-                        </a></th>
-                        <th class="center-text"> <a href="#" ng-click="orderByField='description'; reverse = !reverse">
-                            Description <span ng-show="orderByField == 'description'"><span ng-show="!reverse" class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span><span ng-show="reverse" class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span></span>
-                        </a></th>
-                        </thead>
-                        <tbody>
-                        <tr ng-class="getStatusColor(file)" ng-repeat='file in files | filter: query | orderBy: orderByField:reverse' ng-show={{file.filter}}>
-                            <td>{{file.name}}</td>
-                            <td>{{file.status}}</td>
-                            <td>{{file.stackTrace}}</td>
-                            <td>{{file.message}}</td>
+                        <tr>
+                            <th class="center-text column-nro-1"> <a href="#" ng-click="orderByField='name'; reverse = !reverse">
+                                Unit Test<span ng-show="orderByField == 'name'"><span ng-show="!reverse" class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span><span ng-show="reverse" class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span></span>
+                            </a></th>
+                            <th class="center-text column-nro-2"> <a href="#" ng-click="orderByField='status'; reverse = !reverse">
+                                State <span ng-show="orderByField == 'status'"><span ng-show="!reverse" class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span><span ng-show="reverse" class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span></span>
+                            </a></th>
+                            <th class="center-text column-nro-3"> <a href="#" ng-click="orderByField='stackTrace'; reverse = !reverse">
+                                StackTrace <span ng-show="orderByField == 'stackTrace'"><span ng-show="!reverse" class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span><span ng-show="reverse" class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span></span>
+                            </a></th>
+                            <th class="center-text column-nro-4"> <a href="#" ng-click="orderByField='description'; reverse = !reverse">
+                                Description <span ng-show="orderByField == 'description'"><span ng-show="!reverse" class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span><span ng-show="reverse" class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span></span>
+                            </a></th>
                         </tr>
-                        </tbody>
+                        </thead>
                     </table>
+
+                    <div class="table-body">
+                        <table class='table table-bordered'>
+                            <tr ng-class="getStatusColor(file)" ng-repeat='file in files | filter: query | orderBy: orderByField:reverse' ng-show={{file.filter}}>
+                                <td class="column-nro-1"><abbr title="{{file.name}}">{{file.name}}</abbr></td>
+                                <td class="column-nro-2">{{file.status}}</td>
+                                <td class="column-nro-3">{{file.stackTrace}}</td>
+                                <td class="column-nro-4">{{file.message}}</td>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
         <div ng-show="coverage">
-            <div class="row" ng-controller='controllerChartPie'>
+            <div class="row" ng-controller='controllerReportCoverage'>
                 <div class = "col-md-8">
                     <h1>Coverage Result</h1>
                 </div>
@@ -444,8 +407,8 @@
                         </thead>
                         <tbody>
                         <tr>
-                            <td class="danger">{{linesNotCovered}}({{percentNotCovered}}%) </td>
-                            <td class="success">{{linesCovered}} ({{percentCovered}}%)</td>
+                            <td class="danger">{{linesNotCovered}}({{percentNotCoverage}}%) </td>
+                            <td class="success">{{linesCovered}} ({{percentCoverage}}%)</td>
                         </tr>
                         </tbody>
                     </table>
