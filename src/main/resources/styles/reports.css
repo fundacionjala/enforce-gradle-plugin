@@ -1,0 +1,50 @@
+
+
+div.mean-container {
+    width: 80%;
+}
+
+div.container-table-unit-test .table-body {
+    width: 100%;
+    height: 500px;
+    overflow-y: auto;
+}
+
+div.container-table-unit-test table {
+    width: 100%;
+    margin-bottom: 0;
+    table-layout:fixed;
+}
+
+div.container-table-unit-test table thead {
+    width: 100%;
+}
+
+div.container-table-unit-test table tbody {
+    width: 100%;
+    overflow: hidden;
+}
+
+div.container-table-unit-test table .column-nro-1 abbr {
+    cursor: default;
+    border-bottom: none;
+}
+
+div.container-table-unit-test table .column-nro-1 {
+    width: 30%;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow: ellipsis;
+}
+
+div.container-table-unit-test table .column-nro-2 {
+    width: 10%;
+}
+
+div.container-table-unit-test table .column-nro-3 {
+    width: 30%;
+}
+
+div.container-table-unit-test table .column-nro-4 {
+    width: 30%;
+}
