@@ -224,6 +224,7 @@ class ManagementFile {
 
     /**
      * Copies files valid for salesforce
+     * @param basePath is the common absolute path between fileFrom and pathTo parameters
      * @param fileFrom is the array files
      * @param pathTo is the path copy
      */
