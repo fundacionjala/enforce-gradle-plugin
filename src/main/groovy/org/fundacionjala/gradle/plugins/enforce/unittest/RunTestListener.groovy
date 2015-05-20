@@ -29,12 +29,12 @@ class RunTestListener {
     StreamingClient streamingClient
     OutputStream outputStream
     ArrayList<String> ids
+    ApexTestItem apexTestItem
     private Map methodInClass
     private ApexClasses apexClasses
-    boolean done
-    long startTime
-    long endTime
-    ApexTestItem apexTestItem
+    public boolean done
+    public long startTime
+    public long endTime
 
     /**
      * Creates a run test listener to subscribes to the TestResult system topic
@@ -102,7 +102,7 @@ class RunTestListener {
      */
     public void writeApexTestItems(ApexTestItem apexTestItems) {
         boolean testsCompleted
-        public String messageTest
+        String messageTest
 
         apexTestItems.apexTestResults.each { apexTestResult ->
 
