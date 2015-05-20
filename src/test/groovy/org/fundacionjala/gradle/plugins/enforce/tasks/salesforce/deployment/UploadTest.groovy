@@ -44,7 +44,6 @@ class UploadTest extends Specification {
         uploadInstance = project.tasks.upload
         uploadInstance.fileManager = new ManagementFile(SRC_PATH)
         uploadInstance.createDeploymentDirectory(Paths.get(SRC_PATH, 'build').toString())
-
         credential = new Credential()
         credential.id = 'id'
         credential.username = 'salesforce2014.test@gmail.com'
@@ -67,6 +66,7 @@ class UploadTest extends Specification {
     def "Test should create a package xml file"() {
         given:
             uploadInstance.pathUpload = Paths.get(SRC_PATH, 'build').toString()
+            uploadInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
             uploadInstance.specificFilesToUpload = [new File(Paths.get(SRC_PATH, "src", "classes", "Class1.cls").toString()),
                                                     new File(Paths.get(SRC_PATH, "src", "classes", "Class1.cls-meta.xml").toString()),
                                                     new File(Paths.get(SRC_PATH, "src", "objects", "Object1__c.object").toString()),
@@ -83,6 +83,7 @@ class UploadTest extends Specification {
             uploadInstance.specificFilesToUpload = [new File(Paths.get(SRC_PATH, "src", "classes", "Class1.cls").toString()),
                                                     new File(Paths.get(SRC_PATH, "src", "classes", "Class1.cls-meta.xml").toString()),
                                                     new File(Paths.get(SRC_PATH, "src", "objects", "Object1__c.object").toString())]
+            uploadInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
         when:
             uploadInstance.copyFilesToUpload()
         then:

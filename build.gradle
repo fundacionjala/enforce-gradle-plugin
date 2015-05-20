@@ -71,18 +71,15 @@ dependencies {
 }
 
 group = 'org.fundacionjala.gradle.plugins.enforce'
-version = '1.0.'+String.valueOf(Integer.valueOf("$System.env.TRAVIS_BUILD_NUMBER") - 71)
+version = '1.0.' + String.valueOf(Integer.valueOf("$System.env.TRAVIS_BUILD_NUMBER") - 71)
 
-
-/*uploadArchives {
+uploadArchives {
     repositories {
         mavenDeployer {
             repository url: "file://${System.properties['user.home']}/.m2/repository"
         }
     }
-}*/
-
-
+}
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'

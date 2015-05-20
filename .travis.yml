@@ -15,3 +15,4 @@ notifications:
     - Rodrigo.Ruiz@jalasoft.com
     - ruiz.ac@gmail.com
 after_success: "./run-publish.sh"
+
