@@ -1,3 +1,6 @@
 #!/bin/bash
 set -ev
-echo 'travis execute this .....++++++++++++++++++++++++++ççççççççççççççççç'
+if [ "${TRAVIS_BRANCH}" = "master" ]; then
+  ./gradlew bintrayUpload
+fi
+
