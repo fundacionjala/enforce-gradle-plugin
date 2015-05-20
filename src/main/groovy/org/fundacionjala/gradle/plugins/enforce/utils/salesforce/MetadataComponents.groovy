@@ -120,7 +120,6 @@ public enum MetadataComponents {
      * @return a MetadataComponent
      */
     public static MetadataComponents getComponentByRelativePath(String path) {
-
         MetadataComponents metadataComponent
         String folder = Paths.get(path).getName(0)
         for (MetadataComponents component : values()) {
