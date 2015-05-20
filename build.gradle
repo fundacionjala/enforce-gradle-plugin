@@ -77,8 +77,6 @@ def path = "$System.env.VERSION_NUMBER_PATCH"
 def newVersion = "$major.$minor.$path"
 version = newVersion
 
-
-
 //version = '1.0.3'
 /*uploadArchives {
     repositories {
@@ -87,8 +85,6 @@ version = newVersion
         }
     }
 }*/
-
-
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
