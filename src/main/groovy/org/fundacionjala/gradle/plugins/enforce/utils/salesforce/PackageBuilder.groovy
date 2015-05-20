@@ -13,6 +13,7 @@ import groovy.xml.MarkupBuilder
 import groovy.xml.XmlUtil
 import groovy.xml.dom.DOMCategory
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
+import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.wsc.Connector
 import org.w3c.dom.Document
@@ -36,7 +37,6 @@ class PackageBuilder {
     private final String WILDCARD = '*'
     public static final SLASH = '/'
     Package metaPackage
-    private static final COMPONENTS_HAVE_SUB_FOLDER = ['reports']
     PackageBuilder() {
         metaPackage = new Package()
     }
@@ -253,7 +253,7 @@ class PackageBuilder {
             String relativePath = file.getAbsolutePath().replace(basePath, '')
             String parentName = Paths.get(relativePath).getName(0)
             if (parentName == folder && parentName != file.getName()) {
-                if(COMPONENTS_HAVE_SUB_FOLDER.contains(parentName)) {
+                if(ManagementFile.COMPONENTS_HAVE_SUB_FOLDER.contains(parentName)) {
                     members.addAll(generateMembersByFolderPath(relativePath))
                 } else {
                     members.push(Util.getFileName(file.getName() as String))

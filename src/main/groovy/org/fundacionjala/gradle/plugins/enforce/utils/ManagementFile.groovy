@@ -24,8 +24,7 @@ class ManagementFile {
     private File sourcePath
     private final String DOES_NOT_EXIT = 'does not exist'
     private final String SLASH = '/'
-    private final String BACKSLASH = '\\\\'
-    private final String REPORT_FOLDER = 'reports'
+    public static final COMPONENTS_HAVE_SUB_FOLDER = ['reports']
     ArrayList<File> validFiles
 
     /**
@@ -66,7 +65,7 @@ class ManagementFile {
                             if (xmlFile) {
                                 arrayValidFiles.push(xmlFile)
                             }
-                        } else if (folder.getName().equals(REPORT_FOLDER)) {
+                        } else if (COMPONENTS_HAVE_SUB_FOLDER.contains(folder.getName())) {
                             if (file.isDirectory()) {
                                 arrayValidFiles.addAll(getFilesByReportFolder(folder.getName(), file))
                             }
@@ -177,12 +176,7 @@ class ManagementFile {
      */
     private void createFolder(String basePath, String folderPath) {
         String path = basePath
-        String[] subFolders = [:]
-        if (folderPath.contains(SLASH)) {
-            subFolders = folderPath.split(SLASH)
-        } else if (folderPath.contains('\\')) {
-            subFolders = folderPath.split(BACKSLASH)
-        }
+        String[] subFolders = folderPath.split(Paths.get(SLASH).toString())
 
         if (subFolders.size() == 0) {
             path = Paths.get(path, folderPath).toString()
@@ -312,7 +306,7 @@ class ManagementFile {
                         if (xmlFile.exists()) {
                             filesByFolder.push(xmlFile)
                         }
-                    } else if (folder.getName().equals(REPORT_FOLDER)) {
+                    } else if (COMPONENTS_HAVE_SUB_FOLDER.contains(folder.getName())) {
                         if (file.isDirectory()) {
                             filesByFolder.addAll(getFilesByReportFolder(folder.getName(), file))
                         }
