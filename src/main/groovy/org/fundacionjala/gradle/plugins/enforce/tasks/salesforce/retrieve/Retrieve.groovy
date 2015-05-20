@@ -51,7 +51,7 @@ class Retrieve extends Retrieval {
         verifyDestinationFolder()
         ManagementFile.createDirectories(projectPath)
         loadParameters()
-        //validateContentParameter()
+        validateContentParameter()
         if (!hasPackage() && !files) {
            retrieveWithoutPackageXml()
         } else {
