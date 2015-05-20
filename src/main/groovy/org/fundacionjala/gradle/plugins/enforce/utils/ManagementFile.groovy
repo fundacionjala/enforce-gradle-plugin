@@ -23,7 +23,8 @@ class ManagementFile {
     final String ERROR_GETTING_SOURCE_CODE_PATH = "ManagementFile: It's necessary send in constructor source path of user code"
     private File sourcePath
     private final String DOES_NOT_EXIT = 'does not exist'
-
+    private final SLASH = '/'
+    private final REPORT_FOLDER = 'reports'
     ArrayList<File> validFiles
 
     /**
@@ -63,6 +64,18 @@ class ManagementFile {
                             File xmlFile = getValidateXmlFile(file)
                             if (xmlFile) {
                                 arrayValidFiles.push(xmlFile)
+                            }
+                        } else if (folder.getName().equals(REPORT_FOLDER)) {
+                            if (file.isDirectory()) {
+                                file.eachFile { File reportFile ->
+                                    if (validateFileByFolder(folder.getName(), reportFile.getName())) {
+                                        File xmlReportFile = getValidateXmlFile(file)
+                                        if (xmlReportFile) {
+                                            arrayValidFiles.push(reportFile)
+                                            arrayValidFiles.push(xmlReportFile)
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -127,21 +140,42 @@ class ManagementFile {
      * @param arrayFiles the files should be copy in the path copy
      * @param pathCopy is the parent path
      */
-    private void copyArrayFiles(ArrayList<File> arrayFiles, String pathCopy) {
+    private void copyArrayFiles(String basePath, ArrayList<File> arrayFiles, String pathCopy) {
 
         validFiles = arrayFiles
         if (new File(pathCopy).exists()) {
             arrayFiles.each { file ->
-
                 String pathFolder = pathCopy
                 String fileName = file.getName()
                 if (!fileName.equals(PACKAGE_XML)) {
-                    pathFolder = Paths.get(pathFolder, file.getParentFile().getName()).toString()
-                    new File(pathFolder).mkdir()
+                    String relativePath = file.getAbsolutePath().replace(basePath, '')
+                    String filterFileName = new StringBuilder(SLASH).append(file.getName())
+                    String folderPath = relativePath.replace(filterFileName, '')
+                    createFolder(pathFolder, folderPath)
+                    pathFolder = Paths.get(pathFolder, folderPath).toString()
                 }
-
-                Files.copy(file.toPath(), Paths.get(pathFolder, fileName), StandardCopyOption.REPLACE_EXISTING)
+                Files.copy(file.toPath(), Paths.get(pathFolder, file.getName()), StandardCopyOption.REPLACE_EXISTING)
             }
+        }
+    }
+
+    /**
+     * create a Folder or Folders
+     * @param basePath is the base path where It will create the folder
+     * @param folderPath contains the folder and folder children to create.
+     */
+    private void createFolder(String basePath, String folderPath) {
+        String path = basePath
+        if(!folderPath.contains(SLASH)) {
+            path = Paths.get(path, folderPath).toString()
+            new File(path).mkdir()
+            return
+        }
+
+        String[] subFolders = folderPath.split(SLASH)
+        subFolders.each {String folderName ->
+            path = Paths.get(path, folderName).toString()
+            new File(path).mkdir()
         }
     }
 
@@ -157,7 +191,7 @@ class ManagementFile {
         if (!new File(pathTo).exists()) {
             throw new Exception("${pathTo} ${DOES_NOT_EXIT}")
         }
-        copyArrayFiles(getValidElements(pathFrom), pathTo)
+        copyArrayFiles(pathFrom, getValidElements(pathFrom), pathTo)
     }
 
     /**
@@ -172,7 +206,7 @@ class ManagementFile {
         if (!new File(pathTo).exists()) {
             throw new Exception("${pathTo} ${DOES_NOT_EXIT}")
         }
-        copyArrayFiles(getValidElements(pathFrom), pathTo)
+        copyArrayFiles(pathFrom, getValidElements(pathFrom), pathTo)
     }
 
     /**
@@ -180,8 +214,8 @@ class ManagementFile {
      * @param fileFrom is the array files
      * @param pathTo is the path copy
      */
-    void copy(ArrayList<File> fileFrom, String pathTo) {
-        copyArrayFiles(fileFrom, pathTo)
+    void copy(String basePath, ArrayList<File> fileFrom, String pathTo) {
+        copyArrayFiles(basePath, fileFrom, pathTo)
     }
 
     /**

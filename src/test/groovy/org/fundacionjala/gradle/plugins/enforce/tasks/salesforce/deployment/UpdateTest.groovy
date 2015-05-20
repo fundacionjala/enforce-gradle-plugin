@@ -51,6 +51,7 @@ class UpdateTest extends Specification {
         updateInstance.fileManager = new ManagementFile(SRC_PATH)
         updateInstance.createDeploymentDirectory(Paths.get(SRC_PATH, 'build').toString())
         updateInstance.createDeploymentDirectory(Paths.get(SRC_PATH, 'build', 'update').toString())
+        updateInstance.projectPath = SRC_PATH
         def fileTrackerPath = Paths.get(SRC_PATH,'.fileTracker.data').toString()
         componentSerializer = new ComponentSerializer(fileTrackerPath)
         componentMonitor = new ComponentMonitor(SRC_PATH)
