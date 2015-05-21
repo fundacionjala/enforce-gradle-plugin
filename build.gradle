@@ -12,6 +12,7 @@ apply plugin: 'java'
 apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
+
 buildscript {
     repositories {
         mavenCentral()
@@ -70,16 +71,20 @@ dependencies {
 }
 
 group = 'org.fundacionjala.gradle.plugins.enforce'
+def major = "$System.env.VERSION_NUMBER_MAJOR"
+def minor = "$System.env.VERSION_NUMBER_MINOR"
+def path = "$System.env.VERSION_NUMBER_PATCH"
+def newVersion = "$major.$minor.$path"
+version = newVersion
 
-version = '1.0.'+String.valueOf(Integer.valueOf("$System.env.TRAVIS_BUILD_NUMBER") - 77)
-
-uploadArchives {
+//version = '1.0.3'
+/*uploadArchives {
     repositories {
         mavenDeployer {
             repository url: "file://${System.properties['user.home']}/.m2/repository"
         }
     }
-}
+}*/
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
@@ -98,15 +103,14 @@ publishing {
             } else {
                 from components.java
             }
-
             artifact sourcesJar
         }
     }
 }
 
 bintray {
-    user = bintray_username
-    key = bintray_api_key
+    user = "$System.env.BINTRAY_USER_NAME"
+    key = "$System.env.BINTRAY_API_KEY"
 
     publications = ['mavenJava']
     dryRun = false
