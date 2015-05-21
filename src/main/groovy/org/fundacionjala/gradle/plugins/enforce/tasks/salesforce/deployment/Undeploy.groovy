@@ -12,6 +12,7 @@ import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponent
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageCombiner
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.QueryBuilder
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
 import org.gradle.api.GradleException
@@ -43,6 +44,8 @@ class Undeploy extends Deployment {
     public ArrayList<File> filesToTruncate
     public String folderUnDeploy
     public String unDeployPackagePath
+    public String unDeployDestructivePath
+    public String projectPackagePath
     public SmartFilesValidator smartFilesValidator
     InterceptorManager componentManager
     List<String> standardComponents
@@ -64,10 +67,26 @@ class Undeploy extends Deployment {
 
     @Override
     void runTask() {
-        initializeQueries(getJsonQueries())
         setupFilesToUnDeploy()
+        initializeQueries(getJsonQueries())
+        truncateFiles()
         deployTruncatedComponents()
+        addNewStandardObjects()
+        createDeploymentDirectory(folderUnDeploy)
         deployToDeleteComponents()
+    }
+
+    /**
+     * Creates undeploy folder into build directory
+     * Sets package path from build directory and project directory
+     * Sets destructive path to build directory
+     */
+    def setupFilesToUnDeploy() {
+        folderUnDeploy = Paths.get(buildFolderPath, DIR_UN_DEPLOY).toString()
+        createDeploymentDirectory(folderUnDeploy)
+        unDeployPackagePath = Paths.get(folderUnDeploy, PACKAGE_NAME).toString()
+        unDeployDestructivePath = Paths.get(folderUnDeploy, FILE_NAME_DESTRUCTIVE).toString()
+        projectPackagePath = Paths.get(projectPath, PACKAGE_NAME).toString()
     }
 
     /**
@@ -78,16 +97,9 @@ class Undeploy extends Deployment {
     }
 
     /**
-     * Setups files to UnDeploy
-     * Creates undeploy directory
-     * Copies package from source code directory to undeploy directory
-     * Validates salesForce's components
-     * Truncates files
+     * Truncates files from project directory and copy into build directory
      */
-    def setupFilesToUnDeploy() {
-        folderUnDeploy = Paths.get(buildFolderPath, DIR_UN_DEPLOY).toString()
-        unDeployPackagePath = Paths.get(folderUnDeploy, PACKAGE_NAME).toString()
-        createDeploymentDirectory(folderUnDeploy)
+    def truncateFiles() {
         Files.copy(Paths.get(projectPath, PACKAGE_NAME), Paths.get(folderUnDeploy, PACKAGE_NAME), StandardCopyOption.REPLACE_EXISTING)
         packageComponent = new PackageComponent(unDeployPackagePath)
         filesToTruncate = fileManager.getFilesByFolders(projectPath, packageComponent.truncatedDirectories).sort()
@@ -112,8 +124,6 @@ class Undeploy extends Deployment {
      * Deploys to delete all components from package.xml
      */
     def deployToDeleteComponents() {
-        addNewStandardObjects()
-        createDeploymentDirectory(folderUnDeploy)
         writePackage(unDeployPackagePath, [])
         includesComponents = packageComponent.components
         def excludeComponents = getComponentsWithWildcard(standardComponents)
@@ -122,20 +132,21 @@ class Undeploy extends Deployment {
         files = project.fileTree(dir: projectPath, includes: includesComponents, excludes: excludeComponents)
         ArrayList<File> filesFiltered = smartFilesValidator.filterFilesAccordingOrganization(files.getFiles().sort() as ArrayList<File>)
         filesFiltered = excludeFiles(filesFiltered)
-        preparePackage(Paths.get(folderUnDeploy, FILE_NAME_DESTRUCTIVE).toString(), filesFiltered)
+        preparePackage(unDeployDestructivePath, filesFiltered)
         includesComponents = getComponentsWithWildcard(standardComponents).grep(~/.*.object$/)
         files = project.fileTree(dir: projectPath, includes: includesComponents)
         ArrayList<File> objectFiles = files.getFiles().sort()
         objectFiles = excludeFiles(objectFiles)
         savePackage()
-        updatePackage(CUSTOM_FIELD_NAME, getFields(objectFiles), Paths.get(folderUnDeploy, FILE_NAME_DESTRUCTIVE).toString())
+        updatePackage(CUSTOM_FIELD_NAME, getFields(objectFiles), unDeployDestructivePath)
         if (!workflowNames.empty) {
             workflowFiles = project.fileTree(dir: projectPath, includes: workflowNames).toList()
             workflowFiles = excludeFiles(workflowFiles)
-            updatePackage(WORK_FLOW_RULE_NAME, getRules(workflowFiles), Paths.get(folderUnDeploy, FILE_NAME_DESTRUCTIVE).toString())
+            updatePackage(WORK_FLOW_RULE_NAME, getRules(workflowFiles), unDeployDestructivePath)
         }
         componentDeploy.startMessage = ""
         componentDeploy.successMessage = SUCCESS_MESSAGE_DELETE
+        PackageCombiner.packageCombine(projectPackagePath, unDeployDestructivePath)
         executeDeploy(folderUnDeploy)
     }
 
@@ -185,7 +196,7 @@ class Undeploy extends Deployment {
         toolingAPI = new ToolingAPI(credential)
         queryBuilder = new QueryBuilder()
         ArrayList<String> jsonQueries = []
-        def queries = queryBuilder.createQueryFromPackage(Paths.get(projectPath, PACKAGE_NAME).toString())
+        def queries = queryBuilder.createQueryFromPackage(projectPackagePath)
         queries.each { query ->
             jsonQueries.push(toolingAPI.httpAPIClient.executeQuery(query as String))
         }

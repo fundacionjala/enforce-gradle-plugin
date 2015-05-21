@@ -131,12 +131,15 @@ class UndeployTest extends Specification {
             undeployInstance.folderUnDeploy = undeployDirectory
             undeployInstance.projectPath = srcpath
             undeployInstance.createDeploymentDirectory(undeployDirectory)
+            undeployInstance.truncateFiles()
             undeployInstance.smartFilesValidator = new SmartFilesValidator(undeployInstance.getJsonQueries())
             Files.copy(Paths.get(SRC_PATH, 'src', 'package.xml' ), Paths.get(undeployDirectory, 'package.xml'), StandardCopyOption.REPLACE_EXISTING)
             undeployInstance.packageComponent = new PackageComponent(Paths.get(undeployDirectory,'package.xml').toString())
             def destructiveExpect = "${"<Package xmlns='http://soap.sforce.com/2006/04/metadata'>"}${"<types><members>Class1</members><name>ApexClass</name></types>"}${"<types><members>Object1__c</members><name>CustomObject</name></types>"}${"<types><members>Trigger1</members><name>ApexTrigger</name></types>"}${"<types><members>Account.MyLookupField1__c</members><name>CustomField</name>"}${"</types><version>32.0</version></Package>"}"
             def packageExpect = "${"<?xml version='1.0' encoding='UTF-8'?>"}${"<Package xmlns='http://soap.sforce.com/2006/04/metadata'>"}${"<version>32.0</version></Package>"}"
         when:
+            undeployInstance.addNewStandardObjects()
+            undeployInstance.createDeploymentDirectory(folderUnDeploy)
             undeployInstance.deployToDeleteComponents()
             def destructiveXmlContent =  new File(Paths.get(SRC_PATH, 'build', 'undeploy', 'destructiveChanges.xml').toString()).text
             def packageXmlContent =  new File(Paths.get(SRC_PATH, 'build', 'undeploy', 'package.xml').toString()).text
@@ -188,6 +191,7 @@ class UndeployTest extends Specification {
             jsonArrays.push(jsonString2)
             undeployInstance.smartFilesValidator = new SmartFilesValidator(jsonArrays)
             undeployInstance.setupFilesToUnDeploy()
+            undeployInstance.truncateFiles()
             File classFile = new File(Paths.get(unDeployPath, 'classes', 'Class1.cls').toString())
             File triggerFile = new File(Paths.get(unDeployPath, 'triggers', 'Trigger1.trigger').toString())
             File objectFile = new File(Paths.get(unDeployPath, 'objects', 'Object1__c.object').toString())

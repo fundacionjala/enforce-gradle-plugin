@@ -14,6 +14,7 @@ import org.fundacionjala.gradle.plugins.enforce.utils.AnsiColor
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageBuilder
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageCombiner
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.gradle.api.GradleException
 
@@ -140,7 +141,6 @@ abstract class SalesforceTask extends ForceTask {
         }
         File file = new File(pathPackage)
         packageBuilder.update(nameOfType, members, file)
-
     } 
 
     /**

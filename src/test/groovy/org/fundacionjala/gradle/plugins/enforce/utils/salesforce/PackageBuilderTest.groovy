@@ -300,36 +300,82 @@ class PackageBuilderTest extends Specification {
 
     def "Test should update a package file creating new members"(){
         given:
-        def expectedForceXml = '''<?xml version='1.0' encoding='UTF-8'?>
-        <Package xmlns ='http://soap.sforce.com/2006/04/metadata'>
-          <types>
-            <members>SmartsheetImport</members>
-            <name>ApexComponent</name>
-          </types>
-          <!-- Students grades are updated bi-monthly -->
-          <types>
-            <members>SmartsheetDemoPage</members>
-            <members>OpportunityToSmartsheet</members>
-            <name>ApexPage</name>
-          </types>
-          <types>
-            <members>HttpClient</members>
-            <members>TCP</members>
-            <members>URL</members>
-            <name>CustomObject</name>
-          </types>
-          <version>32.0</version>
-        </Package>
-        '''
-        def filePackage = new File(RESOURCE_PATH,'packageAddNewMembers.xml')
-        filePackage.text = forceXml
-        def packageBuilder = new PackageBuilder()
+            def expectedForceXml = '''<?xml version='1.0' encoding='UTF-8'?>
+            <Package xmlns ='http://soap.sforce.com/2006/04/metadata'>
+              <types>
+                <members>SmartsheetImport</members>
+                <name>ApexComponent</name>
+              </types>
+              <!-- Students grades are updated bi-monthly -->
+              <types>
+                <members>SmartsheetDemoPage</members>
+                <members>OpportunityToSmartsheet</members>
+                <name>ApexPage</name>
+              </types>
+              <types>
+                <members>HttpClient</members>
+                <members>TCP</members>
+                <members>URL</members>
+                <name>CustomObject</name>
+              </types>
+              <version>32.0</version>
+            </Package>
+            '''
+            def filePackage = new File(RESOURCE_PATH,'packageAddNewMembers.xml')
+            filePackage.text = forceXml
+            def packageBuilder = new PackageBuilder()
         when:
-        packageBuilder.update('CustomObject', ['HttpClient', 'TCP', 'URL'], filePackage)
-        XMLUnit.ignoreWhitespace = true
-        def xmlDiff = new Diff(filePackage.text, expectedForceXml)
+            packageBuilder.update('CustomObject', ['HttpClient', 'TCP', 'URL'], filePackage)
+            XMLUnit.ignoreWhitespace = true
+            def xmlDiff = new Diff(filePackage.text, expectedForceXml)
         then:
-        xmlDiff.similar()
+            xmlDiff.similar()
 
+    }
+
+    def "Test should remove members from package file"(){
+        given:
+            def packageBuilder = new PackageBuilder()
+            PackageTypeMembers packageTypeMembers = new PackageTypeMembers()
+            packageTypeMembers.name = 'CustomObject'
+            packageTypeMembers.members = ['Object1__c', 'Object2__c', 'Object3__c']
+            packageBuilder.metaPackage.setTypes(packageTypeMembers)
+        when:
+            packageBuilder.removeMembers('CustomObject', ['Object1__c', 'Object2__c'])
+        then:
+            packageBuilder.metaPackage.types[0].members[0] == 'Object3__c'
+            packageBuilder.metaPackage.types[0].name == 'CustomObject'
+    }
+
+    def "Test should remove a object if members are empty"(){
+        given:
+            def packageBuilder = new PackageBuilder()
+            PackageTypeMembers packageTypeMembers = new PackageTypeMembers()
+            packageTypeMembers.name = 'CustomObject'
+            packageTypeMembers.members = ['Object1__c', 'Object2__c', 'Object3__c']
+            packageBuilder.metaPackage.setTypes(packageTypeMembers)
+        when:
+            packageBuilder.removeMembers('CustomObject', ['Object1__c', 'Object2__c', 'Object3__c'])
+        then:
+            !packageBuilder.metaPackage.types
+    }
+
+    def "Test should remove a object if members are empty and it should show another objects"(){
+        given:
+            def packageBuilder = new PackageBuilder()
+            PackageTypeMembers packageTypeMembers1 = new PackageTypeMembers()
+            PackageTypeMembers packageTypeMembers2 = new PackageTypeMembers()
+            packageTypeMembers1.name = 'CustomObject'
+            packageTypeMembers1.members = ['Object1__c', 'Object2__c', 'Object3__c']
+            packageTypeMembers2.name = 'ApexClass'
+            packageTypeMembers2.members = ['Class1', 'Class2']
+            packageBuilder.metaPackage.setTypes(packageTypeMembers1, packageTypeMembers2)
+        when:
+            packageBuilder.removeMembers('CustomObject', ['Object1__c', 'Object2__c', 'Object3__c'])
+        then:
+            packageBuilder.metaPackage.types.size() == 1
+            packageBuilder.metaPackage.types[0].name == 'ApexClass'
+            packageBuilder.metaPackage.types[0].members[0] == 'Class1'
+            packageBuilder.metaPackage.types[0].members[1] == 'Class2'
     }
 }
