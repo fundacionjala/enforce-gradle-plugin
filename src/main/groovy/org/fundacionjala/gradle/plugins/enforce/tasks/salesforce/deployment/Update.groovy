@@ -128,7 +128,7 @@ class Update extends Deployment {
             }
             filesToUpdate.push(file)
         }
-        fileManager.copy(filesToUpdate, pathUpdate)
+        fileManager.copy(projectPath, filesToUpdate, pathUpdate)
     }
 
     /**

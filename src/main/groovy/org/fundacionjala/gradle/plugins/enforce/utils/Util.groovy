@@ -22,6 +22,7 @@ class Util {
     private static final String PATTERN_FILE_EXT = ~/[.][^.]+$/
     private static final int MAC_ADDRESS_SIZE = 12
     private static final String MAC_ADDRESS_BY_DEFAULT = '000000000000'
+    private static final ZERO_NUMBER_PATH = 0
 
     /**
      * Gets only file typeName without the extension
@@ -218,5 +219,14 @@ class Util {
             }
         }
         return notExistFolders
+    }
+
+    /**
+     * Gets the first part of the path
+     * @param path is type String that contains a file's path
+     * @return an String that contains the first part of the path
+     */
+    public static String getFirstPath(String path) {
+        return Paths.get(path).getName(ZERO_NUMBER_PATH)
     }
 }

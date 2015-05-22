@@ -13,10 +13,14 @@ import groovy.xml.MarkupBuilder
 import groovy.xml.XmlUtil
 import groovy.xml.dom.DOMCategory
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
+import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.wsc.Connector
 import org.w3c.dom.Document
 import org.w3c.dom.Element
+
+import java.nio.file.Path
+import java.nio.file.Paths
 
 /**
  *  Builds a Package instance from package XML and write a package XML file from a package instance
@@ -32,7 +36,6 @@ class PackageBuilder {
     private final String TAG_TYPES = 'types'
     private final String WILDCARD = '*'
     Package metaPackage
-
     PackageBuilder() {
         metaPackage = new Package()
     }
@@ -169,16 +172,16 @@ class PackageBuilder {
      * Creates package from an array files
      * @param files contains files which will be the body of package
      */
-    public void createPackage(ArrayList<File> files) {
-        ArrayList<String> folders = selectFolders(files)
+    public void createPackage(ArrayList<File> files, String basePath='') {
+        ArrayList<String> folders = selectFolders(files, basePath)
         ArrayList<PackageTypeMembers> packageData = []
         PackageTypeMembers packageTypeMembers
         ArrayList<String> invalidFolders = []
         folders.each { folder ->
-            MetadataComponents component = MetadataComponents.getComponentByFolder(folder as String)
+            MetadataComponents component = MetadataComponents.getComponentByRelativePath(folder as String)
             if (component) {
                 packageTypeMembers = new PackageTypeMembers()
-                ArrayList<String> filesMembers = selectFilesMembers(folder, files)
+                ArrayList<String> filesMembers = selectFilesMembers(folder, files, basePath)
                 packageTypeMembers.members = filesMembers ?: [WILDCARD]
                 packageTypeMembers.name = component.getTypeName()
                 packageData.push(packageTypeMembers)
@@ -202,7 +205,7 @@ class PackageBuilder {
         PackageTypeMembers packageTypeMembers
         ArrayList<String> invalidFolders = []
         folders.each { folder ->
-            MetadataComponents component = MetadataComponents.getComponentByFolder(folder as String)
+            MetadataComponents component = MetadataComponents.getComponentByRelativePath(folder as String)
             if (component) {
                 packageTypeMembers = new PackageTypeMembers()
                 packageTypeMembers.members = WILDCARD
@@ -224,18 +227,16 @@ class PackageBuilder {
      * @param files contains all files
      * @return folders
      */
-    private ArrayList<String> selectFolders(ArrayList<File> files) {
+    public ArrayList<String> selectFolders(ArrayList<File> files, String basePath) {
         ArrayList<String> folders = []
-        files.each { file ->
-            MetadataComponents component = MetadataComponents.getComponentByFolder(file.name)
-            if (component && !folders.contains(file.name)) {
-                folders.push(file.name)
-            } else {
-                if (!folders.contains(file.getParentFile().getName())) {
-                    folders.push(file.getParentFile().getName())
-                }
+        files.each { File file ->
+            String relativePath = file.getAbsolutePath().replace(basePath, '')
+            String folderName = Util.getFirstPath(relativePath)
+            if(!folders.contains(folderName)) {
+                folders.push(folderName)
             }
         }
+
         return folders
     }
 
@@ -245,15 +246,37 @@ class PackageBuilder {
      * @param files contains the list of files
      * @return all files inside folders
      */
-    private ArrayList<String> selectFilesMembers(String folder, ArrayList<File> files) {
+    private ArrayList<String> selectFilesMembers(String folder, ArrayList<File> files, String basePath) {
         ArrayList<String> members = []
         files.each { file ->
-            File parentFile = file.getParentFile()
-            if (parentFile && parentFile.getName() == folder) {
-                members.push(Util.getFileName(file.getName() as String))
+            String relativePath = file.getAbsolutePath().replace(basePath, '')
+            String parentName = Util.getFirstPath(relativePath)
+            if (parentName == folder && parentName != file.getName()) {
+                if(ManagementFile.COMPONENTS_HAVE_SUB_FOLDER.contains(parentName)) {
+                    members.addAll(generateMembersByFolderPath(relativePath))
+                } else {
+                    members.push(Util.getFileName(file.getName() as String))
+                }
             }
         }
-        return members
+        return members.unique()
+    }
+
+    /**
+     * Generates members from folder's relative path based by the sub Paths
+     * @param folderPath is a relative path in the project
+     * @return a ArrayList<String>
+     */
+    private ArrayList<String> generateMembersByFolderPath(String folderPath) {
+        ArrayList<String> result = []
+        Path  path = Paths.get(folderPath);
+        StringBuilder member = new StringBuilder()
+        for (int index = 1; index < path.getNameCount(); index++) {
+            member.append(path.getName(index))
+            result.push(Util.getFileName(member.toString() as String))
+            member.append(Paths.get(File.separator).toString())
+        }
+        return result
     }
 
     /**
