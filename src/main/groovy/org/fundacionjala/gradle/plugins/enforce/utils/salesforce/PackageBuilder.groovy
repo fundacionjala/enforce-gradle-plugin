@@ -35,7 +35,6 @@ class PackageBuilder {
     private final String TAG_MEMBERS = 'members'
     private final String TAG_TYPES = 'types'
     private final String WILDCARD = '*'
-    public static final SLASH = '/'
     Package metaPackage
     PackageBuilder() {
         metaPackage = new Package()
@@ -231,8 +230,8 @@ class PackageBuilder {
     public ArrayList<String> selectFolders(ArrayList<File> files, String basePath) {
         ArrayList<String> folders = []
         files.each { File file ->
-            String relativePath = file.getAbsolutePath().replace(basePath, '')
-            String folderName = Paths.get(relativePath).getName(0)
+            String relativePath = Util.getRelativePath(file, basePath)
+            String folderName = Util.getFirstPath(relativePath)
             if(!folders.contains(folderName)) {
                 folders.push(folderName)
             }
@@ -250,8 +249,8 @@ class PackageBuilder {
     private ArrayList<String> selectFilesMembers(String folder, ArrayList<File> files, String basePath) {
         ArrayList<String> members = []
         files.each { file ->
-            String relativePath = file.getAbsolutePath().replace(basePath, '')
-            String parentName = Paths.get(relativePath).getName(0)
+            String relativePath = Util.getRelativePath(file, basePath)
+            String parentName = Util.getFirstPath(relativePath)
             String fileName = Util.getRelativePath(file, Paths.get(basePath, parentName).toString())
             if (parentName == folder && !fileName.isEmpty()) {
                 members.push(Util.getFileName(fileName as String))

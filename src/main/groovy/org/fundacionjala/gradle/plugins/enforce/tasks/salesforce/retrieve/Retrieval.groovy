@@ -85,7 +85,7 @@ abstract class Retrieval extends SalesforceTask {
         filesName.each { String fileName ->
             File file = new File(Paths.get(projectPath, fileName).toString())
             String extension = Util.getFileExtension(file)
-            String parentFileName = Paths.get(fileName).getName(0)
+            String parentFileName = Util.getFirstPath(fileName)
             if (!MetadataComponents.validExtension(extension) || !MetadataComponents.validFolder(parentFileName)) {
                 invalidFiles.push(fileName)
             }

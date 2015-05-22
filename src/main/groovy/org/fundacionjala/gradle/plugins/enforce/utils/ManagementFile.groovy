@@ -23,7 +23,6 @@ class ManagementFile {
     final String ERROR_GETTING_SOURCE_CODE_PATH = "ManagementFile: It's necessary send in constructor source path of user code"
     private File sourcePath
     private final String DOES_NOT_EXIT = 'does not exist'
-    private final String SLASH = '/'
     public static final COMPONENTS_HAVE_SUB_FOLDER = ['reports', 'dashboards', 'documents']
     ArrayList<File> validFiles
 
@@ -67,7 +66,7 @@ class ManagementFile {
                             }
                         } else if (COMPONENTS_HAVE_SUB_FOLDER.contains(folder.getName())) {
                             if (file.isDirectory()) {
-                                arrayValidFiles.addAll(getFilesByReportFolder(folder.getName(), file))
+                                arrayValidFiles.addAll(getFilesByFolder(folder.getName(), file))
                             }
                         }
                     }
@@ -86,7 +85,7 @@ class ManagementFile {
      * @param file is the Folder from gets valid files
      * @return an array of valid files
      */
-    private ArrayList<File> getFilesByReportFolder(String parentName, File file) {
+    private ArrayList<File> getFilesByFolder(String parentName, File file) {
         ArrayList<File> result = [:]
         file.eachFile { File reportFile ->
             File xmlReportFile = getValidateXmlFile(file)
@@ -165,8 +164,8 @@ class ManagementFile {
                 String pathFolder = pathCopy
                 String fileName = file.getName()
                 if (!fileName.equals(PACKAGE_XML)) {
-                    String relativePath = file.getAbsolutePath().replace(basePath, '')
-                    String folderPath = relativePath.replace(file.getName(), '')
+                    String relativePath = Util.getRelativePath(file, basePath)
+                    String folderPath = Paths.get(relativePath).getParent().toString()
                     createFolder(pathFolder, folderPath)
                     pathFolder = Paths.get(pathFolder, folderPath).toString()
                 }
@@ -182,8 +181,7 @@ class ManagementFile {
      */
     private void createFolder(String basePath, String folderPath) {
         String path = basePath
-        String[] subFolders = folderPath.split(Paths.get(SLASH).toString())
-
+        String[] subFolders = folderPath.split(File.separator)
         if (subFolders.size() == 0) {
             path = Paths.get(path, folderPath).toString()
             new File(path).mkdir()
@@ -193,6 +191,7 @@ class ManagementFile {
         subFolders.each { String folderName ->
             if (!folderName.isEmpty()) {
                 path = Paths.get(path, folderName).toString()
+                println 'path: ' + path
                 new File(path).mkdir()
             }
         }
@@ -315,7 +314,7 @@ class ManagementFile {
                         }
                     } else if (COMPONENTS_HAVE_SUB_FOLDER.contains(folder.getName())) {
                         if (file.isDirectory()) {
-                            filesByFolder.addAll(getFilesByReportFolder(folder.getName(), file))
+                            filesByFolder.addAll(getFilesByFolder(folder.getName(), file))
                         }
                     }
                 }
