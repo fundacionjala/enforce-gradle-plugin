@@ -59,7 +59,7 @@ class ManagementFile {
             sourceFolder.eachFile { File folder ->
                 if (folder.isDirectory()) {
                     folder.eachFile { file ->
-                        if (validateFileByFolder(folder.getName(), file.getName())) {
+                        if (validateFileByFolder(folder.getName(), file.getName()) && !file.isDirectory()) {
                             arrayValidFiles.push(file)
                             File xmlFile = getValidateXmlFile(file)
                             if (xmlFile) {
@@ -307,7 +307,7 @@ class ManagementFile {
             File folder = new File(Paths.get(sourcePath, folderName).toString())
             if (folder.exists()) {
                 folder.eachFile { file ->
-                    if (validateFileByFolder(folderName, file.getName())) {
+                    if (validateFileByFolder(folderName, file.getName()) && !file.isDirectory()) {
                         filesByFolder.push(file)
                         File xmlFile = new File("${file.getAbsolutePath().toString()}${METADATA_EXTENSION}")
                         if (xmlFile.exists()) {
