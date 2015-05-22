@@ -345,6 +345,26 @@ class DeployTest extends Specification {
             thrown(Exception)
     }
 
+
+    def "Integration testing must deploy the organization files and delete temporary files generated"() {
+        given:
+            instanceDeploy.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
+            instanceDeploy.projectPath = Paths.get(SRC_PATH, 'src').toString()
+            instanceDeploy.project.enforce.deleteTemporalFiles = true
+            instanceDeploy.poll = 200
+            instanceDeploy.waitTime = 10
+            instanceDeploy.credential = credential
+            def deployFileZipPath = Paths.get(SRC_PATH,'build','deploy.zip').toString()
+            def deployFolderPath = Paths.get(SRC_PATH,'build','deploy').toString()
+            File deployFileZip = new File(deployFileZipPath)
+            File deployFolder = new File(deployFolderPath)
+        when:
+            instanceDeploy.runTask()
+        then:
+            !deployFileZip.exists()
+            !deployFolder.exists()
+    }
+
     def cleanupSpec() {
         new File(Paths.get(SRC_PATH, '/.fileTracker.data').toString()).delete()
         new File(Paths.get(SRC_PATH, 'build').toString()).deleteDir()

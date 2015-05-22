@@ -23,7 +23,7 @@ class EnforcePluginExtension {
      */
     Map<String, String> mapFilesChanged = [:]
 
-    Boolean deleteTemporalFiles = false;
+    Boolean deleteTemporalFiles = true
 
     ArrayList<String> standardObjects = []
 
