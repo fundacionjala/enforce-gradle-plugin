@@ -60,8 +60,10 @@ abstract class Deployment extends SalesforceTask {
         logger.debug('Deploying components')
         componentDeploy.deploy(poll, waitTime, credential)
         if(project.enforce.deleteTemporalFiles) {
-            def deleteZipFile = new File(pathZipToDeploy).delete()
-            def deleteFolder = new File(sourcePath).deleteDir()
+            def deleteZipFile = new File(pathZipToDeploy)
+            def deleteFolder = new File(sourcePath)
+            deleteZipFile.delete()
+            deleteFolder.deleteDir()
         }
     }
 
