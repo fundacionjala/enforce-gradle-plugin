@@ -5,6 +5,8 @@
 
 package org.fundacionjala.gradle.plugins.enforce.utils.salesforce
 
+import org.fundacionjala.gradle.plugins.enforce.utils.Util
+
 import java.nio.file.Paths
 
 /**
@@ -121,7 +123,7 @@ public enum MetadataComponents {
      */
     public static MetadataComponents getComponentByRelativePath(String path) {
         MetadataComponents metadataComponent
-        String folder = Paths.get(path).getName(0)
+        String folder = Util.getFirstPath(path)
         for (MetadataComponents component : values()) {
             if (component.getDirectory() == folder) {
                 metadataComponent = component

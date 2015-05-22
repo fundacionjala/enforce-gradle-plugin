@@ -35,7 +35,6 @@ class PackageBuilder {
     private final String TAG_MEMBERS = 'members'
     private final String TAG_TYPES = 'types'
     private final String WILDCARD = '*'
-    public static final SLASH = '/'
     Package metaPackage
     PackageBuilder() {
         metaPackage = new Package()
@@ -232,7 +231,7 @@ class PackageBuilder {
         ArrayList<String> folders = []
         files.each { File file ->
             String relativePath = file.getAbsolutePath().replace(basePath, '')
-            String folderName = Paths.get(relativePath).getName(0)
+            String folderName = Util.getFirstPath(relativePath)
             if(!folders.contains(folderName)) {
                 folders.push(folderName)
             }
@@ -251,7 +250,7 @@ class PackageBuilder {
         ArrayList<String> members = []
         files.each { file ->
             String relativePath = file.getAbsolutePath().replace(basePath, '')
-            String parentName = Paths.get(relativePath).getName(0)
+            String parentName = Util.getFirstPath(relativePath)
             if (parentName == folder && parentName != file.getName()) {
                 if(ManagementFile.COMPONENTS_HAVE_SUB_FOLDER.contains(parentName)) {
                     members.addAll(generateMembersByFolderPath(relativePath))
@@ -275,7 +274,7 @@ class PackageBuilder {
         for (int index = 1; index < path.getNameCount(); index++) {
             member.append(path.getName(index))
             result.push(Util.getFileName(member.toString() as String))
-            member.append(Paths.get(SLASH).toString())
+            member.append(Paths.get(File.separator).toString())
         }
         return result
     }

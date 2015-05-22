@@ -23,7 +23,6 @@ class ManagementFile {
     final String ERROR_GETTING_SOURCE_CODE_PATH = "ManagementFile: It's necessary send in constructor source path of user code"
     private File sourcePath
     private final String DOES_NOT_EXIT = 'does not exist'
-    private final String SLASH = '/'
     public static final COMPONENTS_HAVE_SUB_FOLDER = ['reports']
     ArrayList<File> validFiles
 
@@ -176,8 +175,7 @@ class ManagementFile {
      */
     private void createFolder(String basePath, String folderPath) {
         String path = basePath
-        String[] subFolders = folderPath.split(Paths.get(SLASH).toString())
-
+        String[] subFolders = folderPath.split(File.separator)
         if (subFolders.size() == 0) {
             path = Paths.get(path, folderPath).toString()
             new File(path).mkdir()
