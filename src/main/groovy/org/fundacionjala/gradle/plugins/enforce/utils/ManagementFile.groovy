@@ -24,7 +24,7 @@ class ManagementFile {
     private File sourcePath
     private final String DOES_NOT_EXIT = 'does not exist'
     private final String SLASH = '/'
-    public static final COMPONENTS_HAVE_SUB_FOLDER = ['reports']
+    public static final COMPONENTS_HAVE_SUB_FOLDER = ['reports', 'dashboards', 'documents']
     ArrayList<File> validFiles
 
     /**
@@ -90,9 +90,12 @@ class ManagementFile {
         ArrayList<File> result = [:]
         file.eachFile { File reportFile ->
             File xmlReportFile = getValidateXmlFile(file)
-            if (validateFileByFolder(parentName, reportFile.getName()) && xmlReportFile) {
-                result.push(reportFile)
+            if (xmlReportFile) {
                 result.push(xmlReportFile)
+            }
+
+            if (validateFileByFolder(parentName, reportFile.getName())) {
+                result.push(reportFile)
             }
         }
         return result;
@@ -138,6 +141,9 @@ class ManagementFile {
      * @return
      */
     public boolean validateFileByFolder(String folderName, String file) {
+        if (folderName == MetadataComponents.DOCUMENTS.getDirectory()) {
+            return true
+        }
         String componentExtension = MetadataComponents.getExtensionByFolder(folderName)
         if (!componentExtension) {
             return false

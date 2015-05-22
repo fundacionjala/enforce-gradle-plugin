@@ -214,10 +214,8 @@ class PackageBuilderTest extends Specification {
         when:
             listResult = packageBuilder.selectFilesMembers('reports', listFiles, RESOURCE_PATH)
         then:
-            listResult == ['reportTest',
-                           'reportTest/AccountReport',
+            listResult == ['reportTest/AccountReport',
                            'reportTest/OpportunityReport',
-                           'report2Test',
                            'report2Test/Account2Report']
     }
 
@@ -253,11 +251,9 @@ class PackageBuilderTest extends Specification {
         when:
             packageBuilder.createPackage(listFiles, RESOURCE_PATH)
         then:
-            packageBuilder.metaPackage.types[0].members[0] == 'testFolder'
-            packageBuilder.metaPackage.types[0].members[1] == 'testFolder/AccountRepo'
-            packageBuilder.metaPackage.types[0].members[2] == 'testFolder/OpportunityRepo'
-            packageBuilder.metaPackage.types[0].members[3] == 'test2Folder'
-            packageBuilder.metaPackage.types[0].members[4] == 'test2Folder/LeadRepo'
+            packageBuilder.metaPackage.types[0].members[0] == 'testFolder/AccountRepo'
+            packageBuilder.metaPackage.types[0].members[1] == 'testFolder/OpportunityRepo'
+            packageBuilder.metaPackage.types[0].members[2] == 'test2Folder/LeadRepo'
             packageBuilder.metaPackage.types[0].name == 'Report'
     }
 

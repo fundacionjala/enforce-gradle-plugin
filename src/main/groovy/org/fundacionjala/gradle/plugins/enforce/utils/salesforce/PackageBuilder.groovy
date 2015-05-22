@@ -252,32 +252,12 @@ class PackageBuilder {
         files.each { file ->
             String relativePath = file.getAbsolutePath().replace(basePath, '')
             String parentName = Paths.get(relativePath).getName(0)
-            if (parentName == folder && parentName != file.getName()) {
-                if(ManagementFile.COMPONENTS_HAVE_SUB_FOLDER.contains(parentName)) {
-                    members.addAll(generateMembersByFolderPath(relativePath))
-                } else {
-                    members.push(Util.getFileName(file.getName() as String))
-                }
+            String fileName = Util.getRelativePath(file, Paths.get(basePath, parentName).toString())
+            if (parentName == folder && !fileName.isEmpty()) {
+                members.push(Util.getFileName(fileName as String))
             }
         }
         return members.unique()
-    }
-
-    /**
-     * Generates members from folder's relative path based by the sub Paths
-     * @param folderPath is a relative path in the project
-     * @return a ArrayList<String>
-     */
-    private ArrayList<String> generateMembersByFolderPath(String folderPath) {
-        ArrayList<String> result = []
-        Path  path = Paths.get(folderPath);
-        StringBuilder member = new StringBuilder()
-        for (int index = 1; index < path.getNameCount(); index++) {
-            member.append(path.getName(index))
-            result.push(Util.getFileName(member.toString() as String))
-            member.append(Paths.get(SLASH).toString())
-        }
-        return result
     }
 
     /**

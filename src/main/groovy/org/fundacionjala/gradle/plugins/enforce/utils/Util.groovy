@@ -171,6 +171,16 @@ class Util {
     }
 
     /**
+     * Gets a path relative of the file
+     * @param file is the file that is tracked
+     * @return is a path relative
+     */
+    public static String getRelativePath(File file, String basePath) {
+        File root = new File(basePath)
+        return root.toURI().relativize(file.toURI()).toString()
+    }
+
+    /**
      * Gets folders invalid
      * @param foldersName are folders name
      * @return an Array list with invalid folders

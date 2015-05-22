@@ -5,6 +5,7 @@ import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ObjectResultTracker
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
 import org.fundacionjala.gradle.plugins.enforce.undeploy.SmartFilesValidator
+import org.gradle.api.artifacts.result.ComponentResult
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -146,7 +147,7 @@ class PackageGeneratorTest extends Specification {
             fileTrackerMap.put(newObjectPathChanged, objectResultTracker)
             packageGenerator.projectPath = RESOURCE_PATH
             packageGenerator.fileTrackerMap = fileTrackerMap
-            smartFilesValidator.filterFilesAccordingOrganization(_) >> packageGenerator.getFiles(ComponentStates.DELETED) + packageGenerator.getSubComponents(ComponentStates.DELETED)
+            smartFilesValidator.filterFilesAccordingOrganization(_,_) >> packageGenerator.getFiles(ComponentStates.DELETED) + packageGenerator.getSubComponents(ComponentStates.DELETED)
             def stringWriter = new StringWriter()
 
         when:
@@ -161,6 +162,27 @@ class PackageGeneratorTest extends Specification {
             packageGenerator.packageBuilder.metaPackage.types[2].members[0] == "ObjectFileChanged.fieldOne"
             packageGenerator.packageBuilder.metaPackage.types[2].members[1] == "ObjectFileChanged.fieldTwo"
             packageGenerator.packageBuilder.metaPackage.types[2].name == "CustomField"
+
+    }
+
+    def "Test should build a package from deleted report files"() {
+        given:
+            PackageGenerator packageGenerator = new PackageGenerator()
+            SmartFilesValidator smartFilesValidator = Mock(SmartFilesValidator)
+
+            def newObjectPathDeleted = "reports/ReportFolder/reportTest.report"
+            Map<String, ResultTracker> fileTrackerMap = [:]
+            fileTrackerMap.put(newObjectPathDeleted, new ResultTracker(ComponentStates.DELETED))
+            packageGenerator.projectPath = RESOURCE_PATH
+            packageGenerator.fileTrackerMap = fileTrackerMap
+            smartFilesValidator.filterFilesAccordingOrganization(_,_) >> packageGenerator.getFiles(ComponentStates.DELETED)
+            def stringWriter = new StringWriter()
+
+        when:
+            packageGenerator.buildDestructive(stringWriter, smartFilesValidator)
+        then:
+            packageGenerator.packageBuilder.metaPackage.types[0].members[0] == "ReportFolder/reportTest"
+            packageGenerator.packageBuilder.metaPackage.types[0].name == "Report"
 
     }
 

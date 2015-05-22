@@ -171,7 +171,6 @@ public enum MetadataComponents {
      * @return a extension o component
      */
     public static String getExtensionByName(String name) {
-
         String extensionByName
         for (MetadataComponents input : values()) {
             if (input.getTypeName() == name) {
@@ -188,7 +187,6 @@ public enum MetadataComponents {
      * @return a directory of component
      */
     public static String getDirectoryByName(String name) {
-
         String directory
         for (MetadataComponents input : values()) {
             if (input.getTypeName() == name) {

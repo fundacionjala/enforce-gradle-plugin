@@ -40,7 +40,8 @@ class ResetTest extends Specification {
         given:
             new File(Paths.get(SRC_PATH, 'src').toString()).mkdir()
             new File(Paths.get(SRC_PATH, 'src', 'classes').toString()).mkdir()
-            def class1Path = Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString()
+            String relativeClassPath =  Paths.get('classes', 'Class1.cls').toString()
+            def class1Path = Paths.get(SRC_PATH, 'src', relativeClassPath).toString()
             FileWriter fileWriter = new FileWriter(new File(class1Path))
             fileWriter.write('test')
             def pathFileTracker = Paths.get(SRC_PATH, 'src', '.fileTracker.data').toString()
@@ -53,7 +54,7 @@ class ResetTest extends Specification {
             fileWriter.write('new change')
             fileWriter.close()
         then:
-            instanceReset.componentMonitor.componentSerializer.read().get(class1Path).hash == signature
+            instanceReset.componentMonitor.componentSerializer.read().get(relativeClassPath).hash == signature
     }
 
     def "Test should delete a old fileTracker file and create a new fileTracker with jsonFormat" () {

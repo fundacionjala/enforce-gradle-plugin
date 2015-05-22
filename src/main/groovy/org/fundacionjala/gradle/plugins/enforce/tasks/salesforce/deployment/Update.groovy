@@ -77,7 +77,7 @@ class Update extends Deployment {
     def createPackage() {
         packageGenerator.fileTrackerMap.each { nameFile, resultTracker ->
             if (resultTracker.state != ComponentStates.DELETED) {
-                filesToCopy.add(new File(nameFile))
+                filesToCopy.add(new File(Paths.get(projectPath, nameFile).toString()))
             }
         }
         packageGenerator.buildPackage(Paths.get(pathUpdate, PACKAGE_NAME).toString())
