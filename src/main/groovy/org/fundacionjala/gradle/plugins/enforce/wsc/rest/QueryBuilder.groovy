@@ -23,10 +23,10 @@ class QueryBuilder {
     private final String WHERE_NAME = 'WHERE Name ='
     private final String WHERE_FULL_NAME = 'WHERE DeveloperName ='
     private final String THERE_IS_NOT_PACKAGE = "There isn't a package xml file in this path: "
-    public static final ArrayList<String> defaultComponents = ['ApexClass', 'ApexComponent', 'ApexPage', 'ApexTrigger', 'StaticResource',
-                                                               'Profile', 'EmailTemplate', 'CustomField', 'CompactLayout', 'RecordType','ValidationRule']
+    public static final ArrayList<String> defaultComponents = ['ApexClass', 'ApexComponent', 'ApexPage', 'ApexTrigger',
+                                                               'StaticResource', 'Profile', 'EmailTemplate']
 
-    public static final ArrayList<String> defaultSubComponents = ['CustomField', 'CompactLayout', 'RecordType','ValidationRule']
+    public static final ArrayList<String> defaultSubComponents = ['CompactLayout']
     /**
      * Gets queries of components from package xml file
      * @param packagePath is type String
@@ -42,7 +42,7 @@ class QueryBuilder {
                 typeMembers.members.each { member ->
                     if (member != '*') {
                         queries.add("""${SELECT_FULL_NAME} ${typeMembers.name} ${WHERE_FULL_NAME} '${
-                            Util.getDeveloperNameByMember(member)
+                            Util.getDeveloperNameByMember(member, typeMembers.name as String)
                         }'""")
                     }
                 }

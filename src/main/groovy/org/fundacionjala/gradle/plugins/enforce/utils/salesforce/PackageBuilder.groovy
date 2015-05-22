@@ -104,6 +104,7 @@ class PackageBuilder {
         } else {
             List packageTypes = packageTypeMembersFound.members.toList()
             packageTypes.addAll(members)
+            packageTypes = packageTypes.unique()
             packageTypeMembersFound.members = packageTypes.toArray() as String[]
         }
         metaPackage.version = metaPackage.version ?: Package.API_VERSION

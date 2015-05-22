@@ -3,7 +3,16 @@ package org.fundacionjala.gradle.plugins.enforce.utils.salesforce
 import com.sforce.soap.metadata.PackageTypeMembers
 
 class PackageCombiner {
-    private static final String CUSTOM_FIELD = 'CustomField'
+    private static final ArrayList<String> SUB_COMPONENTS = ['CustomField', 'FieldSet', 'ValidationRule',
+                                                             'CompactLayout', 'SharingReason']
+    //RecordType
+    //WebLink
+    //SharingRecalculation
+    //SearchLayout
+    //ListView
+    //HistoryRetentionPolicy
+    //BusinessProcess
+    //ActionOverride
     private static final String CUSTOM_OBJECT = 'CustomObject'
     private static final String ASTERISK = '*'
 
@@ -20,14 +29,13 @@ class PackageCombiner {
             ArrayList<String> membersOfCustomObject = new ArrayList<String>()
 
             buildPackage.metaPackage.types.each { PackageTypeMembers type ->
-                if (type.name == CUSTOM_FIELD) {
+                if (SUB_COMPONENTS.contains(type.name)) {
                     membersOfCustomField = type.members as ArrayList<String>
                 }
                 if (type.name == CUSTOM_OBJECT) {
                     membersOfCustomObject = type.members as ArrayList<String>
                 }
             }
-
             ArrayList<String> membersToRemove = getMembersToDelete(membersOfCustomField, membersOfCustomObject)
             buildPackage.removeMembers(CUSTOM_OBJECT, membersToRemove)
             writePackageCombined(buildPackage, buildPackagePath)
