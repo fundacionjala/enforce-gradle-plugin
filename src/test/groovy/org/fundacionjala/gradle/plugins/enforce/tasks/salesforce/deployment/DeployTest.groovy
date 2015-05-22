@@ -38,6 +38,7 @@ class DeployTest extends Specification {
         project.enforce.srcPath = SRC_PATH
         instanceDeploy = project.tasks.deploy
         instanceDeploy.fileManager = new ManagementFile(SRC_PATH)
+        instanceDeploy.project.enforce.deleteTemporalFiles = false
         instanceDeploy.createDeploymentDirectory(Paths.get(SRC_PATH, 'build').toString())
         instanceDeploy.createDeploymentDirectory(Paths.get(SRC_PATH, 'build', 'deploy').toString())
         instanceDeploy.createDeploymentDirectory(Paths.get(SRC_PATH, 'build', 'deploy', 'folderOne').toString())

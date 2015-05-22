@@ -52,6 +52,7 @@ class UndeployTest extends Specification {
         }
         undeployInstance = project.tasks.undeploy
         undeployInstance.fileManager = new ManagementFile(SRC_PATH)
+        undeployInstance.project.enforce.deleteTemporalFiles = false
         credential = new Credential()
         credential.id = 'id'
         credential.username = 'salesforce2014.test@gmail.com'
@@ -98,6 +99,7 @@ class UndeployTest extends Specification {
     def "Integration test should deploy truncate components"() {
         given:
             undeployInstance.createDeploymentDirectory(Paths.get(SRC_PATH, 'build').toString())
+
             def undeployDirectory = Paths.get(SRC_PATH, 'build', 'undeploy').toString()
             undeployInstance.unDeployPackagePath = Paths.get(undeployDirectory,'package.xml').toString()
             undeployInstance.filesToTruncate = [new File(Paths.get(SRC_PATH,'src', 'classes','Class1.cls').toString()),
