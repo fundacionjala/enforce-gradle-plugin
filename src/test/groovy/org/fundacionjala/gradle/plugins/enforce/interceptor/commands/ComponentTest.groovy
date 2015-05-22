@@ -54,7 +54,6 @@ class ComponentTest extends Specification {
         when:
         componentContent.execute(file)
         then:
-        true
         file.text.replaceAll("\\s*","") == expectedContent.replaceAll("\\s*","")
     }
     def cleanupSpec() {
