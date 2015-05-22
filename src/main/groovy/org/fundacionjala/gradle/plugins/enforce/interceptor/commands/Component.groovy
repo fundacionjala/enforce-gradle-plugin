@@ -11,7 +11,7 @@ import java.util.regex.Matcher
  * Implements the truncated algorithm to truncate the component content
  */
 class Component {
-    private final String ATTRIBUTE_REGEX = /<apex:attribute(.|\n)*?\/>/
+    private final String ATTRIBUTE_REGEX = /<apex:attribute(.|\s)*?\/>/
     private final String ATTRIBUTE_BY_DEFAULT = "<apex:attribute name=%s type=\"Object\" required=\"false\" description=\"Description\"/>"
     private final String NAME_ATTRIBUTE = "name"
     private final String COMPONENT_BY_DEFAULT = "<apex:component>%s\n</apex:component>"

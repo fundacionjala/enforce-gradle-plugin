@@ -105,7 +105,7 @@ class Undeploy extends Deployment {
         filesToTruncate = fileManager.getFilesByFolders(projectPath, packageComponent.truncatedDirectories).sort()
         filesToTruncate = smartFilesValidator.filterFilesAccordingOrganization(filesToTruncate)
         filesToTruncate = excludeFiles(filesToTruncate)
-        fileManager.copy(filesToTruncate, folderUnDeploy)
+        fileManager.copy(projectPath, filesToTruncate, folderUnDeploy)
         interceptorsToExecute += interceptors
         truncateComponents(folderUnDeploy)
     }

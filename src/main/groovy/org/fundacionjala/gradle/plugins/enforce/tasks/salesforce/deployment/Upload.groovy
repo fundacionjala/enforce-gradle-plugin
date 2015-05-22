@@ -175,7 +175,7 @@ class Upload extends Deployment {
      */
     public void copyFilesToUpload() {
         specificFilesToUpload = excludeFiles(specificFilesToUpload)
-        fileManager.copy(specificFilesToUpload, pathUpload)
+        fileManager.copy(projectPath, specificFilesToUpload, pathUpload)
     }
 
     /**
