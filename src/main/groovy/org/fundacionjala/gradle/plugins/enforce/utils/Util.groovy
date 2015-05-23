@@ -178,7 +178,8 @@ class Util {
      */
     public static String getRelativePath(File file, String basePath) {
         File root = new File(basePath)
-        return root.toURI().relativize(file.toURI()).toString()
+        String relativePath = root.toURI().relativize(file.toURI()).toString()
+        return Paths.get(relativePath).toString()
     }
 
     /**
