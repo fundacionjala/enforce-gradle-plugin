@@ -8,6 +8,7 @@ package org.fundacionjala.gradle.plugins.enforce.utils
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 import java.util.regex.Pattern
@@ -181,19 +182,11 @@ class ManagementFile {
      */
     private void createFolder(String basePath, String folderPath) {
         String path = basePath
-        String[] subFolders = folderPath.split(File.separator)
-        if (subFolders.size() == 0) {
-            path = Paths.get(path, folderPath).toString()
+        Path folders = Paths.get(folderPath)
+        for(int index = 0; index < folders.getNameCount(); index++) {
+            String folderName = folders.getName(index)
+            path = Paths.get(path, folderName).toString()
             new File(path).mkdir()
-            return
-        }
-
-        subFolders.each { String folderName ->
-            if (!folderName.isEmpty()) {
-                path = Paths.get(path, folderName).toString()
-                println 'path: ' + path
-                new File(path).mkdir()
-            }
         }
     }
 
