@@ -141,7 +141,7 @@ class ManagementFile {
      * @return
      */
     public boolean validateFileByFolder(String folderName, String file) {
-        if (folderName == MetadataComponents.DOCUMENTS.getDirectory()) {
+        if (folderName == MetadataComponents.DOCUMENTS.getDirectory() && file.contains('.')) {
             return true
         }
         String componentExtension = MetadataComponents.getExtensionByFolder(folderName)

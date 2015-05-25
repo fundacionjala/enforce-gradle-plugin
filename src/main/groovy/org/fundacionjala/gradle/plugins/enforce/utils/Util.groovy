@@ -176,10 +176,13 @@ class Util {
      * @param file is the file that is tracked
      * @return is a path relative
      */
-    public static String getRelativePath(File file, String basePath) {
+    public static String getRelativePath(File file, String basePath, boolean normalizePath = true) {
         File root = new File(basePath)
         String relativePath = root.toURI().relativize(file.toURI()).toString()
-        return Paths.get(relativePath).toString()
+        if (normalizePath) {
+            return Paths.get(relativePath).toString()
+        }
+        return relativePath
     }
 
     /**
