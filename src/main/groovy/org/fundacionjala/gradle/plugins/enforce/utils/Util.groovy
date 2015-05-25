@@ -46,8 +46,14 @@ class Util {
      * @param member is member tag of package xml file
      * @return developerName of custom field
      */
-    public static String getDeveloperNameByMember(String member) {
-        return member.substring(member.indexOf('.') + 1, member.length() - 3)
+    public static String getDeveloperNameByMember(String member, String name) {
+        String result
+        if (name == 'CustomField') {
+            result = member.substring(member.indexOf('.') + 1, member.length() - 3)
+        } else {
+            result = member.substring(member.indexOf('.') + 1, member.length())
+        }
+        return result
     }
 
     /**

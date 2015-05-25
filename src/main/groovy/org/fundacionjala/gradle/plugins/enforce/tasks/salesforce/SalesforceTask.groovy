@@ -140,7 +140,6 @@ abstract class SalesforceTask extends ForceTask {
         }
         File file = new File(pathPackage)
         packageBuilder.update(nameOfType, members, file)
-
     } 
 
     /**

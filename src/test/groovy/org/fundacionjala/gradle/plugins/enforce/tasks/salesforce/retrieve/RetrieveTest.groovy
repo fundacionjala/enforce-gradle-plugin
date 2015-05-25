@@ -9,7 +9,6 @@ import org.custommonkey.xmlunit.Diff
 import org.custommonkey.xmlunit.XMLUnit
 import org.fundacionjala.gradle.plugins.enforce.EnforcePlugin
 import org.fundacionjala.gradle.plugins.enforce.credentialmanagement.CredentialManager
-import org.fundacionjala.gradle.plugins.enforce.undeploy.PackageComponent
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.LoginType
@@ -21,25 +20,22 @@ import java.nio.file.Paths
 
 class RetrieveTest extends spock.lang.Specification {
     @Shared
-    Retrieve retrieve
+        Retrieve retrieve
     @Shared
-    PackageComponent packageComponent
+        Project project
     @Shared
-    Project project
+        CredentialManager credentialManager
     @Shared
-    CredentialManager credentialManager
+        def path = Paths.get(System.getProperty("user.dir"), "src", "test", "groovy", "org", "fundacionjala", "gradle",
+                "plugins","enforce", "tasks", "salesforce").toString()
     @Shared
-    def path = Paths.get(System.getProperty("user.dir"), "src", "test", "groovy", "org", "fundacionjala", "gradle",
-            "plugins","enforce", "tasks", "salesforce").toString()
-    @Shared
-    Credential credential
+        Credential credential
 
     def setup() {
         project = ProjectBuilder.builder().build()
         project.apply(plugin: EnforcePlugin)
         retrieve = project.task('retrieveTest', type: Retrieve)
         retrieve.fileManager = new ManagementFile(Paths.get(path, 'retrieve', 'resources').toString())
-        packageComponent = Mock(PackageComponent)
         credentialManager = Mock(CredentialManager)
         new File(Paths.get(path, 'retrieve', 'resources').toString()).mkdir()
 

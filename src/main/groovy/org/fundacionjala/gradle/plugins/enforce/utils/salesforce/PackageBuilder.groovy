@@ -27,7 +27,6 @@ import java.nio.file.Paths
  */
 @Log
 class PackageBuilder {
-
     private static final String XMLNS = 'http://soap.sforce.com/2006/04/metadata'
     private static final String VERSION = '1.0'
     private static final String ENCODING = 'UTF-8'
@@ -108,7 +107,33 @@ class PackageBuilder {
         } else {
             List packageTypes = packageTypeMembersFound.members.toList()
             packageTypes.addAll(members)
+            packageTypes = packageTypes.unique()
             packageTypeMembersFound.members = packageTypes.toArray() as String[]
+        }
+        metaPackage.version = metaPackage.version ?: Package.API_VERSION
+    }
+
+    public void removeMembers(String name, ArrayList<String> membersToRemove) {
+        if (membersToRemove.isEmpty()) {
+            return
+        }
+        ArrayList<PackageTypeMembers> packageTypeMembers = metaPackage.types.toList()
+
+        PackageTypeMembers packageTypeMembersFound = null
+        packageTypeMembers.find { packageTypeMembersIt ->
+            if (packageTypeMembersIt.name == name) {
+                packageTypeMembersFound = packageTypeMembersIt
+                return true
+            }
+        }
+        if (packageTypeMembersFound) {
+            List packageTypes = packageTypeMembersFound.members.toList()
+            packageTypes.removeAll(membersToRemove)
+            packageTypeMembersFound.members = packageTypes.toArray() as String[]
+            if (packageTypes.size() <= 0) {
+                packageTypeMembers.remove(packageTypeMembersFound)
+            }
+            metaPackage.types = packageTypeMembers.toArray() as PackageTypeMembers[]
         }
         metaPackage.version = metaPackage.version ?: Package.API_VERSION
     }
