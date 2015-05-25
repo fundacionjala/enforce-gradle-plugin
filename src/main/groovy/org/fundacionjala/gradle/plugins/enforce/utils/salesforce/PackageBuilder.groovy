@@ -276,7 +276,7 @@ class PackageBuilder {
         files.each { file ->
             String relativePath = Util.getRelativePath(file, basePath)
             String parentName = Util.getFirstPath(relativePath)
-            String fileName = Util.getRelativePath(file, Paths.get(basePath, parentName).toString())
+            String fileName = Util.getRelativePath(file, Paths.get(basePath, parentName).toString(), false)
             if (parentName == folder && !fileName.isEmpty()) {
                 members.push(Util.getFileName(fileName as String))
             }

@@ -183,7 +183,7 @@ class PackageGeneratorTest extends Specification {
         when:
             packageGenerator.buildDestructive(stringWriter, smartFilesValidator)
         then:
-            packageGenerator.packageBuilder.metaPackage.types[0].members[0] == Paths.get("ReportFolder/reportTest").toString()
+            packageGenerator.packageBuilder.metaPackage.types[0].members[0] == "ReportFolder/reportTest"
             packageGenerator.packageBuilder.metaPackage.types[0].name == "Report"
 
     }
