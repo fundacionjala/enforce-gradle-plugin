@@ -19,7 +19,7 @@ class ReportResourceManager {
     private final String RESOURCE_FONTS = '/fonts/'
 
     private final ArrayList<String> scriptFiles = ['clipboard.swf', 'shBrushJava.js', 'shCore.js',
-                                                   'shLegacy.js', 'angular.min.js', 'bootstrap.min.js', 'jquery.min.js']
+                                                   'shLegacy.js', 'angular.min.js', 'bootstrap.min.js', 'jquery.min.js', 'ng-google-chart.js']
     private final ArrayList<String> stylesFiles = ['shCore.css', 'shThemeDefault.css', 'dashboard.css',
                                                    'bootstrap.min.css', 'bootstrap.css.map','reports.css']
     private final ArrayList<String> fontsFiles = ['glyphicons-halflings-regular.eot', 'glyphicons-halflings-regular.svg',

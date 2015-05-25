@@ -10,7 +10,7 @@
     <script src='scripts/angular.min.js'></script>
     <script src='scripts/jquery.min.js'></script>
     <script src='scripts/bootstrap.min.js'></script>
-    <script src='http://bouil.github.io/angular-google-chart/ng-google-chart.js'></script>
+    <script src='scripts/ng-google-chart.js'></script>
     <link href='http://fonts.googleapis.com/css?family=Alfa+Slab One' rel='stylesheet' type='text/css'>
     <title>  Enforce Report </title>
 </head>
@@ -79,6 +79,8 @@ app.controller('controllerReportCoverage', function(\$scope) {
 <script type='text/javascript'>
     app.controller('controllerUnitTest', function(\$scope) {
         \$scope.files = $arrayUnitTest;
+        \$scope.filesClone = \$scope.files.slice(0);
+        \$scope.filesClone = JSON.parse(JSON.stringify($arrayUnitTest));
         \$scope.orderByField = 'name';
         \$scope.danger = true;
         \$scope.success = false;
@@ -102,6 +104,27 @@ app.controller('controllerReportCoverage', function(\$scope) {
                 \$scope.valueButtonDanger = "btn btn-default";
             }
         });
+
+        \$scope.detailsByTest = function(id) {
+            for (var i = 0; i < \$scope.filesClone.length ; i++) {
+                var file = \$scope.filesClone[i];
+                console.log(file);
+                if (file.id === id) {
+                    var details = file.status == "Fail"?file.details.slice(0):[]
+                    return details;
+                }
+            };
+        };
+
+        \$scope.showDetails = function (file) {
+            if (file.isVisible == true) {
+                file.details =  [];
+                file.isVisible = false;
+                return;
+            }
+            file.details = \$scope.detailsByTest(file.id);
+            file.isVisible = true;
+        }
 
         \$scope.getStatusColor = function(file) {
         if(file.status === 'Fail') {
@@ -370,23 +393,30 @@ app.controller('controllerReportCoverage', function(\$scope) {
                             <th class="center-text column-nro-2"> <a href="#" ng-click="orderByField='status'; reverse = !reverse">
                                 State <span ng-show="orderByField == 'status'"><span ng-show="!reverse" class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span><span ng-show="reverse" class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span></span>
                             </a></th>
-                            <th class="center-text column-nro-3"> <a href="#" ng-click="orderByField='stackTrace'; reverse = !reverse">
-                                StackTrace <span ng-show="orderByField == 'stackTrace'"><span ng-show="!reverse" class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span><span ng-show="reverse" class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span></span>
-                            </a></th>
-                            <th class="center-text column-nro-4"> <a href="#" ng-click="orderByField='description'; reverse = !reverse">
-                                Description <span ng-show="orderByField == 'description'"><span ng-show="!reverse" class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span><span ng-show="reverse" class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span></span>
-                            </a></th>
                         </tr>
                         </thead>
                     </table>
 
                     <div class="table-body">
                         <table class='table table-bordered'>
-                            <tr ng-class="getStatusColor(file)" ng-repeat='file in files | filter: query | orderBy: orderByField:reverse' ng-show={{file.filter}}>
-                                <td class="column-nro-1"><abbr title="{{file.name}}">{{file.name}}</abbr></td>
+                            <tr ng-class="getStatusColor(file)" ng-repeat-start='file in files | filter: query | orderBy: orderByField:reverse' ng-show={{file.filter}}>
+                                <td class="column-nro-1">
+
+                                    <div ng-if="file.status == 'Fail'">
+                                        <a ng-click="showDetails(file)">{{file.name}}</a>
+                                    </div>
+                                    <div ng-if="file.status != 'Fail'">
+                                        {{file.name}}
+                                    </div>
+                                </td>
                                 <td class="column-nro-2">{{file.status}}</td>
-                                <td class="column-nro-3">{{file.stackTrace}}</td>
-                                <td class="column-nro-4">{{file.message}}</td>
+                            </tr>
+                            <tr ng-repeat="detail in file.details" ng-show="file.isVisible">
+                                <td colspan="2"><b>{{detail.label}}:</b> {{detail.content}}</td>
+                            </tr>
+
+                            <tr ng-repeat-end ng-show="file.details.length == 0 && file.isVisible">
+                                <td colspan="2">No detail</td>
                             </tr>
                         </table>
                     </div>

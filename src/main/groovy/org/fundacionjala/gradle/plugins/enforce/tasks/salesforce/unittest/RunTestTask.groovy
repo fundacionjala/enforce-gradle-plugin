@@ -9,6 +9,7 @@ import com.sforce.soap.apex.*
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.SalesforceTask
+import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexClass
 import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexClasses
 import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexRunTestResult
 import org.fundacionjala.gradle.plugins.enforce.unittest.RunTestListener
@@ -351,14 +352,14 @@ class RunTestTask extends SalesforceTask {
         progressLogger.completed()
         jsonCoverageLines = toolingAPI.httpAPIClient.executeQuery(QUERY_COVERAGE)
         apexTestResultArrayList = runTestListener.apexTestItem.apexTestResults
-        generateHtmlReportCoverageAsync()
+        generateHtmlReportCoverageAsync(apexClasses)
         generateCoverageReportXml()
     }
 
     /**
      * Generates report coverage in html format using json objects
      */
-    def generateHtmlReportCoverageAsync() {
+    def generateHtmlReportCoverageAsync(ApexClasses apexClasses) {
         int unitTestFail = 0
         int unitTestSuccess = 0
 
@@ -368,6 +369,10 @@ class RunTestTask extends SalesforceTask {
             } else {
                 unitTestSuccess++
             }
+        }
+        apexTestResultArrayList.each {apexTestResult->
+            ApexClass apexClass = apexClasses.getClass(apexTestResult.apexClassId)
+            apexTestResult.className = apexClass?apexClass.name:apexTestResult.className
         }
         htmlManager.generateReport(verifyExistFileCoverage(getCodeCoverageResult()), apexTestResultArrayList, unitTestFail, unitTestSuccess)
         fileWriterReport.close()
