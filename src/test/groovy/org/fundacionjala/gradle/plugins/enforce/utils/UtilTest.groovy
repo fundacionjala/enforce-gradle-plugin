@@ -143,9 +143,16 @@ class UtilTest extends Specification {
 
     def "Test should get developerName from a member" () {
         when:
-            def developerName = Util.getDeveloperNameByMember('TwilioConfig__c.AuthTokenAPI__c')
+            def developerName = Util.getDeveloperNameByMember('TwilioConfig__c.AuthTokenAPI__c', 'CustomField')
         then:
             developerName == 'AuthTokenAPI'
+    }
+
+    def "Test should get developerName from a member of type componentLayout" () {
+        when:
+        def developerName = Util.getDeveloperNameByMember('Object5__c.myCompactLayout', 'CompactLayout')
+        then:
+        developerName == 'myCompactLayout'
     }
 
     def "Test get relative path"() {
