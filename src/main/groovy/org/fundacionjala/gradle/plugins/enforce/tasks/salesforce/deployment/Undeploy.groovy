@@ -91,7 +91,7 @@ class Undeploy extends Deployment {
         Files.copy(Paths.get(projectPath, PACKAGE_NAME), Paths.get(folderUnDeploy, PACKAGE_NAME), StandardCopyOption.REPLACE_EXISTING)
         packageComponent = new PackageComponent(unDeployPackagePath)
         filesToTruncate = fileManager.getFilesByFolders(projectPath, packageComponent.truncatedDirectories).sort()
-        filesToTruncate = smartFilesValidator.filterFilesAccordingOrganization(filesToTruncate)
+        filesToTruncate = smartFilesValidator.filterFilesAccordingOrganization(filesToTruncate, projectPath)
         filesToTruncate = excludeFiles(filesToTruncate)
         fileManager.copy(projectPath, filesToTruncate, folderUnDeploy)
         interceptorsToExecute += interceptors
@@ -120,7 +120,7 @@ class Undeploy extends Deployment {
         workflowNames = packageComponent.components.grep(~/.*.workflow$/) as ArrayList<String>
         excludeComponents.addAll(workflowNames)
         files = project.fileTree(dir: projectPath, includes: includesComponents, excludes: excludeComponents)
-        ArrayList<File> filesFiltered = smartFilesValidator.filterFilesAccordingOrganization(files.getFiles().sort() as ArrayList<File>)
+        ArrayList<File> filesFiltered = smartFilesValidator.filterFilesAccordingOrganization(files.getFiles().sort() as ArrayList<File>, projectPath)
         filesFiltered = excludeFiles(filesFiltered)
         preparePackage(Paths.get(folderUnDeploy, FILE_NAME_DESTRUCTIVE).toString(), filesFiltered)
         includesComponents = getComponentsWithWildcard(standardComponents).grep(~/.*.object$/)

@@ -148,7 +148,18 @@ class UtilTest extends Specification {
             developerName == 'AuthTokenAPI'
     }
 
+    def "Test get relative path"() {
+        given:
+        String basePath = Paths.get(resourcesPath, 'relativeTest')
+        File file = new File(Paths.get(basePath, "classes/class1").toString())
+        when:
+        def relativePath = Util.getRelativePath(file, basePath)
+        then:
+        relativePath == Paths.get("classes", "class1").toString()
+    }
+
     def cleanupSpec() {
         new File(Paths.get(resourcesPath, 'triggers').toString()).deleteDir()
+        new File(Paths.get(resourcesPath, 'relativeTest').toString()).deleteDir()
     }
 }
