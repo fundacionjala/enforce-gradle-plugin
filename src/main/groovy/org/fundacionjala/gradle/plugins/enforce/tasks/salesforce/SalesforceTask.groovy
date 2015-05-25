@@ -104,7 +104,7 @@ abstract class SalesforceTask extends ForceTask {
         files = files.grep({ file->
             !file.name.endsWith(Constants.META_XML_NAME)
         })
-        packageBuilder.createPackage(files)
+        packageBuilder.createPackage(files, projectPath)
         packageBuilder.write(fileWriter)
         fileWriter.close()
     }
@@ -116,7 +116,7 @@ abstract class SalesforceTask extends ForceTask {
      */
     void preparePackage(String packagePath, ArrayList<File> files) {
         this.packageLoaded = packagePath
-        packageBuilder.createPackage(files)
+        packageBuilder.createPackage(files, projectPath)
     }
     
     /**
@@ -140,7 +140,6 @@ abstract class SalesforceTask extends ForceTask {
         }
         File file = new File(pathPackage)
         packageBuilder.update(nameOfType, members, file)
-
     } 
 
     /**

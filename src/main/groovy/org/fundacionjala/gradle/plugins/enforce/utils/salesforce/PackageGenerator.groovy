@@ -16,6 +16,7 @@ class PackageGenerator {
     Map<String, ResultTracker> fileTrackerMap
     SmartFilesValidator smartFilesValidator
     Credential credential
+    String projectPath
 
     public PackageGenerator() {
         packageBuilder = new PackageBuilder()
@@ -23,6 +24,7 @@ class PackageGenerator {
     }
 
     public void init(String projectPath, ArrayList<File> files, Credential credential) {
+        this.projectPath = projectPath
         this.credential = credential
         componentMonitor = new ComponentMonitor(projectPath)
         if (!componentMonitor.verifyFileMap()) {
@@ -58,7 +60,7 @@ class PackageGenerator {
         ArrayList<File> filesPackage = []
         fileTrackerMap.each { fileName, resultTracker ->
             if (resultTracker.state == status) {
-                filesPackage.add(new File(fileName))
+                filesPackage.add(new File(Paths.get(projectPath, fileName).toString()))
             }
         }
         return filesPackage
@@ -71,7 +73,9 @@ class PackageGenerator {
             if (resultTracker instanceof ObjectResultTracker && resultTracker.state == ComponentStates.CHANGED) {
                 resultTracker.subComponentsResult.each { subComponentName, statusField ->
                     if (statusField == subComponentStatus) {
-                        file = new File("${Paths.get(subComponentName).parent.fileName}/${Util.getFileName(Paths.get(fileName).fileName.toString())}.${Paths.get(subComponentName).fileName}.sbc")
+                        String fileSubComponentName = "${Paths.get(subComponentName).parent.fileName}/${Util.getFileName(Paths.get(fileName).fileName.toString())}.${Paths.get(subComponentName).fileName}.sbc"
+                        String path = Paths.get(projectPath, fileSubComponentName.toString()).toString();
+                        file = new File(path)
                         filesResult.add(file)
                     }
                 }
@@ -82,11 +86,11 @@ class PackageGenerator {
 
     public void buildPackage(Writer writer) {
         ArrayList<File> files = getFiles(ComponentStates.ADDED) + getFiles(ComponentStates.CHANGED) + getSubComponents(ComponentStates.ADDED) + getSubComponents(ComponentStates.CHANGED)
-        packageBuilder.createPackage(files)
+        packageBuilder.createPackage(files, projectPath)
         packageBuilder.write(writer)
     }
 
-    public void buildDestructive(Writer writer){
+    public void buildDestructive(Writer writer) {
         ArrayList<File> files = getFiles(ComponentStates.DELETED) + getSubComponents(ComponentStates.DELETED)
         smartFilesValidator = new SmartFilesValidator(SmartFilesValidator.getJsonQueries(files, credential))
         buildDestructive(writer, smartFilesValidator)
@@ -94,9 +98,8 @@ class PackageGenerator {
 
     public void buildDestructive(Writer writer, SmartFilesValidator smartFilesValidator) {
         ArrayList<File> files = getFiles(ComponentStates.DELETED) + getSubComponents(ComponentStates.DELETED)
-        files = smartFilesValidator.filterFilesAccordingOrganization(files)
-
-        packageBuilder.createPackage(files)
+        files = smartFilesValidator.filterFilesAccordingOrganization(files, projectPath)
+        packageBuilder.createPackage(files, projectPath)
         packageBuilder.write(writer)
     }
 
@@ -108,7 +111,7 @@ class PackageGenerator {
         Map<String, ResultTracker> fileTrackerMapClone = fileTrackerMap.clone() as Map<String, ResultTracker>
         ArrayList<File> excludedFiles = []
         fileTrackerMapClone.each { fileName, resultTracker ->
-            def fileChanged = new File(fileName.toString())
+            File fileChanged = new File(fileName.toString())
             if (!files.contains(fileChanged)) {
                 fileTrackerMap.remove(fileName.toString())
                 excludedFiles.push(fileChanged)

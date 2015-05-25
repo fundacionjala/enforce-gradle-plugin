@@ -8,6 +8,7 @@ package org.fundacionjala.gradle.plugins.enforce.utils
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 import java.util.regex.Pattern
@@ -23,7 +24,7 @@ class ManagementFile {
     final String ERROR_GETTING_SOURCE_CODE_PATH = "ManagementFile: It's necessary send in constructor source path of user code"
     private File sourcePath
     private final String DOES_NOT_EXIT = 'does not exist'
-
+    public static final COMPONENTS_HAVE_SUB_FOLDER = ['reports', 'dashboards', 'documents']
     ArrayList<File> validFiles
 
     /**
@@ -58,11 +59,15 @@ class ManagementFile {
             sourceFolder.eachFile { File folder ->
                 if (folder.isDirectory()) {
                     folder.eachFile { file ->
-                        if (validateFileByFolder(folder.getName(), file.getName())) {
+                        if (validateFileByFolder(folder.getName(), file.getName()) && !file.isDirectory()) {
                             arrayValidFiles.push(file)
                             File xmlFile = getValidateXmlFile(file)
                             if (xmlFile) {
                                 arrayValidFiles.push(xmlFile)
+                            }
+                        } else if (COMPONENTS_HAVE_SUB_FOLDER.contains(folder.getName())) {
+                            if (file.isDirectory()) {
+                                arrayValidFiles.addAll(getFilesByFolder(folder.getName(), file))
                             }
                         }
                     }
@@ -73,6 +78,27 @@ class ManagementFile {
             }
         }
         return arrayValidFiles
+    }
+
+    /**
+     * Gets valid files by a folder
+     * @param parentName is the folder parent name
+     * @param file is the Folder from gets valid files
+     * @return an array of valid files
+     */
+    private ArrayList<File> getFilesByFolder(String parentName, File file) {
+        ArrayList<File> result = [:]
+        file.eachFile { File reportFile ->
+            File xmlReportFile = getValidateXmlFile(file)
+            if (xmlReportFile) {
+                result.push(xmlReportFile)
+            }
+
+            if (validateFileByFolder(parentName, reportFile.getName())) {
+                result.push(reportFile)
+            }
+        }
+        return result;
     }
 
     /**
@@ -109,12 +135,15 @@ class ManagementFile {
     }
 
     /**
-     *
+     * Validates the file based in the folder name who belongs, following the saleforce definitions
      * @param folderName
      * @param file
      * @return
      */
     public boolean validateFileByFolder(String folderName, String file) {
+        if (folderName == MetadataComponents.DOCUMENTS.getDirectory()) {
+            return true
+        }
         String componentExtension = MetadataComponents.getExtensionByFolder(folderName)
         if (!componentExtension) {
             return false
@@ -123,30 +152,46 @@ class ManagementFile {
     }
 
     /**
-     * Copy array file in the path copy
+     * Copies array file in the path copy
+     * @parem basePath is to get the relative path of the project based for basePath
      * @param arrayFiles the files should be copy in the path copy
      * @param pathCopy is the parent path
      */
-    private void copyArrayFiles(ArrayList<File> arrayFiles, String pathCopy) {
+    private void copyArrayFiles(String basePath, ArrayList<File> arrayFiles, String pathCopy) {
 
         validFiles = arrayFiles
         if (new File(pathCopy).exists()) {
             arrayFiles.each { file ->
-
                 String pathFolder = pathCopy
                 String fileName = file.getName()
                 if (!fileName.equals(PACKAGE_XML)) {
-                    pathFolder = Paths.get(pathFolder, file.getParentFile().getName()).toString()
-                    new File(pathFolder).mkdir()
+                    String relativePath = Util.getRelativePath(file, basePath)
+                    String folderPath = Paths.get(relativePath).getParent().toString()
+                    createFolder(pathFolder, folderPath)
+                    pathFolder = Paths.get(pathFolder, folderPath).toString()
                 }
-
-                Files.copy(file.toPath(), Paths.get(pathFolder, fileName), StandardCopyOption.REPLACE_EXISTING)
+                Files.copy(file.toPath(), Paths.get(pathFolder, file.getName()), StandardCopyOption.REPLACE_EXISTING)
             }
         }
     }
 
     /**
-     * Copy files valid for salesforce
+     * Creates a Folder or Folders children based in the basePath source path.
+     * @param basePath is the base path where It will create the folder
+     * @param folderPath contains the folder and folder children to create them.
+     */
+    private void createFolder(String basePath, String folderPath) {
+        String path = basePath
+        Path folders = Paths.get(folderPath)
+        for(int index = 0; index < folders.getNameCount(); index++) {
+            String folderName = folders.getName(index)
+            path = Paths.get(path, folderName).toString()
+            new File(path).mkdir()
+        }
+    }
+
+    /**
+     * Copies files valid for salesforce
      * @param pathFrom is the path source
      * @param pathTo is the path copy
      */
@@ -157,11 +202,11 @@ class ManagementFile {
         if (!new File(pathTo).exists()) {
             throw new Exception("${pathTo} ${DOES_NOT_EXIT}")
         }
-        copyArrayFiles(getValidElements(pathFrom), pathTo)
+        copyArrayFiles(pathFrom, getValidElements(pathFrom), pathTo)
     }
 
     /**
-     * Copy files valid for salesforce
+     * Copies files valid for salesforce
      * @param pathFrom is the path source
      * @param pathTo is the path copy
      */
@@ -172,20 +217,21 @@ class ManagementFile {
         if (!new File(pathTo).exists()) {
             throw new Exception("${pathTo} ${DOES_NOT_EXIT}")
         }
-        copyArrayFiles(getValidElements(pathFrom), pathTo)
+        copyArrayFiles(pathFrom, getValidElements(pathFrom), pathTo)
     }
 
     /**
-     * Copy files valid for salesforce
+     * Copies files valid for salesforce
+     * @param basePath is the common absolute path between fileFrom and pathTo parameters
      * @param fileFrom is the array files
      * @param pathTo is the path copy
      */
-    void copy(ArrayList<File> fileFrom, String pathTo) {
-        copyArrayFiles(fileFrom, pathTo)
+    void copy(String basePath, ArrayList<File> fileFrom, String pathTo) {
+        copyArrayFiles(basePath, fileFrom, pathTo)
     }
 
     /**
-     * Create a new directory according path
+     * Creates a new directory according path
      * @param path is the path for new directory
      */
     public static void createNewDirectory(String path) {
@@ -220,7 +266,7 @@ class ManagementFile {
     }
 
     /**
-     * Iterate only folders and put in the array folders not deployed
+     * Iterates only folders and put in the array folders not deployed
      * @param Path is the source path
      * @return array of the folders not deployed
      */
@@ -253,11 +299,15 @@ class ManagementFile {
             File folder = new File(Paths.get(sourcePath, folderName).toString())
             if (folder.exists()) {
                 folder.eachFile { file ->
-                    if (validateFileByFolder(folderName, file.getName())) {
+                    if (validateFileByFolder(folderName, file.getName()) && !file.isDirectory()) {
                         filesByFolder.push(file)
                         File xmlFile = new File("${file.getAbsolutePath().toString()}${METADATA_EXTENSION}")
                         if (xmlFile.exists()) {
                             filesByFolder.push(xmlFile)
+                        }
+                    } else if (COMPONENTS_HAVE_SUB_FOLDER.contains(folder.getName())) {
+                        if (file.isDirectory()) {
+                            filesByFolder.addAll(getFilesByFolder(folder.getName(), file))
                         }
                     }
                 }

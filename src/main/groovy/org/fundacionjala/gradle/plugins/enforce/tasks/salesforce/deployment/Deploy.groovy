@@ -86,7 +86,7 @@ class Deploy extends Deployment {
             }
             ArrayList<File> filesByFolders = fileManager.getFilesByFolders(projectPath, foldersName)
             filesByFolders = excludeFiles(filesByFolders)
-            fileManager.copy(filesByFolders, folderDeploy)
+            fileManager.copy(projectPath, filesByFolders, folderDeploy)
             writePackage(packagePathDeploy, filesByFolders)
             deployToSalesForce()
         }
@@ -102,7 +102,7 @@ class Deploy extends Deployment {
             ArrayList<File> filesToTruncate = excludeFiles(fileManager.getFilesByFolders(projectPath, FOLDERS_TO_TRUNCATE))
             Files.copy(Paths.get(projectPath, PACKAGE_NAME), Paths.get(packagePathDeploy), StandardCopyOption.REPLACE_EXISTING)
             logger.debug('Copying files to deploy')
-            fileManager.copy(filesToTruncate, folderDeploy)
+            fileManager.copy(projectPath, filesToTruncate, folderDeploy)
             logger.debug('Generating package')
             writePackage(packagePathDeploy, filesToTruncate)
             truncateComponents()
@@ -112,7 +112,7 @@ class Deploy extends Deployment {
             executeDeploy(folderDeploy)
             createDeploymentDirectory(folderDeploy)
         }
-        fileManager.copy(excludeFiles(fileManager.getValidElements(projectPath)), folderDeploy)
+        fileManager.copy(projectPath, excludeFiles(fileManager.getValidElements(projectPath)), folderDeploy)
         componentDeploy.startMessage = DEPLOYING_CODE
         componentDeploy.successMessage = DEPLOYING_CODE_SUCCESSFULLY
         deployToSalesForce()
@@ -189,7 +189,7 @@ class Deploy extends Deployment {
     def truncateComponents() {
         String srcPath = Paths.get(buildFolderPath, FOLDER_DEPLOY).toString()
         interceptorsToExecute = [Interceptor.TRUNCATE_CLASSES.id, Interceptor.TRUNCATE_FIELD_SETS.id, Interceptor.TRUNCATE_ACTION_OVERRIDES.id,
-                                 Interceptor.TRUNCATE_FIELD.id,Interceptor.TRUNCATE_FORMULAS.id, Interceptor.TRUNCATE_WEB_LINKS.id,
+                                 Interceptor.TRUNCATE_FIELD.id, Interceptor.TRUNCATE_FORMULAS.id, Interceptor.TRUNCATE_WEB_LINKS.id,
                                  Interceptor.TRUNCATE_PAGES.id, Interceptor.TRUNCATE_TRIGGERS.id, Interceptor.TRUNCATE_WORKFLOWS.id,
                                  Interceptor.TRUNCATE_COMPONENTS.id]
         interceptorsToExecute += interceptors

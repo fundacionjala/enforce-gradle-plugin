@@ -84,8 +84,8 @@ abstract class Retrieval extends SalesforceTask {
         ArrayList<String> invalidFiles = new ArrayList<String>()
         filesName.each { String fileName ->
             File file = new File(Paths.get(projectPath, fileName).toString())
-            def extension = Util.getFileExtension(file)
-            def parentFileName = file.getParentFile().getName()
+            String extension = Util.getFileExtension(file)
+            String parentFileName = Util.getFirstPath(fileName)
             if (!MetadataComponents.validExtension(extension) || !MetadataComponents.validFolder(parentFileName)) {
                 invalidFiles.push(fileName)
             }

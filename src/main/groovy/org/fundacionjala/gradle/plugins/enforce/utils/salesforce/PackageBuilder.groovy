@@ -13,17 +13,20 @@ import groovy.xml.MarkupBuilder
 import groovy.xml.XmlUtil
 import groovy.xml.dom.DOMCategory
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
+import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.wsc.Connector
 import org.w3c.dom.Document
 import org.w3c.dom.Element
+
+import java.nio.file.Path
+import java.nio.file.Paths
 
 /**
  *  Builds a Package instance from package XML and write a package XML file from a package instance
  */
 @Log
 class PackageBuilder {
-
     private static final String XMLNS = 'http://soap.sforce.com/2006/04/metadata'
     private static final String VERSION = '1.0'
     private static final String ENCODING = 'UTF-8'
@@ -32,7 +35,6 @@ class PackageBuilder {
     private final String TAG_TYPES = 'types'
     private final String WILDCARD = '*'
     Package metaPackage
-
     PackageBuilder() {
         metaPackage = new Package()
     }
@@ -105,7 +107,33 @@ class PackageBuilder {
         } else {
             List packageTypes = packageTypeMembersFound.members.toList()
             packageTypes.addAll(members)
+            packageTypes = packageTypes.unique()
             packageTypeMembersFound.members = packageTypes.toArray() as String[]
+        }
+        metaPackage.version = metaPackage.version ?: Package.API_VERSION
+    }
+
+    public void removeMembers(String name, ArrayList<String> membersToRemove) {
+        if (membersToRemove.isEmpty()) {
+            return
+        }
+        ArrayList<PackageTypeMembers> packageTypeMembers = metaPackage.types.toList()
+
+        PackageTypeMembers packageTypeMembersFound = null
+        packageTypeMembers.find { packageTypeMembersIt ->
+            if (packageTypeMembersIt.name == name) {
+                packageTypeMembersFound = packageTypeMembersIt
+                return true
+            }
+        }
+        if (packageTypeMembersFound) {
+            List packageTypes = packageTypeMembersFound.members.toList()
+            packageTypes.removeAll(membersToRemove)
+            packageTypeMembersFound.members = packageTypes.toArray() as String[]
+            if (packageTypes.size() <= 0) {
+                packageTypeMembers.remove(packageTypeMembersFound)
+            }
+            metaPackage.types = packageTypeMembers.toArray() as PackageTypeMembers[]
         }
         metaPackage.version = metaPackage.version ?: Package.API_VERSION
     }
@@ -169,16 +197,16 @@ class PackageBuilder {
      * Creates package from an array files
      * @param files contains files which will be the body of package
      */
-    public void createPackage(ArrayList<File> files) {
-        ArrayList<String> folders = selectFolders(files)
+    public void createPackage(ArrayList<File> files, String basePath='') {
+        ArrayList<String> folders = selectFolders(files, basePath)
         ArrayList<PackageTypeMembers> packageData = []
         PackageTypeMembers packageTypeMembers
         ArrayList<String> invalidFolders = []
         folders.each { folder ->
-            MetadataComponents component = MetadataComponents.getComponentByFolder(folder as String)
+            MetadataComponents component = MetadataComponents.getComponentByRelativePath(folder as String)
             if (component) {
                 packageTypeMembers = new PackageTypeMembers()
-                ArrayList<String> filesMembers = selectFilesMembers(folder, files)
+                ArrayList<String> filesMembers = selectFilesMembers(folder, files, basePath)
                 packageTypeMembers.members = filesMembers ?: [WILDCARD]
                 packageTypeMembers.name = component.getTypeName()
                 packageData.push(packageTypeMembers)
@@ -202,7 +230,7 @@ class PackageBuilder {
         PackageTypeMembers packageTypeMembers
         ArrayList<String> invalidFolders = []
         folders.each { folder ->
-            MetadataComponents component = MetadataComponents.getComponentByFolder(folder as String)
+            MetadataComponents component = MetadataComponents.getComponentByRelativePath(folder as String)
             if (component) {
                 packageTypeMembers = new PackageTypeMembers()
                 packageTypeMembers.members = WILDCARD
@@ -224,18 +252,16 @@ class PackageBuilder {
      * @param files contains all files
      * @return folders
      */
-    private ArrayList<String> selectFolders(ArrayList<File> files) {
+    public ArrayList<String> selectFolders(ArrayList<File> files, String basePath) {
         ArrayList<String> folders = []
-        files.each { file ->
-            MetadataComponents component = MetadataComponents.getComponentByFolder(file.name)
-            if (component && !folders.contains(file.name)) {
-                folders.push(file.name)
-            } else {
-                if (!folders.contains(file.getParentFile().getName())) {
-                    folders.push(file.getParentFile().getName())
-                }
+        files.each { File file ->
+            String relativePath = Util.getRelativePath(file, basePath)
+            String folderName = Util.getFirstPath(relativePath)
+            if(!folders.contains(folderName)) {
+                folders.push(folderName)
             }
         }
+
         return folders
     }
 
@@ -245,15 +271,17 @@ class PackageBuilder {
      * @param files contains the list of files
      * @return all files inside folders
      */
-    private ArrayList<String> selectFilesMembers(String folder, ArrayList<File> files) {
+    private ArrayList<String> selectFilesMembers(String folder, ArrayList<File> files, String basePath) {
         ArrayList<String> members = []
         files.each { file ->
-            File parentFile = file.getParentFile()
-            if (parentFile && parentFile.getName() == folder) {
-                members.push(Util.getFileName(file.getName() as String))
+            String relativePath = Util.getRelativePath(file, basePath)
+            String parentName = Util.getFirstPath(relativePath)
+            String fileName = Util.getRelativePath(file, Paths.get(basePath, parentName).toString())
+            if (parentName == folder && !fileName.isEmpty()) {
+                members.push(Util.getFileName(fileName as String))
             }
         }
-        return members
+        return members.unique()
     }
 
     /**
