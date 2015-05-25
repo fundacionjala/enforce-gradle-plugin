@@ -47,13 +47,13 @@ app.controller('controllerReportCoverage', function(\$scope) {
         \$scope.percentNotCoverage = parseFloat(100 - \$scope.percentCoverage).toFixed(2);
     }
 
-    if (\$scope.percentCoverage <= 74 ) {
+    if (\$scope.percentCoverage < 75 ) {
         \$scope.colorCoverage = colorDanger;
     }
-    else if (\$scope.percentCoverage <= 79 ) {
+    else if (\$scope.percentCoverage < 80 ) {
         \$scope.colorCoverage = colorRisk;
     }
-    else if (\$scope.percentCoverage <= 94 ) {
+    else if (\$scope.percentCoverage < 95 ) {
         \$scope.colorCoverage = colorAcceptable;
     }
     else if (\$scope.percentCoverage <= 100 ) {
@@ -265,12 +265,12 @@ app.controller('controllerReportCoverage', function(\$scope) {
                             <div id="block-progress" class="block-range"></div>
 
                             <label id="lb-range-1" class="lb-range">0</label>
-                            <label id="lb-range-2" class="lb-range">74</label>
-                            <label id="lb-range-3" class="lb-range">79</label>
-                            <label id="lb-range-4" class="lb-range">94</label>
+                            <label id="lb-range-2" class="lb-range">75</label>
+                            <label id="lb-range-3" class="lb-range">80</label>
+                            <label id="lb-range-4" class="lb-range">95</label>
                             <label id="lb-range-5" class="lb-range">100</label>
 
-                            <div id="block-pin" class="block-range" style="left:{{percentCoverage}}%">
+                            <div id="block-pin" class="block-range" style="left:calc({{percentCoverage}}% - 8px)">
                                 <div class="arrowText arrowBottom"></div>
                             </div>
                         </div>
