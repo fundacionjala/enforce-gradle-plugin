@@ -92,7 +92,7 @@ class ComponentMonitor {
         files.each {File file->
             ComponentHash componentHash
             String signature = MD5.asHex(MD5.getHash(file))
-            String relativePath = getPathRelative(file)
+            String relativePath = Util.getRelativePath(file, srcProject)
             if (Util.getFileExtension(file) == Constants.OBJECT_EXTENSION) {
                 ObjectParser objectParser = new ObjectParser()
                 componentHash = new ObjectHash(relativePath, signature, objectParser.parseByObjectXML(file))
@@ -102,17 +102,6 @@ class ComponentMonitor {
             result.put(relativePath, componentHash)
         }
         return result
-    }
-
-    /**
-     * Gets a path relative of the file
-     * @param file is the file that is tracked
-     * @return is a path relative
-     */
-    public String getPathRelative(File file) {
-        String nameFile = file.getName()
-        String folderFile = file.getParentFile().getName()
-        Paths.get(srcProject, folderFile, nameFile).toString()
     }
 
     public void setSrcProject(String srcProject) {

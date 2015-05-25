@@ -154,6 +154,7 @@ class UpdateTest extends Specification {
         given:
             updateInstance.packageGenerator.fileTrackerMap = ['classes/Class1.cls':new ResultTracker(ComponentStates.DELETED)]
             updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
+            updateInstance.packageGenerator.projectPath = Paths.get(SRC_PATH, 'src').toString()
             updateInstance.pathUpdate = Paths.get(SRC_PATH, 'build', 'update').toString()
             updateInstance.credential = credential
             updateInstance.packageGenerator.credential = credential
@@ -167,7 +168,8 @@ class UpdateTest extends Specification {
         given:
             updateInstance.projectPath = SRC_PATH
             updateInstance.packageGenerator.componentMonitor = new ComponentMonitor(SRC_PATH)
-            def newFilePath = Paths.get(SRC_PATH, 'classes', 'Class2.cls').toString()
+            String newRelativeFilePath = Paths.get('classes', 'Class2.cls').toString()
+            String newFilePath = Paths.get(SRC_PATH, newRelativeFilePath).toString()
             FileWriter newFile = new FileWriter(newFilePath)
             newFile.write('test')
             newFile.close()
@@ -175,8 +177,8 @@ class UpdateTest extends Specification {
         when:
             updateInstance.loadFilesChanged()
         then:
-            updateInstance.packageGenerator.fileTrackerMap.containsKey(newFilePath)
-            updateInstance.packageGenerator.fileTrackerMap.get(newFilePath).state == ComponentStates.ADDED
+            updateInstance.packageGenerator.fileTrackerMap.containsKey(newRelativeFilePath)
+            updateInstance.packageGenerator.fileTrackerMap.get(newRelativeFilePath).state == ComponentStates.ADDED
 
     }
 

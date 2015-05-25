@@ -150,12 +150,23 @@ class UtilTest extends Specification {
 
     def "Test should get developerName from a member of type componentLayout" () {
         when:
-            def developerName = Util.getDeveloperNameByMember('Object5__c.myCompactLayout', 'CompactLayout')
+        def developerName = Util.getDeveloperNameByMember('Object5__c.myCompactLayout', 'CompactLayout')
         then:
-            developerName == 'myCompactLayout'
+        developerName == 'myCompactLayout'
+    }
+
+    def "Test get relative path"() {
+        given:
+        String basePath = Paths.get(resourcesPath, 'relativeTest')
+        File file = new File(Paths.get(basePath, "classes/class1").toString())
+        when:
+        def relativePath = Util.getRelativePath(file, basePath)
+        then:
+        relativePath == Paths.get("classes", "class1").toString()
     }
 
     def cleanupSpec() {
         new File(Paths.get(resourcesPath, 'triggers').toString()).deleteDir()
+        new File(Paths.get(resourcesPath, 'relativeTest').toString()).deleteDir()
     }
 }

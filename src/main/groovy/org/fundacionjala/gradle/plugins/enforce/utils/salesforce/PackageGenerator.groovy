@@ -98,7 +98,7 @@ class PackageGenerator {
 
     public void buildDestructive(Writer writer, SmartFilesValidator smartFilesValidator) {
         ArrayList<File> files = getFiles(ComponentStates.DELETED) + getSubComponents(ComponentStates.DELETED)
-        files = smartFilesValidator.filterFilesAccordingOrganization(files)
+        files = smartFilesValidator.filterFilesAccordingOrganization(files, projectPath)
         packageBuilder.createPackage(files, projectPath)
         packageBuilder.write(writer)
     }

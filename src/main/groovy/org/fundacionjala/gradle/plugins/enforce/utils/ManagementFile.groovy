@@ -8,6 +8,7 @@ package org.fundacionjala.gradle.plugins.enforce.utils
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 import java.util.regex.Pattern
@@ -23,7 +24,7 @@ class ManagementFile {
     final String ERROR_GETTING_SOURCE_CODE_PATH = "ManagementFile: It's necessary send in constructor source path of user code"
     private File sourcePath
     private final String DOES_NOT_EXIT = 'does not exist'
-    public static final COMPONENTS_HAVE_SUB_FOLDER = ['reports']
+    public static final COMPONENTS_HAVE_SUB_FOLDER = ['reports', 'dashboards', 'documents']
     ArrayList<File> validFiles
 
     /**
@@ -58,7 +59,7 @@ class ManagementFile {
             sourceFolder.eachFile { File folder ->
                 if (folder.isDirectory()) {
                     folder.eachFile { file ->
-                        if (validateFileByFolder(folder.getName(), file.getName())) {
+                        if (validateFileByFolder(folder.getName(), file.getName()) && !file.isDirectory()) {
                             arrayValidFiles.push(file)
                             File xmlFile = getValidateXmlFile(file)
                             if (xmlFile) {
@@ -66,7 +67,7 @@ class ManagementFile {
                             }
                         } else if (COMPONENTS_HAVE_SUB_FOLDER.contains(folder.getName())) {
                             if (file.isDirectory()) {
-                                arrayValidFiles.addAll(getFilesByReportFolder(folder.getName(), file))
+                                arrayValidFiles.addAll(getFilesByFolder(folder.getName(), file))
                             }
                         }
                     }
@@ -85,13 +86,16 @@ class ManagementFile {
      * @param file is the Folder from gets valid files
      * @return an array of valid files
      */
-    private ArrayList<File> getFilesByReportFolder(String parentName, File file) {
+    private ArrayList<File> getFilesByFolder(String parentName, File file) {
         ArrayList<File> result = [:]
         file.eachFile { File reportFile ->
             File xmlReportFile = getValidateXmlFile(file)
-            if (validateFileByFolder(parentName, reportFile.getName()) && xmlReportFile) {
-                result.push(reportFile)
+            if (xmlReportFile) {
                 result.push(xmlReportFile)
+            }
+
+            if (validateFileByFolder(parentName, reportFile.getName())) {
+                result.push(reportFile)
             }
         }
         return result;
@@ -137,6 +141,9 @@ class ManagementFile {
      * @return
      */
     public boolean validateFileByFolder(String folderName, String file) {
+        if (folderName == MetadataComponents.DOCUMENTS.getDirectory()) {
+            return true
+        }
         String componentExtension = MetadataComponents.getExtensionByFolder(folderName)
         if (!componentExtension) {
             return false
@@ -158,8 +165,8 @@ class ManagementFile {
                 String pathFolder = pathCopy
                 String fileName = file.getName()
                 if (!fileName.equals(PACKAGE_XML)) {
-                    String relativePath = file.getAbsolutePath().replace(basePath, '')
-                    String folderPath = relativePath.replace(file.getName(), '')
+                    String relativePath = Util.getRelativePath(file, basePath)
+                    String folderPath = Paths.get(relativePath).getParent().toString()
                     createFolder(pathFolder, folderPath)
                     pathFolder = Paths.get(pathFolder, folderPath).toString()
                 }
@@ -175,18 +182,11 @@ class ManagementFile {
      */
     private void createFolder(String basePath, String folderPath) {
         String path = basePath
-        String[] subFolders = folderPath.split(File.separator)
-        if (subFolders.size() == 0) {
-            path = Paths.get(path, folderPath).toString()
+        Path folders = Paths.get(folderPath)
+        for(int index = 0; index < folders.getNameCount(); index++) {
+            String folderName = folders.getName(index)
+            path = Paths.get(path, folderName).toString()
             new File(path).mkdir()
-            return
-        }
-
-        subFolders.each { String folderName ->
-            if (!folderName.isEmpty()) {
-                path = Paths.get(path, folderName).toString()
-                new File(path).mkdir()
-            }
         }
     }
 
@@ -299,7 +299,7 @@ class ManagementFile {
             File folder = new File(Paths.get(sourcePath, folderName).toString())
             if (folder.exists()) {
                 folder.eachFile { file ->
-                    if (validateFileByFolder(folderName, file.getName())) {
+                    if (validateFileByFolder(folderName, file.getName()) && !file.isDirectory()) {
                         filesByFolder.push(file)
                         File xmlFile = new File("${file.getAbsolutePath().toString()}${METADATA_EXTENSION}")
                         if (xmlFile.exists()) {
@@ -307,7 +307,7 @@ class ManagementFile {
                         }
                     } else if (COMPONENTS_HAVE_SUB_FOLDER.contains(folder.getName())) {
                         if (file.isDirectory()) {
-                            filesByFolder.addAll(getFilesByReportFolder(folder.getName(), file))
+                            filesByFolder.addAll(getFilesByFolder(folder.getName(), file))
                         }
                     }
                 }

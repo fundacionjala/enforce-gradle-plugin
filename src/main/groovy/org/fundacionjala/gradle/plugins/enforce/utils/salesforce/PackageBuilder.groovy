@@ -255,7 +255,7 @@ class PackageBuilder {
     public ArrayList<String> selectFolders(ArrayList<File> files, String basePath) {
         ArrayList<String> folders = []
         files.each { File file ->
-            String relativePath = file.getAbsolutePath().replace(basePath, '')
+            String relativePath = Util.getRelativePath(file, basePath)
             String folderName = Util.getFirstPath(relativePath)
             if(!folders.contains(folderName)) {
                 folders.push(folderName)
@@ -274,34 +274,14 @@ class PackageBuilder {
     private ArrayList<String> selectFilesMembers(String folder, ArrayList<File> files, String basePath) {
         ArrayList<String> members = []
         files.each { file ->
-            String relativePath = file.getAbsolutePath().replace(basePath, '')
+            String relativePath = Util.getRelativePath(file, basePath)
             String parentName = Util.getFirstPath(relativePath)
-            if (parentName == folder && parentName != file.getName()) {
-                if(ManagementFile.COMPONENTS_HAVE_SUB_FOLDER.contains(parentName)) {
-                    members.addAll(generateMembersByFolderPath(relativePath))
-                } else {
-                    members.push(Util.getFileName(file.getName() as String))
-                }
+            String fileName = Util.getRelativePath(file, Paths.get(basePath, parentName).toString())
+            if (parentName == folder && !fileName.isEmpty()) {
+                members.push(Util.getFileName(fileName as String))
             }
         }
         return members.unique()
-    }
-
-    /**
-     * Generates members from folder's relative path based by the sub Paths
-     * @param folderPath is a relative path in the project
-     * @return a ArrayList<String>
-     */
-    private ArrayList<String> generateMembersByFolderPath(String folderPath) {
-        ArrayList<String> result = []
-        Path  path = Paths.get(folderPath);
-        StringBuilder member = new StringBuilder()
-        for (int index = 1; index < path.getNameCount(); index++) {
-            member.append(path.getName(index))
-            result.push(Util.getFileName(member.toString() as String))
-            member.append(Paths.get(File.separator).toString())
-        }
-        return result
     }
 
     /**
