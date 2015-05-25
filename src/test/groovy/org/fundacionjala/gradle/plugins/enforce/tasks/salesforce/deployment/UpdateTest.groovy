@@ -49,6 +49,7 @@ class UpdateTest extends Specification {
         project.enforce.srcPath = SRC_PATH
         updateInstance = project.tasks.update
         updateInstance.fileManager = new ManagementFile(SRC_PATH)
+        updateInstance.project.enforce.deleteTemporalFiles = false
         updateInstance.createDeploymentDirectory(Paths.get(SRC_PATH, 'build').toString())
         updateInstance.createDeploymentDirectory(Paths.get(SRC_PATH, 'build', 'update').toString())
         updateInstance.projectPath = SRC_PATH
@@ -259,6 +260,41 @@ class UpdateTest extends Specification {
             classXmlDifference.similar()
             class2Content == new File(Paths.get(SRC_PATH, 'build', 'update', 'classes', 'Class2.cls').toString()).text
     }
+
+    def "Integration testing must update the organization and delete temporary files generated"() {
+        given:
+            updateInstance.packageGenerator.fileTrackerMap = [:]
+            updateInstance.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
+            updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
+            updateInstance.componentDeploy = new DeployMetadata()
+            updateInstance.poll = 200
+            updateInstance.waitTime = 10
+            updateInstance.credential = credential
+            updateInstance.project.enforce.deleteTemporalFiles = true
+            componentMonitor.srcProject = Paths.get(SRC_PATH,'src').toString()
+            componentSerializer.sourcePath = Paths.get(SRC_PATH,'src','.fileTracker.data').toString()
+            componentSerializer.save(componentMonitor.getComponentsSignature([]))
+            def newTemporalClassPath = Paths.get(SRC_PATH, 'src', 'classes', 'Class2.cls').toString()
+            def newTemporalXmlPath = Paths.get(SRC_PATH, 'src', 'classes', 'Class2.cls-meta.xml').toString()
+            FileWriter writerClass = new FileWriter(newTemporalClassPath)
+            FileWriter writerXml   = new FileWriter(newTemporalXmlPath)
+            def contentTemporalClass = "public with sharing class Class2 {public Class2(Integer a, Integer b){ }}"
+            def contentTemporalXml = "${"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"}${"<ApexClass xmlns=\"http://soap.sforce.com/2006/04/metadata\">"}${"<apiVersion>24.0</apiVersion><status>Active</status></ApexClass>"}"
+            writerClass.write(contentTemporalClass)
+            writerXml.write(contentTemporalXml)
+            writerClass.close()
+            writerXml.close()
+            def updateFileZipPath = Paths.get(SRC_PATH,'build','update.zip').toString()
+            def updateFolderPath = Paths.get(SRC_PATH,'build','update').toString()
+            File updateFileZip = new File(updateFileZipPath)
+            File updateFolder = new File(updateFolderPath)
+        when:
+            updateInstance.runTask()
+        then:
+            !updateFileZip.exists()
+            !updateFolder.exists()
+    }
+
     def cleanupSpec() {
         new File(Paths.get(SRC_PATH, 'build').toString()).deleteDir()
         new File(Paths.get(SRC_PATH, 'classes', 'Class2.cls').toString()).delete()

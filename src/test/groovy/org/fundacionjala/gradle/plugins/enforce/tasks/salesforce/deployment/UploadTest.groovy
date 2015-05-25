@@ -42,6 +42,7 @@ class UploadTest extends Specification {
         project.apply(plugin: EnforcePlugin)
         project.enforce.srcPath = SRC_PATH
         uploadInstance = project.tasks.upload
+        uploadInstance.project.enforce.deleteTemporalFiles = false
         uploadInstance.fileManager = new ManagementFile(SRC_PATH)
         uploadInstance.createDeploymentDirectory(Paths.get(SRC_PATH, 'build').toString())
         credential = new Credential()

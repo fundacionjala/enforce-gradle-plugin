@@ -38,6 +38,7 @@ class DeployTest extends Specification {
         project.enforce.srcPath = SRC_PATH
         instanceDeploy = project.tasks.deploy
         instanceDeploy.fileManager = new ManagementFile(SRC_PATH)
+        instanceDeploy.project.enforce.deleteTemporalFiles = false
         instanceDeploy.createDeploymentDirectory(Paths.get(SRC_PATH, 'build').toString())
         instanceDeploy.createDeploymentDirectory(Paths.get(SRC_PATH, 'build', 'deploy').toString())
         instanceDeploy.createDeploymentDirectory(Paths.get(SRC_PATH, 'build', 'deploy', 'folderOne').toString())
@@ -342,6 +343,26 @@ class DeployTest extends Specification {
             instanceDeploy.deployByFolder()
         then:
             thrown(Exception)
+    }
+
+
+    def "Integration testing must deploy the organization files and delete temporary files generated"() {
+        given:
+            instanceDeploy.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
+            instanceDeploy.projectPath = Paths.get(SRC_PATH, 'src').toString()
+            instanceDeploy.project.enforce.deleteTemporalFiles = true
+            instanceDeploy.poll = 200
+            instanceDeploy.waitTime = 10
+            instanceDeploy.credential = credential
+            def deployFileZipPath = Paths.get(SRC_PATH,'build','deploy.zip').toString()
+            def deployFolderPath = Paths.get(SRC_PATH,'build','deploy').toString()
+            File deployFileZip = new File(deployFileZipPath)
+            File deployFolder = new File(deployFolderPath)
+        when:
+            instanceDeploy.runTask()
+        then:
+            !deployFileZip.exists()
+            !deployFolder.exists()
     }
 
     def cleanupSpec() {
