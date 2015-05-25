@@ -62,10 +62,7 @@ class QueryBuilderTest extends Specification {
         when:
             def queries = queryBuilder.createQueryFromPackage(packagePath)
         then:
-            queries.sort() == ['SELECT Name FROM ApexClass', 'SELECT Name FROM ApexComponent',
-                               "${'SELECT FullName FROM CustomField WHERE DeveloperName = '}${"'Field11'"}",
-                               "${'SELECT FullName FROM CustomField WHERE DeveloperName = '}${"'Field22'"}",
-                               "${'SELECT FullName FROM CustomField WHERE DeveloperName = '}${"'Field33'"}",].sort()
+            queries.sort() == ['SELECT Name FROM ApexClass', 'SELECT Name FROM ApexComponent'].sort()
     }
 
     def "Test should return an array with queries" () {

@@ -14,6 +14,8 @@ import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.QueryBuilder
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
 
+import java.nio.file.Paths
+
 /**
  * Validates files according salesForce json queries
  */
@@ -74,17 +76,17 @@ class SmartFilesValidator {
      * @param files contains all files to be evaluated
      * @return files selected
      */
-    public ArrayList<File> filterFilesAccordingOrganization(ArrayList<File> files) {
+    public ArrayList<File> filterFilesAccordingOrganization(ArrayList<File> files, String basePath) {
         if (files == null) {
             throw new NullPointerException(String.format(Constants.NULL_PARAM_EXCEPTION, "files"))
         }
-
         ArrayList<File> filesClassified = []
         ArrayList<String> filesInOrganization = []
         ArrayList<String> invalidFolders = []
         files.each { file ->
-            String folderName = file.getParentFile().getName()
-            MetadataComponents component = MetadataComponents.getComponentByFolder(folderName as String)
+            String relativePath = Util.getRelativePath(file, basePath)
+            String folderName = Paths.get(relativePath).getName(0)
+            MetadataComponents component = MetadataComponents.getComponentByRelativePath(relativePath as String)
             if (component) {
                 filesInOrganization = queryResult.get(component.getTypeName())
                 pushIfItIsPossible(file, folderName, filesClassified, filesInOrganization)
@@ -95,7 +97,6 @@ class SmartFilesValidator {
         if (!invalidFolders.isEmpty()) {
             Util.logList(log, Constants.UNSUPPORTED_FOLDERS, invalidFolders)
         }
-
         return filesClassified
     }
 

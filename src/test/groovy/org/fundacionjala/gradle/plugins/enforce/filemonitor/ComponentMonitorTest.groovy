@@ -33,7 +33,7 @@ class ComponentMonitorTest extends Specification{
 
     def setup() {
         subComponents = [:]
-        componentMonitor = new ComponentMonitor('resources')
+        componentMonitor = new ComponentMonitor(srcProjectPath)
         ComponentHash oldClassTracker = new ComponentHash()
         oldClassTracker.hash = 'qweasdzxc'
         ComponentHash currentClassTracker = new ComponentHash()
@@ -128,14 +128,14 @@ class ComponentMonitorTest extends Specification{
             ArrayList<File> files = [new File(firstFile), new File(secondFile)]
             def class1Hash = MD5.asHex(MD5.getHash(files[0]))
             def class2Hash = MD5.asHex(MD5.getHash(files[1]))
-            componentMonitor.srcProject = 'resources'
+            componentMonitor.srcProject = srcProjectPath
         when:
             Map<String, ComponentHash> result = componentMonitor.getComponentsSignature(files)
         then:
-            result.containsKey(Paths.get('resources', 'classes','Class1.cls').toString())
-            result.containsKey(Paths.get('resources', 'classes','Class2.cls').toString())
-            result.get(Paths.get('resources', 'classes','Class1.cls').toString()).hash == class1Hash
-            result.get(Paths.get('resources', 'classes','Class2.cls').toString()).hash == class2Hash
+            result.containsKey(Paths.get('classes','Class1.cls').toString())
+            result.containsKey(Paths.get('classes','Class2.cls').toString())
+            result.get(Paths.get('classes','Class1.cls').toString()).hash == class1Hash
+            result.get(Paths.get('classes','Class2.cls').toString()).hash == class2Hash
     }
 
     def "Test should have the values as instance of ObjectTracker" () {
@@ -143,14 +143,14 @@ class ComponentMonitorTest extends Specification{
             def object1 = Paths.get(srcProjectPath, 'objects', 'Object1__c.object').toString()
             def object2 = Paths.get(srcProjectPath, 'objects', 'Object2__c.object').toString()
             ArrayList<File> files = [new File(object1), new File(object2)]
-            componentMonitor.srcProject = 'resources'
+            componentMonitor.srcProject = srcProjectPath
         when:
             Map<String, ComponentHash> result = componentMonitor.getComponentsSignature(files)
         then:
-            result.containsKey(Paths.get('resources','objects', 'Object1__c.object').toString())
-            result.containsKey(Paths.get('resources','objects', 'Object2__c.object').toString())
-            result.get(Paths.get('resources','objects', 'Object1__c.object').toString()) instanceof ObjectHash
-            result.get(Paths.get('resources','objects', 'Object2__c.object').toString()) instanceof ObjectHash
+            result.containsKey(Paths.get('objects', 'Object1__c.object').toString())
+            result.containsKey(Paths.get('objects', 'Object2__c.object').toString())
+            result.get(Paths.get('objects', 'Object1__c.object').toString()) instanceof ObjectHash
+            result.get(Paths.get('objects', 'Object2__c.object').toString()) instanceof ObjectHash
     }
 
     def "Test should return a map with fields and their hash value" () {
@@ -158,14 +158,14 @@ class ComponentMonitorTest extends Specification{
             def object1 = Paths.get(srcProjectPath, 'objects', 'Object1__c.object').toString()
             def object2 = Paths.get(srcProjectPath, 'objects', 'Object2__c.object').toString()
             ArrayList<File> files = [new File(object1), new File(object2)]
-            componentMonitor.srcProject = 'resources'
+            componentMonitor.srcProject = srcProjectPath
         when:
             Map<String, ComponentHash> result = componentMonitor.getComponentsSignature(files)
         then:
-            result.containsKey(Paths.get('resources','objects', 'Object1__c.object').toString())
-            result.containsKey(Paths.get('resources','objects', 'Object2__c.object').toString())
-            result.get(Paths.get('resources','objects', 'Object1__c.object').toString()).subComponents.containsKey('fields/Field1__c')
-            result.get(Paths.get('resources','objects', 'Object2__c.object').toString()).subComponents.containsKey('fields/Field1__c')
+            result.containsKey(Paths.get('objects', 'Object1__c.object').toString())
+            result.containsKey(Paths.get('objects', 'Object2__c.object').toString())
+            result.get(Paths.get('objects', 'Object1__c.object').toString()).subComponents.containsKey('fields/Field1__c')
+            result.get(Paths.get('objects', 'Object2__c.object').toString()).subComponents.containsKey('fields/Field1__c')
     }
 
     def "Test should return a map without changes" () {
@@ -186,15 +186,16 @@ class ComponentMonitorTest extends Specification{
             def object1 = Paths.get(srcProjectPath, 'objects', 'Object1__c.object').toString()
             def object2 = Paths.get(srcProjectPath, 'objects', 'Object2__c.object').toString()
             ArrayList<File> files = [new File(object1), new File(object2)]
+            componentMonitor.srcProject = srcProjectPath
             Map<String, ComponentHash> componentsHash = componentMonitor.getComponentsSignature(files)
-            ComponentSerializer componentSerializer = new ComponentSerializer('resources')
+            ComponentSerializer componentSerializer = new ComponentSerializer(componentMonitor.fileName)
             componentSerializer.save(componentsHash)
-            files.remove(0)
+            ArrayList<File> currentFiles = [new File(object2)];
         when:
-            Map<String, ResultTracker> result = componentMonitor.getComponentChanged(files)
+            Map<String, ResultTracker> result = componentMonitor.getComponentChanged(currentFiles)
         then:
-            result.containsKey(Paths.get('resources','objects', 'Object1__c.object').toString())
-            result.get(Paths.get('resources','objects', 'Object1__c.object').toString()).state == ComponentStates.DELETED
+            result.containsKey(Paths.get('objects', 'Object1__c.object').toString())
+            result.get(Paths.get('objects', 'Object1__c.object').toString()).state == ComponentStates.DELETED
     }
 
     def "Test should return a map with files that have had added" () {
@@ -204,13 +205,13 @@ class ComponentMonitorTest extends Specification{
             def everNoteObject = Paths.get(srcProjectPath, 'objects', 'Evernote__Contact_Note__c.object').toString()
             ArrayList<File> files = [new File(object1), new File(object2)]
             Map<String, ComponentHash> componentsHash = componentMonitor.getComponentsSignature(files)
-            ComponentSerializer componentSerializer = new ComponentSerializer('resources')
+            ComponentSerializer componentSerializer = new ComponentSerializer(componentMonitor.fileName)
             componentSerializer.save(componentsHash)
             files.add(new File(everNoteObject))
         when:
             Map<String, ResultTracker> result = componentMonitor.getComponentChanged(files)
         then:
-            String everNoteObjectPath = Paths.get('resources', 'objects', 'Evernote__Contact_Note__c.object')
+            String everNoteObjectPath = Paths.get('objects', 'Evernote__Contact_Note__c.object')
             result.containsKey(everNoteObjectPath)
             result.get(everNoteObjectPath).state == ComponentStates.ADDED
     }
@@ -222,6 +223,7 @@ class ComponentMonitorTest extends Specification{
             def everNoteChangedContent = new File(Paths.get(srcProjectPath, 'objects', 'Evernote__Contact_Note__c.object').toString()).text
             new File(everNoteChanged).write(everNoteChangedContent)
             ArrayList<File> files = [new File(everNoteChanged), new File(object2)]
+
             Map<String, ComponentHash> componentsHash = componentMonitor.getComponentsSignature(files)
             componentMonitor.componentSerializer.save(componentsHash)
             XmlSlurper xmlSlurper = new XmlSlurper()
@@ -233,7 +235,7 @@ class ComponentMonitorTest extends Specification{
         when:
             Map<String, ResultTracker> result = componentMonitor.getComponentChanged(files)
         then:
-            String everNoteChangedPath = Paths.get('resources', 'objects', 'EverNoteChanged__c.object')
+            String everNoteChangedPath = Paths.get('objects', 'EverNoteChanged__c.object')
             result.containsKey(everNoteChangedPath)
             result.get(everNoteChangedPath).state == ComponentStates.CHANGED
     }
@@ -259,7 +261,7 @@ class ComponentMonitorTest extends Specification{
         when:
             Map<String, ResultTracker> result = componentMonitor.getComponentChanged(files)
         then:
-            String objectFieldDeleted = Paths.get('resources', 'objects', 'Object1FieldDeleted__c.object')
+            String objectFieldDeleted = Paths.get('objects', 'Object1FieldDeleted__c.object')
             result.containsKey(objectFieldDeleted)
             result.get(objectFieldDeleted).state == ComponentStates.CHANGED
             result.get(objectFieldDeleted).subComponentsResult.containsKey('fields/Field1__c')
@@ -286,7 +288,7 @@ class ComponentMonitorTest extends Specification{
         when:
             Map<String, ResultTracker> result = componentMonitor.getComponentChanged(files)
         then:
-            String object1FieldAddedPath = Paths.get('resources', 'objects', 'Object1FieldAdded__c.object')
+            String object1FieldAddedPath = Paths.get('objects', 'Object1FieldAdded__c.object')
             result.containsKey(object1FieldAddedPath)
             result.get(object1FieldAddedPath).state == ComponentStates.CHANGED
             result.get(object1FieldAddedPath).subComponentsResult.containsKey('fieldSets/Enforce_Fieldset')
@@ -311,7 +313,7 @@ class ComponentMonitorTest extends Specification{
         when:
             Map<String, ResultTracker> result = componentMonitor.getComponentChanged(files)
         then:
-            String object1FieldChangedPath = Paths.get('resources', 'objects', 'Object1FieldChanged__c.object')
+            String object1FieldChangedPath = Paths.get('objects', 'Object1FieldChanged__c.object')
             result.containsKey(object1FieldChangedPath)
             result.get(object1FieldChangedPath).state == ComponentStates.CHANGED
             result.get(object1FieldChangedPath).subComponentsResult.containsKey('fields/Field1__c')
@@ -355,15 +357,6 @@ class ComponentMonitorTest extends Specification{
         then:
             componentMonitor.srcProject == sourceProject
             componentMonitor.fileName == Paths.get(sourceProject, fileName).toString()
-    }
-
-    def "Test get relative path"() {
-        given:
-            File fileRelativePath = new File("user/project/src/class/class1")
-        when:
-            def relativePath = componentMonitor.getPathRelative(fileRelativePath)
-        then:
-            relativePath == Paths.get("resources", "class", "class1").toString()
     }
 
     def "Test should update the map with subComponents"() {

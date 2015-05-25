@@ -54,11 +54,17 @@ abstract class Deployment extends SalesforceTask {
      */
     def executeDeploy(String sourcePath) {
         String fileName = new File(sourcePath).getName()
-        logger.debug("Crating zip file at: $buildFolderPath/$fileName")
+        logger.debug("Creating zip file at: $buildFolderPath$File.separator$fileName")
         String pathZipToDeploy = createZip(sourcePath, buildFolderPath, fileName)
         componentDeploy.setPath(pathZipToDeploy)
         logger.debug('Deploying components')
         componentDeploy.deploy(poll, waitTime, credential)
+        if(project.enforce.deleteTemporalFiles) {
+            def deleteZipFile = new File(pathZipToDeploy)
+            def deleteFolder = new File(sourcePath)
+            deleteZipFile.delete()
+            deleteFolder.deleteDir()
+        }
     }
 
     /**

@@ -78,7 +78,7 @@
     position: relative;
 
 }
-#circle-coverage > div{
+#circle-coverage > div {
     top: 50%;
     width: 110px;
     position: absolute;
@@ -160,24 +160,24 @@
     position: absolute;
 }
 #block-danger {
-    width: 74%;
+    width: 75%;
     height: 100%;
     position: absolute;
 }
 
 #block-risk {
-    left: 74%;
-    width: calc(79% - 74%);
+    left: 75%;
+    width: calc(80% - 75%);
 }
 
 #block-acceptable {
-    left: 79%;
-    width: calc(94% - 79%);
+    left: 80%;
+    width: calc(95% - 80%);
 }
 
 #block-safe {
-    left: 94%;
-    width: calc(100% - 94%);
+    left: 95%;
+    width: calc(100% - 95%);
 }
 
 #block-progress {
@@ -186,7 +186,7 @@
 }
 
 #block-pin {
-    left:  calc(97% - 8px);
+    left:  calc(0% - 8px);
     height: calc(100% + 11px);
     width: 15px;
     z-index: 4;
@@ -255,15 +255,15 @@
 }
 
 #lb-range-2 {
-    left: calc(74% - 7px);
+    left: calc(75% - 7px);
 }
 
 #lb-range-3 {
-    left: calc(79% - 7px);
+    left: calc(80% - 7px);
 }
 
 #lb-range-4 {
-    left: calc(94% - 7px);
+    left: calc(95% - 7px);
 }
 
 #lb-range-5 {
@@ -274,4 +274,3 @@
     width: 100%;
     padding: 50px 10% 20px 10%;
 }
-

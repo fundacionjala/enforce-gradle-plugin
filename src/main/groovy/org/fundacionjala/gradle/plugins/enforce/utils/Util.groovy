@@ -22,6 +22,7 @@ class Util {
     private static final String PATTERN_FILE_EXT = ~/[.][^.]+$/
     private static final int MAC_ADDRESS_SIZE = 12
     private static final String MAC_ADDRESS_BY_DEFAULT = '000000000000'
+    private static final ZERO_NUMBER_PATH = 0
 
     /**
      * Gets only file typeName without the extension
@@ -45,8 +46,14 @@ class Util {
      * @param member is member tag of package xml file
      * @return developerName of custom field
      */
-    public static String getDeveloperNameByMember(String member) {
-        return member.substring(member.indexOf('.') + 1, member.length() - 3)
+    public static String getDeveloperNameByMember(String member, String name) {
+        String result
+        if (name == 'CustomField') {
+            result = member.substring(member.indexOf('.') + 1, member.length() - 3)
+        } else {
+            result = member.substring(member.indexOf('.') + 1, member.length())
+        }
+        return result
     }
 
     /**
@@ -171,6 +178,20 @@ class Util {
     }
 
     /**
+     * Gets a path relative of the file
+     * @param file is the file that is tracked
+     * @return is a path relative
+     */
+    public static String getRelativePath(File file, String basePath, boolean normalizePath = true) {
+        File root = new File(basePath)
+        String relativePath = root.toURI().relativize(file.toURI()).toString()
+        if (normalizePath) {
+            return Paths.get(relativePath).toString()
+        }
+        return relativePath
+    }
+
+    /**
      * Gets folders invalid
      * @param foldersName are folders name
      * @return an Array list with invalid folders
@@ -218,5 +239,14 @@ class Util {
             }
         }
         return notExistFolders
+    }
+
+    /**
+     * Gets the first part of the path
+     * @param path is type String that contains a file's path
+     * @return an String that contains the first part of the path
+     */
+    public static String getFirstPath(String path) {
+        return Paths.get(path).getName(ZERO_NUMBER_PATH)
     }
 }
