@@ -135,7 +135,7 @@ class UndeployTest extends Specification {
             undeployInstance.smartFilesValidator = new SmartFilesValidator(undeployInstance.getJsonQueries())
             Files.copy(Paths.get(SRC_PATH, 'src', 'package.xml' ), Paths.get(undeployDirectory, 'package.xml'), StandardCopyOption.REPLACE_EXISTING)
             undeployInstance.packageComponent = new PackageComponent(Paths.get(undeployDirectory,'package.xml').toString())
-            def destructiveExpect = "${"<Package xmlns='http://soap.sforce.com/2006/04/metadata'>"}${"<types><members>Class1</members><name>ApexClass</name></types>"}${"<types><members>Object1__c</members><name>CustomObject</name></types>"}${"<types><members>Trigger1</members><name>ApexTrigger</name></types>"}${"<types><members>Account.MyLookupField1__c</members><name>CustomField</name>"}${"</types><version>32.0</version></Package>"}"
+            def destructiveExpect = "${"<Package xmlns='http://soap.sforce.com/2006/04/metadata'>\n"}${"<types>\n<members>Class1</members><name>ApexClass</name>\n</types>"}${"<types>\n<members>Object1__c</members><name>CustomObject</name>\n</types>"}${"<types><members>Trigger1</members><name>ApexTrigger</name></types>"}${"<version>32.0</version></Package>"}"
             def packageExpect = "${"<?xml version='1.0' encoding='UTF-8'?>"}${"<Package xmlns='http://soap.sforce.com/2006/04/metadata'>"}${"<version>32.0</version></Package>"}"
         when:
             undeployInstance.deployToDeleteComponents()
@@ -160,7 +160,7 @@ class UndeployTest extends Specification {
             undeployInstance.waitTime = 10
             undeployInstance.credential = credential
             undeployInstance.executeDeploy(Paths.get(SRC_PATH, 'src').toString())
-            def destructiveExpect = "${"<Package xmlns='http://soap.sforce.com/2006/04/metadata'>"}${"<types><members>Class1</members><name>ApexClass</name></types>"}${"<types><members>Object1__c</members><name>CustomObject</name></types>"}${"<types><members>Trigger1</members><name>ApexTrigger</name></types>"}${"<types><members>Account.MyLookupField1__c</members><name>CustomField</name>"}${"</types><version>32.0</version></Package>"}"
+            def destructiveExpect = "${"<Package xmlns='http://soap.sforce.com/2006/04/metadata'>"}${"<types><members>Class1</members><name>ApexClass</name></types>"}${"<types><members>Object1__c</members><name>CustomObject</name></types>"}${"<types><members>Trigger1</members><name>ApexTrigger</name></types>"}${"<version>32.0</version></Package>"}"
             def packageExpect = "${"<?xml version='1.0' encoding='UTF-8'?>"}${"<Package xmlns='http://soap.sforce.com/2006/04/metadata'>"}${"<version>32.0</version></Package>"}"
         when:
             undeployInstance.runTask()
