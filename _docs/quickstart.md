@@ -22,6 +22,7 @@ Here you can find required information  that is enough to have a Gradle project 
    
    enforce {
        srcPath = 'src'
+       deleteTemporaryFiles = true
    }   
 {% endhighlight %}
 
