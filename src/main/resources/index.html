@@ -411,7 +411,7 @@ app.controller('controllerReportCoverage', function(\$scope) {
                                 </td>
                                 <td class="column-nro-2">{{file.status}}</td>
                             </tr>
-                            <tr ng-repeat="detail in file.details" ng-show="file.isVisible">
+                            <tr ng-repeat="detail in file.details" ng-show="file.isVisible && {{file.filter}}">
                                 <td colspan="2"><b>{{detail.label}}:</b> {{detail.content}}</td>
                             </tr>
 
