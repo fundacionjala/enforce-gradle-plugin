@@ -76,6 +76,42 @@ output:
     BUILD SUCCESSFUL
 ```
 
+
+
+### Using sort parameter:
+
+Scenario:
+
+We can change the way in which we see the updated files, sorting by file name.
+
+command:
+
+	$ gradle status -Psort=name
+
+output:
+
+```bash
+    :update
+    ___________________________________________
+            Username: juan.perez.f@gmail.com
+            Login type: login
+    ___________________________________________
+
+    *********************************************
+                  Status Files Changed
+    *********************************************
+    Class1.cls - Deleted file
+    Class2.cls - Changed file
+    Trigger1.trigger - new file
+    *********************************************
+
+    Starting deploy...
+    [==================================================]   100%
+    The files were successfully deployed
+
+    BUILD SUCCESSFUL
+```
+
 ## Reset task
 
 File monitor tracker will be reset.

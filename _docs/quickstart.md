@@ -22,6 +22,7 @@ Here you can find the enought required information to have running a Gradle proj
    
    enforce {
        srcPath = 'src'
+       deleteTemporaryFiles = true
    }   
 {% endhighlight %}
 

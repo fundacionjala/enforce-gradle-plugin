@@ -50,6 +50,7 @@ This is an open source plugin
 
    enforce {
        srcPath = 'src'
+       deleteTemporaryFiles = true
    }
 ```
 
