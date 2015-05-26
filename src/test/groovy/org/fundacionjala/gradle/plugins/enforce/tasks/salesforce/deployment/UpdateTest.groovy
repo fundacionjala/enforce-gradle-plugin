@@ -49,7 +49,7 @@ class UpdateTest extends Specification {
         project.enforce.srcPath = SRC_PATH
         updateInstance = project.tasks.update
         updateInstance.fileManager = new ManagementFile(SRC_PATH)
-        updateInstance.project.enforce.deleteTemporalFiles = false
+        updateInstance.project.enforce.deleteTemporaryFiles = false
         updateInstance.createDeploymentDirectory(Paths.get(SRC_PATH, 'build').toString())
         updateInstance.createDeploymentDirectory(Paths.get(SRC_PATH, 'build', 'update').toString())
         updateInstance.projectPath = SRC_PATH
@@ -272,7 +272,7 @@ class UpdateTest extends Specification {
             updateInstance.poll = 200
             updateInstance.waitTime = 10
             updateInstance.credential = credential
-            updateInstance.project.enforce.deleteTemporalFiles = true
+            updateInstance.project.enforce.deleteTemporaryFiles = true
             componentMonitor.srcProject = Paths.get(SRC_PATH,'src').toString()
             componentSerializer.sourcePath = Paths.get(SRC_PATH,'src','.fileTracker.data').toString()
             componentSerializer.save(componentMonitor.getComponentsSignature([]))
