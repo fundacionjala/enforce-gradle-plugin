@@ -1,7 +1,10 @@
 package org.fundacionjala.gradle.plugins.enforce.utils.salesforce
 
 import com.sforce.soap.metadata.PackageTypeMembers
+import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
+
+import java.nio.file.Paths
 
 class PackageCombiner {
     private static final ArrayList<String> SUB_COMPONENTS = ['CustomField', 'FieldSet', 'ValidationRule',
@@ -66,6 +69,10 @@ class PackageCombiner {
                     !componentToDelete.get(componentType).contains(componentName)) {
                 componentToDelete.get(componentType).push(componentName)
             }
+            String parentName = Util.getFirstPath(componentName)
+            if(parentName != componentName) {
+                componentToDelete.get(componentType).push(parentName)
+            }
         }
 
         componentToDelete.each {String componentType, ArrayList<String> componentNames ->
@@ -82,9 +89,11 @@ class PackageCombiner {
      * @return a component name
      */
     private static String getComponentName(String fileName) {
-        String componentName = Util.getFileName(fileName)
-        if (fileName.contains('/')) {
-            componentName = fileName.substring( fileName.indexOf('/') + 1, fileName.length())
+        String componentName = fileName
+        if (fileName.contains(Constants.SLASH)) {
+            componentName = fileName.substring( fileName.indexOf(Constants.SLASH) + 1, fileName.length())
+        }
+        if (!componentName.contains(Constants.SLASH)) {
             componentName = Util.getFileName(componentName)
         }
         return componentName

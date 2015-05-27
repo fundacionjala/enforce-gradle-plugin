@@ -150,8 +150,9 @@ class PackageCombinerTest extends Specification {
             String packageContent = '''<?xml version='1.0' encoding='UTF-8'?>
                             <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
                                 <types>
-                                    <members>MyDocuments/doc2</members>
-                                    <members>MyDocuments/doc1</members>
+                                    <members>MyDocuments</members>
+                                    <members>MyDocuments/doc2.txt</members>
+                                    <members>MyDocuments/doc1.txt</members>
                                     <name>Document</name>
                                 </types>
                                 <version>32.0</version>
@@ -162,7 +163,7 @@ class PackageCombinerTest extends Specification {
             String packageExpect = '''<?xml version='1.0' encoding='UTF-8'?>
                                 <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
                                     <types>
-                                        <members>MyDocuments/doc1</members>
+                                        <members>MyDocuments/doc1.txt</members>
                                         <name>Document</name>
                                     </types>
                                     <version>32.0</version>
@@ -176,10 +177,38 @@ class PackageCombinerTest extends Specification {
             xmlDiff.similar()
     }
 
+    def 'Test should remove reports component from package xml file'() {
+        given:
+            String packagePath = Paths.get(SRC_PATH, 'packageTestReport.xml')
+            String packageContent = '''<?xml version='1.0' encoding='UTF-8'?>
+                                <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
+                                    <types>
+                                        <members>testFolder/testReport.report</members>
+                                        <name>Report</name>
+                                    </types>
+                                    <version>32.0</version>
+                                </Package>
+                                '''
+            File packageFile = new File(packagePath)
+            packageFile.write(packageContent)
+            String packageExpect = '''<?xml version='1.0' encoding='UTF-8'?>
+                                    <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
+                                        <version>32.0</version>
+                                    </Package>
+                                    '''
+        when:
+            PackageCombiner.removeMembersFromPackage(packagePath, ['reports/testFolder/testReport.report'])
+            XMLUnit.ignoreWhitespace = true
+            def xmlDiff = new Diff(packageFile.text, packageExpect)
+        then:
+            xmlDiff.similar()
+    }
+
     def cleanupSpec() {
         new File(Paths.get(SRC_PATH, 'projectPackage.xml').toString()).delete()
         new File(Paths.get(SRC_PATH, 'buildPackage.xml').toString()).delete()
         new File(Paths.get(SRC_PATH, 'packageTest.xml').toString()).delete()
         new File(Paths.get(SRC_PATH, 'packageTestDocument.xml').toString()).delete()
+        new File(Paths.get(SRC_PATH, 'packageTestReport.xml').toString()).delete()
     }
 }
