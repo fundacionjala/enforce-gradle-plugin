@@ -148,7 +148,9 @@ class Undeploy extends Deployment {
         componentDeploy.startMessage = ""
         componentDeploy.successMessage = SUCCESS_MESSAGE_DELETE
         PackageCombiner.packageCombine(projectPackagePath, unDeployDestructivePath)
-        PackageCombiner.removeMembersFromPackage(unDeployDestructivePath, getFilesExcludes(excludes))
+        if (excludes) {
+            PackageCombiner.removeMembersFromPackage(unDeployDestructivePath, getFilesExcludes(excludes))
+        }
         executeDeploy(folderUnDeploy)
     }
 

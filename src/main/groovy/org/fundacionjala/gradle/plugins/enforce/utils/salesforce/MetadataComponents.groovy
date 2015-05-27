@@ -152,6 +152,22 @@ public enum MetadataComponents {
     }
 
     /**
+     * gets a component by folder
+     * @param folder is folder component
+     * @return a metadataComponent object
+     */
+    public static getComponentByFolder(String folder) {
+        MetadataComponents metadataComponent
+        for (MetadataComponents component : values()) {
+            if (component.getDirectory() == folder) {
+                metadataComponent = component
+                break
+            }
+        }
+        return metadataComponent
+    }
+
+    /**
      * Gets a MetadataComponent by extension
      * @param extension is component extension
      * @return a MetadataComponent object

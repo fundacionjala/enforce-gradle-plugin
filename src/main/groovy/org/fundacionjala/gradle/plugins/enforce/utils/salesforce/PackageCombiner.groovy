@@ -56,13 +56,14 @@ class PackageCombiner {
 
         excludedFiles.each {String fileName ->
             String componentType = getComponentType(fileName)
-            String componentName = Util.getFileName(fileName)
+            String componentName = getComponentName(fileName)
 
             if (!componentToDelete.containsKey(componentType)){
                 componentToDelete.put(componentType, [componentName])
             }
 
-            if (componentToDelete.containsKey(componentType)) {
+            if (componentToDelete.containsKey(componentType) &&
+                    !componentToDelete.get(componentType).contains(componentName)) {
                 componentToDelete.get(componentType).push(componentName)
             }
         }
@@ -76,17 +77,27 @@ class PackageCombiner {
     }
 
     /**
+     * Gets a component name without extension
+     * @param fileName is component name
+     * @return a component name
+     */
+    private static String getComponentName(String fileName) {
+        String componentName = Util.getFileName(fileName)
+        if (fileName.contains('/')) {
+            componentName = fileName.substring( fileName.indexOf('/') + 1, fileName.length())
+            componentName = Util.getFileName(componentName)
+        }
+        return componentName
+    }
+
+    /**
      * Gets componentType
      * @param fileName is component name
      * @return component type
      */
     private static String getComponentType(String fileName) {
-        String fileExtension = Util.getFileExtension(new File(fileName))
-        String componentType = MetadataComponents.DOCUMENTS.getTypeName()
-        if (fileExtension != "") {
-            MetadataComponents.getComponentByExtension(fileExtension).getTypeName()
-        }
-        return componentType
+        String folderName = Util.getFirstPath(fileName)
+        return MetadataComponents.getComponentByFolder(folderName).getTypeName()
     }
 
     /**

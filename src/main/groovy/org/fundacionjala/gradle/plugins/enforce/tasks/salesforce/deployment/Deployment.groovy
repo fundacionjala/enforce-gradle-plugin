@@ -157,6 +157,11 @@ abstract class Deployment extends SalesforceTask {
         return filesFiltered
     }
 
+    /**
+     * Returns files that were excluded
+     * @param criterion is a exclude criterion
+     * @return files excluded
+     */
     public ArrayList<String> getFilesExcludes(String criterion) {
         ArrayList<String> filesName = new ArrayList<String>()
         ArrayList<File> sourceFiles = new ArrayList<File>()
@@ -164,12 +169,31 @@ abstract class Deployment extends SalesforceTask {
         FileTree fileTree = project.fileTree(dir: projectPath, includes: criterias)
         sourceFiles = fileTree.getFiles() as ArrayList<File>
         sourceFiles.each { File file ->
-            String fileName = file.name
-            if (MetadataComponents.validExtension(Util.getFileExtension(file))) {
-                filesName.push(fileName)
+            String relativePath = Util.getRelativePath(file, projectPath)
+            String extension = Util.getFileExtension(file)
+            if ( isValidRelativePath(relativePath)) {
+                filesName.push(relativePath)
+            }
+
+            if (MetadataComponents.validExtension(extension)) {
+                filesName.push(relativePath)
             }
         }
         return filesName.unique()
+    }
+
+    /**
+     * Validates relative path
+     * @param relativePath is a relative path of a component
+     * @return true if is valid
+     */
+    public boolean isValidRelativePath(String relativePath) {
+        boolean result = false
+        String folderName = Util.getFirstPath(relativePath)
+        if ( MetadataComponents.validFolder(folderName) && MetadataComponents.getExtensionByFolder(folderName) == ""){
+            result = true
+        }
+        return  result
     }
 
     /**
