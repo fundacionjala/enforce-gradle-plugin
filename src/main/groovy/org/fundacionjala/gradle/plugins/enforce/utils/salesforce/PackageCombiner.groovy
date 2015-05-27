@@ -1,6 +1,7 @@
 package org.fundacionjala.gradle.plugins.enforce.utils.salesforce
 
 import com.sforce.soap.metadata.PackageTypeMembers
+import org.fundacionjala.gradle.plugins.enforce.utils.Util
 
 class PackageCombiner {
     private static final ArrayList<String> SUB_COMPONENTS = ['CustomField', 'FieldSet', 'ValidationRule',
@@ -40,6 +41,52 @@ class PackageCombiner {
             buildPackage.removeMembers(CUSTOM_OBJECT, membersToRemove)
             writePackageCombined(buildPackage, buildPackagePath)
         }
+    }
+
+    /**
+     * Removes components from package xml file
+     * @param packagePath is package path
+     * @param excludedFiles is an ArrayList with files name that were excluded
+     */
+    public static void removeMembersFromPackage(String packagePath, ArrayList<String> excludedFiles) {
+        PackageBuilder packageBuilder = new PackageBuilder()
+        FileReader packageFileReader = new FileReader(packagePath)
+        packageBuilder.read(packageFileReader)
+        Map<String, ArrayList<String>> componentToDelete = [:]
+
+        excludedFiles.each {String fileName ->
+            String componentType = getComponentType(fileName)
+            String componentName = Util.getFileName(fileName)
+
+            if (!componentToDelete.containsKey(componentType)){
+                componentToDelete.put(componentType, [componentName])
+            }
+
+            if (componentToDelete.containsKey(componentType)) {
+                componentToDelete.get(componentType).push(componentName)
+            }
+        }
+
+        componentToDelete.each {String componentType, ArrayList<String> componentNames ->
+            packageBuilder.removeMembers(componentType, componentNames)
+        }
+
+        FileWriter fileWriter = new FileWriter(packagePath)
+        packageBuilder.write(fileWriter)
+    }
+
+    /**
+     * Gets componentType
+     * @param fileName is component name
+     * @return component type
+     */
+    private static String getComponentType(String fileName) {
+        String fileExtension = Util.getFileExtension(new File(fileName))
+        String componentType = MetadataComponents.DOCUMENTS.getTypeName()
+        if (fileExtension != "") {
+            MetadataComponents.getComponentByExtension(fileExtension).getTypeName()
+        }
+        return componentType
     }
 
     /**

@@ -12,6 +12,7 @@ import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponent
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageBuilder
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageCombiner
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.QueryBuilder
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
@@ -147,6 +148,7 @@ class Undeploy extends Deployment {
         componentDeploy.startMessage = ""
         componentDeploy.successMessage = SUCCESS_MESSAGE_DELETE
         PackageCombiner.packageCombine(projectPackagePath, unDeployDestructivePath)
+        PackageCombiner.removeMembersFromPackage(unDeployDestructivePath, getFilesExcludes(excludes))
         executeDeploy(folderUnDeploy)
     }
 

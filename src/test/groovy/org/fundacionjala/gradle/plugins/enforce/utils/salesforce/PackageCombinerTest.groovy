@@ -111,8 +111,74 @@ class PackageCombinerTest extends Specification {
             xmlDiff.similar()
     }
 
+    def 'Test should remove components from package xml file'() {
+        given:
+            String packagePath = Paths.get(SRC_PATH, 'packageTest.xml')
+
+            String packageContent = '''<?xml version='1.0' encoding='UTF-8'?>
+                        <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
+                            <types>
+                                <members>Object1__c</members>
+                                <members>Object2__c</members>
+                                <name>CustomObject</name>
+                            </types>
+                            <version>32.0</version>
+                        </Package>
+                        '''
+            File packageFile = new File(packagePath)
+            packageFile.write(packageContent)
+            String packageExpect = '''<?xml version='1.0' encoding='UTF-8'?>
+                            <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
+                                <types>
+                                    <members>Object2__c</members>
+                                    <name>CustomObject</name>
+                                </types>
+                                <version>32.0</version>
+                            </Package>
+                            '''
+        when:
+            PackageCombiner.removeMembersFromPackage(packagePath, ['Object1__c.object'])
+            XMLUnit.ignoreWhitespace = true
+            def xmlDiff = new Diff(packageFile.text, packageExpect)
+        then:
+            xmlDiff.similar()
+    }
+
+    def 'Test should remove documents component from package xml file'() {
+        given:
+            String packagePath = Paths.get(SRC_PATH, 'packageTest.xml')
+            String packageContent = '''<?xml version='1.0' encoding='UTF-8'?>
+                            <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
+                                <types>
+                                    <members>MyDocuments/doc2</members>
+                                    <members>MyDocuments/doc1</members>
+                                    <name>Document</name>
+                                </types>
+                                <version>32.0</version>
+                            </Package>
+                            '''
+            File packageFile = new File(packagePath)
+            packageFile.write(packageContent)
+            String packageExpect = '''<?xml version='1.0' encoding='UTF-8'?>
+                                <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
+                                    <types>
+                                        <members>MyDocuments/doc1</members>
+                                        <name>Document</name>
+                                    </types>
+                                    <version>32.0</version>
+                                </Package>
+                                '''
+        when:
+            PackageCombiner.removeMembersFromPackage(packagePath, ['MyDocuments/doc2'])
+            XMLUnit.ignoreWhitespace = true
+            def xmlDiff = new Diff(packageFile.text, packageExpect)
+        then:
+            xmlDiff.similar()
+    }
+
     def cleanupSpec() {
         new File(Paths.get(SRC_PATH, 'projectPackage.xml').toString()).delete()
         new File(Paths.get(SRC_PATH, 'buildPackage.xml').toString()).delete()
+        new File(Paths.get(SRC_PATH, 'packageTest.xml').toString()).delete()
     }
 }

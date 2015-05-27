@@ -118,7 +118,9 @@ class Deploy extends Deployment {
             executeDeploy(folderDeploy)
             createDeploymentDirectory(folderDeploy)
         }
-        fileManager.copy(projectPath, excludeFiles(fileManager.getValidElements(projectPath)), folderDeploy)
+        ArrayList<File> filteredFiles = excludeFiles(fileManager.getValidElements(projectPath))
+        fileManager.copy(projectPath, filteredFiles, folderDeploy)
+        writePackage(deployPackagePath, filteredFiles)
         componentDeploy.startMessage = Constants.DEPLOYING_CODE
         componentDeploy.successMessage = Constants.DEPLOYING_CODE_SUCCESSFULLY
         deployToSalesForce()
@@ -153,7 +155,6 @@ class Deploy extends Deployment {
             truncateComponents(folderDeploy)
         }
         logger.debug("Deploying all components from: $folderDeploy")
-        PackageCombiner.packageCombine(projectPackagePath, deployPackagePath)
         executeDeploy(folderDeploy)
         updateFileTracker()
     }

@@ -365,6 +365,37 @@ class DeployTest extends Specification {
             !deployFolder.exists()
     }
 
+    def "Test should return class name that was excluded"() {
+        given:
+            String criterion = "classes${File.separator}class1.cls"
+            instanceDeploy.projectPath = SRC_PATH
+        when:
+            ArrayList<String> result = instanceDeploy.getFilesExcludes(criterion)
+        then:
+            result.size() == 1
+            result[0] == "class1.cls"
+    }
+
+    def "Test should return objects that were excluded"() {
+        given:
+            String criterion = "objects"
+            instanceDeploy.projectPath = SRC_PATH
+        when:
+            ArrayList<String> result = instanceDeploy.getFilesExcludes(criterion)
+        then:
+            result.sort() == ["Object2__c.object", "Account.object", "Object1__c.object"].sort()
+    }
+
+    def "Test should return Account object that were excluded"() {
+        given:
+            String criterion = "**/Account.object"
+            instanceDeploy.projectPath = SRC_PATH
+        when:
+            ArrayList<String> result = instanceDeploy.getFilesExcludes(criterion)
+        then:
+            result.sort() == ["Account.object"].sort()
+    }
+
     def cleanupSpec() {
         new File(Paths.get(SRC_PATH, '/.fileTracker.data').toString()).delete()
         new File(Paths.get(SRC_PATH, 'build').toString()).deleteDir()

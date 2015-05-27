@@ -26,14 +26,9 @@ abstract class Deployment extends SalesforceTask {
     InterceptorManager componentManager
     List<String> interceptorsToExecute = []
     List<String> interceptors = []
-    private final String REG_EXP_TO_EXCLUDE = "([\\*/*.[A-Za-z0-9]{1,*}])"
     public final String EXCLUDES = 'excludes'
     public String excludes
-    public final String META_XML = '-meta.xml'
     public final int FILE_NAME_POSITION = 1
-    public final int FOLDER_NAME_POSITION = 2
-    public final String DOT_ASTERISK = ".*"
-    public final String ASTERISK_DOT_ASTERISK = "*.*"
     public final String SLASH = "/"
     public final String BACKSLASH = "\\\\"
 
@@ -151,6 +146,38 @@ abstract class Deployment extends SalesforceTask {
         }
         ArrayList<File> filesFiltered = new ArrayList<File>()
         ArrayList<File> sourceFiles = new ArrayList<File>()
+        ArrayList<String> criterias = getCriterias(criterion)
+        FileTree fileTree = project.fileTree(dir: projectPath, excludes: criterias)
+        sourceFiles = fileTree.getFiles() as ArrayList<File>
+        sourceFiles.each { File file ->
+            if (files.contains(file)) {
+                filesFiltered.push(file)
+            }
+        }
+        return filesFiltered
+    }
+
+    public ArrayList<String> getFilesExcludes(String criterion) {
+        ArrayList<String> filesName = new ArrayList<String>()
+        ArrayList<File> sourceFiles = new ArrayList<File>()
+        ArrayList<String> criterias = getCriterias(criterion)
+        FileTree fileTree = project.fileTree(dir: projectPath, includes: criterias)
+        sourceFiles = fileTree.getFiles() as ArrayList<File>
+        sourceFiles.each { File file ->
+            String fileName = file.name
+            if (MetadataComponents.validExtension(Util.getFileExtension(file))) {
+                filesName.push(fileName)
+            }
+        }
+        return filesName.unique()
+    }
+
+    /**
+     * Gets a criterias to exclde files
+     * @param criterion is an String with criterias
+     * @return an ArrayList of criterias
+     */
+    public ArrayList<String> getCriterias(String criterion) {
         ArrayList<String> criterias = new ArrayList<String>()
         criterion.split(Constants.COMMA).each { String critery ->
             critery = critery.replaceAll(BACKSLASH, SLASH)
@@ -162,14 +189,7 @@ abstract class Deployment extends SalesforceTask {
             criterias.push(critery)
             criterias.push("${critery}${Constants.META_XML}")
         }
-        FileTree fileTree = project.fileTree(dir: projectPath, excludes: criterias)
-        sourceFiles = fileTree.getFiles() as ArrayList<File>
-        sourceFiles.each { File file ->
-            if (files.contains(file)) {
-                filesFiltered.push(file)
-            }
-        }
-        return filesFiltered
+        return criterias
     }
 
     /**
