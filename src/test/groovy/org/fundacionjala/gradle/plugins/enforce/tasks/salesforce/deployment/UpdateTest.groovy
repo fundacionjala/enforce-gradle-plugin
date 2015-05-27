@@ -49,8 +49,10 @@ class UpdateTest extends Specification {
         project.enforce.srcPath = SRC_PATH
         updateInstance = project.tasks.update
         updateInstance.fileManager = new ManagementFile(SRC_PATH)
+        updateInstance.project.enforce.deleteTemporaryFiles = false
         updateInstance.createDeploymentDirectory(Paths.get(SRC_PATH, 'build').toString())
         updateInstance.createDeploymentDirectory(Paths.get(SRC_PATH, 'build', 'update').toString())
+        updateInstance.projectPath = SRC_PATH
         def fileTrackerPath = Paths.get(SRC_PATH,'.fileTracker.data').toString()
         componentSerializer = new ComponentSerializer(fileTrackerPath)
         componentMonitor = new ComponentMonitor(SRC_PATH)
@@ -116,6 +118,7 @@ class UpdateTest extends Specification {
     def "Test should create a package XML file" () {
         given:
             updateInstance.packageGenerator.fileTrackerMap = ['classes/Class1.cls':new ResultTracker(ComponentStates.ADDED)]
+            updateInstance.packageGenerator.projectPath = Paths.get(SRC_PATH, 'src').toString()
             updateInstance.pathUpdate = Paths.get(SRC_PATH, 'build', 'update').toString()
             updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
         when:
@@ -127,6 +130,7 @@ class UpdateTest extends Specification {
     def "Test should create a package XML file empty if status is deleted" () {
         given:
             updateInstance.packageGenerator.fileTrackerMap = ['classes/Class1.cls':new ResultTracker(ComponentStates.ADDED)]
+            updateInstance.packageGenerator.projectPath = Paths.get(SRC_PATH, 'src').toString()
             updateInstance.pathUpdate = Paths.get(SRC_PATH, 'build', 'update').toString()
             updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
         when:
@@ -150,6 +154,7 @@ class UpdateTest extends Specification {
         given:
             updateInstance.packageGenerator.fileTrackerMap = ['classes/Class1.cls':new ResultTracker(ComponentStates.DELETED)]
             updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
+            updateInstance.packageGenerator.projectPath = Paths.get(SRC_PATH, 'src').toString()
             updateInstance.pathUpdate = Paths.get(SRC_PATH, 'build', 'update').toString()
             updateInstance.credential = credential
             updateInstance.packageGenerator.credential = credential
@@ -163,7 +168,8 @@ class UpdateTest extends Specification {
         given:
             updateInstance.projectPath = SRC_PATH
             updateInstance.packageGenerator.componentMonitor = new ComponentMonitor(SRC_PATH)
-            def newFilePath = Paths.get(SRC_PATH, 'classes', 'Class2.cls').toString()
+            String newRelativeFilePath = Paths.get('classes', 'Class2.cls').toString()
+            String newFilePath = Paths.get(SRC_PATH, newRelativeFilePath).toString()
             FileWriter newFile = new FileWriter(newFilePath)
             newFile.write('test')
             newFile.close()
@@ -171,8 +177,8 @@ class UpdateTest extends Specification {
         when:
             updateInstance.loadFilesChanged()
         then:
-            updateInstance.packageGenerator.fileTrackerMap.containsKey(newFilePath)
-            updateInstance.packageGenerator.fileTrackerMap.get(newFilePath).state == ComponentStates.ADDED
+            updateInstance.packageGenerator.fileTrackerMap.containsKey(newRelativeFilePath)
+            updateInstance.packageGenerator.fileTrackerMap.get(newRelativeFilePath).state == ComponentStates.ADDED
 
     }
 
@@ -212,6 +218,7 @@ class UpdateTest extends Specification {
 
     def "Integration test should update (New file)"() {
         given:
+            updateInstance.packageGenerator.projectPath = Paths.get(SRC_PATH, 'src').toString()
             updateInstance.packageGenerator.fileTrackerMap = [:]
             def class1Cls = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString())
             def object1__c = new File(Paths.get(SRC_PATH, 'src', 'objects', 'Object1__c.object').toString())
@@ -241,6 +248,7 @@ class UpdateTest extends Specification {
             def destructiveExpect = "${"<?xml version='1.0' encoding='UTF-8'?>"}${"<Package xmlns='http://soap.sforce.com/2006/04/metadata'>"}${"<version>32.0</version>"}${"</Package>"}"
         when:
             updateInstance.runTask()
+            println 'package ' + new File(Paths.get(SRC_PATH, 'build', 'update', 'package.xml').toString()).exists()
             def packageXml =  new File(Paths.get(SRC_PATH, 'build', 'update', 'package.xml').toString()).text
             def destructiveXml =  new File(Paths.get(SRC_PATH, 'build', 'update', 'destructiveChanges.xml').toString()).text
             def class2Xml =  new File(Paths.get(SRC_PATH, 'build', 'update', 'classes', 'Class2.cls-meta.xml').toString()).text
@@ -254,6 +262,41 @@ class UpdateTest extends Specification {
             classXmlDifference.similar()
             class2Content == new File(Paths.get(SRC_PATH, 'build', 'update', 'classes', 'Class2.cls').toString()).text
     }
+
+    def "Integration testing must update the organization and delete temporary files generated"() {
+        given:
+            updateInstance.packageGenerator.fileTrackerMap = [:]
+            updateInstance.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
+            updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
+            updateInstance.componentDeploy = new DeployMetadata()
+            updateInstance.poll = 200
+            updateInstance.waitTime = 10
+            updateInstance.credential = credential
+            updateInstance.project.enforce.deleteTemporaryFiles = true
+            componentMonitor.srcProject = Paths.get(SRC_PATH,'src').toString()
+            componentSerializer.sourcePath = Paths.get(SRC_PATH,'src','.fileTracker.data').toString()
+            componentSerializer.save(componentMonitor.getComponentsSignature([]))
+            def newTemporalClassPath = Paths.get(SRC_PATH, 'src', 'classes', 'Class2.cls').toString()
+            def newTemporalXmlPath = Paths.get(SRC_PATH, 'src', 'classes', 'Class2.cls-meta.xml').toString()
+            FileWriter writerClass = new FileWriter(newTemporalClassPath)
+            FileWriter writerXml   = new FileWriter(newTemporalXmlPath)
+            def contentTemporalClass = "public with sharing class Class2 {public Class2(Integer a, Integer b){ }}"
+            def contentTemporalXml = "${"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"}${"<ApexClass xmlns=\"http://soap.sforce.com/2006/04/metadata\">"}${"<apiVersion>24.0</apiVersion><status>Active</status></ApexClass>"}"
+            writerClass.write(contentTemporalClass)
+            writerXml.write(contentTemporalXml)
+            writerClass.close()
+            writerXml.close()
+            def updateFileZipPath = Paths.get(SRC_PATH,'build','update.zip').toString()
+            def updateFolderPath = Paths.get(SRC_PATH,'build','update').toString()
+            File updateFileZip = new File(updateFileZipPath)
+            File updateFolder = new File(updateFolderPath)
+        when:
+            updateInstance.runTask()
+        then:
+            !updateFileZip.exists()
+            !updateFolder.exists()
+    }
+
     def cleanupSpec() {
         new File(Paths.get(SRC_PATH, 'build').toString()).deleteDir()
         new File(Paths.get(SRC_PATH, 'classes', 'Class2.cls').toString()).delete()

@@ -5,8 +5,11 @@ import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ObjectResultTracker
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
 import org.fundacionjala.gradle.plugins.enforce.undeploy.SmartFilesValidator
+import org.gradle.api.artifacts.result.ComponentResult
 import spock.lang.Shared
 import spock.lang.Specification
+
+import java.nio.file.Paths
 
 class PackageGeneratorTest extends Specification {
     @Shared
@@ -27,6 +30,7 @@ class PackageGeneratorTest extends Specification {
             fileTrackerMap.put(newFilePath2, new ResultTracker(ComponentStates.CHANGED))
             fileTrackerMap.put(newFilePath3, new ObjectResultTracker(ComponentStates.ADDED))
             fileTrackerMap.put(newFilePath4, new ObjectResultTracker(ComponentStates.CHANGED))
+            packageGenerator.projectPath = RESOURCE_PATH
             packageGenerator.fileTrackerMap = fileTrackerMap
             def stringWriter = new StringWriter()
         when:
@@ -66,7 +70,7 @@ class PackageGeneratorTest extends Specification {
             Map<String, ResultTracker> fileTrackerMap = [:]
             fileTrackerMap.put(newFilePathObject1,objectResultTracker1)
             fileTrackerMap.put(newFilePathObject2,objectResultTracker2)
-
+            packageGenerator.projectPath = RESOURCE_PATH
             packageGenerator.fileTrackerMap = fileTrackerMap
 
         when:
@@ -102,7 +106,7 @@ class PackageGeneratorTest extends Specification {
             objectResultTrackerChanged.subComponentsResult = subComponentResult
             fileTrackerMap.put(newObjectPathChanged, objectResultTrackerChanged)
             fileTrackerMap.put(newObjectPathAdded  , new ObjectResultTracker(ComponentStates.ADDED))
-
+            packageGenerator.projectPath = RESOURCE_PATH
             packageGenerator.fileTrackerMap = fileTrackerMap
             def stringWriter = new StringWriter()
 
@@ -143,8 +147,9 @@ class PackageGeneratorTest extends Specification {
             fileTrackerMap.put(newFilePath, new ResultTracker(ComponentStates.DELETED))
             fileTrackerMap.put(newObjectPathDeleted, new ResultTracker(ComponentStates.DELETED))
             fileTrackerMap.put(newObjectPathChanged, objectResultTracker)
+            packageGenerator.projectPath = RESOURCE_PATH
             packageGenerator.fileTrackerMap = fileTrackerMap
-            smartFilesValidator.filterFilesAccordingOrganization(_) >> packageGenerator.getFiles(ComponentStates.DELETED) + packageGenerator.getSubComponents(ComponentStates.DELETED)
+            smartFilesValidator.filterFilesAccordingOrganization(_,_) >> packageGenerator.getFiles(ComponentStates.DELETED) + packageGenerator.getSubComponents(ComponentStates.DELETED)
             def stringWriter = new StringWriter()
 
         when:
@@ -159,6 +164,27 @@ class PackageGeneratorTest extends Specification {
             packageGenerator.packageBuilder.metaPackage.types[2].members[0] == "ObjectFileChanged.fieldOne"
             packageGenerator.packageBuilder.metaPackage.types[2].members[1] == "ObjectFileChanged.fieldTwo"
             packageGenerator.packageBuilder.metaPackage.types[2].name == "CustomField"
+
+    }
+
+    def "Test should build a package from deleted report files"() {
+        given:
+            PackageGenerator packageGenerator = new PackageGenerator()
+            SmartFilesValidator smartFilesValidator = Mock(SmartFilesValidator)
+
+            def newObjectPathDeleted = "reports/ReportFolder/reportTest.report"
+            Map<String, ResultTracker> fileTrackerMap = [:]
+            fileTrackerMap.put(newObjectPathDeleted, new ResultTracker(ComponentStates.DELETED))
+            packageGenerator.projectPath = RESOURCE_PATH
+            packageGenerator.fileTrackerMap = fileTrackerMap
+            smartFilesValidator.filterFilesAccordingOrganization(_,_) >> packageGenerator.getFiles(ComponentStates.DELETED)
+            def stringWriter = new StringWriter()
+
+        when:
+            packageGenerator.buildDestructive(stringWriter, smartFilesValidator)
+        then:
+            packageGenerator.packageBuilder.metaPackage.types[0].members[0] == "ReportFolder/reportTest"
+            packageGenerator.packageBuilder.metaPackage.types[0].name == "Report"
 
     }
 
