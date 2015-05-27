@@ -52,7 +52,7 @@ class UndeployTest extends Specification {
         }
         undeployInstance = project.tasks.undeploy
         undeployInstance.fileManager = new ManagementFile(SRC_PATH)
-        undeployInstance.project.enforce.deleteTemporalFiles = false
+        undeployInstance.project.enforce.deleteTemporaryFiles = false
         credential = new Credential()
         credential.id = 'id'
         credential.username = 'salesforce2014.test@gmail.com'

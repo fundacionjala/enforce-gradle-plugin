@@ -38,7 +38,7 @@ class DeployTest extends Specification {
         project.enforce.srcPath = SRC_PATH
         instanceDeploy = project.tasks.deploy
         instanceDeploy.fileManager = new ManagementFile(SRC_PATH)
-        instanceDeploy.project.enforce.deleteTemporalFiles = false
+        instanceDeploy.project.enforce.deleteTemporaryFiles = false
         instanceDeploy.createDeploymentDirectory(Paths.get(SRC_PATH, 'build').toString())
         instanceDeploy.createDeploymentDirectory(Paths.get(SRC_PATH, 'build', 'deploy').toString())
         instanceDeploy.createDeploymentDirectory(Paths.get(SRC_PATH, 'build', 'deploy', 'folderOne').toString())
@@ -350,7 +350,7 @@ class DeployTest extends Specification {
         given:
             instanceDeploy.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
             instanceDeploy.projectPath = Paths.get(SRC_PATH, 'src').toString()
-            instanceDeploy.project.enforce.deleteTemporalFiles = true
+            instanceDeploy.project.enforce.deleteTemporaryFiles = true
             instanceDeploy.poll = 200
             instanceDeploy.waitTime = 10
             instanceDeploy.credential = credential
