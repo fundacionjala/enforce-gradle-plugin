@@ -14,8 +14,6 @@ import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.QueryBuilder
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
 
-import java.nio.file.Paths
-
 /**
  * Validates files according salesForce json queries
  */
@@ -86,7 +84,7 @@ class SmartFilesValidator {
         files.each { file ->
             String relativePath = Util.getRelativePath(file, basePath)
             String folderName = Util.getFirstPath(relativePath)
-            MetadataComponents component = MetadataComponents.getComponentByRelativePath(relativePath as String)
+            MetadataComponents component = MetadataComponents.getComponentByPath(relativePath as String)
             if (component) {
                 filesInOrganization = queryResult.get(component.getTypeName())
                 pushIfItIsPossible(file, folderName, filesClassified, filesInOrganization)

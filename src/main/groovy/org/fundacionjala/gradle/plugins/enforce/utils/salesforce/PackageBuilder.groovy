@@ -13,13 +13,11 @@ import groovy.xml.MarkupBuilder
 import groovy.xml.XmlUtil
 import groovy.xml.dom.DOMCategory
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
-import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.wsc.Connector
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 
-import java.nio.file.Path
 import java.nio.file.Paths
 
 /**
@@ -203,7 +201,7 @@ class PackageBuilder {
         PackageTypeMembers packageTypeMembers
         ArrayList<String> invalidFolders = []
         folders.each { folder ->
-            MetadataComponents component = MetadataComponents.getComponentByRelativePath(folder as String)
+            MetadataComponents component = MetadataComponents.getComponentByPath(folder as String)
             if (component) {
                 packageTypeMembers = new PackageTypeMembers()
                 ArrayList<String> filesMembers = selectFilesMembers(folder, files, basePath)
@@ -230,7 +228,7 @@ class PackageBuilder {
         PackageTypeMembers packageTypeMembers
         ArrayList<String> invalidFolders = []
         folders.each { folder ->
-            MetadataComponents component = MetadataComponents.getComponentByRelativePath(folder as String)
+            MetadataComponents component = MetadataComponents.getComponentByPath(folder as String)
             if (component) {
                 packageTypeMembers = new PackageTypeMembers()
                 packageTypeMembers.members = WILDCARD

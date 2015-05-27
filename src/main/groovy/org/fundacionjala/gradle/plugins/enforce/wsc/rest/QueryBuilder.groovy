@@ -67,7 +67,7 @@ class QueryBuilder {
         ArrayList<String> invalidFolders = []
         files.each { file ->
             String folderName = file.getParentFile().getName()
-            MetadataComponents component = MetadataComponents.getComponentByRelativePath(folderName)
+            MetadataComponents component = MetadataComponents.getComponentByPath(folderName)
             if (component && isDefaultComponent(component.getTypeName())) {
                 String query = component.getExtension() != 'sbc'?
                     """${SELECT_NAME} ${component.getTypeName()} ${WHERE_NAME} '${
@@ -93,7 +93,7 @@ class QueryBuilder {
      * @return String which contain type name of file
      */
     public String getComponent(File file) {
-        return MetadataComponents.getComponentByRelativePath(file.getParentFile().getName()).getTypeName()
+        return MetadataComponents.getComponentByPath(file.getParentFile().getName()).getTypeName()
     }
 
     /**

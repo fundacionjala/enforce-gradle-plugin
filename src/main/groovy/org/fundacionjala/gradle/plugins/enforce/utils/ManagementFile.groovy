@@ -60,7 +60,7 @@ class ManagementFile {
         if (sourceFolder.exists()) {
             sourceFolder.eachFile { File folder ->
                 if (folder.isDirectory()) {
-                    arrayValidFiles.addAll(getFiles(folder))
+                    arrayValidFiles.addAll(getValidFilesByForder(folder))
                 }
                 if (folder.getName() == PACKAGE_XML) {
                     arrayValidFiles.add(folder)
@@ -272,7 +272,7 @@ class ManagementFile {
         folders.each { folderName ->
             File folder = new File(Paths.get(sourcePath, folderName).toString())
             if (folder.exists()) {
-                filesByFolder.addAll(getFiles(folder))
+                filesByFolder.addAll(getValidFilesByForder(folder))
             }
         }
         return filesByFolder
@@ -283,7 +283,7 @@ class ManagementFile {
      * @param folders is type ArrayList
      * @return files validated by folders
      */
-    private ArrayList<File> getFiles(File folder) {
+    private ArrayList<File> getValidFilesByForder(File folder) {
         ArrayList<File> result = []
         folder.eachFile { file ->
             SalesforceValidator validator = SalesforceValidatorManager.getValidator(folder.getName())
