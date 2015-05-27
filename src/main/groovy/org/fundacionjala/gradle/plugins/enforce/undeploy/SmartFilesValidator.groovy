@@ -85,7 +85,7 @@ class SmartFilesValidator {
         ArrayList<String> invalidFolders = []
         files.each { file ->
             String relativePath = Util.getRelativePath(file, basePath)
-            String folderName = Paths.get(relativePath).getName(0)
+            String folderName = Util.getFirstPath(relativePath)
             MetadataComponents component = MetadataComponents.getComponentByRelativePath(relativePath as String)
             if (component) {
                 filesInOrganization = queryResult.get(component.getTypeName())
