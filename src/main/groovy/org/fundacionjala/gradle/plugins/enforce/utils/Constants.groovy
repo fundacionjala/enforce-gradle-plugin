@@ -33,6 +33,25 @@ public class Constants {
     public static final String COMMA = ","
     public static final String POINT = "."
     public static final String WILDCARD = "*"
+    public static final String SLASH = '/'
 
     public static final String OBJECT_EXTENSION = 'object'
+
+    //Deploy task constants
+    public static final String DEPLOYING_TRUNCATED_CODE = 'Deploying truncated code'
+    public static final String DEPLOYING_TRUNCATED_CODE_SUCCESSFULLY = 'Truncated code were successfully deployed'
+    public static final String DEPLOYING_CODE = 'Starting deploy'
+    public static final String DEPLOYING_CODE_SUCCESSFULLY = 'Code were successfully deployed'
+    public static final String TRUNCATE_DEPRECATE_TURNED_OFF = 'truncate deprecate statement has been deactivated'
+    public static final String TRUNCATE_CODE_TURNED_OFF = 'truncate code has been deactivated'
+    public static final String DESCRIPTION_OF_TASK = 'This task deploys all the project'
+    public static final String FOLDERS_DEPLOY = "folders"
+    public static final String FOLDER_DEPLOY = 'deploy'
+    public static final String TURN_OFF_TRUNCATE = 'turnOffTruncate'
+    public static final String TRUNCATE_DEPRECATE = 'deprecate'
+    public static final String TRUNCATE_CODE = 'sourceCode'
+
+    public static final Integer NOT_FOUND = -1
+
+    public static final ArrayList<String> FOLDERS_TO_TRUNCATE = ['classes', 'objects', 'triggers', 'pages', 'components', 'workflows']
 }

@@ -80,6 +80,7 @@ public enum MetadataComponents {
     OBJECTWEBLINKS("Weblink", "sbc", "webLinks"),
     CUSTOMPERMISSIONS("CustomPermission", "customPermission", "customPermissions")
 
+
     public final static Map<String, MetadataComponents> COMPONENT;
 
     static {
@@ -143,6 +144,39 @@ public enum MetadataComponents {
         MetadataComponents metadataComponent
         for (MetadataComponents component : values()) {
             if (component.getTypeName() == name) {
+                metadataComponent = component
+                break
+            }
+        }
+        return metadataComponent
+    }
+
+    /**
+     * gets a component by folder
+     * @param folder is folder component
+     * @return a metadataComponent object
+     */
+    public static getComponentByFolder(String folder) {
+        MetadataComponents metadataComponent
+        for (MetadataComponents component : values()) {
+            if (component.getDirectory() == folder) {
+                metadataComponent = component
+                break
+            }
+        }
+        return metadataComponent
+    }
+
+    /**
+     * Gets a MetadataComponent by extension
+     * @param extension is component extension
+     * @return a MetadataComponent object
+     */
+    public static MetadataComponents getComponentByExtension(String extension) {
+
+        MetadataComponents metadataComponent
+        for (MetadataComponents component : values()) {
+            if (component.getExtension() == extension) {
                 metadataComponent = component
                 break
             }
