@@ -34,10 +34,10 @@ class PackageCombiner {
 
             buildPackage.metaPackage.types.each { PackageTypeMembers type ->
                 if (SUB_COMPONENTS.contains(type.name)) {
-                    membersOfCustomField = type.members as ArrayList<String>
+                    membersOfCustomField.addAll(type.members as ArrayList<String>)
                 }
                 if (type.name == CUSTOM_OBJECT) {
-                    membersOfCustomObject = type.members as ArrayList<String>
+                    membersOfCustomObject.addAll(type.members as ArrayList<String>)
                 }
             }
             ArrayList<String> membersToRemove = getMembersToDelete(membersOfCustomField, membersOfCustomObject)

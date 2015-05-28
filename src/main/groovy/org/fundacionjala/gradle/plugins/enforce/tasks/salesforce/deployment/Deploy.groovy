@@ -10,7 +10,6 @@ import org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor
 import org.fundacionjala.gradle.plugins.enforce.utils.AnsiColor
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageCombiner
 
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -23,7 +22,6 @@ class Deploy extends Deployment {
     private boolean deprecateTruncateOn
     private boolean codeTruncateOn
     private String deployPackagePath
-    private String projectPackagePath
 
     public ArrayList<String> foldersNotDeploy
     public String folderDeploy
@@ -33,7 +31,7 @@ class Deploy extends Deployment {
      * Sets description task and its group
      */
     Deploy() {
-        super(Constants.DESCRIPTION_OF_TASK, Constants.DEPLOYMENT)
+        super(Constants.DEPLOY_DESCRIPTION, Constants.DEPLOYMENT)
         deprecateTruncateOn = true
         codeTruncateOn = true
     }
@@ -63,7 +61,6 @@ class Deploy extends Deployment {
     public void setupFilesToDeploy() {
         folderDeploy = Paths.get(buildFolderPath, Constants.FOLDER_DEPLOY).toString()
         deployPackagePath = Paths.get(folderDeploy, PACKAGE_NAME).toString()
-        projectPackagePath = Paths.get(projectPath, PACKAGE_NAME).toString()
     }
 
     /**
@@ -115,6 +112,7 @@ class Deploy extends Deployment {
             componentDeploy.startMessage = Constants.DEPLOYING_TRUNCATED_CODE
             componentDeploy.successMessage = Constants.DEPLOYING_TRUNCATED_CODE_SUCCESSFULLY
             logger.debug("Deploying to truncate components from: $folderDeploy")
+            combinePackage(deployPackagePath)
             executeDeploy(folderDeploy)
             createDeploymentDirectory(folderDeploy)
         }
@@ -155,6 +153,7 @@ class Deploy extends Deployment {
             truncateComponents(folderDeploy)
         }
         logger.debug("Deploying all components from: $folderDeploy")
+        combinePackage(deployPackagePath)
         executeDeploy(folderDeploy)
         updateFileTracker()
     }

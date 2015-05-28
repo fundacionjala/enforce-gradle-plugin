@@ -99,7 +99,6 @@ class UndeployTest extends Specification {
     def "Integration test should deploy truncate components"() {
         given:
             undeployInstance.createDeploymentDirectory(Paths.get(SRC_PATH, 'build').toString())
-
             def undeployDirectory = Paths.get(SRC_PATH, 'build', 'undeploy').toString()
             undeployInstance.unDeployPackagePath = Paths.get(undeployDirectory,'package.xml').toString()
             undeployInstance.filesToTruncate = [new File(Paths.get(SRC_PATH,'src', 'classes','Class1.cls').toString()),
@@ -109,6 +108,7 @@ class UndeployTest extends Specification {
             undeployInstance.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
             undeployInstance.createDeploymentDirectory(undeployDirectory)
             undeployInstance.fileManager.copy(SRC_PATH, undeployInstance.filesToTruncate, undeployDirectory)
+            undeployInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
             undeployInstance.poll = 200
             undeployInstance.waitTime = 10
             undeployInstance.credential = credential
@@ -135,6 +135,7 @@ class UndeployTest extends Specification {
             undeployInstance.projectPath = srcpath
             undeployInstance.createDeploymentDirectory(undeployDirectory)
             undeployInstance.setupFilesToUnDeploy()
+            undeployInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
             undeployInstance.smartFilesValidator = new SmartFilesValidator(undeployInstance.getJsonQueries())
             undeployInstance.truncateFiles()
             Files.copy(Paths.get(SRC_PATH, 'src', 'package.xml' ), Paths.get(undeployDirectory, 'package.xml'), StandardCopyOption.REPLACE_EXISTING)
@@ -165,6 +166,7 @@ class UndeployTest extends Specification {
             undeployInstance.poll = 200
             undeployInstance.waitTime = 10
             undeployInstance.credential = credential
+            undeployInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
             undeployInstance.executeDeploy(Paths.get(SRC_PATH, 'src').toString())
             def destructiveExpect = "${"<Package xmlns='http://soap.sforce.com/2006/04/metadata'>"}${"<types><members>Class1</members><name>ApexClass</name></types>"}${"<types><members>Object1__c</members><name>CustomObject</name></types>"}${"<types><members>Trigger1</members><name>ApexTrigger</name></types>"}${"<version>32.0</version></Package>"}"
             def packageExpect = "${"<?xml version='1.0' encoding='UTF-8'?>"}${"<Package xmlns='http://soap.sforce.com/2006/04/metadata'>"}${"<version>32.0</version></Package>"}"
