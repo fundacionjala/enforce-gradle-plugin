@@ -365,6 +365,57 @@ class DeployTest extends Specification {
             !deployFolder.exists()
     }
 
+    def "Test should return class name that was excluded"() {
+        given:
+            String criterion = "classes${File.separator}class1.cls"
+            instanceDeploy.projectPath = SRC_PATH
+        when:
+            ArrayList<String> result = instanceDeploy.getFilesExcludes(criterion)
+        then:
+            result.size() == 1
+            result[0] == "classes/class1.cls"
+    }
+
+    def "Test should return objects that were excluded"() {
+        given:
+            String criterion = "objects"
+            instanceDeploy.projectPath = SRC_PATH
+        when:
+            ArrayList<String> result = instanceDeploy.getFilesExcludes(criterion)
+        then:
+            result.sort() == ["objects/Object2__c.object", "objects/Account.object", "objects/Object1__c.object"].sort()
+    }
+
+    def "Test should return Account object that were excluded"() {
+        given:
+            String criterion = "**/Account.object"
+            instanceDeploy.projectPath = SRC_PATH
+        when:
+            ArrayList<String> result = instanceDeploy.getFilesExcludes(criterion)
+        then:
+            result.sort() == ["objects/Account.object", "src/objects/Account.object"].sort()
+    }
+
+    def "Test should return Document component that was excluded"() {
+        given:
+            String criterion = "documents"
+            instanceDeploy.projectPath = SRC_PATH
+        when:
+            ArrayList<String> result = instanceDeploy.getFilesExcludes(criterion)
+        then:
+            result.sort() == ["documents/myDocuments/doc.txt", "documents/myDocuments/doc2.txt"].sort()
+    }
+
+    def "Test should return Report component that was excluded"() {
+        given:
+            String criterion = "reports"
+            instanceDeploy.projectPath = SRC_PATH
+        when:
+            ArrayList<String> result = instanceDeploy.getFilesExcludes(criterion)
+        then:
+            result.sort() == ["reports/myreports/reportTest.report"].sort()
+    }
+
     def cleanupSpec() {
         new File(Paths.get(SRC_PATH, '/.fileTracker.data').toString()).delete()
         new File(Paths.get(SRC_PATH, 'build').toString()).deleteDir()
