@@ -6,6 +6,7 @@
 package org.fundacionjala.gradle.plugins.enforce.wsc
 
 import com.sforce.soap.metadata.DeployResult
+import com.sforce.soap.metadata.DeployStatus
 import com.sforce.soap.metadata.MetadataConnection
 import com.sforce.soap.metadata.RetrieveResult
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
@@ -37,19 +38,21 @@ class InspectorResults {
      * @throws Exception if an request timed out or could not retrieve the metadata
      */
     public DeployResult waitForDeployResult(String asyncResultId, int maxPolls, int waitTimeMilliSecs) throws Exception {
-       int poll = Constants.ZERO
-        DeployResult deployResult = metadataConnection.checkDeployStatus(asyncResultId, true)
+        DeployResult deployResult = null
+        int poll = Constants.ZERO
         int percent = Constants.ZERO
-        percent = getDeployPercentage(deployResult)
-        writePercent(percent)
-        while (!deployResult.isDone()) {
-            if (poll++ > maxPolls) {
-                throw new Exception(TIMEOUT_EXCEPTION)
+        while ((null == deployResult) || !deployResult.isDone()) {
+            if (null != deployResult) {
+                if (poll++ > maxPolls) {
+                    throw new Exception(TIMEOUT_EXCEPTION)
+                }
+                Thread.sleep(waitTimeMilliSecs)
             }
-            Thread.sleep(waitTimeMilliSecs)
             deployResult = metadataConnection.checkDeployStatus(asyncResultId, true)
-            percent = getDeployPercentage(deployResult)
-            writePercent(percent)
+            if (percent != HUNDRED) {
+                percent = getDeployPercentage(deployResult)
+            }
+            writePercent(percent, deployResult)
             if (percent == HUNDRED && deployResult.done) {
                 break
             }
@@ -86,18 +89,21 @@ class InspectorResults {
         return (int)percent
     }
 
-    public void writePercent(int percent) {
-        StringBuilder progressBar = new StringBuilder("[")
-
-        for (int i = Constants.ZERO; i < END_VAL_PROGRESS_BAR; i++) {
-            if (i < (percent / 2)) {
-                progressBar.append("=")
-            } else {
-                progressBar.append(" ")
+    public void writePercent(int percent, DeployResult deployResult) {
+        if (DeployStatus.InProgress == deployResult.status) {
+            StringBuilder progressBar = new StringBuilder("[")
+            for (int i = Constants.ZERO; i < END_VAL_PROGRESS_BAR; i++) {
+                if (i < (percent / 2)) {
+                    progressBar.append("=")
+                } else {
+                    progressBar.append(" ")
+                }
             }
+            progressBar.append("]   ${deployResult.numberComponentsDeployed}/${deployResult.numberComponentsTotal}(${percent}%)");
+            outputStream.write("\r${progressBar.toString()}".getBytes(Charset.forName("UTF-8")))
+        } else {
+            outputStream.write(Util.getBytes("\r\nDeploy Status: ${deployResult.status}...", "UTF-8"))
         }
-        progressBar.append("]   " + percent + "%     ");
-        outputStream.write("\r${progressBar.toString()}".getBytes(Charset.forName("UTF-8")))
         outputStream.flush()
     }
 }
