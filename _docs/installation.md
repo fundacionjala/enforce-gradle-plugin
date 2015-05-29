@@ -29,6 +29,7 @@ Enforce is a Gradle plugin, so it is required to have build.gradle file where th
    
    enforce {
      srcPath = 'src'
+     deleteTemporaryFiles = true
    }
 {% endhighlight %}
 

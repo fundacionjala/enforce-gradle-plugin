@@ -26,6 +26,19 @@ Here you can find required information  that is enough to have a Gradle project 
    }   
 {% endhighlight %}
 
+- Configuration parameters.
+We can change some properties using parameters
+{% highlight bash %}
+srcPath : 
+Specify the folder where we store our code
+  Example  :  srcPATH = 'src'
+    
+deleteTemporaryFiles : 
+During the execution of a task is necessary to create some temporary folders in the build folder, using this parameter we can define that these folders are not delete.
+  Example : deleteTemporaryFiles = true
+  Note    : The default value of this variable is true
+
+{% endhighlight %}
 
 - Register a Salesforce credential to be used. [generate token security](http://www.salesforcegeneral.com/salesforce-articles/salesforce-security-token.html)
 {% highlight bash %}

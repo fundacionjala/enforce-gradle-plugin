@@ -25,6 +25,7 @@ apply plugin: 'enforce'
 
 enforce {
     srcPath = 'src'
+    deleteTemporaryFiles = true
 }
 {% endhighlight %}
 
