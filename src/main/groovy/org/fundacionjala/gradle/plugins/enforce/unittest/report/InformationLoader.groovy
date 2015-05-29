@@ -239,14 +239,17 @@ class InformationLoader {
      */
     private String loadInformationCoverage(ArrayList<ApexRunTestResult> apexTestResultArrayList) {
         ArrayList<String> arrayJson = new ArrayList<String>()
+        int id = 0
         apexTestResultArrayList.each {apexTestResult ->
             String filter = STATE_PROGRESS_BAR_DANGER
             if(apexTestResult.outcome != STATE_FAIL) {
                 filter = STATE_PROGRESS_BAR_SUCCESS
             }
-            String message = StringEscapeUtils.escapeJavaScript(apexTestResult.message);
-            String stackTrace = StringEscapeUtils.escapeJavaScript(apexTestResult.stackTrace);
-            String objectJson = "{name: '${apexTestResult.className}.${apexTestResult.methodName}', status: '${apexTestResult.outcome}', stackTrace: '${stackTrace}', message: '${message}', filter: '$filter'}"
+            String message = StringEscapeUtils.escapeJavaScript(apexTestResult.message)
+            String stackTrace = StringEscapeUtils.escapeJavaScript(apexTestResult.stackTrace)
+            String unitTest = apexTestResult.className?"${apexTestResult.className}.${apexTestResult.methodName}":apexTestResult.methodName
+            String objectJson = "{id: ${id} ,name: '${unitTest}', status: '${apexTestResult.outcome}', stackTrace: '${stackTrace}', message: '${message}', filter: '$filter', details:[{label: 'Stacktrace', content: '$stackTrace'}, {label: 'Message', content: '$message'}]}"
+            id++
             arrayJson.push(objectJson)
         }
         JsonBuilder json = new JsonBuilder()

@@ -5,6 +5,10 @@
 
 package org.fundacionjala.gradle.plugins.enforce.utils.salesforce
 
+import org.fundacionjala.gradle.plugins.enforce.utils.Util
+
+import java.nio.file.Paths
+
 /**
  * Represents all directories types on salesforce
  */
@@ -76,6 +80,7 @@ public enum MetadataComponents {
     OBJECTWEBLINKS("Weblink", "sbc", "webLinks"),
     CUSTOMPERMISSIONS("CustomPermission", "customPermission", "customPermissions")
 
+
     public final static Map<String, MetadataComponents> COMPONENT;
 
     static {
@@ -113,13 +118,13 @@ public enum MetadataComponents {
     }
 
     /**
-     * Gets a MetadataComponent by folder
-     * @param folder is a component folder
+     * Gets a MetadataComponent by path
+     * @param path is the relative path in the project
      * @return a MetadataComponent
      */
-    public static MetadataComponents getComponentByFolder(String folder) {
-
+    public static MetadataComponents getComponentByRelativePath(String path) {
         MetadataComponents metadataComponent
+        String folder = Util.getFirstPath(path)
         for (MetadataComponents component : values()) {
             if (component.getDirectory() == folder) {
                 metadataComponent = component
@@ -139,6 +144,39 @@ public enum MetadataComponents {
         MetadataComponents metadataComponent
         for (MetadataComponents component : values()) {
             if (component.getTypeName() == name) {
+                metadataComponent = component
+                break
+            }
+        }
+        return metadataComponent
+    }
+
+    /**
+     * gets a component by folder
+     * @param folder is folder component
+     * @return a metadataComponent object
+     */
+    public static getComponentByFolder(String folder) {
+        MetadataComponents metadataComponent
+        for (MetadataComponents component : values()) {
+            if (component.getDirectory() == folder) {
+                metadataComponent = component
+                break
+            }
+        }
+        return metadataComponent
+    }
+
+    /**
+     * Gets a MetadataComponent by extension
+     * @param extension is component extension
+     * @return a MetadataComponent object
+     */
+    public static MetadataComponents getComponentByExtension(String extension) {
+
+        MetadataComponents metadataComponent
+        for (MetadataComponents component : values()) {
+            if (component.getExtension() == extension) {
                 metadataComponent = component
                 break
             }
@@ -169,7 +207,6 @@ public enum MetadataComponents {
      * @return a extension o component
      */
     public static String getExtensionByName(String name) {
-
         String extensionByName
         for (MetadataComponents input : values()) {
             if (input.getTypeName() == name) {
@@ -186,7 +223,6 @@ public enum MetadataComponents {
      * @return a directory of component
      */
     public static String getDirectoryByName(String name) {
-
         String directory
         for (MetadataComponents input : values()) {
             if (input.getTypeName() == name) {

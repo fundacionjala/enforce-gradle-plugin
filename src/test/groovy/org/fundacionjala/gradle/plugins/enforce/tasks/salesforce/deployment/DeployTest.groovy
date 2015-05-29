@@ -38,6 +38,7 @@ class DeployTest extends Specification {
         project.enforce.srcPath = SRC_PATH
         instanceDeploy = project.tasks.deploy
         instanceDeploy.fileManager = new ManagementFile(SRC_PATH)
+        instanceDeploy.project.enforce.deleteTemporaryFiles = false
         instanceDeploy.createDeploymentDirectory(Paths.get(SRC_PATH, 'build').toString())
         instanceDeploy.createDeploymentDirectory(Paths.get(SRC_PATH, 'build', 'deploy').toString())
         instanceDeploy.createDeploymentDirectory(Paths.get(SRC_PATH, 'build', 'deploy', 'folderOne').toString())
@@ -342,6 +343,77 @@ class DeployTest extends Specification {
             instanceDeploy.deployByFolder()
         then:
             thrown(Exception)
+    }
+
+
+    def "Integration testing must deploy the organization files and delete temporary files generated"() {
+        given:
+            instanceDeploy.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
+            instanceDeploy.projectPath = Paths.get(SRC_PATH, 'src').toString()
+            instanceDeploy.project.enforce.deleteTemporaryFiles = true
+            instanceDeploy.poll = 200
+            instanceDeploy.waitTime = 10
+            instanceDeploy.credential = credential
+            def deployFileZipPath = Paths.get(SRC_PATH,'build','deploy.zip').toString()
+            def deployFolderPath = Paths.get(SRC_PATH,'build','deploy').toString()
+            File deployFileZip = new File(deployFileZipPath)
+            File deployFolder = new File(deployFolderPath)
+        when:
+            instanceDeploy.runTask()
+        then:
+            !deployFileZip.exists()
+            !deployFolder.exists()
+    }
+
+    def "Test should return class name that was excluded"() {
+        given:
+            String criterion = "classes${File.separator}class1.cls"
+            instanceDeploy.projectPath = SRC_PATH
+        when:
+            ArrayList<String> result = instanceDeploy.getFilesExcludes(criterion)
+        then:
+            result.size() == 1
+            result[0] == "classes/class1.cls"
+    }
+
+    def "Test should return objects that were excluded"() {
+        given:
+            String criterion = "objects"
+            instanceDeploy.projectPath = SRC_PATH
+        when:
+            ArrayList<String> result = instanceDeploy.getFilesExcludes(criterion)
+        then:
+            result.sort() == ["objects/Object2__c.object", "objects/Account.object", "objects/Object1__c.object"].sort()
+    }
+
+    def "Test should return Account object that were excluded"() {
+        given:
+            String criterion = "**/Account.object"
+            instanceDeploy.projectPath = SRC_PATH
+        when:
+            ArrayList<String> result = instanceDeploy.getFilesExcludes(criterion)
+        then:
+            result.sort() == ["objects/Account.object", "src/objects/Account.object"].sort()
+    }
+
+    def "Test should return Document component that was excluded"() {
+        given:
+            String criterion = "documents"
+            instanceDeploy.projectPath = SRC_PATH
+        when:
+            ArrayList<String> result = instanceDeploy.getFilesExcludes(criterion)
+        then:
+            result.sort() == ["documents/myDocuments/doc.txt", "documents/myDocuments/doc2.txt"].sort()
+    }
+
+    def "Test should return Report component that was excluded"() {
+        given:
+            String criterion = "reports"
+            instanceDeploy.projectPath = SRC_PATH
+        when:
+            ArrayList<String> result = instanceDeploy.getFilesExcludes(criterion)
+        then:
+            result.sort() == ["reports/myreports/reportTest.report"].sort()
     }
 
     def cleanupSpec() {

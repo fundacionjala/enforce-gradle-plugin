@@ -23,10 +23,10 @@ class QueryBuilder {
     private final String WHERE_NAME = 'WHERE Name ='
     private final String WHERE_FULL_NAME = 'WHERE DeveloperName ='
     private final String THERE_IS_NOT_PACKAGE = "There isn't a package xml file in this path: "
-    public static final ArrayList<String> defaultComponents = ['ApexClass', 'ApexComponent', 'ApexPage', 'ApexTrigger', 'StaticResource',
-                                                               'Profile', 'EmailTemplate', 'CustomField', 'CompactLayout', 'RecordType','ValidationRule']
+    public static final ArrayList<String> defaultComponents = ['ApexClass', 'ApexComponent', 'ApexPage', 'ApexTrigger',
+                                                               'StaticResource', 'Profile', 'EmailTemplate']
 
-    public static final ArrayList<String> defaultSubComponents = ['CustomField', 'CompactLayout', 'RecordType','ValidationRule']
+    public static final ArrayList<String> defaultSubComponents = ['CompactLayout']
     /**
      * Gets queries of components from package xml file
      * @param packagePath is type String
@@ -42,7 +42,7 @@ class QueryBuilder {
                 typeMembers.members.each { member ->
                     if (member != '*') {
                         queries.add("""${SELECT_FULL_NAME} ${typeMembers.name} ${WHERE_FULL_NAME} '${
-                            Util.getDeveloperNameByMember(member)
+                            Util.getDeveloperNameByMember(member, typeMembers.name as String)
                         }'""")
                     }
                 }
@@ -67,7 +67,7 @@ class QueryBuilder {
         ArrayList<String> invalidFolders = []
         files.each { file ->
             String folderName = file.getParentFile().getName()
-            MetadataComponents component = MetadataComponents.getComponentByFolder(folderName)
+            MetadataComponents component = MetadataComponents.getComponentByRelativePath(folderName)
             if (component && isDefaultComponent(component.getTypeName())) {
                 String query = component.getExtension() != 'sbc'?
                     """${SELECT_NAME} ${component.getTypeName()} ${WHERE_NAME} '${
@@ -93,7 +93,7 @@ class QueryBuilder {
      * @return String which contain type name of file
      */
     public String getComponent(File file) {
-        return MetadataComponents.getComponentByFolder(file.getParentFile().getName()).getTypeName()
+        return MetadataComponents.getComponentByRelativePath(file.getParentFile().getName()).getTypeName()
     }
 
     /**
