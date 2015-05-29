@@ -1,11 +1,14 @@
 package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators
+
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
+
 /**
  * Manages the different kind of validate a file
  * based in Salesforce definitions
  */
 public class SalesforceValidatorManager {
     private static Map<String, SalesforceValidator> validatorMap = [
-            'documents': new DocumentSalesforceValidator()
+            MetadataComponents.DOCUMENTS.getDirectory(): new DocumentSalesforceValidator()
     ]
 
     /**
