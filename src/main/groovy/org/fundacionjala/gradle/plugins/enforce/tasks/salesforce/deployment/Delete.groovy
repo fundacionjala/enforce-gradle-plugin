@@ -17,12 +17,10 @@ import java.nio.file.Paths
  */
 class Delete extends Deployment {
     private static final String DESCRIPTION_OF_TASK = "This task deploys just the files that were changed"
-    private final String FOLDERS_DEPLOY = "folders"
-    private final String DIR_UPDATE_FOLDER = "delete"
+    private final String DIR_DELETE_FOLDER = "delete"
+    private static final String PARAMETER_FOLDERS= "folders"
     private final String FILE_NAME_DESTRUCTIVE = "destructiveChanges.xml"
-    private final String NOT_FILES_CHANGED = "There are not files changed"
     public String pathUpdate
-    ArrayList<File> filesToCopy
     ArrayList<File> filesToUpdate
     String folders
     ArrayList<File> filesExcludes
@@ -35,7 +33,6 @@ class Delete extends Deployment {
      */
     Delete() {
         super(DESCRIPTION_OF_TASK, Constants.DEPLOYMENT)
-        filesToCopy = new ArrayList<File>()
         filesToUpdate = new ArrayList<File>()
         filesExcludes = new ArrayList<File>()
         packageGenerator = new PackageGenerator()
@@ -47,19 +44,14 @@ class Delete extends Deployment {
      */
     @Override
     void runTask() {
-        pathUpdate = Paths.get(buildFolderPath, DIR_UPDATE_FOLDER).toString()
+        pathUpdate = Paths.get(buildFolderPath, DIR_DELETE_FOLDER).toString()
         createDeploymentDirectory(pathUpdate)
         loadFilesChanged()
         verifyParameter()
-
+        excludeFilesFromFilesChanged()
         createDestructive()
         createPackage()
-        copyFilesChanged()
-   //     truncate(pathUpdate)
-
-  /*      executeDeploy(pathUpdate)
-        packageGenerator.saveFileTrackerMap()*/
-
+//        executeDeploy(pathUpdate)
     }
 
     def truncate(String pathToTruncate) {
@@ -71,15 +63,6 @@ class Delete extends Deployment {
      * Creates packages to all files which has been changed
      */
     def createPackage() {
-        println "\n** CreatePackage()"
-        println "fileTrackerMap : "+packageGenerator.fileTrackerMap
-        packageGenerator.fileTrackerMap.each { nameFile, resultTracker ->
-            println "--  "+resultTracker.state+ " == "+ComponentStates.DELETED
-            if (resultTracker.state == ComponentStates.DELETED) {
-                filesToCopy.add(new File(nameFile))
-            }
-        }
-        println "filesToCopy : "+filesToCopy
         packageGenerator.buildPackage(Paths.get(pathUpdate, PACKAGE_NAME).toString())
     }
 
@@ -87,8 +70,13 @@ class Delete extends Deployment {
      * Creates package to all files which has been deleted
      */
     def createDestructive() {
-        println "\n** CreateDestructive "
-        packageGenerator.buildDestructive(Paths.get(pathUpdate, FILE_NAME_DESTRUCTIVE).toString())
+        ArrayList<File> files = new ArrayList<File>();
+        packageGenerator.fileTrackerMap.each { nameFile, resultTracker ->
+            if (resultTracker.state == ComponentStates.DELETED) {
+                files.add(new File(Paths.get(projectPath, nameFile).toString()))
+            }
+        }
+        writePackage(Paths.get(pathUpdate, FILE_NAME_DESTRUCTIVE).toString(), files)
     }
 
     /**
@@ -102,9 +90,13 @@ class Delete extends Deployment {
      * Verifies if there is files changed in folders inserted by user
      */
     def verifyParameter() {
-        if (Util.isValidProperty(project, "folders")) {
+        println "|*| : "+project
+        println "|*| : "+Util.isValidProperty(project, PARAMETER_FOLDERS)
+        if (Util.isValidProperty(project, PARAMETER_FOLDERS)) {
             folders = project.folders
         }
+        println "|*| : "+folders
+        ArrayList<File> validatedFiles
         if (folders) {
             ArrayList<String> foldersName = folders.split(Constants.COMMA)
 
@@ -113,63 +105,11 @@ class Delete extends Deployment {
             if (!invalidFolders.empty) {
                 throw new Exception("${Constants.INVALID_FOLDER}: ${invalidFolders}")
             }
-            ArrayList<File> validatedFiles = fileManager.getValidElements(projectPath, excludeFilesToMonitor)
+            validatedFiles = fileManager.getValidElements(projectPath, excludeFilesToMonitor)
             packageGenerator.listFileToDelete(foldersName,validatedFiles)
         }
-    }
 
-    /**
-     * Copies files using fileManager
-     */
-    def copyFilesChanged() {
-        println "\n** CopyFilesChanged()"
-        println "filesCopy : "+filesToCopy
-        filesToCopy.each { file ->
-            File xmlFile = fileManager.getValidateXmlFile(file)
-            if (xmlFile) {
-                filesToUpdate.push(xmlFile)
-            }
-            filesToUpdate.push(file)
-        }
-        println "filesToUpdate : "+filesToUpdate
-        println "pathUpdate : "+pathUpdate
-        fileManager.copy(projectPath,filesToUpdate, pathUpdate)
-    }
-
-    /**
-     * Prints files changed
-     */
-    def showFilesChanged() {
-        if (packageGenerator.fileTrackerMap.size() > 0) {
-            logger.quiet("*********************************************")
-            logger.quiet("              Status Files Changed             ")
-            logger.quiet("*********************************************")
-            packageGenerator.fileTrackerMap.each { nameFile, status ->
-                logger.quiet("${Paths.get(nameFile).getFileName().toString()}${" - "}${status.toString()}")
-            }
-            logger.quiet("*********************************************")
-        }
-    }
-
-    /**
-     * Shows files excluded if there are more than five this shows just a message.
-     * @return
-     */
-    def showFilesExcludes() {
-        if (filesExcludes.empty) {
-            return
-        }
-        if (filesExcludes.size() < 5) {
-            logger.quiet("*********************************************")
-            logger.quiet("              Files excluded                 ")
-            logger.quiet("*********************************************")
-            filesExcludes.each { File file ->
-                logger.quiet("${file.getName()}${" - "} excluded")
-            }
-            logger.quiet("*********************************************")
-        } else {
-            logger.quiet("${filesExcludes.size()}${' files were excluded\n'}")
-        }
+        println "File to delete : "+packageGenerator.fileTrackerMap
     }
 
     /**
@@ -177,6 +117,11 @@ class Delete extends Deployment {
      */
     private void excludeFilesFromFilesChanged() {
         ArrayList<File> filesFiltered = excludeFiles(packageGenerator.getFiles())
+        filesFiltered.add(new File("classes/Class2.cls"))
         filesExcludes = packageGenerator.excludeFiles(filesFiltered)
+        println "\nFile to exclude : "+filesFiltered
+        println "File to exclude : "+filesExcludes
     }
+
+
 }
