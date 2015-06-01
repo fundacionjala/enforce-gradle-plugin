@@ -204,11 +204,54 @@ class PackageCombinerTest extends Specification {
             xmlDiff.similar()
     }
 
+    def 'Test should remove CustomField subcomponent from package xml file'() {
+        given:
+            String packagePath = Paths.get(SRC_PATH, 'packageTestField.xml')
+            String packageContent = '''<?xml version='1.0' encoding='UTF-8'?>
+                                    <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
+                                        <types>
+                                            <members>Object1__c.MyCustomField1__c</members>
+                                            <members>Object1__c.MyCustomField2__c</members>
+                                            <members>Object2__c.MyCustomField2__c</members>
+                                            <name>CustomField</name>
+                                        </types>
+                                        <types>
+                                            <members>Object1__c.MyFieldSet1__c</members>
+                                            <members>Object2__c.MyFieldSet2__c</members>
+                                            <name>FieldSet</name>
+                                        </types>
+                                        <version>32.0</version>
+                                    </Package>
+                                    '''
+            File packageFile = new File(packagePath)
+            packageFile.write(packageContent)
+            String packageExpect = '''<?xml version='1.0' encoding='UTF-8'?>
+                                        <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
+                                            <types>
+                                                <members>Object2__c.MyCustomField2__c</members>
+                                                <name>CustomField</name>
+                                            </types>
+                                            <types>
+                                                <members>Object2__c.MyFieldSet2__c</members>
+                                                <name>FieldSet</name>
+                                            </types>
+                                            <version>32.0</version>
+                                        </Package>
+                                        '''
+        when:
+            PackageCombiner.removeMembersFromPackage(packagePath, ['objects/Object1__c.object'])
+            XMLUnit.ignoreWhitespace = true
+            def xmlDiff = new Diff(packageFile.text, packageExpect)
+        then:
+            xmlDiff.similar()
+    }
+
     def cleanupSpec() {
         new File(Paths.get(SRC_PATH, 'projectPackage.xml').toString()).delete()
         new File(Paths.get(SRC_PATH, 'buildPackage.xml').toString()).delete()
         new File(Paths.get(SRC_PATH, 'packageTest.xml').toString()).delete()
         new File(Paths.get(SRC_PATH, 'packageTestDocument.xml').toString()).delete()
         new File(Paths.get(SRC_PATH, 'packageTestReport.xml').toString()).delete()
+        new File(Paths.get(SRC_PATH, 'packageTestField.xml').toString()).delete()
     }
 }

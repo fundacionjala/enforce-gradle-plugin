@@ -11,6 +11,7 @@ import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.SalesforceTask
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageCombiner
 import org.gradle.api.file.FileTree
 import org.gradle.api.tasks.bundling.Zip
 
@@ -20,7 +21,6 @@ import java.nio.file.Paths
  * Represent base class for needs deploy code in salesforce
  */
 abstract class Deployment extends SalesforceTask {
-
     private final String NAME_TASK_ZIP = "createZip"
     DeployMetadata componentDeploy
     InterceptorManager componentManager
@@ -312,6 +312,13 @@ abstract class Deployment extends SalesforceTask {
         }
         if (!errorMessage.isEmpty()) {
             throw new Exception(errorMessage)
+        }
+    }
+
+    public void combinePackage(String buildPackagePath) {
+        PackageCombiner.packageCombine(projectPackagePath, buildPackagePath)
+        if (excludes) {
+            PackageCombiner.removeMembersFromPackage(buildPackagePath, getFilesExcludes(excludes))
         }
     }
 }
