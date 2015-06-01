@@ -9,6 +9,7 @@ class PackageCombiner {
                                                              'CompactLayout', 'SharingReason', 'RecordType', 'WebLink',
                                                              'SharingRecalculation', 'SearchLayout', 'ListView',
                                                              'HistoryRetentionPolicy', 'BusinessProcess', 'ActionOverride']
+    //The next sub components are part of custom objects:
     //RecordType
     //WebLink
     //SharingRecalculation
@@ -111,15 +112,15 @@ class PackageCombiner {
         Map<String, ArrayList<String>> components = componentToDelete.clone()
         Map<String, ArrayList<String>> componentsFromPackage = getMembersByNameType(packageBuilder)
 
-        componentsFromPackage.each { String Name, ArrayList<String> members ->
-            if (SUB_COMPONENTS.contains(Name)) {
+        componentsFromPackage.each { String name, ArrayList<String> members ->
+            if (SUB_COMPONENTS.contains(name)) {
                 members.each { String member ->
                     String objectName = member.substring(0, member.indexOf('.'))
                     if (components.get(CUSTOM_OBJECT).contains(objectName)) {
-                        if (!components.containsKey(Name)) {
-                            components.put(Name, [member])
+                        if (!components.containsKey(name)) {
+                            components.put(name, [member])
                         } else {
-                            components.get(Name).push(member)
+                            components.get(name).push(member)
                         }
                     }
                 }

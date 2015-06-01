@@ -375,37 +375,44 @@ class DeployTest extends Specification {
             ArrayList<String> result = instanceDeploy.getFilesExcludes(criterion)
         then:
             result.size() == 1
-            result[0] == "classes/class1.cls"
+            result[0] == "classes${File.separator}class1.cls"
     }
 
     def "Test should return objects that were excluded"() {
         given:
             String criterion = "objects"
             instanceDeploy.projectPath = SRC_PATH
+            String object2 = "objects${File.separator}Object2__c.object"
+            String object1 = "objects${File.separator}Object1__c.object"
+            String object3 = "objects${File.separator}Account.object"
         when:
             ArrayList<String> result = instanceDeploy.getFilesExcludes(criterion)
         then:
-            result.sort() == ["objects/Object2__c.object", "objects/Account.object", "objects/Object1__c.object"].sort()
+            result.sort() == [object1, object2, object3].sort()
     }
 
     def "Test should return Account object that were excluded"() {
         given:
             String criterion = "**/Account.object"
             instanceDeploy.projectPath = SRC_PATH
+            String accountObject1 = "objects${File.separator}Account.object"
+            String accountObject2 = "src${File.separator}objects${File.separator}Account.object"
         when:
             ArrayList<String> result = instanceDeploy.getFilesExcludes(criterion)
         then:
-            result.sort() == ["objects/Account.object", "src/objects/Account.object"].sort()
+            result.sort() == [accountObject1, accountObject2].sort()
     }
 
     def "Test should return Document component that was excluded"() {
         given:
             String criterion = "documents"
             instanceDeploy.projectPath = SRC_PATH
+            String document1 = "documents${File.separator}myDocuments${File.separator}doc.txt"
+            String document2 = "documents${File.separator}myDocuments${File.separator}doc2.txt"
         when:
             ArrayList<String> result = instanceDeploy.getFilesExcludes(criterion)
         then:
-            result.sort() == ["documents/myDocuments/doc.txt", "documents/myDocuments/doc2.txt"].sort()
+            result.sort() == [document1, document2].sort()
     }
 
     def "Test should return Report component that was excluded"() {
@@ -415,7 +422,7 @@ class DeployTest extends Specification {
         when:
             ArrayList<String> result = instanceDeploy.getFilesExcludes(criterion)
         then:
-            result.sort() == ["reports/myreports/reportTest.report"].sort()
+            result.sort() == ["reports${File.separator}myreports${File.separator}reportTest.report"].sort()
     }
 
     def cleanupSpec() {
