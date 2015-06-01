@@ -76,11 +76,11 @@ class MetadataComponentsTest extends Specification {
 
     def "Test a component by folder"() {
         expect:
-            MetadataComponents.getComponentByRelativePath("classes").typeName == "ApexClass"
+            MetadataComponents.getComponentByPath("classes").typeName == "ApexClass"
     }
 
     def "Test a component by folder has contains sub folder"() {
         expect:
-            MetadataComponents.getComponentByRelativePath("reports/reportTest").typeName == "Report"
+            MetadataComponents.getComponentByPath("reports/reportTest").typeName == "Report"
     }
 }

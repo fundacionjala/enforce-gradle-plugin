@@ -39,6 +39,7 @@ abstract class SalesforceTask extends ForceTask {
     public int poll
     public int waitTime
     public ArrayList<String> arrayPaths
+    public String projectPackagePath
 
     /**
      * Sets description and group task
@@ -153,6 +154,7 @@ abstract class SalesforceTask extends ForceTask {
         logger.debug('Finished load credential')
         fileManager.createDirectory(buildFolderPath)
         logger.debug('Created directory at: ' + buildFolderPath)
+        projectPackagePath = Paths.get(projectPath, PACKAGE_NAME)
         runTask()
     }
 
