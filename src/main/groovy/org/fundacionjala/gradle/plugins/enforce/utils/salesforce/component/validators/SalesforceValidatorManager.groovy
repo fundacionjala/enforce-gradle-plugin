@@ -1,5 +1,6 @@
 package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators
 
+import org.codehaus.groovy.runtime.GStringImpl
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 
 /**
@@ -8,7 +9,7 @@ import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataCompone
  */
 public class SalesforceValidatorManager {
     private static Map<String, SalesforceValidator> validatorMap = [
-            MetadataComponents.DOCUMENTS.getDirectory(): new DocumentSalesforceValidator()
+            "${MetadataComponents.DOCUMENTS.getDirectory()}": new DocumentSalesforceValidator()
     ]
 
     /**
@@ -16,8 +17,9 @@ public class SalesforceValidatorManager {
      * defined in Salesforce
      */
     public static SalesforceValidator getValidator(String folderName) {
-        if (validatorMap.containsKey(folderName)) {
-           return validatorMap.get(folderName)
+        GStringImpl key = "${folderName}"
+        if (validatorMap.containsKey(key)) {
+           return validatorMap.get(key)
         }
         return new FileSalesforceValidator()
     }
