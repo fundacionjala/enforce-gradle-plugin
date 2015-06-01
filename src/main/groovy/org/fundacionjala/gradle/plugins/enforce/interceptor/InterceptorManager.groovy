@@ -35,7 +35,7 @@ class InterceptorManager {
      */
     public void buildInterceptors() {
         truncatedDirectories.each { dir ->
-            MetadataComponents componentType = MetadataComponents.getComponentByRelativePath(dir as String)
+            MetadataComponents componentType = MetadataComponents.getComponentByPath(dir as String)
             FactoryInterceptor factoryComponent = new FactoryInterceptor()
             MetadataInterceptor interceptor = factoryComponent.getInterceptor(componentType)
             if (interceptor) {

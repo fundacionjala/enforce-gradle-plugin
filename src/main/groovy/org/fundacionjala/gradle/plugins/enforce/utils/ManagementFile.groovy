@@ -6,6 +6,8 @@
 package org.fundacionjala.gradle.plugins.enforce.utils
 
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.SalesforceValidator
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.SalesforceValidatorManager
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -58,19 +60,7 @@ class ManagementFile {
         if (sourceFolder.exists()) {
             sourceFolder.eachFile { File folder ->
                 if (folder.isDirectory()) {
-                    folder.eachFile { file ->
-                        if (validateFileByFolder(folder.getName(), file.getName()) && !file.isDirectory()) {
-                            arrayValidFiles.push(file)
-                            File xmlFile = getValidateXmlFile(file)
-                            if (xmlFile) {
-                                arrayValidFiles.push(xmlFile)
-                            }
-                        } else if (COMPONENTS_HAVE_SUB_FOLDER.contains(folder.getName())) {
-                            if (file.isDirectory()) {
-                                arrayValidFiles.addAll(getFilesByFolder(folder.getName(), file))
-                            }
-                        }
-                    }
+                    arrayValidFiles.addAll(getValidFilesByForder(folder))
                 }
                 if (folder.getName() == PACKAGE_XML) {
                     arrayValidFiles.add(folder)
@@ -87,14 +77,14 @@ class ManagementFile {
      * @return an array of valid files
      */
     private ArrayList<File> getFilesByFolder(String parentName, File file) {
-        ArrayList<File> result = [:]
+        ArrayList<File> result = []
         file.eachFile { File reportFile ->
             File xmlReportFile = getValidateXmlFile(file)
             if (xmlReportFile) {
                 result.push(xmlReportFile)
             }
-
-            if (validateFileByFolder(parentName, reportFile.getName())) {
+            SalesforceValidator validator = SalesforceValidatorManager.getValidator(parentName)
+            if (validator.validateFileByFolder(parentName, reportFile)) {
                 result.push(reportFile)
             }
         }
@@ -134,22 +124,6 @@ class ManagementFile {
         return null
     }
 
-    /**
-     * Validates the file based in the folder name who belongs, following the saleforce definitions
-     * @param folderName
-     * @param file
-     * @return
-     */
-    public boolean validateFileByFolder(String folderName, String file) {
-        if (folderName == MetadataComponents.DOCUMENTS.getDirectory() && file.contains('.')) {
-            return true
-        }
-        String componentExtension = MetadataComponents.getExtensionByFolder(folderName)
-        if (!componentExtension) {
-            return false
-        }
-        return file.endsWith(componentExtension)
-    }
 
     /**
      * Copies array file in the path copy
@@ -289,7 +263,7 @@ class ManagementFile {
     /**
      * Gets array valid files by folders
      * @param sourcePath is type String
-     * @param folders ys type ArrayList
+     * @param folders is type ArrayList
      * @return files validated by folders
      */
     public ArrayList<File> getFilesByFolders(String sourcePath, ArrayList<String> folders) {
@@ -298,22 +272,35 @@ class ManagementFile {
         folders.each { folderName ->
             File folder = new File(Paths.get(sourcePath, folderName).toString())
             if (folder.exists()) {
-                folder.eachFile { file ->
-                    if (validateFileByFolder(folderName, file.getName()) && !file.isDirectory()) {
-                        filesByFolder.push(file)
-                        File xmlFile = new File("${file.getAbsolutePath().toString()}${METADATA_EXTENSION}")
-                        if (xmlFile.exists()) {
-                            filesByFolder.push(xmlFile)
-                        }
-                    } else if (COMPONENTS_HAVE_SUB_FOLDER.contains(folder.getName())) {
-                        if (file.isDirectory()) {
-                            filesByFolder.addAll(getFilesByFolder(folder.getName(), file))
-                        }
-                    }
-                }
+                filesByFolder.addAll(getValidFilesByForder(folder))
             }
         }
         return filesByFolder
+    }
+
+    /**
+     * Gets array valid files by folder
+     * @param folders is type ArrayList
+     * @return files validated by folders
+     */
+    private ArrayList<File> getValidFilesByForder(File folder) {
+        ArrayList<File> result = []
+        folder.eachFile { file ->
+            SalesforceValidator validator = SalesforceValidatorManager.getValidator(folder.getName())
+            if (validator.validateFileByFolder(folder.getName(), file)) {
+                result.push(file)
+                File xmlFile = new File("${file.getAbsolutePath().toString()}${METADATA_EXTENSION}")
+                if (xmlFile.exists()) {
+                    result.push(xmlFile)
+                }
+            } else if (COMPONENTS_HAVE_SUB_FOLDER.contains(folder.getName())) {
+                if (file.isDirectory()) {
+                    result.addAll(getFilesByFolder(folder.getName(), file))
+                }
+            }
+        }
+
+        return result
     }
 
     /**
