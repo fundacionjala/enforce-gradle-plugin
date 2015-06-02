@@ -197,19 +197,24 @@ abstract class SalesforceTask extends ForceTask {
      * @param dirToExclude the directory to exclude
      */
     public void deleteDir(String dirToDelete, String dirToExclude){
-        String tempDirPath = System.getProperty(Constants.TEMP_DIR_PATH)
-        def tempDir = new File(Paths.get(tempDirPath,"${Constants.TEMP_FOLDER_NAME}${Long.toString(System.nanoTime())}").toString())
-        if(!tempDir.mkdir()){
-            throw new IOException("Could not create temp directory: ${tempDir.getAbsolutePath()}");
-        }
-        project.copy {
-            from dirToExclude
-            into tempDir.absolutePath
+        File dirExcluded = new File(dirToExclude)
+        if(dirExcluded.exists()) {
+            String tempDirPath = System.getProperty(Constants.TEMP_DIR_PATH)
+            def tempDir = new File(Paths.get(tempDirPath, "${Constants.TEMP_FOLDER_NAME}${Long.toString(System.nanoTime())}").toString())
+            if (!tempDir.mkdir()) {
+                throw new IOException("Could not create temp directory: ${tempDir.getAbsolutePath()}");
+            }
+            project.copy {
+                from dirToExclude
+                into tempDir.absolutePath
+            }
         }
         project.delete project.files(dirToDelete)
-        project.copy {
-            from tempDir.absolutePath
-            into dirToExclude
+        if(dirExcluded.exists()) {
+            project.copy {
+                from tempDir.absolutePath
+                into dirToExclude
+            }
         }
     }
 
