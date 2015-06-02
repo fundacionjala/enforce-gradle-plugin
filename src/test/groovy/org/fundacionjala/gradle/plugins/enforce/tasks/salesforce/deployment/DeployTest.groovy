@@ -119,6 +119,7 @@ class DeployTest extends Specification {
             instanceDeploy.poll = 200
             instanceDeploy.waitTime = 10
             instanceDeploy.credential = credential
+            instanceDeploy.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
         when:
             instanceDeploy.runTask()
             def packageXmlToDeployDirectory =  new File(Paths.get(SRC_PATH, 'build', 'deploy', 'package.xml').toString()).text
@@ -354,6 +355,7 @@ class DeployTest extends Specification {
             instanceDeploy.poll = 200
             instanceDeploy.waitTime = 10
             instanceDeploy.credential = credential
+            instanceDeploy.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
             def deployFileZipPath = Paths.get(SRC_PATH,'build','deploy.zip').toString()
             def deployFolderPath = Paths.get(SRC_PATH,'build','deploy').toString()
             File deployFileZip = new File(deployFileZipPath)
@@ -363,6 +365,64 @@ class DeployTest extends Specification {
         then:
             !deployFileZip.exists()
             !deployFolder.exists()
+    }
+
+    def "Test should return class name that was excluded"() {
+        given:
+            String criterion = "classes${File.separator}class1.cls"
+            instanceDeploy.projectPath = SRC_PATH
+        when:
+            ArrayList<String> result = instanceDeploy.getFilesExcludes(criterion)
+        then:
+            result.size() == 1
+            result[0] == "classes${File.separator}class1.cls"
+    }
+
+    def "Test should return objects that were excluded"() {
+        given:
+            String criterion = "objects"
+            instanceDeploy.projectPath = SRC_PATH
+            String object2 = "objects${File.separator}Object2__c.object"
+            String object1 = "objects${File.separator}Object1__c.object"
+            String object3 = "objects${File.separator}Account.object"
+        when:
+            ArrayList<String> result = instanceDeploy.getFilesExcludes(criterion)
+        then:
+            result.sort() == [object1, object2, object3].sort()
+    }
+
+    def "Test should return Account object that were excluded"() {
+        given:
+            String criterion = "**/Account.object"
+            instanceDeploy.projectPath = SRC_PATH
+            String accountObject1 = "objects${File.separator}Account.object"
+            String accountObject2 = "src${File.separator}objects${File.separator}Account.object"
+        when:
+            ArrayList<String> result = instanceDeploy.getFilesExcludes(criterion)
+        then:
+            result.sort() == [accountObject1, accountObject2].sort()
+    }
+
+    def "Test should return Document component that was excluded"() {
+        given:
+            String criterion = "documents"
+            instanceDeploy.projectPath = SRC_PATH
+            String document1 = "documents${File.separator}myDocuments${File.separator}doc.txt"
+            String document2 = "documents${File.separator}myDocuments${File.separator}doc2.txt"
+        when:
+            ArrayList<String> result = instanceDeploy.getFilesExcludes(criterion)
+        then:
+            result.sort() == [document1, document2].sort()
+    }
+
+    def "Test should return Report component that was excluded"() {
+        given:
+            String criterion = "reports"
+            instanceDeploy.projectPath = SRC_PATH
+        when:
+            ArrayList<String> result = instanceDeploy.getFilesExcludes(criterion)
+        then:
+            result.sort() == ["reports${File.separator}myreports${File.separator}reportTest.report"].sort()
     }
 
     def cleanupSpec() {

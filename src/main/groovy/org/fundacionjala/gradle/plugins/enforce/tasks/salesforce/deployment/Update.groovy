@@ -16,12 +16,8 @@ import java.nio.file.Paths
  * Updates an org using metadata API
  */
 class Update extends Deployment {
-    private static final String DESCRIPTION_OF_TASK = "This task deploys just the files that were changed"
-    private final String FOLDERS_DEPLOY = "folders"
-    private final String DIR_UPDATE_FOLDER = "update"
-    private final String FILE_NAME_DESTRUCTIVE = "destructiveChanges.xml"
-    private final String NOT_FILES_CHANGED = "There are not files changed"
     public String pathUpdate
+    public String updatePackagePath
     ArrayList<File> filesToCopy
     ArrayList<File> filesToUpdate
     String folders
@@ -34,7 +30,7 @@ class Update extends Deployment {
      * @param group is the group typeName the task
      */
     Update() {
-        super(DESCRIPTION_OF_TASK, Constants.DEPLOYMENT)
+        super(Constants.UPDATE_DESCRIPTION, Constants.DEPLOYMENT)
         filesToCopy = new ArrayList<File>()
         filesToUpdate = new ArrayList<File>()
         filesExcludes = new ArrayList<File>()
@@ -47,14 +43,15 @@ class Update extends Deployment {
      */
     @Override
     void runTask() {
-        pathUpdate = Paths.get(buildFolderPath, DIR_UPDATE_FOLDER).toString()
+        pathUpdate = Paths.get(buildFolderPath, Constants.DIR_UPDATE_FOLDER).toString()
+        updatePackagePath = Paths.get(pathUpdate, PACKAGE_NAME).toString()
         createDeploymentDirectory(pathUpdate)
         loadFilesChanged()
         verifyParameter()
         excludeFilesFromFilesChanged()
         showFilesChanged()
         if (packageGenerator.fileTrackerMap.isEmpty()) {
-            logger.quiet(NOT_FILES_CHANGED)
+            logger.quiet(Constants.NOT_FILES_CHANGED)
             return
         }
         createDestructive()
@@ -62,6 +59,7 @@ class Update extends Deployment {
         copyFilesChanged()
         showFilesExcludes()
         truncate(pathUpdate)
+        combinePackage(updatePackagePath)
         executeDeploy(pathUpdate)
         packageGenerator.saveFileTrackerMap()
     }
@@ -87,7 +85,7 @@ class Update extends Deployment {
      * Creates package to all files which has been deleted
      */
     def createDestructive() {
-        packageGenerator.buildDestructive(Paths.get(pathUpdate, FILE_NAME_DESTRUCTIVE).toString())
+        packageGenerator.buildDestructive(Paths.get(pathUpdate, Constants.FILE_NAME_DESTRUCTIVE).toString())
     }
 
     /**
@@ -102,7 +100,7 @@ class Update extends Deployment {
      * Verifies if there is files changed in folders inserted by user
      */
     def verifyParameter() {
-        if (Util.isValidProperty(project, FOLDERS_DEPLOY)) {
+        if (Util.isValidProperty(project, Constants.FOLDERS_DEPLOY)) {
             folders = project.folders
         }
 

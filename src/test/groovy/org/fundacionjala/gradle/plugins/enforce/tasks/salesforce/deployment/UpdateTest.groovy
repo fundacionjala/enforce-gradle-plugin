@@ -230,6 +230,7 @@ class UpdateTest extends Specification {
             componentSerializer.save(mapMock)
             updateInstance.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
             updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
+            updateInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
             def newFilePath = Paths.get(SRC_PATH, 'src', 'classes', 'Class2.cls').toString()
             def newXmlFilePath = Paths.get(SRC_PATH, 'src', 'classes', 'Class2.cls-meta.xml').toString()
             FileWriter newFile = new FileWriter(newFilePath)
@@ -274,6 +275,7 @@ class UpdateTest extends Specification {
             updateInstance.credential = credential
             updateInstance.project.enforce.deleteTemporaryFiles = true
             componentMonitor.srcProject = Paths.get(SRC_PATH,'src').toString()
+            updateInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
             componentSerializer.sourcePath = Paths.get(SRC_PATH,'src','.fileTracker.data').toString()
             componentSerializer.save(componentMonitor.getComponentsSignature([]))
             def newTemporalClassPath = Paths.get(SRC_PATH, 'src', 'classes', 'Class2.cls').toString()

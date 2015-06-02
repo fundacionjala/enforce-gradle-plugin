@@ -24,20 +24,17 @@ public enum MetadataComponents {
     ASSIGNMENTRULES("AssignmentRules", "assignmentRules", "assignmentRules"),
     OBJECTTRANSLATIONS("CustomObjectTranslation", "objectTranslation", "objectTranslations"),
     APPROVALPROCESSES("ApprovalProcess", "approvalProcess", "approvalProcesses"),
-    CAMPAIGNSHARINGRULES("CampaignSharingRules", "", "campaignSharingRules"),
+    SHARINGRULES("SharingRules", ".sharingRules", "sharingRules"),
     APPLICATIONS("CustomApplication", "app", "applications"),
     WEBLINKS("CustomPageWebLink", "weblink", "weblinks"),
     DASHBOARDS("Dashboard", "dashboard", "dashboards"),
     OBJECTS("CustomObject", "object", "objects"),
-    ACCOUNTSHARINGRULES("AccountSharingRules", "", "accountSharingRules"),
     GROUPS("Group", "group", "groups"),
     STATICRESOURCES("StaticResource", "resource", "staticresources"),
-    ESCALATIONRULES("EscalationRules", "", "escalationRules"),
-    CUSTOMOBJECTSHARINGRULES("CustomObjectSharingRules", "", "customObjectSharingRules"),
+    ESCALATIONRULES("EscalationRules", "escalationRules", "escalationRules"),
     REPORTS("Report", "report", "reports"),
     HOMEPAGECOMPONENTS("HomePageComponent", "homePageComponent", "homePageComponents"),
     LABELS("CustomLabels", "labels", "labels"),
-    OPPORTUNITYSHARINGRULES("OpportunitySharingRules", "", "opportunitySharingRules"),
     CONNECTEDAPPS("ConnectedApp", "connectedapp", "connectedApps"),
     FLOWS("Flow", "flow", "flows"),
     AUTHPROVIDERS("AuthProvider", "authprovider", "authproviders"),
@@ -45,11 +42,9 @@ public enum MetadataComponents {
     EMAIL("EmailTemplate", "email", "email"),
     ROLES("Role", "role", "roles"),
     COMPONENTS("ApexComponent", "component", "components"),
-    LEADSHARINGRULES("LeadSharingRules", "", "leadSharingRules"),
     CUSTOMAPPLICATIONCOMPONENTS("CustomApplicationComponent", "customApplicationComponent", "customApplicationComponents"),
     LAYOUTS("Layout", "layout", "layouts"),
     HOMEPAGELAYOUTS("HomePageLayout", "homePageLayout", "homePageLayouts"),
-    CONTACTSHARINGRULES("ContactSharingRules", "", "contactSharingRules"),
     ANALYTICSNAPSHOTS("AnalyticSnapshot", "analyticsnapshot", "analyticSnapshots"),
     AUTORESPONSERULES("AutoResponseRules", "autoResponseRules", "autoResponseRules"),
     DATACATEGORYGROUPS("DataCategoryGroup", "datacategorygroup", "datacategorygroups"),
@@ -59,7 +54,6 @@ public enum MetadataComponents {
     PAGES("ApexPage", "page", "pages"),
     LETTERHEAD("Letterhead", "letter", "letterhead"),
     REPORTTYPES("ReportType", "reportType", "reportTypes"),
-    CASESHARINGRULES("CaseSharingRules", "", "caseSharingRules"),
     SYNONYMDICTIONARIES("SynonymDictionary", "synonymDictionary", "synonymDictionaries"),
     POSTTEMPLATES("PostTemplate", "postTemplate", "postTemplates"),
     QUICKACTIONS("QuickAction", "quickAction", "quickActions"),
@@ -79,6 +73,7 @@ public enum MetadataComponents {
     SHARINGREASON("SharingReason", "sbc", "SharingReason"),
     OBJECTWEBLINKS("Weblink", "sbc", "webLinks"),
     CUSTOMPERMISSIONS("CustomPermission", "customPermission", "customPermissions")
+
 
     public final static Map<String, MetadataComponents> COMPONENT;
 
@@ -121,7 +116,7 @@ public enum MetadataComponents {
      * @param path is the relative path in the project
      * @return a MetadataComponent
      */
-    public static MetadataComponents getComponentByRelativePath(String path) {
+    public static MetadataComponents getComponentByPath(String path) {
         MetadataComponents metadataComponent
         String folder = Util.getFirstPath(path)
         for (MetadataComponents component : values()) {
@@ -143,6 +138,39 @@ public enum MetadataComponents {
         MetadataComponents metadataComponent
         for (MetadataComponents component : values()) {
             if (component.getTypeName() == name) {
+                metadataComponent = component
+                break
+            }
+        }
+        return metadataComponent
+    }
+
+    /**
+     * gets a component by folder
+     * @param folder is folder component
+     * @return a metadataComponent object
+     */
+    public static getComponentByFolder(String folder) {
+        MetadataComponents metadataComponent
+        for (MetadataComponents component : values()) {
+            if (component.getDirectory() == folder) {
+                metadataComponent = component
+                break
+            }
+        }
+        return metadataComponent
+    }
+
+    /**
+     * Gets a MetadataComponent by extension
+     * @param extension is component extension
+     * @return a MetadataComponent object
+     */
+    public static MetadataComponents getComponentByExtension(String extension) {
+
+        MetadataComponents metadataComponent
+        for (MetadataComponents component : values()) {
+            if (component.getExtension() == extension) {
                 metadataComponent = component
                 break
             }

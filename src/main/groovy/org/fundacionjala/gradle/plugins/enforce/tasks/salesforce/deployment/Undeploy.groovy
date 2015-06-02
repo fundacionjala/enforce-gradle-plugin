@@ -12,7 +12,6 @@ import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponent
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageCombiner
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.QueryBuilder
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
 import org.gradle.api.GradleException
@@ -26,26 +25,18 @@ import java.nio.file.StandardCopyOption
  * Undeploys an org using metadata API
  */
 class Undeploy extends Deployment {
-    private final String START_MESSAGE_TRUNCATE = 'Starting undeploy...'
-    private final String SUCCESS_MESSAGE_TRUNCATE = 'All components truncated were successfully uploaded'
-    private final String SUCCESS_MESSAGE_DELETE = 'The files were successfully deleted'
-    private final String FILE_NAME_DESTRUCTIVE = "destructiveChanges.xml"
-    private final String CUSTOM_FIELD_NAME = 'CustomField'
-    private final String WORK_FLOW_RULE_NAME = 'WorkflowRule'
-    private final String DIR_UN_DEPLOY = "undeploy"
     private List includesComponents
     private FileTree files
     private ArrayList<String> workflowNames
     private ArrayList<File> workflowFiles
     private QueryBuilder queryBuilder
-    public final String LOOKUP_NAME = 'Lookup'
+
     public ToolingAPI toolingAPI
     public PackageComponent packageComponent
     public ArrayList<File> filesToTruncate
     public String folderUnDeploy
     public String unDeployPackagePath
     public String unDeployDestructivePath
-    public String projectPackagePath
     public SmartFilesValidator smartFilesValidator
     InterceptorManager componentManager
     List<String> standardComponents
@@ -56,7 +47,7 @@ class Undeploy extends Deployment {
      * @param group is the group typeName the task
      */
     Undeploy() {
-        super('This task removes all components in your organization according to local repository', Constants.DEPLOYMENT)
+        super(Constants.UN_DEPLOY_DESCRIPTION, Constants.DEPLOYMENT)
         filesToTruncate = new ArrayList<File>()
         componentManager = new InterceptorManager()
         componentManager.buildInterceptors()
@@ -78,15 +69,13 @@ class Undeploy extends Deployment {
 
     /**
      * Creates undeploy folder into build directory
-     * Sets package path from build directory and project directory
      * Sets destructive path to build directory
      */
     def setupFilesToUnDeploy() {
-        folderUnDeploy = Paths.get(buildFolderPath, DIR_UN_DEPLOY).toString()
+        folderUnDeploy = Paths.get(buildFolderPath, Constants.DIR_UN_DEPLOY).toString()
         createDeploymentDirectory(folderUnDeploy)
         unDeployPackagePath = Paths.get(folderUnDeploy, PACKAGE_NAME).toString()
-        unDeployDestructivePath = Paths.get(folderUnDeploy, FILE_NAME_DESTRUCTIVE).toString()
-        projectPackagePath = Paths.get(projectPath, PACKAGE_NAME).toString()
+        unDeployDestructivePath = Paths.get(folderUnDeploy, Constants.FILE_NAME_DESTRUCTIVE).toString()
     }
 
     /**
@@ -115,8 +104,9 @@ class Undeploy extends Deployment {
      */
     def deployTruncatedComponents() {
         writePackage(unDeployPackagePath, filesToTruncate)
-        componentDeploy.startMessage = START_MESSAGE_TRUNCATE
-        componentDeploy.successMessage = SUCCESS_MESSAGE_TRUNCATE
+        componentDeploy.startMessage = Constants.START_MESSAGE_TRUNCATE
+        componentDeploy.successMessage = Constants.SUCCESS_MESSAGE_TRUNCATE
+        combinePackage(unDeployPackagePath)
         executeDeploy(folderUnDeploy)
     }
 
@@ -138,15 +128,15 @@ class Undeploy extends Deployment {
         ArrayList<File> objectFiles = files.getFiles().sort()
         objectFiles = excludeFiles(objectFiles)
         savePackage()
-        updatePackage(CUSTOM_FIELD_NAME, getFields(objectFiles), unDeployDestructivePath)
+        updatePackage(Constants.CUSTOM_FIELD_NAME, getFields(objectFiles), unDeployDestructivePath)
         if (!workflowNames.empty) {
             workflowFiles = project.fileTree(dir: projectPath, includes: workflowNames).toList()
             workflowFiles = excludeFiles(workflowFiles)
-            updatePackage(WORK_FLOW_RULE_NAME, getRules(workflowFiles), unDeployDestructivePath)
+            updatePackage(Constants.WORK_FLOW_RULE_NAME, getRules(workflowFiles), unDeployDestructivePath)
         }
         componentDeploy.startMessage = ""
-        componentDeploy.successMessage = SUCCESS_MESSAGE_DELETE
-        PackageCombiner.packageCombine(projectPackagePath, unDeployDestructivePath)
+        componentDeploy.successMessage = Constants.SUCCESS_MESSAGE_DELETE
+        combinePackage(unDeployDestructivePath)
         executeDeploy(folderUnDeploy)
     }
 
@@ -249,7 +239,7 @@ class Undeploy extends Deployment {
         CustomObject.fields.each { field ->
             def type = field.type.text()
             String objReference = "${field.referenceTo.text()}.${MetadataComponents.OBJECTS.getExtension()}"
-            if (type == LOOKUP_NAME && PackageComponent.existObject(objectFile.parent, objReference)) {
+            if (type == Constants.LOOKUP_NAME && PackageComponent.existObject(objectFile.parent, objReference)) {
                 customFields.add("${objectName}.${field.fullName.text()}")
             }
         }
