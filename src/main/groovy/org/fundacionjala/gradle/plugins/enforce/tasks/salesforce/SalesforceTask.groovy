@@ -16,7 +16,6 @@ import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageBuilder
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.gradle.api.GradleException
-import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.bundling.Zip
 
 import java.nio.file.Paths
@@ -105,7 +104,7 @@ abstract class SalesforceTask extends ForceTask {
      */
     void writePackage(String packagePath, ArrayList<File> files) {
         FileWriter fileWriter = new FileWriter(packagePath)
-        files = files.grep({ file->
+        files = files.grep({ file ->
             !file.name.endsWith(Constants.META_XML_NAME)
         })
         packageBuilder.createPackage(files, projectPath)
@@ -122,13 +121,13 @@ abstract class SalesforceTask extends ForceTask {
         this.packageLoaded = packagePath
         packageBuilder.createPackage(files, projectPath)
     }
-    
+
     /**
      * Saves package created
      */
     void savePackage() {
         if (!this.packageLoaded) {
-            throw new DeployException(SAVE_PACKAGE_ERROR,[])
+            throw new DeployException(SAVE_PACKAGE_ERROR, [])
         }
         FileWriter fileWriter = new FileWriter(this.packageLoaded)
         packageBuilder.write(fileWriter)
@@ -138,15 +137,13 @@ abstract class SalesforceTask extends ForceTask {
     /**
      * Updates the package prepared
      */
-    void updatePackage(String nameOfType,ArrayList<String> members, String pathPackage) {
+    void updatePackage(String nameOfType, ArrayList<String> members, String pathPackage) {
         if (packageBuilder == null && !this.packageLoaded) {
             throw new DeployException(UPDATE_PACKAGE_ERROR, [])
         }
         File file = new File(pathPackage)
         packageBuilder.update(nameOfType, members, file)
     }
-
-
 
     /**
      * Creates a zip file
@@ -196,9 +193,9 @@ abstract class SalesforceTask extends ForceTask {
      * @param dirToDelete the directory to delete
      * @param dirToExclude the directory to exclude
      */
-    public void deleteDir(String dirToDelete, String dirToExclude){
+    public void deleteDir(String dirToDelete, String dirToExclude) {
         File dirExcluded = new File(dirToExclude)
-        if(dirExcluded.exists()) {
+        if (dirExcluded.exists()) {
             String tempDirPath = System.getProperty(Constants.TEMP_DIR_PATH)
             def tempDir = new File(Paths.get(tempDirPath, "${Constants.TEMP_FOLDER_NAME}${Long.toString(System.nanoTime())}").toString())
             if (!tempDir.mkdir()) {
@@ -210,7 +207,7 @@ abstract class SalesforceTask extends ForceTask {
             }
         }
         project.delete project.files(dirToDelete)
-        if(dirExcluded.exists()) {
+        if (dirExcluded.exists()) {
             project.copy {
                 from tempDir.absolutePath
                 into dirToExclude
@@ -221,12 +218,11 @@ abstract class SalesforceTask extends ForceTask {
     /**
      * Deletes all temporary files excluding the log files
      */
-    public void deleteTemporaryFiles(){
-        if(project.enforce.deleteTemporaryFiles) {
+    public void deleteTemporaryFiles() {
+        if (project.enforce.deleteTemporaryFiles) {
             deleteDir(buildFolderPath, Paths.get(buildFolderPath, Constants.LOGS_FOLDER_NAME).toString())
         }
     }
-
 
     /**
      * Load credential, gets version api and execute the method run
