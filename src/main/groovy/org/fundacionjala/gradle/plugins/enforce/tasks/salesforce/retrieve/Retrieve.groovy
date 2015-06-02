@@ -20,7 +20,7 @@ import java.nio.file.Paths
 class Retrieve extends Retrieval {
     private static final String GROUP_OF_TASK = "Retrieve"
     private static final String DESCRIPTION_OF_TASK = 'This task recover specific files from an organization'
-    private static final String MESSAGE_WARNING = 'Warning: All files according to package will be downloaded'
+    private static final String MESSAGE_WARNING = 'Warning: All files will be downloaded according to the package'
     private static final String MESSAGE_CANCELED = 'Retrieve task was canceled!!'
     private static final String QUESTION_TO_CONTINUE = 'Do you want to continue? (y/n) : '
     private final String FILES_RETRIEVE = 'files'
@@ -69,6 +69,7 @@ class Retrieve extends Retrieval {
             }
             retrieveWithPackageXml()
         }
+        deleteTemporaryFiles()
     }
 
     /**

@@ -27,6 +27,9 @@ public class Constants {
     public static final String UNSUPPORTED_FOLDERS = "unsupported folders"
     public static final String JENKINS_CHART_NAME = "Code coverage"
     public static final String FALSE = "false"
+    public static final String TEMP_DIR_PATH = "java.io.tmpdir"
+    public static final String TEMP_FOLDER_NAME = "temp_enforce"
+    public static final String LOGS_FOLDER_NAME = "logs"
 
     public static final int ZERO = 0
 
