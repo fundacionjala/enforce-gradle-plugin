@@ -58,6 +58,9 @@ public class Constants {
 
     public static final ArrayList<String> FOLDERS_TO_TRUNCATE = ['classes', 'objects', 'triggers', 'pages', 'components', 'workflows']
 
+    //I/O constants
+    public static final String IO_MESSAGE_TEMP_DIR = 'Could not create temp directory'
+
     //UnDeploy task constants
     public static final String UN_DEPLOY_DESCRIPTION = 'This task removes all components in your organization according to local repository'
     public static final String START_MESSAGE_TRUNCATE = 'Starting undeploy...'
@@ -83,5 +86,11 @@ public class Constants {
     public static final String UPDATE_DESCRIPTION = "This task deploys just the files that were changed"
     public static final String DIR_UPDATE_FOLDER = "update"
     public static final String NOT_FILES_CHANGED = "There are not files changed"
+
+    //Retrieve task constants
+    public static final String RETRIEVE_DESCRIPTION_OF_TASK = 'This task recover specific files from an organization'
+    public static final String RETRIEVE_MESSAGE_WARNING = 'Warning: All files will be downloaded according to the package'
+    public static final String RETRIEVE_MESSAGE_CANCELED = 'Retrieve task was canceled!!'
+    public static final String RETRIEVE_QUESTION_TO_CONTINUE = 'Do you want to continue? (y/n) : '
 
 }
