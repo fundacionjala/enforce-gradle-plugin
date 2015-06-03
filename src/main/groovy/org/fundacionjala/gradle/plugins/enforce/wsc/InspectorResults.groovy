@@ -6,6 +6,7 @@
 package org.fundacionjala.gradle.plugins.enforce.wsc
 
 import com.sforce.soap.metadata.DeployResult
+import com.sforce.soap.metadata.DeployStatus
 import com.sforce.soap.metadata.MetadataConnection
 import com.sforce.soap.metadata.RetrieveResult
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
@@ -48,6 +49,10 @@ class InspectorResults {
             }
             Thread.sleep(waitTimeMilliSecs)
             deployResult = metadataConnection.checkDeployStatus(asyncResultId, true)
+            if (deployResult.status == DeployStatus.Failed) {
+                String message = deployResult.errorMessage + '\n\n' + deployResult.stateDetail
+                throw new Exception(message)
+            }
             percent = getDeployPercentage(deployResult)
             writePercent(percent)
             if (percent == HUNDRED && deployResult.done) {
