@@ -3,6 +3,8 @@ package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.vali
 import spock.lang.Shared
 import spock.lang.Specification
 
+import java.nio.file.Paths
+
 class DocumentSalesforceValidatorTest extends Specification {
 
     @Shared
@@ -25,7 +27,7 @@ class DocumentSalesforceValidatorTest extends Specification {
 
     def "Test should validate a document in the valid folder"() {
         given:
-            def file = new File('mydocuments/doc1.docx')
+            def file = new File(Paths.get('mydocuments/doc1.docx').toString())
             def folder = 'documents'
         when:
             def result = validator.validateFileByFolder(folder, file)
