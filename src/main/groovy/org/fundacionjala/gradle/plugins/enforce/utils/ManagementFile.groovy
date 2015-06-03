@@ -214,7 +214,7 @@ class ManagementFile {
         if (dir.exists()) {
             dir.deleteDir()
         }
-        dir.mkdir()
+        dir.mkdirs()
     }
 
     /**

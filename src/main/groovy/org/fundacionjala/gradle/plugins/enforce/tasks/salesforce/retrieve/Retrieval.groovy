@@ -49,7 +49,7 @@ abstract class Retrieval extends SalesforceTask {
     void saveOnDiskFileUnzipped(byte[] zipFile) {
         ZipFileManager zipFileManager = new ZipFileManager()
         zipFileManager.flushZipFile(zipFile, buildFolderPath, ZIP_FILE_NAME)
-        zipFileManager.unzipZipRetrieved(Paths.get(buildFolderPath, ZIP_FILE_NAME).toString(), buildFolderPath)
+        unZip(Paths.get(buildFolderPath, ZIP_FILE_NAME).toString(), buildFolderPath)
     }
 
     /**
