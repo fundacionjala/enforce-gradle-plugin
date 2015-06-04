@@ -287,4 +287,15 @@ abstract class Deployment extends SalesforceTask {
             PackageCombiner.removeMembersFromPackage(buildPackagePath, getFilesExcludes(excludes))
         }
     }
+
+    /**
+     * Combines package from build folder and package from source directory
+     * @return
+     */
+    def combinePackageToUpdate(String buildPackagePath) {
+        PackageCombiner.packageCombineToUpdate(projectPackagePath, buildPackagePath)
+        if (excludes) {
+            PackageCombiner.removeMembersFromPackage(buildPackagePath, getFilesExcludes(excludes))
+        }
+    }
 }

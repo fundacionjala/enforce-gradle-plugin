@@ -104,9 +104,9 @@ class Undeploy extends Deployment {
      */
     def deployTruncatedComponents() {
         writePackage(unDeployPackagePath, filesToTruncate)
+        combinePackage(unDeployPackagePath)
         componentDeploy.startMessage = Constants.START_MESSAGE_TRUNCATE
         componentDeploy.successMessage = Constants.SUCCESS_MESSAGE_TRUNCATE
-        combinePackage(unDeployPackagePath)
         executeDeploy(folderUnDeploy)
     }
 
