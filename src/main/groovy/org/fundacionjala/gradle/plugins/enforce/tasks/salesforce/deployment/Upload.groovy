@@ -58,7 +58,6 @@ class Upload extends Deployment {
             copyFilesToUpload()
             createPackage()
             truncate(pathUpload)
-            combinePackage(uploadPackagePath)
             executeDeploy(pathUpload)
             saveMapOfFilesChanged()
         } else {
@@ -162,6 +161,7 @@ class Upload extends Deployment {
     public void createPackage() {
         if (!specificFilesToUpload.empty) {
             writePackage(Paths.get(pathUpload, PACKAGE_NAME).toString(), specificFilesToUpload)
+            combinePackageToUpdate(uploadPackagePath)
         }
     }
 
