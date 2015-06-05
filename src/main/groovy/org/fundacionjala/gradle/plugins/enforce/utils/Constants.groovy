@@ -37,6 +37,7 @@ public class Constants {
     public static final String POINT = "."
     public static final String WILDCARD = "*"
     public static final String SLASH = '/'
+    public static final String BACK_SLASH = '\\\\'
 
     public static final String OBJECT_EXTENSION = 'object'
 

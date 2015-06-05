@@ -184,11 +184,11 @@ class Util {
      */
     public static String getRelativePath(File file, String basePath, boolean normalizePath = true) {
         File root = new File(basePath)
-        String relativePath = root.toURI().relativize(file.toURI()).toString()
+        String relativePath = root.toPath().relativize(file.toPath()).toString()
         if (normalizePath) {
             return Paths.get(relativePath).toString()
         }
-        return relativePath
+        return relativePath.replaceAll(Constants.BACK_SLASH, Constants.SLASH)
     }
 
     /**

@@ -346,7 +346,6 @@ class DeployTest extends Specification {
             thrown(Exception)
     }
 
-
     def "Integration testing must deploy the organization files and delete temporary files generated"() {
         given:
             instanceDeploy.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
