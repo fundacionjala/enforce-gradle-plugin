@@ -79,7 +79,7 @@ class DeleteTest extends Specification {
             deleteInstance.createPackageEmpty()
 
         then:
-            filesExpected.sort{ it.getAbsolutePath() }.equals( deleteInstance.filesToDeleted.sort{ it.getAbsolutePath() })
+            filesExpected.sort().equals( deleteInstance.filesToDeleted.sort())
     }
 
     def "Integration testing must list files filtered for folders to delete"() {
@@ -107,7 +107,7 @@ class DeleteTest extends Specification {
             deleteInstance.createPackageEmpty()
 
         then:
-            filesExpected.sort{ it.getAbsolutePath() }.equals( deleteInstance.filesToDeleted.sort{ it.getAbsolutePath() })
+            filesExpected.sort().equals( deleteInstance.filesToDeleted.sort())
     }
 
     def "Integration testing must list files filtered for files to delete"() {
@@ -133,7 +133,7 @@ class DeleteTest extends Specification {
             deleteInstance.createPackageEmpty()
 
         then:
-            filesExpected.sort{ it.getAbsolutePath() }.equals( deleteInstance.filesToDeleted.sort{ it.getAbsolutePath() })
+            filesExpected.sort().equals( deleteInstance.filesToDeleted.sort())
     }
 
     def "Integration testing must list all the files less exclude to delete"() {
@@ -164,10 +164,11 @@ class DeleteTest extends Specification {
             deleteInstance.createPackageEmpty()
 
         then:
-            filesExpected.sort{ it.getAbsolutePath() }.equals( deleteInstance.filesToDeleted.sort{ it.getAbsolutePath() })
+            filesExpected.sort().equals( deleteInstance.filesToDeleted.sort())
     }
 
     def cleanupSpec() {
         new File(Paths.get(SRC_PATH, 'build').toString()).deleteDir()
+        new File(Paths.get(SRC_PATH, 'src', '.fileTracker.data').toString()).delete()
     }
 }
