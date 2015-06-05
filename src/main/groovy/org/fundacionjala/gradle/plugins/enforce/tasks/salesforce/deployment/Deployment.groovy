@@ -32,6 +32,7 @@ abstract class Deployment extends SalesforceTask {
     public final String SLASH = "/"
     public final String BACKSLASH = "\\\\"
 
+
     /**
      * Sets description and group task
      * @param descriptionTask is description tasks
@@ -217,6 +218,73 @@ abstract class Deployment extends SalesforceTask {
     }
 
     /**
+     * Add files int a folder
+     * @param files  list of files to the new files will be added
+     * @return files  list of files with the new files added
+     */
+    def addAllFilesInAFolder(ArrayList<File> files) {
+        if (!Util.isValidProperty(parameters, Constants.PARAMETER_FOLDERS) && !Util.isValidProperty(parameters, Constants.PARAMETER_FILES)) {
+            files = files + fileManager.getAllFilesOf(projectPath)
+        }
+        return files
+    }
+
+    /**
+     * Add files from folders
+     * @param files  list of files to the new files will be added
+     * @return files  list of files with the new files added
+     */
+    def addFilesFromFolders(ArrayList<File> files) {
+        String folderNames
+        if (Util.isValidProperty(parameters, Constants.PARAMETER_FOLDERS)) {
+            folderNames = parameters[Constants.PARAMETER_FOLDERS].toString()
+        }
+        if (folderNames) {
+            ArrayList<String> foldersName = folderNames.split(Constants.COMMA)
+            ArrayList<String> invalidFolders = Util.getInvalidFolders(foldersName)
+            validateFolders(foldersName)
+            if (!invalidFolders.empty) {
+                throw new Exception("${Constants.INVALID_FOLDER}: ${invalidFolders}")
+            }
+            files = fileManager.getFilesByFolders(projectPath, folderNames.split(Constants.COMMA) as ArrayList<String>)
+        }
+        files.unique { a, b -> a <=> b }
+        return files
+    }
+
+    /**
+     * Add files to
+     * @param files  list of files to the new files will be added
+     * @return files  list of files with the new files added
+     */
+    public addFilesTo(ArrayList<File> files) {
+        String fileNames
+        if (Util.isValidProperty(parameters, Constants.PARAMETER_FILES) && !Util.isEmptyProperty(parameters, Constants.PARAMETER_FILES)) {
+            fileNames = parameters[Constants.PARAMETER_FILES].toString()
+        }
+        ArrayList<String> filesName = new ArrayList<String>()
+        if (fileNames == null) {
+            return files
+        }
+        validateParameter(fileNames)
+        fileNames.split(Constants.COMMA).each {String fileName ->
+            def fileNameChanged = fileName.replaceAll(BACKSLASH, SLASH)
+            if (!fileNameChanged.contains(SLASH)) {
+                filesName.push("${fileName}${File.separator}${Constants.WILDCARD}${Constants.WILDCARD}")
+                return files
+            }
+            filesName.push(fileName)
+            filesName.push("${fileName}${Constants.META_XML}")
+        }
+
+        FileTree fileTree = project.fileTree(dir:projectPath, includes: filesName)
+        fileTree.each {File file ->
+            files.push(file)
+        }
+        return files
+    }
+
+    /**
      * Excludes files
      * @param filesToFilter files that will be filter
      * @return ArrayList with files filter
@@ -224,16 +292,19 @@ abstract class Deployment extends SalesforceTask {
     public excludeFiles(ArrayList<File> filesToFilter) {
         if (filesToFilter == null) {
             logger.error("${Constants.NULL_PARAM_EXCEPTION} filesToFilter")
+            return filesToFilter
         }
-        ArrayList<File> filesFiltered = filesToFilter.clone() as ArrayList<File>
-        if (Util.isValidProperty(project, EXCLUDES) && !Util.isEmptyProperty(project, EXCLUDES)) {
-            excludes = project.excludes as String
+        else {
+            ArrayList<File> filesFiltered = filesToFilter.clone() as ArrayList<File>
+            if (Util.isValidProperty(parameters, Constants.PARAMETER_EXCLUDES) && !Util.isEmptyProperty(parameters, Constants.PARAMETER_EXCLUDES)) {
+                excludes = parameters[Constants.PARAMETER_EXCLUDES].toString()
+            }
+            if (excludes) {
+                validateParameter(excludes)
+                filesFiltered = excludeFilesByCriterion(filesFiltered, excludes)
+            }
+            return filesFiltered
         }
-        if (excludes) {
-            validateParameter(excludes)
-            filesFiltered = excludeFilesByCriterion(filesFiltered, excludes)
-        }
-        return filesFiltered
     }
 
     /**

@@ -5,7 +5,6 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 
-import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageGenerator
@@ -18,13 +17,11 @@ import java.nio.file.Paths
 class Delete extends Deployment {
     private static final String DESCRIPTION_OF_TASK = "This task deploys just the files that were changed"
     private final String DIR_DELETE_FOLDER = "delete"
-    private static final String PARAMETER_FOLDERS= "folders"
     private final String FILE_NAME_DESTRUCTIVE = "destructiveChanges.xml"
-    public String pathUpdate
-    ArrayList<File> filesToUpdate
-    String folders
-    ArrayList<File> filesExcludes
-    PackageGenerator packageGenerator
+    private final String FILE_NAME_PACKAGE = "package.xml"
+    public String pathDetele
+    public String option
+    public ArrayList<File> filesToDeleted
 
     /**
      * Sets description and group task
@@ -33,10 +30,7 @@ class Delete extends Deployment {
      */
     Delete() {
         super(DESCRIPTION_OF_TASK, Constants.DEPLOYMENT)
-        filesToUpdate = new ArrayList<File>()
-        filesExcludes = new ArrayList<File>()
-        packageGenerator = new PackageGenerator()
-        interceptorsToExecute = [org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.REMOVE_DEPRECATE.id]
+        filesToDeleted = new ArrayList<File>()
     }
 
     /**
@@ -44,84 +38,73 @@ class Delete extends Deployment {
      */
     @Override
     void runTask() {
-        pathUpdate = Paths.get(buildFolderPath, DIR_DELETE_FOLDER).toString()
-        createDeploymentDirectory(pathUpdate)
-        loadFilesChanged()
-        verifyParameter()
-        excludeFilesFromFilesChanged()
-        createDestructive()
-        createPackage()
-//        executeDeploy(pathUpdate)
+        pathDetele = Paths.get(buildFolderPath, DIR_DELETE_FOLDER).toString()
+        createDeploymentDirectory(pathDetele)
+        addAllFiles()
+        addFoldersToDeleteFiles()
+        addFilesToDelete()
+        excludeFilesToDelete()
+        showFilesToDelete()
+
+        option = System.console().readLine(Constants.QUESTION_CONTINUE)
+
+
+
+        if( option == 'y' ) {
+            createDestructive()
+            createPackage()
+//          executeDeploy(pathDetele)
+        }
     }
 
-    def truncate(String pathToTruncate) {
-        interceptorsToExecute += interceptors
-        truncateComponents(pathToTruncate)
+    def addAllFiles() {
+        filesToDeleted = addAllFilesInAFolder(filesToDeleted);
+    }
+    /**
+     * Add all files that are inside the folders
+     */
+    def addFoldersToDeleteFiles() {
+        filesToDeleted = addFilesFromFolders(filesToDeleted)
     }
 
     /**
-     * Creates packages to all files which has been changed
+     * Add files to file's list
      */
-    def createPackage() {
-        packageGenerator.buildPackage(Paths.get(pathUpdate, PACKAGE_NAME).toString())
+    def addFilesToDelete() {
+        filesToDeleted = addFilesTo(filesToDeleted)
+    }
+
+    /**
+     * Show files to delete
+     */
+
+    def showFilesToDelete() {
+        println "\nFILES TO DELETE\n"
+        filesToDeleted.each { file->
+            println file
+        }
+        println filesToDeleted.size() + " files \n"
+    }
+
+    /**
+     * ExcludeFiles from filesExcludes map
+     */
+    def excludeFilesToDelete() {
+        filesToDeleted = excludeFiles(filesToDeleted)
     }
 
     /**
      * Creates package to all files which has been deleted
      */
     def createDestructive() {
-        ArrayList<File> files = new ArrayList<File>();
-        packageGenerator.fileTrackerMap.each { nameFile, resultTracker ->
-            if (resultTracker.state == ComponentStates.DELETED) {
-                files.add(new File(Paths.get(projectPath, nameFile).toString()))
-            }
-        }
-        writePackage(Paths.get(pathUpdate, FILE_NAME_DESTRUCTIVE).toString(), files)
+        writePackage(Paths.get(pathDetele, FILE_NAME_DESTRUCTIVE).toString(), filesToDeleted)
     }
 
     /**
-     * Loads all files which has been changed on filesChanged
+     * Creates packages to all files which has been changed
      */
-    def loadFilesChanged() {
-        packageGenerator.init(projectPath, credential)
+    def createPackage() {
+        writePackage(Paths.get(pathDetele, FILE_NAME_PACKAGE).toString(), [])
     }
-
-    /**
-     * Verifies if there is files changed in folders inserted by user
-     */
-    def verifyParameter() {
-        println "|*| : "+project
-        println "|*| : "+Util.isValidProperty(project, PARAMETER_FOLDERS)
-        if (Util.isValidProperty(project, PARAMETER_FOLDERS)) {
-            folders = project.folders
-        }
-        println "|*| : "+folders
-        ArrayList<File> validatedFiles
-        if (folders) {
-            ArrayList<String> foldersName = folders.split(Constants.COMMA)
-
-            ArrayList<String> invalidFolders = Util.getInvalidFolders(foldersName)
-            validateFolders(foldersName)
-            if (!invalidFolders.empty) {
-                throw new Exception("${Constants.INVALID_FOLDER}: ${invalidFolders}")
-            }
-            validatedFiles = fileManager.getValidElements(projectPath, excludeFilesToMonitor)
-            packageGenerator.listFileToDelete(foldersName,validatedFiles)
-        }
-
-        println "File to delete : "+packageGenerator.fileTrackerMap
-    }
-
-    /**
-     * ExcludeFiles from filesExcludes map
-     */
-    private void excludeFilesFromFilesChanged() {
-        ArrayList<File> filesFiltered = excludeFiles(packageGenerator.getFiles())
-        filesFiltered.add(new File("classes/Class2.cls"))
-        filesExcludes = packageGenerator.excludeFiles(filesFiltered)
-        println "\nFile to exclude : "+filesFiltered
-        println "File to exclude : "+filesExcludes
-    }
-
 
 }

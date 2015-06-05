@@ -37,6 +37,12 @@ public class Constants {
 
     public static final String OBJECT_EXTENSION = 'object'
 
+
+    //Deployment task constants
+    public static final String PARAMETER_FOLDERS = 'folders'
+    public static final String PARAMETER_FILES = 'files'
+    public static final String PARAMETER_EXCLUDES = 'excludes'
+
     //Deploy task constants
     public static final String DEPLOYING_TRUNCATED_CODE = 'Deploying truncated code'
     public static final String DEPLOYING_TRUNCATED_CODE_SUCCESSFULLY = 'Truncated code were successfully deployed'
