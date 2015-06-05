@@ -50,7 +50,6 @@ class InspectorResults {
             }
             deployResult = metadataConnection.checkDeployStatus(asyncResultId, true)
             if (deployResult.status == DeployStatus.Failed) {
-                println deployResult
                 String message = deployResult.errorMessage + '\n\n' + deployResult.stateDetail
                 throw new Exception(message)
             }
