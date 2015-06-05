@@ -12,15 +12,10 @@ import org.fundacionjala.gradle.plugins.enforce.metadata.DeployMetadata
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
-import org.fundacionjala.gradle.plugins.enforce.wsc.LoginType
-import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
-import org.fundacionjala.gradle.plugins.enforce.wsc.soap.ApexAPI
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Shared
 import spock.lang.Specification
-
-import java.nio.file.Path
 import java.nio.file.Paths
 
 class DeleteTest extends Specification {
@@ -55,41 +50,6 @@ class DeleteTest extends Specification {
         deleteInstance.createDeploymentDirectory(Paths.get(SRC_PATH, 'build').toString())
         deleteInstance.createDeploymentDirectory(Paths.get(SRC_PATH, 'build', 'delete').toString())
         deleteInstance.projectPath = SRC_PATH
-        def fileTrackerPath = Paths.get(SRC_PATH,'.fileTracker.data').toString()
-        componentSerializer = new ComponentSerializer(fileTrackerPath)
-        componentMonitor = new ComponentMonitor(SRC_PATH)
-
-
-        def class1 = new File(Paths.get(SRC_PATH, 'classes', 'class1.cls').toString())
-        def class1Cls = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString())
-        def class1ClsXml = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls-meta.xml').toString())
-        def object1__c = new File(Paths.get(SRC_PATH, 'src', 'objects', 'Object1__c.object').toString())
-        def account = new File(Paths.get(SRC_PATH, 'src', 'objects', 'Account.object').toString())
-        def trigger = new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger').toString())
-        def triggerXml = new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger-meta.xml').toString())
-
-
-        ArrayList<File> files = new ArrayList<File>()
-
-        files.add(new File(Paths.get(SRC_PATH, 'src','classes', 'class1.cls').toString()))
-        files.add(new File(Paths.get(SRC_PATH, 'src','classes', '').toString()))
-        files.add(new File(Paths.get(SRC_PATH, 'src','classes', '').toString()))
-        files.add(new File(Paths.get(SRC_PATH, 'src','classes', '').toString()))
-        files.add(new File(Paths.get(SRC_PATH, 'src','classes', '').toString()))
-        files.add(new File(Paths.get(SRC_PATH, 'src','classes', '').toString()))
-        files.add(new File(Paths.get(SRC_PATH, 'src','classes', '').toString()))
-
-
-        def mapMock = componentMonitor.getComponentsSignature([class1, class1Cls, class1ClsXml, object1__c, object1__c, account, trigger, triggerXml])
-        componentSerializer.save(mapMock)
-
-        credential = new Credential()
-        credential.id = 'id'
-        credential.username = 'salesforce2014.test@gmail.com'
-        credential.password = '123qwe2014'
-        credential.token = 'UO1Jx5vDQl97xCKkwXBH8tg3T'
-        credential.loginFormat = LoginType.DEV.value()
-        credential.type = 'normal'
     }
 
     def "Integration testing must list all the files to delete"() {
@@ -97,9 +57,6 @@ class DeleteTest extends Specification {
             deleteInstance.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
             deleteInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
             deleteInstance.componentDeploy = new DeployMetadata()
-            deleteInstance.poll = 200
-            deleteInstance.waitTime = 10
-            deleteInstance.credential = credential
             deleteInstance.project.enforce.deleteTemporaryFiles = true
 
             ArrayList<File> filesExpected = new ArrayList<File>();
@@ -112,8 +69,8 @@ class DeleteTest extends Specification {
             filesExpected.add(new File(Paths.get(SRC_PATH,'src','triggers','Trigger1.trigger-meta.xml').toString()))
 
         when:
-            deleteInstance.pathDetele = Paths.get(deleteInstance.buildFolderPath, DIR_DELETE_FOLDER).toString()
-            deleteInstance.createDeploymentDirectory(deleteInstance.pathDetele)
+            deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
+            deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
             deleteInstance.addAllFiles()
             deleteInstance.addFoldersToDeleteFiles()
             deleteInstance.addFilesToDelete()
@@ -130,9 +87,6 @@ class DeleteTest extends Specification {
             deleteInstance.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
             deleteInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
             deleteInstance.componentDeploy = new DeployMetadata()
-            deleteInstance.poll = 200
-            deleteInstance.waitTime = 10
-            deleteInstance.credential = credential
             deleteInstance.project.enforce.deleteTemporaryFiles = true
             deleteInstance.parameters.put('folders','classes,triggers')
 
@@ -143,8 +97,8 @@ class DeleteTest extends Specification {
             filesExpected.add(new File(Paths.get(SRC_PATH,'src','triggers','Trigger1.trigger-meta.xml').toString()))
 
         when:
-            deleteInstance.pathDetele = Paths.get(deleteInstance.buildFolderPath, DIR_DELETE_FOLDER).toString()
-            deleteInstance.createDeploymentDirectory(deleteInstance.pathDetele)
+            deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, DIR_DELETE_FOLDER).toString()
+            deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
             deleteInstance.addAllFiles()
             deleteInstance.addFoldersToDeleteFiles()
             deleteInstance.addFilesToDelete()
@@ -161,9 +115,6 @@ class DeleteTest extends Specification {
             deleteInstance.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
             deleteInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
             deleteInstance.componentDeploy = new DeployMetadata()
-            deleteInstance.poll = 200
-            deleteInstance.waitTime = 10
-            deleteInstance.credential = credential
             deleteInstance.project.enforce.deleteTemporaryFiles = true
             deleteInstance.parameters.put('files','classes/Class1.cls')
 
@@ -172,8 +123,8 @@ class DeleteTest extends Specification {
             filesExpected.add(new File(Paths.get(SRC_PATH,'src','classes','Class1.cls-meta.xml').toString()))
 
         when:
-            deleteInstance.pathDetele = Paths.get(deleteInstance.buildFolderPath, DIR_DELETE_FOLDER).toString()
-            deleteInstance.createDeploymentDirectory(deleteInstance.pathDetele)
+            deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, DIR_DELETE_FOLDER).toString()
+            deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
             deleteInstance.addAllFiles()
             deleteInstance.addFoldersToDeleteFiles()
             deleteInstance.addFilesToDelete()
@@ -203,8 +154,8 @@ class DeleteTest extends Specification {
             filesExpected.add(new File(Paths.get(SRC_PATH,'src','package.xml').toString()))
 
         when:
-            deleteInstance.pathDetele = Paths.get(deleteInstance.buildFolderPath, DIR_DELETE_FOLDER).toString()
-            deleteInstance.createDeploymentDirectory(deleteInstance.pathDetele)
+            deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
+            deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
             deleteInstance.addAllFiles()
             deleteInstance.addFoldersToDeleteFiles()
             deleteInstance.addFilesToDelete()
@@ -218,11 +169,6 @@ class DeleteTest extends Specification {
 
     def cleanupSpec() {
         new File(Paths.get(SRC_PATH, 'build').toString()).deleteDir()
-        new File(Paths.get(SRC_PATH, 'classes', 'Class2.cls').toString()).delete()
-        new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class2.cls').toString()).delete()
-        new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class2.cls-meta.xml').toString()).delete()
-        new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class3.cls').toString()).delete()
-        new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class3.cls-meta.xml').toString()).delete()
         new File(Paths.get(SRC_PATH, 'src', '.fileTracker.data').toString()).delete()
     }
 }

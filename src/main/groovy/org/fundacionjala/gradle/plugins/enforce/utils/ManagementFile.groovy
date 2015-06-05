@@ -284,21 +284,21 @@ class ManagementFile {
      */
     public ArrayList<File> getAllFilesOf(String sourcePath) {
         ArrayList<File> files = new ArrayList<File>()
-        File file = new File(sourcePath)
-        if(file.isDirectory()) {
-            file.eachFile  { auxFile ->
-                SalesforceValidator validator = SalesforceValidatorManager.getValidator(file.getName())
-                if (validator.validateFileByFolder(file.getName(), auxFile)) {
-                    File xmlFile = new File("${auxFile.getAbsolutePath().toString()}${METADATA_EXTENSION}")
+        File folder = new File(sourcePath)
+        if(folder.isDirectory()) {
+            folder.eachFile  { file ->
+                SalesforceValidator validator = SalesforceValidatorManager.getValidator(folder.getName())
+                if (validator.validateFileByFolder(folder.getName(), file)) {
+                    File xmlFile = new File("${file.getAbsolutePath().toString()}${METADATA_EXTENSION}")
                     if (xmlFile.exists()) {
                         files.push(xmlFile)
                     }
                 }
-                files =  files + getAllFilesOf(auxFile.getAbsolutePath().toString())
+                files.addAll(getAllFilesOf(file.getAbsolutePath().toString()))
             }
         }
         else {
-            files.push(file)
+            files.push(folder)
         }
         return files
     }

@@ -29,6 +29,7 @@ abstract class SalesforceTask extends ForceTask {
     private final String SAVE_PACKAGE_ERROR = "path package not defined, you need prepare package first"
     private final String UPDATE_PACKAGE_ERROR = "you need to prepare package first"
     public final String PACKAGE_NAME = "package.xml"
+    public final String PACKAGE_NAME_DESTRUCTIVE = "destructiveChanges.xml"
     private final String DIR_USER = "user.home"
     private final String BUILD_FOLDER_NAME = "build"
     private CredentialManager credentialManagement

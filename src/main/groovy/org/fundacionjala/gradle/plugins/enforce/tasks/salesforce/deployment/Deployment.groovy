@@ -21,17 +21,15 @@ import java.nio.file.Paths
  * Represent base class for needs deploy code in salesforce
  */
 abstract class Deployment extends SalesforceTask {
-    private final String NAME_TASK_ZIP = "createZip"
-    DeployMetadata componentDeploy
-    InterceptorManager componentManager
-    List<String> interceptorsToExecute = []
-    List<String> interceptors = []
+    public DeployMetadata componentDeploy
+    public InterceptorManager componentManager
+    public List<String> interceptorsToExecute = []
+    public List<String> interceptors = []
     public final String EXCLUDES = 'excludes'
     public String excludes
     public final int FILE_NAME_POSITION = 1
     public final String SLASH = "/"
     public final String BACKSLASH = "\\\\"
-
 
     /**
      * Sets description and group task
@@ -184,43 +182,38 @@ abstract class Deployment extends SalesforceTask {
     }
 
     /**
-     * Add files int a folder
+     * Adds all files inside a folder and  subfolders
      * @param files  list of files to the new files will be added
      * @return files  list of files with the new files added
      */
     def addAllFilesInAFolder(ArrayList<File> files) {
         if (!Util.isValidProperty(parameters, Constants.PARAMETER_FOLDERS) && !Util.isValidProperty(parameters, Constants.PARAMETER_FILES)) {
-            files = files + fileManager.getAllFilesOf(projectPath)
+            files.addAll(fileManager.getAllFilesOf(projectPath))
         }
         return files
     }
 
     /**
-     * Add files from folders
+     * Adds files from folders
      * @param files  list of files to the new files will be added
      * @return files  list of files with the new files added
      */
     def addFilesFromFolders(ArrayList<File> files) {
-        String folderNames
+        String folders
         if (Util.isValidProperty(parameters, Constants.PARAMETER_FOLDERS)) {
-            folderNames = parameters[Constants.PARAMETER_FOLDERS].toString()
+            folders = parameters[Constants.PARAMETER_FOLDERS].toString()
         }
-        if (folderNames) {
-            ArrayList<String> foldersName = folderNames.split(Constants.COMMA)
-            ArrayList<String> invalidFolders = Util.getInvalidFolders(foldersName)
+        if (folders) {
+            ArrayList<String> foldersName = folders.split(Constants.COMMA)
             validateFolders(foldersName)
-            if (!invalidFolders.empty) {
-                throw new Exception("${Constants.INVALID_FOLDER}: ${invalidFolders}")
-            }
-            files = fileManager.getFilesByFolders(projectPath, folderNames.split(Constants.COMMA) as ArrayList<String>)
+            files = fileManager.getFilesByFolders(projectPath, foldersName as ArrayList<String>)
         }
-        files.unique { a, b -> a <=> b }
+        files.unique()
         return files
     }
 
     /**
-     * Add files to
-     * @param files  list of files to the new files will be added
+     * Adds files to ArrayList according to the parameters passed
      * @return files  list of files with the new files added
      */
     public addFilesTo(ArrayList<File> files) {
@@ -236,7 +229,6 @@ abstract class Deployment extends SalesforceTask {
         fileNames.split(Constants.COMMA).each {String fileName ->
             def fileNameChanged = fileName.replaceAll(BACKSLASH, SLASH)
             if (!fileNameChanged.contains(SLASH)) {
-                filesName.push("${fileName}${File.separator}${Constants.WILDCARD}${Constants.WILDCARD}")
                 return files
             }
             filesName.push(fileName)
@@ -258,19 +250,17 @@ abstract class Deployment extends SalesforceTask {
     public excludeFiles(ArrayList<File> filesToFilter) {
         if (filesToFilter == null) {
             logger.error("${Constants.NULL_PARAM_EXCEPTION} filesToFilter")
-            return filesToFilter
         }
-        else {
-            ArrayList<File> filesFiltered = filesToFilter.clone() as ArrayList<File>
-            if (Util.isValidProperty(parameters, Constants.PARAMETER_EXCLUDES) && !Util.isEmptyProperty(parameters, Constants.PARAMETER_EXCLUDES)) {
-                excludes = parameters[Constants.PARAMETER_EXCLUDES].toString()
-            }
-            if (excludes) {
-                validateParameter(excludes)
-                filesFiltered = excludeFilesByCriterion(filesFiltered, excludes)
-            }
-            return filesFiltered
+
+        ArrayList<File> filesFiltered = filesToFilter.clone() as ArrayList<File>
+        if (Util.isValidProperty(parameters, Constants.PARAMETER_EXCLUDES) && !Util.isEmptyProperty(parameters, Constants.PARAMETER_EXCLUDES)) {
+            excludes = parameters[Constants.PARAMETER_EXCLUDES].toString()
         }
+        if (excludes) {
+            validateParameter(excludes)
+            filesFiltered = excludeFilesByCriterion(filesFiltered, excludes)
+        }
+        return filesFiltered
     }
 
     /**

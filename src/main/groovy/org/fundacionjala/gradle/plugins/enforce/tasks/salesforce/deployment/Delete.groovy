@@ -12,11 +12,7 @@ import java.nio.file.Paths
  * Updates an org using metadata API
  */
 class Delete extends Deployment {
-    private static final String DESCRIPTION_OF_TASK = "This task deploys just the files that were changed"
-    private final String DIR_DELETE_FOLDER = "delete"
-    private final String FILE_NAME_DESTRUCTIVE = "destructiveChanges.xml"
-    private final String FILE_NAME_PACKAGE = "package.xml"
-    public String pathDetele
+    public String pathDelete
     public ArrayList<File> filesToDeleted
 
     /**
@@ -25,7 +21,7 @@ class Delete extends Deployment {
      * @param group is the group typeName the task
      */
     Delete() {
-        super(DESCRIPTION_OF_TASK, Constants.DEPLOYMENT)
+        super(Constants.DESCRIPTION_DELETE_TASK, Constants.DEPLOYMENT)
         filesToDeleted = new ArrayList<File>()
     }
 
@@ -34,68 +30,67 @@ class Delete extends Deployment {
      */
     @Override
     void runTask() {
-        pathDetele = Paths.get(buildFolderPath, DIR_DELETE_FOLDER).toString()
-        createDeploymentDirectory(pathDetele)
+        pathDelete = Paths.get(buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
+        createDeploymentDirectory(pathDelete)
         addAllFiles()
         addFoldersToDeleteFiles()
         addFilesToDelete()
         excludeFilesToDelete()
         showFilesToDelete()
 
-        if( System.console().readLine(Constants.QUESTION_CONTINUE) == 'y' ) {
+        if( System.console().readLine(Constants.QUESTION_CONTINUE) == Constants.YES_OPTION ) {
             createDestructive()
             createPackage()
-          executeDeploy(pathDetele)
+            executeDeploy(pathDelete)
         }
     }
 
     def addAllFiles() {
-        filesToDeleted = addAllFilesInAFolder(filesToDeleted);
+        filesToDeleted = addAllFilesInAFolder(filesToDeleted)
     }
     /**
-     * Add all files that are inside the folders
+     * Adds all files that are inside the folders
      */
     def addFoldersToDeleteFiles() {
         filesToDeleted = addFilesFromFolders(filesToDeleted)
     }
 
     /**
-     * Add files to file's list
+     * Adds files to file's list
      */
     def addFilesToDelete() {
         filesToDeleted = addFilesTo(filesToDeleted)
     }
 
     /**
-     * Show files to delete
+     * Shows files to delete
      */
     def showFilesToDelete() {
-        println "\nFILES TO DELETE\n"
+        logger.quiet("\nFILES TO DELETE\n")
         filesToDeleted.each { file->
-            println file
+            println "->"+file
         }
-        println filesToDeleted.size() + " files \n"
+        logger.quiet(filesToDeleted.size() + " files \n")
     }
 
     /**
-     * ExcludeFiles from filesExcludes map
+     * Excludes Files from filesExcludes map
      */
     def excludeFilesToDelete() {
         filesToDeleted = excludeFiles(filesToDeleted)
     }
 
     /**
-     * Creates package to all files which has been deleted
+     * Creates packages to all files which has been deleted
      */
     def createDestructive() {
-        writePackage(Paths.get(pathDetele, FILE_NAME_DESTRUCTIVE).toString(), filesToDeleted)
+        writePackage(Paths.get(pathDelete, PACKAGE_NAME_DESTRUCTIVE).toString(), filesToDeleted)
     }
 
     /**
-     * Creates packages to all files which has been changed
+     * Create a package empty
      */
     def createPackage() {
-        writePackage(Paths.get(pathDetele, FILE_NAME_PACKAGE).toString(), [])
+        writePackage(Paths.get(pathDelete, PACKAGE_NAME).toString(), [])
     }
-
 }
