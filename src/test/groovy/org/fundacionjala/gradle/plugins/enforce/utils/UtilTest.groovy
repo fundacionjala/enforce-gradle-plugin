@@ -175,6 +175,13 @@ class UtilTest extends Specification {
             relativePath == Paths.get("classes", "class 1").toString()
     }
 
+    def "Test should return object name from sub component member" () {
+        when:
+            def objectName = Util.getObjectName('Object5__c.MyCustomField')
+        then:
+            objectName == 'Object5__c'
+    }
+
     def cleanupSpec() {
         new File(Paths.get(resourcesPath, 'triggers').toString()).deleteDir()
         new File(Paths.get(resourcesPath, 'relativeTest').toString()).deleteDir()

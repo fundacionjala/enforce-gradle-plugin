@@ -121,6 +121,8 @@ class UpdateTest extends Specification {
             updateInstance.packageGenerator.projectPath = Paths.get(SRC_PATH, 'src').toString()
             updateInstance.pathUpdate = Paths.get(SRC_PATH, 'build', 'update').toString()
             updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
+            updateInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
+            updateInstance.updatePackagePath = Paths.get(SRC_PATH, 'build', 'update', 'package.xml').toString()
         when:
             updateInstance.createPackage()
         then:
@@ -133,6 +135,8 @@ class UpdateTest extends Specification {
             updateInstance.packageGenerator.projectPath = Paths.get(SRC_PATH, 'src').toString()
             updateInstance.pathUpdate = Paths.get(SRC_PATH, 'build', 'update').toString()
             updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
+            updateInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
+            updateInstance.updatePackagePath = Paths.get(SRC_PATH, 'build', 'update', 'package.xml').toString()
         when:
             updateInstance.createPackage()
         then:
@@ -144,6 +148,8 @@ class UpdateTest extends Specification {
             updateInstance.packageGenerator.fileTrackerMap = [:]
             updateInstance.pathUpdate = Paths.get(SRC_PATH, 'build', 'update').toString()
             updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
+            updateInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
+            updateInstance.updatePackagePath = Paths.get(SRC_PATH, 'build', 'update', 'package.xml').toString()
         when:
             updateInstance.createPackage()
         then:
@@ -156,6 +162,8 @@ class UpdateTest extends Specification {
             updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
             updateInstance.packageGenerator.projectPath = Paths.get(SRC_PATH, 'src').toString()
             updateInstance.pathUpdate = Paths.get(SRC_PATH, 'build', 'update').toString()
+            updateInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
+            updateInstance.updatePackagePath = Paths.get(SRC_PATH, 'build', 'update', 'destructiveChanges.xml').toString()
             updateInstance.credential = credential
             updateInstance.packageGenerator.credential = credential
         when:
