@@ -108,7 +108,6 @@ app.controller('controllerReportCoverage', function(\$scope) {
         \$scope.detailsByTest = function(id) {
             for (var i = 0; i < \$scope.filesClone.length ; i++) {
                 var file = \$scope.filesClone[i];
-                console.log(file);
                 if (file.id === id) {
                     var details = file.status == "Fail"?file.details.slice(0):[]
                     return details;

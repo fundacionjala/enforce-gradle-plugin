@@ -55,12 +55,7 @@ abstract class Deployment extends SalesforceTask {
         componentDeploy.setPath(pathZipToDeploy)
         logger.debug('Deploying components')
         componentDeploy.deploy(poll, waitTime, credential)
-        if(project.enforce.deleteTemporaryFiles) {
-            def deleteZipFile = new File(pathZipToDeploy)
-            def deleteFolder = new File(sourcePath)
-            deleteZipFile.delete()
-            deleteFolder.deleteDir()
-        }
+        deleteTemporaryFiles()
     }
 
     /**
@@ -105,35 +100,6 @@ abstract class Deployment extends SalesforceTask {
      */
     void createDeploymentDirectory(String pathDirectory) {
         fileManager.createNewDirectory(pathDirectory)
-    }
-
-    /**
-     * Creates a zip file
-     * @param destination is folder where will create zip
-     * @param fileName is name of file zip
-     * @param sourcePath is folder will compress
-     * @return a path zip  was created
-     */
-    String createZip(String sourcePath, String destination, String fileName) {
-        File folderDestination = new File(destination)
-
-        if (!folderDestination.exists()) {
-            throw new Exception("Cannot find the folder: $destination ")
-        }
-
-        String fileNameZip = "${fileName}.zip"
-        File fileZip = new File(Paths.get(destination, fileNameZip).toString())
-        if (fileZip.exists()) {
-            fileZip.delete()
-        }
-
-        project.task(NAME_TASK_ZIP, type: Zip, overwrite: true) {
-            destinationDir new File(destination)
-            archiveName fileNameZip
-            from sourcePath
-        }.execute()
-
-        return fileZip.getAbsolutePath()
     }
 
     /**
@@ -388,6 +354,17 @@ abstract class Deployment extends SalesforceTask {
 
     public void combinePackage(String buildPackagePath) {
         PackageCombiner.packageCombine(projectPackagePath, buildPackagePath)
+        if (excludes) {
+            PackageCombiner.removeMembersFromPackage(buildPackagePath, getFilesExcludes(excludes))
+        }
+    }
+
+    /**
+     * Combines package from build folder and package from source directory
+     * @return
+     */
+    def combinePackageToUpdate(String buildPackagePath) {
+        PackageCombiner.packageCombineToUpdate(projectPackagePath, buildPackagePath)
         if (excludes) {
             PackageCombiner.removeMembersFromPackage(buildPackagePath, getFilesExcludes(excludes))
         }

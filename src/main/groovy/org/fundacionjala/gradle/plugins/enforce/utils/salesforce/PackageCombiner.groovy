@@ -6,20 +6,12 @@ import org.fundacionjala.gradle.plugins.enforce.utils.Util
 
 class PackageCombiner {
     private static final ArrayList<String> SUB_COMPONENTS = ['CustomField', 'FieldSet', 'ValidationRule',
-                                                             'CompactLayout', 'SharingReason', 'RecordType', 'WebLink',
-                                                             'SharingRecalculation', 'SearchLayout', 'ListView',
-                                                             'HistoryRetentionPolicy', 'BusinessProcess', 'ActionOverride']
-    //The next sub components are part of custom objects:
-    //RecordType
-    //WebLink
-    //SharingRecalculation
-    //SearchLayout
-    //ListView
-    //HistoryRetentionPolicy
-    //BusinessProcess
-    //ActionOverride
+                                                             'CompactLayout', 'SharingReason', 'RecordType',
+                                                             'WebLink', 'SharingRecalculation', 'SearchLayout',
+                                                             'ListView', 'HistoryRetentionPolicy', 'BusinessProcess',
+                                                             'ActionOverride']
+    private static final ArrayList<String> COMPONENTS_WITH_SUB_FOLDERS = ['Document', 'Report', 'Dashboard']
     private static final String CUSTOM_OBJECT = 'CustomObject'
-    private static final String ASTERISK = '*'
 
     /**
      * Combines package generated into build directory with package from project directory
@@ -27,38 +19,13 @@ class PackageCombiner {
      * @param buildPackagePath is a path of package from build directory
      */
     public static void packageCombine(String projectPackagePath, String buildPackagePath) {
-        if (new File(projectPackagePath).exists()) {
+        File packageFile = new File(projectPackagePath)
+        if (packageFile.exists()) {
             PackageBuilder buildPackage = mergePackage(projectPackagePath, buildPackagePath)
-
-            ArrayList<String> membersOfCustomField = new ArrayList<String>()
-            ArrayList<String> membersOfCustomObject = new ArrayList<String>()
-
-            buildPackage.metaPackage.types.each { PackageTypeMembers type ->
-                if (SUB_COMPONENTS.contains(type.name)) {
-                    membersOfCustomField.addAll(type.members as ArrayList<String>)
-                }
-                if (type.name == CUSTOM_OBJECT) {
-                    membersOfCustomObject.addAll(type.members as ArrayList<String>)
-                }
-            }
-            ArrayList<String> membersToRemove = getMembersToDelete(membersOfCustomField, membersOfCustomObject)
+            ArrayList<String> membersToRemove = getObjectMembersToDelete(buildPackage)
             buildPackage.removeMembers(CUSTOM_OBJECT, membersToRemove)
-            writePackageCombined(buildPackage, buildPackagePath)
+            writePackage(buildPackage, buildPackagePath)
         }
-    }
-
-    /**
-     * Gets a map with name and its members
-     * @param buildPackage is of type PackageBuilder
-     * @return a map
-     */
-    private static Map<String, ArrayList<String>> getMembersByNameType(PackageBuilder buildPackage) {
-        Map<String, ArrayList<String>> membersByNameType = [:]
-
-        buildPackage.metaPackage.types.each { PackageTypeMembers type ->
-            membersByNameType.put(type.name as String, type.members as ArrayList<String>)
-        }
-        return membersByNameType
     }
 
     /**
@@ -90,14 +57,106 @@ class PackageCombiner {
             }
         }
 
-        Map<String, ArrayList<String>> components = getComponentsToDelete(componentToDelete, packageBuilder)
+        Map<String, ArrayList<String>> components = [:]
+
+        if (componentToDelete.containsKey(CUSTOM_OBJECT)) {
+            components = getComponentsToDelete(componentToDelete, packageBuilder)
+        } else {
+            components = componentToDelete
+        }
 
         components.each { String componentType, ArrayList<String> componentNames ->
             packageBuilder.removeMembers(componentType, componentNames)
         }
+        writePackage(packageBuilder, packagePath)
+    }
 
-        FileWriter fileWriter = new FileWriter(packagePath)
-        packageBuilder.write(fileWriter)
+    /**
+     * Combines package file from build directory with package from project directory
+     * @param projectPackagePath is the path of package from project directory
+     * @param buildPackagePath is the path of package from build directory
+     */
+    public static void packageCombineToUpdate(String projectPackagePath, String buildPackagePath) {
+        PackageBuilder packageFromBuildFolder = getPackageBuilder(buildPackagePath)
+        PackageBuilder packageFromSourceFolder = getPackageBuilder(projectPackagePath)
+        Map <String, ArrayList<String>> membersByNameOfPackageBuild = getMembersByNameType(packageFromBuildFolder)
+        ArrayList<String> objectToDelete = []
+
+        getMembersByNameType(packageFromSourceFolder).each { String name, ArrayList<String> members ->
+            if (COMPONENTS_WITH_SUB_FOLDERS.contains(name) && membersByNameOfPackageBuild.containsKey(name)) {
+                packageFromBuildFolder.removeMembers(name, membersByNameOfPackageBuild.get(name))
+                packageFromBuildFolder.update(name, members)
+            }
+
+            if (SUB_COMPONENTS.contains(name) && membersByNameOfPackageBuild.containsKey(CUSTOM_OBJECT)) {
+                members.each { String member ->
+                    String objectName = Util.getObjectName(member)
+                    if (membersByNameOfPackageBuild.get(CUSTOM_OBJECT).contains(objectName)) {
+                        packageFromBuildFolder.update(name, [member])
+                        objectToDelete.push(objectName)
+                    }
+                }
+            }
+        }
+
+        packageFromBuildFolder.removeMembers(CUSTOM_OBJECT, objectToDelete)
+        writePackage(packageFromBuildFolder, buildPackagePath)
+    }
+
+    /**
+     * Gets an instance of PackageBuilder class
+     * @param packagePath is package path
+     * @return an instance of PackageBuilder class
+     */
+    private static PackageBuilder getPackageBuilder(String packagePath) {
+        PackageBuilder packageBuilder = new PackageBuilder()
+        FileReader packageBuilderReader = new FileReader(packagePath)
+        packageBuilder.read(packageBuilderReader)
+        return packageBuilder
+    }
+
+    /**
+     * Gets members of SubComponents
+     * @param packageBuilder is of type PackageBuilder
+     * @return an ArrayList with members of subComponents
+     */
+    private static ArrayList<String> getMembersOfSubComponents(PackageBuilder packageBuilder) {
+        ArrayList<String> membersOfSubComponent = new ArrayList<String>()
+        packageBuilder.metaPackage.types.each { PackageTypeMembers type ->
+            if (SUB_COMPONENTS.contains(type.name)) {
+                membersOfSubComponent.addAll(type.members as ArrayList<String>)
+            }
+        }
+        return membersOfSubComponent
+    }
+
+    /**
+     * Gets an array list of members of objects component
+     * @param packageBuilder is type packageBuilder
+     * @return an ArrayList with members of objects
+     */
+    private static ArrayList<String> getMembersOfComponent(PackageBuilder packageBuilder, String componentType) {
+        ArrayList<String> membersOfCustomObject = new ArrayList<String>()
+        packageBuilder.metaPackage.types.each { PackageTypeMembers type ->
+            if (type.name == componentType) {
+                membersOfCustomObject.addAll(type.members as ArrayList<String>)
+            }
+        }
+        return membersOfCustomObject
+    }
+
+    /**
+     * Gets a map with name and its members
+     * @param packageBuilder is of type PackageBuilder
+     * @return a map
+     */
+    private static Map<String, ArrayList<String>> getMembersByNameType(PackageBuilder packageBuilder) {
+        Map<String, ArrayList<String>> membersByNameType = [:]
+
+        packageBuilder.metaPackage.types.each { PackageTypeMembers type ->
+            membersByNameType.put(type.name as String, type.members as ArrayList<String>)
+        }
+        return membersByNameType
     }
 
     /**
@@ -115,7 +174,7 @@ class PackageCombiner {
         componentsFromPackage.each { String name, ArrayList<String> members ->
             if (SUB_COMPONENTS.contains(name)) {
                 members.each { String member ->
-                    String objectName = member.substring(0, member.indexOf('.'))
+                    String objectName = Util.getObjectName(member)
                     if (components.get(CUSTOM_OBJECT).contains(objectName)) {
                         if (!components.containsKey(name)) {
                             components.put(name, [member])
@@ -162,14 +221,14 @@ class PackageCombiner {
      * @return a PackageBuilder object merged
      */
     private static PackageBuilder mergePackage(String projectPackagePath, String buildPackagePath) {
-        PackageBuilder projectPackage = new PackageBuilder()
-        PackageBuilder buildPackage = new PackageBuilder()
-
-        projectPackage.read(new FileReader(projectPackagePath))
-        buildPackage.read(new FileReader(buildPackagePath))
+        PackageBuilder projectPackage = getPackageBuilder(projectPackagePath)
+        PackageBuilder buildPackage = getPackageBuilder(buildPackagePath)
 
         projectPackage.metaPackage.types.each { PackageTypeMembers type ->
-            if (!type.members.toList().contains(ASTERISK)) {
+            if (!type.members.toList().contains(Constants.WILDCARD)) {
+                buildPackage.metaPackage.types.each { PackageTypeMembers buildType ->
+                    buildPackage.removeMembers(type.name as String, buildType.members as ArrayList<String>)
+                }
                 buildPackage.update(type.name as String, type.members as ArrayList<String>)
             }
         }
@@ -182,25 +241,26 @@ class PackageCombiner {
      * @param membersOfCustomObject is a list of members of custom object
      * @return an ArrayList with members that will delete
      */
-    private static ArrayList<String> getMembersToDelete(ArrayList<String> membersOfCustomField, ArrayList<String> membersOfCustomObject) {
+    private static ArrayList<String> getObjectMembersToDelete(PackageBuilder packageBuilder) {
+        ArrayList<String> membersOfCustomObject = getMembersOfComponent(packageBuilder, CUSTOM_OBJECT)
         ArrayList<String> membersToRemove = new ArrayList<String>()
-        membersOfCustomField.each { String customFieldMember ->
-            String objectName = customFieldMember.substring(0, customFieldMember.indexOf('.'))
+        getMembersOfSubComponents(packageBuilder).each { String customFieldMember ->
+            String objectName = Util.getObjectName(customFieldMember)
             if (membersOfCustomObject.contains(objectName)) {
                 membersToRemove.add(objectName)
             }
         }
-        return membersToRemove
+        return membersToRemove.unique()
     }
 
     /**
      * Writes a package combined
-     * @param packageCombined is a package combined
+     * @param packageBuilder is a package combined
      * @param packageCombinedPath is path where packaged combined will be saved
      */
-    private static void writePackageCombined(PackageBuilder packageCombined, String packageCombinedPath) {
+    private static void writePackage(PackageBuilder packageBuilder, String packageCombinedPath) {
         FileWriter fileWriter = new FileWriter(packageCombinedPath)
-        packageCombined.write(fileWriter)
+        packageBuilder.write(fileWriter)
         fileWriter.close()
     }
 }

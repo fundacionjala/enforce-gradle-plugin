@@ -267,4 +267,14 @@ class Util {
     public static String getFirstPath(String path) {
         return Paths.get(path).getName(ZERO_NUMBER_PATH)
     }
+
+    /**
+     * Gets a object name from sub component member
+     * @param subComponentMember is a sub component member
+     * @return a object name
+     */
+    public static String getObjectName(String subComponentMember) {
+        String objectName = subComponentMember.substring(0, subComponentMember.indexOf('.'))
+        return objectName
+    }
 }

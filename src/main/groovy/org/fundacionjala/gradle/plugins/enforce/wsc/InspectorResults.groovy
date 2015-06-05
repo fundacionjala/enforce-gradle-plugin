@@ -90,7 +90,7 @@ class InspectorResults {
     }
 
     public void writePercent(int percent, DeployResult deployResult) {
-        if (DeployStatus.InProgress == deployResult.status) {
+        if ((DeployStatus.InProgress == deployResult.status) || (DeployStatus.Succeeded == deployResult.status)) {
             StringBuilder progressBar = new StringBuilder("[")
             for (int i = Constants.ZERO; i < END_VAL_PROGRESS_BAR; i++) {
                 if (i < (percent / 2)) {

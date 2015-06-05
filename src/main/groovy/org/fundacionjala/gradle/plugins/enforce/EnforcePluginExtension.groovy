@@ -39,7 +39,7 @@ class EnforcePluginExtension {
 
     Map<String, Map<String, Closure>> interceptors
 
-    EnforcePluginExtension(){
+    EnforcePluginExtension() {
         interceptors = [:]
     }
 
