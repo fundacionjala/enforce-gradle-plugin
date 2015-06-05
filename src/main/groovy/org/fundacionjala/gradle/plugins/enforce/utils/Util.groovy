@@ -188,7 +188,7 @@ class Util {
         if (normalizePath) {
             return Paths.get(relativePath).toString()
         }
-        return relativePath
+        return relativePath.replaceAll(Constants.BACK_SLASH, Constants.SLASH)
     }
 
     /**
