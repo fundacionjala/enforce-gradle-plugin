@@ -76,7 +76,7 @@ class DeleteTest extends Specification {
             deleteInstance.addFilesToDelete()
             deleteInstance.excludeFilesToDelete()
             deleteInstance.createDestructive()
-            deleteInstance.createPackage()
+            deleteInstance.createPackageEmpty()
 
         then:
             filesExpected.sort{ it.getAbsolutePath() }.equals( deleteInstance.filesToDeleted.sort{ it.getAbsolutePath() })
@@ -104,7 +104,7 @@ class DeleteTest extends Specification {
             deleteInstance.addFilesToDelete()
             deleteInstance.excludeFilesToDelete()
             deleteInstance.createDestructive()
-            deleteInstance.createPackage()
+            deleteInstance.createPackageEmpty()
 
         then:
             filesExpected.sort{ it.getAbsolutePath() }.equals( deleteInstance.filesToDeleted.sort{ it.getAbsolutePath() })
@@ -130,7 +130,7 @@ class DeleteTest extends Specification {
             deleteInstance.addFilesToDelete()
             deleteInstance.excludeFilesToDelete()
             deleteInstance.createDestructive()
-            deleteInstance.createPackage()
+            deleteInstance.createPackageEmpty()
 
         then:
             filesExpected.sort{ it.getAbsolutePath() }.equals( deleteInstance.filesToDeleted.sort{ it.getAbsolutePath() })
@@ -161,7 +161,7 @@ class DeleteTest extends Specification {
             deleteInstance.addFilesToDelete()
             deleteInstance.excludeFilesToDelete()
             deleteInstance.createDestructive()
-            deleteInstance.createPackage()
+            deleteInstance.createPackageEmpty()
 
         then:
             filesExpected.sort{ it.getAbsolutePath() }.equals( deleteInstance.filesToDeleted.sort{ it.getAbsolutePath() })

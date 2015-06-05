@@ -9,7 +9,7 @@ import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import java.nio.file.Paths
 
 /**
- * Updates an org using metadata API
+ * Deletes files into an org using metadata API
  */
 class Delete extends Deployment {
     public String pathDelete
@@ -40,14 +40,18 @@ class Delete extends Deployment {
 
         if( System.console().readLine(Constants.QUESTION_CONTINUE) == Constants.YES_OPTION ) {
             createDestructive()
-            createPackage()
+            createPackageEmpty()
             executeDeploy(pathDelete)
         }
     }
 
+    /**
+     * Adds all files into an org
+     */
     def addAllFiles() {
         filesToDeleted = addAllFilesInAFolder(filesToDeleted)
     }
+
     /**
      * Adds all files that are inside the folders
      */
@@ -68,7 +72,7 @@ class Delete extends Deployment {
     def showFilesToDelete() {
         logger.quiet("\nFILES TO DELETE\n")
         filesToDeleted.each { file->
-            println "->"+file
+            logger.quiet(file.getAbsolutePath())
         }
         logger.quiet(filesToDeleted.size() + " files \n")
     }
@@ -90,7 +94,7 @@ class Delete extends Deployment {
     /**
      * Create a package empty
      */
-    def createPackage() {
+    def createPackageEmpty() {
         writePackage(Paths.get(pathDelete, PACKAGE_NAME).toString(), [])
     }
 }
