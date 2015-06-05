@@ -116,11 +116,13 @@ class DeleteTest extends Specification {
             deleteInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
             deleteInstance.componentDeploy = new DeployMetadata()
             deleteInstance.project.enforce.deleteTemporaryFiles = true
-            deleteInstance.parameters.put('files','classes/Class1.cls')
+            deleteInstance.parameters.put('files','classes/Class1.cls,triggers/Trigger1.trigger')
 
             ArrayList<File> filesExpected = new ArrayList<File>();
             filesExpected.add(new File(Paths.get(SRC_PATH,'src','classes','Class1.cls').toString()))
             filesExpected.add(new File(Paths.get(SRC_PATH,'src','classes','Class1.cls-meta.xml').toString()))
+            filesExpected.add(new File(Paths.get(SRC_PATH,'src','triggers','Trigger1.trigger').toString()))
+            filesExpected.add(new File(Paths.get(SRC_PATH,'src','triggers','Trigger1.trigger-meta.xml').toString()))
 
         when:
             deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, DIR_DELETE_FOLDER).toString()
