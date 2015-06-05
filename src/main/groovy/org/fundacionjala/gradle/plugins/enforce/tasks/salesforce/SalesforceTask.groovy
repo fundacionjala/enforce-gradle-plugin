@@ -29,6 +29,7 @@ abstract class SalesforceTask extends ForceTask {
     private final String SAVE_PACKAGE_ERROR = "path package not defined, you need prepare package first"
     private final String UPDATE_PACKAGE_ERROR = "you need to prepare package first"
     public final String PACKAGE_NAME = "package.xml"
+    public final String PACKAGE_NAME_DESTRUCTIVE = "destructiveChanges.xml"
     private final String DIR_USER = "user.home"
     private final String BUILD_FOLDER_NAME = "build"
     private CredentialManager credentialManagement
@@ -42,6 +43,7 @@ abstract class SalesforceTask extends ForceTask {
     public int waitTime
     public ArrayList<String> arrayPaths
     public String projectPackagePath
+    public Map parameters
 
     /**
      * Sets description and group task
@@ -58,6 +60,7 @@ abstract class SalesforceTask extends ForceTask {
         def pathHome = Paths.get(System.properties[DIR_USER].toString(), CREDENTIAL_NAME).toString()
         arrayPaths = [pathProject, pathHome]
         buildFolderPath = Paths.get(project.projectDir.path, BUILD_FOLDER_NAME).toString()
+        parameters = new HashMap()
     }
 
     /**
@@ -233,6 +236,7 @@ abstract class SalesforceTask extends ForceTask {
         fileManager.createDirectory(buildFolderPath)
         logger.debug('Created directory at: ' + buildFolderPath)
         projectPackagePath = Paths.get(projectPath, PACKAGE_NAME)
+        parameters = project.properties.clone()
         runTask()
     }
 

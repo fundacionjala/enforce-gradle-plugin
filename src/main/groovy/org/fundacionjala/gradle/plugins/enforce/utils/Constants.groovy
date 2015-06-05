@@ -41,6 +41,12 @@ public class Constants {
 
     public static final String OBJECT_EXTENSION = 'object'
 
+
+    //Deployment task constants
+    public static final String PARAMETER_FOLDERS = 'folders'
+    public static final String PARAMETER_FILES = 'files'
+    public static final String PARAMETER_EXCLUDES = 'excludes'
+
     //Deploy task constants
     public static final String DEPLOYING_TRUNCATED_CODE = 'Deploying truncated code'
     public static final String DEPLOYING_TRUNCATED_CODE_SUCCESSFULLY = 'Truncated code were successfully deployed'
@@ -93,5 +99,9 @@ public class Constants {
     public static final String RETRIEVE_MESSAGE_WARNING = 'Warning: All files will be downloaded according to the package'
     public static final String RETRIEVE_MESSAGE_CANCELED = 'Retrieve task was canceled!!'
     public static final String RETRIEVE_QUESTION_TO_CONTINUE = 'Do you want to continue? (y/n) : '
+
+    //Delete task constants
+    public static final String DESCRIPTION_DELETE_TASK = "This task deploys just the files that were changed"
+    public static final String DIR_DELETE_FOLDER = "delete"
 
 }

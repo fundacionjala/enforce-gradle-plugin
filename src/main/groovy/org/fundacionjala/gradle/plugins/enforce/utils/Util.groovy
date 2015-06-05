@@ -65,12 +65,30 @@ class Util {
     }
 
     /**
+     * Verifies if the property exist and if it is not empty string
+     * @parameters to compare
+     * @param name the property typeName
+     */
+    public static boolean isValidProperty(Map parameters, String name) {
+        parameters.containsKey(name) && !parameters[name].toString().equals("")
+    }
+
+    /**
      * Verify if the property is empty
      * @param name the property typeName
      */
     public static isEmptyProperty(Project project, String name) {
         project.hasProperty(name) && project.properties[name].toString().equals('')
     }
+
+    /**
+     * Verify if the property is empty
+     * @param name the property typeName
+     */
+    public static isEmptyProperty(Map parameters, String name) {
+        parameters.hasProperty(name) && parameters[name].toString().equals('')
+    }
+
     /**
      * Validates required parameters that should be entered via command line
      * @param project The project reference
