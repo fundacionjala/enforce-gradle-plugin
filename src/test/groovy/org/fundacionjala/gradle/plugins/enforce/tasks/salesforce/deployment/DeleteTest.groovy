@@ -169,6 +169,5 @@ class DeleteTest extends Specification {
 
     def cleanupSpec() {
         new File(Paths.get(SRC_PATH, 'build').toString()).deleteDir()
-        new File(Paths.get(SRC_PATH, 'src', '.fileTracker.data').toString()).delete()
     }
 }
