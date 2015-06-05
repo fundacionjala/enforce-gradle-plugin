@@ -6,9 +6,6 @@
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
-import org.fundacionjala.gradle.plugins.enforce.utils.Util
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageGenerator
-
 import java.nio.file.Paths
 
 /**
@@ -20,7 +17,6 @@ class Delete extends Deployment {
     private final String FILE_NAME_DESTRUCTIVE = "destructiveChanges.xml"
     private final String FILE_NAME_PACKAGE = "package.xml"
     public String pathDetele
-    public String option
     public ArrayList<File> filesToDeleted
 
     /**
@@ -46,14 +42,10 @@ class Delete extends Deployment {
         excludeFilesToDelete()
         showFilesToDelete()
 
-        option = System.console().readLine(Constants.QUESTION_CONTINUE)
-
-
-
-        if( option == 'y' ) {
+        if( System.console().readLine(Constants.QUESTION_CONTINUE) == 'y' ) {
             createDestructive()
             createPackage()
-//          executeDeploy(pathDetele)
+          executeDeploy(pathDetele)
         }
     }
 
@@ -77,7 +69,6 @@ class Delete extends Deployment {
     /**
      * Show files to delete
      */
-
     def showFilesToDelete() {
         println "\nFILES TO DELETE\n"
         filesToDeleted.each { file->
