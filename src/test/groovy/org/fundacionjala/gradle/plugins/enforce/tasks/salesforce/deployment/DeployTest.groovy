@@ -354,6 +354,7 @@ class DeployTest extends Specification {
             instanceDeploy.poll = 200
             instanceDeploy.waitTime = 10
             instanceDeploy.credential = credential
+            instanceDeploy.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
             def deployFileZipPath = Paths.get(SRC_PATH,'build','deploy.zip').toString()
             def deployFolderPath = Paths.get(SRC_PATH,'build','deploy').toString()
             File deployFileZip = new File(deployFileZipPath)
