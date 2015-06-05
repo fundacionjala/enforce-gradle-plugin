@@ -267,7 +267,6 @@ class ManagementFile {
      * @return files validated by folders
      */
     public ArrayList<File> getFilesByFolders(String sourcePath, ArrayList<String> folders) {
-
         ArrayList<File> filesByFolder = new ArrayList<File>()
         folders.each { folderName ->
             File folder = new File(Paths.get(sourcePath, folderName).toString())
@@ -276,6 +275,32 @@ class ManagementFile {
             }
         }
         return filesByFolder
+    }
+
+    /**
+     * Gets array valid files by folders
+     * @param sourcePath is type String
+     * @return files validated by folders and subfolders
+     */
+    public ArrayList<File> getAllFilesOf(String sourcePath) {
+        ArrayList<File> files = new ArrayList<File>()
+        File folder = new File(sourcePath)
+        if(folder.isDirectory()) {
+            folder.eachFile  { file ->
+                SalesforceValidator validator = SalesforceValidatorManager.getValidator(folder.getName())
+                if (validator.validateFileByFolder(folder.getName(), file)) {
+                    File xmlFile = new File("${file.getAbsolutePath().toString()}${METADATA_EXTENSION}")
+                    if (xmlFile.exists()) {
+                        files.push(xmlFile)
+                    }
+                }
+                files.addAll(getAllFilesOf(file.getAbsolutePath().toString()))
+            }
+        }
+        else {
+            files.push(folder)
+        }
+        return files
     }
 
     /**
