@@ -85,8 +85,8 @@ class DeleteTest extends Specification {
             new File(folder.getAbsolutePath()).mkdir()
         }
 
-        files.each { folder->
-            new File(folder.getAbsolutePath()).createNewFile()
+        files.each { file->
+            new File(file.getAbsolutePath()).createNewFile()
         }
     }
 
@@ -268,9 +268,6 @@ class DeleteTest extends Specification {
     def "Integration testing must list all the files less exclude all files"() {
         given:
             deleteInstance.parameters.put('excludes','*/**.*')
-
-            ArrayList<File> filesExpected = new ArrayList<File>();
-
         when:
             deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
             deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
@@ -282,7 +279,7 @@ class DeleteTest extends Specification {
             deleteInstance.createPackageEmpty()
 
         then:
-            filesExpected.sort().equals( deleteInstance.filesToDeleted.sort())
+            deleteInstance.filesToDeleted.isEmpty()
     }
 
     def cleanupSpec() {
