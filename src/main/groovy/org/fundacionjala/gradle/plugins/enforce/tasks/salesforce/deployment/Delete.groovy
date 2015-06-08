@@ -6,6 +6,8 @@
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
+import org.fundacionjala.gradle.plugins.enforce.utils.Util
+
 import java.nio.file.Paths
 
 /**
@@ -70,11 +72,15 @@ class Delete extends Deployment {
      * Shows files to delete
      */
     def showFilesToDelete() {
-        logger.quiet("\nFILES TO DELETE\n")
-        filesToDeleted.each { file->
-            logger.quiet(file.getAbsolutePath())
+        logger.quiet("\nCOMPONENTS TO DELETE\n")
+        def numComponentes = 0;
+        filesToDeleted.each { File file ->
+            if (!file.getName().endsWith("xml")) {
+                logger.quiet(Util.getRelativePath(file, projectPath))
+                numComponentes++
+            }
         }
-        logger.quiet(filesToDeleted.size() + " files \n")
+        logger.quiet(filesToDeleted.size() + " componentes \n")
     }
 
     /**
@@ -88,7 +94,9 @@ class Delete extends Deployment {
      * Creates packages to all files which has been deleted
      */
     def createDestructive() {
-        writePackage(Paths.get(pathDelete, PACKAGE_NAME_DESTRUCTIVE).toString(), filesToDeleted)
+        String destructivePath = Paths.get(pathDelete, PACKAGE_NAME_DESTRUCTIVE).toString()
+        writePackage(destructivePath, filesToDeleted)
+        combinePackageToUpdate(destructivePath)
     }
 
     /**
