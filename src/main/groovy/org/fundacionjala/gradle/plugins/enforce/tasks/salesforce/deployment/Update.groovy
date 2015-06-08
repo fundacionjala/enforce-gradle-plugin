@@ -124,8 +124,12 @@ class Update extends Deployment {
     def copyFilesChanged() {
         filesToCopy.each { file ->
             File xmlFile = fileManager.getValidateXmlFile(file)
+            File xmlFolder = fileManager.getValidateXmlFile(file.getParentFile())
             if (xmlFile) {
                 filesToUpdate.push(xmlFile)
+            }
+            if (xmlFolder) {
+                filesToUpdate.push(xmlFolder)
             }
             filesToUpdate.push(file)
         }
