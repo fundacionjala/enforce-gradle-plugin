@@ -82,7 +82,8 @@ public class Constants {
     //Upload task constants
     public static final String UPLOAD_DESCRIPTION = "This task uploads all specific files or folders as user wants"
     public static final String ALL_FILES_UPLOAD = "All files will be uploaded from: "
-    public static final String QUESTION_CONTINUE = " Do you want to continue? (y/n) :"
+    public static final String QUESTION_CONTINUE = "Do you want to continue? (y/n) :"
+    public static final String QUESTION_CONTINUE_DELETE = "Do you want delete this files into your organization? (y/n) :"
     public static final String UPLOAD_CANCELED ='Upload all files was canceled!!'
     public static final String DIR_UPLOAD_FOLDER = "upload"
     public static final String FILES_TO_UPLOAD = "files"
@@ -101,7 +102,9 @@ public class Constants {
     public static final String RETRIEVE_QUESTION_TO_CONTINUE = 'Do you want to continue? (y/n) : '
 
     //Delete task constants
+    public static final String START_DELETE_TASK = 'Start process to deleted'
+    public static final String SUCCESSFULLY_DELETE_TASK  = 'The files were successfully deleted'
     public static final String DESCRIPTION_DELETE_TASK = "This task deploys just the files that were changed"
     public static final String DIR_DELETE_FOLDER = "delete"
-
+    public static final String PROCCES_DELETE_CANCELLED = "The delete process was canceled"
 }

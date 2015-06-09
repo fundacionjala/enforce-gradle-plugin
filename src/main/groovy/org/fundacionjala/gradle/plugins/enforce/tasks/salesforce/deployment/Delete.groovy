@@ -33,6 +33,8 @@ class Delete extends Deployment {
     @Override
     void runTask() {
         pathDelete = Paths.get(buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
+        componentDeploy.startMessage = Constants.START_DELETE_TASK
+        componentDeploy.successMessage = Constants.SUCCESSFULLY_DELETE_TASK
         createDeploymentDirectory(pathDelete)
         addAllFiles()
         addFoldersToDeleteFiles()
@@ -40,10 +42,13 @@ class Delete extends Deployment {
         excludeFilesToDelete()
         showFilesToDelete()
 
-        if( System.console().readLine(Constants.QUESTION_CONTINUE) == Constants.YES_OPTION ) {
+        if( System.console().readLine("\n"+Constants.QUESTION_CONTINUE_DELETE) == Constants.YES_OPTION ) {
             createDestructive()
             createPackageEmpty()
             executeDeploy(pathDelete)
+        }
+        else {
+            logger.quiet(Constants.PROCCES_DELETE_CANCELLED)
         }
     }
 
@@ -72,15 +77,49 @@ class Delete extends Deployment {
      * Shows files to delete
      */
     def showFilesToDelete() {
-        logger.quiet("\nCOMPONENTS TO DELETE\n")
         def numComponentes = 0;
+        def limit = 15;
+        def nameFolder = ""
+        ArrayList<File> showFiles = new ArrayList<File>();
         filesToDeleted.each { File file ->
             if (!file.getName().endsWith("xml")) {
-                logger.quiet(Util.getRelativePath(file, projectPath))
                 numComponentes++
+                showFiles.add(file)
             }
         }
-        logger.quiet(filesToDeleted.size() + " componentes \n")
+        showFiles.sort{it.getAbsolutePath()}
+
+        logger.quiet("*********************************************")
+        logger.quiet("            Components to delete             ")
+        logger.quiet("*********************************************")
+        if(numComponentes == 0) {
+            logger.quiet("There are not files deleted")
+        }
+        else if(numComponentes > limit) {
+            def numFiles = 0;
+            def fatherName;
+            nameFolder = showFiles[0].getParentFile().getName()
+            showFiles.each { File file ->
+                fatherName = file.getParentFile().getName()
+                if(!fatherName.equals(nameFolder)) {
+                    logger.quiet("[ " + numFiles + " ] " + nameFolder)
+                    nameFolder = fatherName
+                    numFiles = 0;
+                }
+                numFiles++;
+            }
+            logger.quiet("[ " + numFiles + " ] " + fatherName)
+            logger.quiet(numComponentes+" components")
+        }
+        else
+        {
+            showFiles.each { File file ->
+                logger.quiet( Util.getRelativePath(file, projectPath))
+            }
+            logger.quiet(numComponentes+" components")
+        }
+        logger.quiet("*********************************************")
+
     }
 
     /**

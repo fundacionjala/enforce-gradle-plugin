@@ -274,8 +274,6 @@ class DeleteTest extends Specification {
             filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object4__c.object').toString()))
             filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object5__c.object').toString()))
 
-
-
         when:
             deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
             deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
