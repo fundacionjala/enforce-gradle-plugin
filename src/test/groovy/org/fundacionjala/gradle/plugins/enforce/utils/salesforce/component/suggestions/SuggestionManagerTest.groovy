@@ -8,7 +8,7 @@ class SuggestionManagerTest extends Specification {
     def "Should returns a suggestion when the error is Processing DocumentTest/documenttest.docx"() {
         given:
             String stateDetail = 'Processing DocumentTest/documenttest.docx'
-            String expected = 'Make sure the DocumentTest folder has xml file and it is defined in the package.xml'
+            String expected = 'Salesforce has reported an unexpected error:\n  A common cause is about DocumentTest folder doesn´t have a respective XML file or it is not defined in the package.xml'
         when:
             String sugesstion = SuggestionManager.processStateDetail(stateDetail)
         then:
@@ -17,11 +17,11 @@ class SuggestionManagerTest extends Specification {
 
     def "Should returns a suggestion when the error is Processing ReportTest/reporttest.docx"() {
         given:
-        String stateDetail = 'Processing ReportTest/reporttest.docx'
-        String expected = 'Make sure the ReportTest folder has xml file and it is defined in the package.xml'
+            String stateDetail = 'Processing ReportTest/reporttest.docx'
+            String expected = 'Salesforce has reported an unexpected error:\n  A common cause is about ReportTest folder doesn´t have a respective XML file or it is not defined in the package.xml'
         when:
-        String sugesstion = SuggestionManager.processStateDetail(stateDetail)
+            String sugesstion = SuggestionManager.processStateDetail(stateDetail)
         then:
-        expected == sugesstion
+            expected == sugesstion
     }
 }

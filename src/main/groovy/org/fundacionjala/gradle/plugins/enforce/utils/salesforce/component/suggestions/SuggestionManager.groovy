@@ -9,7 +9,7 @@ import java.nio.file.Paths
  * Created by alex_ventura on 09-06-15.
  */
 public class SuggestionManager {
-    public static String PROCESSING = 'Processing'
+    public static final String PROCESSING = 'Processing'
     public static String processStateDetail(String stateDetail) {
         StringBuilder result = new StringBuilder()
         if (stateDetail.startsWith(PROCESSING)) {
@@ -17,8 +17,8 @@ public class SuggestionManager {
             String parentPath = Paths.get(filePath).getName(0)
             if (parentPath != filePath) {
                 String folder = parentPath
-                result.append("Make sure the $folder")
-                result.append(' folder has xml file and it is defined in the package.xml')
+                result.append("Salesforce has reported an unexpected error:\n  A common cause is about $folder")
+                result.append(' folder doesn´t have a respective XML file or it is not defined in the package.xml')
             }
         }
 

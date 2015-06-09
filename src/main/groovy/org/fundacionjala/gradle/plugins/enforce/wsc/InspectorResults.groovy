@@ -55,7 +55,6 @@ class InspectorResults {
                     StringBuilder message = new StringBuilder()
                     message.append('\n')
                     message.append(deployResult.stateDetail)
-                    message.append("\n\nSuggestions:")
                     message.append("\n")
                     message.append(SuggestionManager.processStateDetail(deployResult.stateDetail))
                     throw new Exception(message.toString())
