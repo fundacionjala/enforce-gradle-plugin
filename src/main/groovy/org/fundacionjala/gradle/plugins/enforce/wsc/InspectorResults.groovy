@@ -11,6 +11,7 @@ import com.sforce.soap.metadata.MetadataConnection
 import com.sforce.soap.metadata.RetrieveResult
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.suggestions.SuggestionManager
 
 import java.nio.charset.Charset
 
@@ -51,9 +52,11 @@ class InspectorResults {
             deployResult = metadataConnection.checkDeployStatus(asyncResultId, true)
             if (deployResult.status == DeployStatus.Failed) {
                 if (deployResult.stateDetail) {
-                    StringBuilder message = new StringBuilder(deployResult.errorMessage)
-                    message.append('\n\n')
+                    StringBuilder message = new StringBuilder()
+                    message.append('\n')
                     message.append(deployResult.stateDetail)
+                    message.append("\n")
+                    message.append(SuggestionManager.processStateDetail(deployResult.stateDetail))
                     throw new Exception(message.toString())
                 }
             }
