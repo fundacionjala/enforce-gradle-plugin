@@ -68,6 +68,8 @@ class UploadTest extends Specification {
         given:
             uploadInstance.pathUpload = Paths.get(SRC_PATH, 'build').toString()
             uploadInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
+            uploadInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
+            uploadInstance.uploadPackagePath = Paths.get(SRC_PATH, 'build', 'package.xml').toString()
             uploadInstance.specificFilesToUpload = [new File(Paths.get(SRC_PATH, "src", "classes", "Class1.cls").toString()),
                                                     new File(Paths.get(SRC_PATH, "src", "classes", "Class1.cls-meta.xml").toString()),
                                                     new File(Paths.get(SRC_PATH, "src", "objects", "Object1__c.object").toString()),

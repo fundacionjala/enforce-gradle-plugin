@@ -8,6 +8,7 @@ package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageCombiner
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageGenerator
 
 import java.nio.file.Paths
@@ -58,15 +59,14 @@ class Update extends Deployment {
         createPackage()
         copyFilesChanged()
         showFilesExcludes()
-        truncate(pathUpdate)
-        combinePackage(updatePackagePath)
+        truncate()
         executeDeploy(pathUpdate)
         packageGenerator.saveFileTrackerMap()
     }
 
-    def truncate(String pathToTruncate) {
+    def truncate() {
         interceptorsToExecute += interceptors
-        truncateComponents(pathToTruncate)
+        truncateComponents(pathUpdate)
     }
 
     /**
@@ -78,14 +78,17 @@ class Update extends Deployment {
                 filesToCopy.add(new File(Paths.get(projectPath, nameFile).toString()))
             }
         }
-        packageGenerator.buildPackage(Paths.get(pathUpdate, PACKAGE_NAME).toString())
+        packageGenerator.buildPackage(updatePackagePath)
+        combinePackageToUpdate(updatePackagePath)
     }
 
     /**
      * Creates package to all files which has been deleted
      */
     def createDestructive() {
-        packageGenerator.buildDestructive(Paths.get(pathUpdate, Constants.FILE_NAME_DESTRUCTIVE).toString())
+        String destructivePath = Paths.get(pathUpdate, Constants.FILE_NAME_DESTRUCTIVE).toString()
+        packageGenerator.buildDestructive(destructivePath)
+        combinePackageToUpdate(destructivePath)
     }
 
     /**
@@ -121,8 +124,12 @@ class Update extends Deployment {
     def copyFilesChanged() {
         filesToCopy.each { file ->
             File xmlFile = fileManager.getValidateXmlFile(file)
+            File xmlFolder = fileManager.getValidateXmlFile(file.getParentFile())
             if (xmlFile) {
                 filesToUpdate.push(xmlFile)
+            }
+            if (xmlFolder) {
+                filesToUpdate.push(xmlFolder)
             }
             filesToUpdate.push(file)
         }

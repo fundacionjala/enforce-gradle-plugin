@@ -74,6 +74,7 @@ class Deploy extends Deployment {
             filesByFolders = excludeFiles(filesByFolders)
             fileManager.copy(projectPath, filesByFolders, folderDeploy)
             writePackage(deployPackagePath, filesByFolders)
+            combinePackageToUpdate(deployPackagePath)
             deployToSalesForce()
         }
     }
@@ -108,17 +109,18 @@ class Deploy extends Deployment {
             fileManager.copy(projectPath, filesToTruncate, folderDeploy)
             logger.debug('Generating package')
             writePackage(deployPackagePath, filesToTruncate)
+            combinePackage(deployPackagePath)
             truncateComponents()
             componentDeploy.startMessage = Constants.DEPLOYING_TRUNCATED_CODE
             componentDeploy.successMessage = Constants.DEPLOYING_TRUNCATED_CODE_SUCCESSFULLY
             logger.debug("Deploying to truncate components from: $folderDeploy")
-            combinePackage(deployPackagePath)
             executeDeploy(folderDeploy)
             createDeploymentDirectory(folderDeploy)
         }
         ArrayList<File> filteredFiles = excludeFiles(fileManager.getValidElements(projectPath))
         fileManager.copy(projectPath, filteredFiles, folderDeploy)
         writePackage(deployPackagePath, filteredFiles)
+        combinePackage(deployPackagePath)
         componentDeploy.startMessage = Constants.DEPLOYING_CODE
         componentDeploy.successMessage = Constants.DEPLOYING_CODE_SUCCESSFULLY
         deployToSalesForce()
@@ -153,7 +155,6 @@ class Deploy extends Deployment {
             truncateComponents(folderDeploy)
         }
         logger.debug("Deploying all components from: $folderDeploy")
-        combinePackage(deployPackagePath)
         executeDeploy(folderDeploy)
         updateFileTracker()
     }

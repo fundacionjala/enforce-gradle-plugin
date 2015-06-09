@@ -21,11 +21,10 @@ import java.nio.file.Paths
  * Represent base class for needs deploy code in salesforce
  */
 abstract class Deployment extends SalesforceTask {
-    private final String NAME_TASK_ZIP = "createZip"
-    DeployMetadata componentDeploy
-    InterceptorManager componentManager
-    List<String> interceptorsToExecute = []
-    List<String> interceptors = []
+    public DeployMetadata componentDeploy
+    public InterceptorManager componentManager
+    public List<String> interceptorsToExecute = []
+    public List<String> interceptors = []
     public final String EXCLUDES = 'excludes'
     public String excludes
     public final int FILE_NAME_POSITION = 1
@@ -183,6 +182,67 @@ abstract class Deployment extends SalesforceTask {
     }
 
     /**
+     * Adds all files inside a folder and  subfolders
+     * @param files  list of files to the new files will be added
+     * @return files  list of files with the new files added
+     */
+    def addAllFilesInAFolder(ArrayList<File> files) {
+        if (!Util.isValidProperty(parameters, Constants.PARAMETER_FOLDERS) && !Util.isValidProperty(parameters, Constants.PARAMETER_FILES)) {
+            files.addAll(fileManager.getAllFilesOf(projectPath))
+        }
+        return files
+    }
+
+    /**
+     * Adds files from folders
+     * @param files  list of files to the new files will be added
+     * @return files  list of files with the new files added
+     */
+    def addFilesFromFolders(ArrayList<File> files) {
+        String folders
+        if (Util.isValidProperty(parameters, Constants.PARAMETER_FOLDERS)) {
+            folders = parameters[Constants.PARAMETER_FOLDERS].toString()
+        }
+        if (folders) {
+            ArrayList<String> foldersName = folders.split(Constants.COMMA)
+            validateFolders(foldersName)
+            files = fileManager.getFilesByFolders(projectPath, foldersName as ArrayList<String>)
+        }
+        files.unique()
+        return files
+    }
+
+    /**
+     * Adds files to ArrayList according to the parameters passed
+     * @return files  list of files with the new files added
+     */
+    public addFilesTo(ArrayList<File> files) {
+        String fileNames
+        if (Util.isValidProperty(parameters, Constants.PARAMETER_FILES) && !Util.isEmptyProperty(parameters, Constants.PARAMETER_FILES)) {
+            fileNames = parameters[Constants.PARAMETER_FILES].toString()
+        }
+        ArrayList<String> filesName = new ArrayList<String>()
+        if (fileNames == null) {
+            return files
+        }
+        validateParameter(fileNames)
+        fileNames.split(Constants.COMMA).each {String fileName ->
+            def fileNameChanged = fileName.replaceAll(BACKSLASH, SLASH)
+            if (!fileNameChanged.contains(SLASH)) {
+                return files
+            }
+            filesName.push(fileName)
+            filesName.push("${fileName}${Constants.META_XML}")
+        }
+
+        FileTree fileTree = project.fileTree(dir:projectPath, includes: filesName)
+        fileTree.each {File file ->
+            files.push(file)
+        }
+        return files
+    }
+
+    /**
      * Excludes files
      * @param filesToFilter files that will be filter
      * @return ArrayList with files filter
@@ -191,9 +251,10 @@ abstract class Deployment extends SalesforceTask {
         if (filesToFilter == null) {
             logger.error("${Constants.NULL_PARAM_EXCEPTION} filesToFilter")
         }
+
         ArrayList<File> filesFiltered = filesToFilter.clone() as ArrayList<File>
-        if (Util.isValidProperty(project, EXCLUDES) && !Util.isEmptyProperty(project, EXCLUDES)) {
-            excludes = project.excludes as String
+        if (Util.isValidProperty(parameters, Constants.PARAMETER_EXCLUDES) && !Util.isEmptyProperty(parameters, Constants.PARAMETER_EXCLUDES)) {
+            excludes = parameters[Constants.PARAMETER_EXCLUDES].toString()
         }
         if (excludes) {
             validateParameter(excludes)
@@ -283,6 +344,17 @@ abstract class Deployment extends SalesforceTask {
 
     public void combinePackage(String buildPackagePath) {
         PackageCombiner.packageCombine(projectPackagePath, buildPackagePath)
+        if (excludes) {
+            PackageCombiner.removeMembersFromPackage(buildPackagePath, getFilesExcludes(excludes))
+        }
+    }
+
+    /**
+     * Combines package from build folder and package from source directory
+     * @return
+     */
+    def combinePackageToUpdate(String buildPackagePath) {
+        PackageCombiner.packageCombineToUpdate(projectPackagePath, buildPackagePath)
         if (excludes) {
             PackageCombiner.removeMembersFromPackage(buildPackagePath, getFilesExcludes(excludes))
         }

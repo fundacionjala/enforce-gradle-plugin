@@ -49,6 +49,14 @@ class InspectorResults {
                 Thread.sleep(waitTimeMilliSecs)
             }
             deployResult = metadataConnection.checkDeployStatus(asyncResultId, true)
+            if (deployResult.status == DeployStatus.Failed) {
+                if (deployResult.stateDetail) {
+                    StringBuilder message = new StringBuilder(deployResult.errorMessage)
+                    message.append('\n\n')
+                    message.append(deployResult.stateDetail)
+                    throw new Exception(message.toString())
+                }
+            }
             if (percent != HUNDRED) {
                 percent = getDeployPercentage(deployResult)
             }
