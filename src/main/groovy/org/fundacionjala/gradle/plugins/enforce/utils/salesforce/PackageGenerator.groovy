@@ -23,6 +23,13 @@ class PackageGenerator {
         componentMonitor = new ComponentMonitor()
     }
 
+    public void init(String projectPath, Credential credential) {
+        this.projectPath = projectPath
+        this.credential = credential
+        componentMonitor = new ComponentMonitor(projectPath)
+    }
+
+
     public void init(String projectPath, ArrayList<File> files, Credential credential) {
         this.projectPath = projectPath
         this.credential = credential
@@ -105,6 +112,20 @@ class PackageGenerator {
 
     public void updateFileTrackerMap(ArrayList<String> folders) {
         fileTrackerMap = componentMonitor.getFoldersFiltered(folders, fileTrackerMap)
+    }
+
+    public void listFileToDelete(ArrayList<String> folders,ArrayList<File> files) {
+        Map foldersFiltered = [:]
+
+        files.each { file ->
+            String parentFile = file.getParentFile().getName()
+            folders.each { nameFolder ->
+                if (parentFile == nameFolder) {
+                    foldersFiltered.put(Paths.get(parentFile,file.getName().toString()).toString(), new ResultTracker(ComponentStates.DELETED))
+                }
+            }
+        }
+        fileTrackerMap = foldersFiltered;
     }
 
     public ArrayList<File> excludeFiles(ArrayList<File> files) {

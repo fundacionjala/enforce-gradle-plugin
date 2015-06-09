@@ -24,36 +24,6 @@ class ManagementFileTest extends Specification {
         managementFile = new ManagementFile(targetPath)
     }
 
-    def "Test get valid file true"() {
-        given:
-            def file = 'class1.cls'
-            def folder = 'classes'
-        when:
-            def result = managementFile.validateFileByFolder(folder, file)
-        then:
-            result == true
-    }
-
-    def "Test get valid file false"() {
-        given:
-            def file = 'class1.data'
-            def folder = 'classes'
-        when:
-            def result = managementFile.validateFileByFolder(folder, file)
-        then:
-            !result
-    }
-
-    def "Test get wrong file xml"() {
-        given:
-            def file = 'package.xml'
-            def folder = 'classes'
-        when:
-            def result = managementFile.validateFileByFolder(folder, file)
-        then:
-            !result
-    }
-
     def "Test get valid elements with path source"() {
         when:
             ArrayList<File> arrayResult = managementFile.getValidElements(targetPath)

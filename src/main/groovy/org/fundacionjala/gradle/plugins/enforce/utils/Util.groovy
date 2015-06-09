@@ -65,12 +65,30 @@ class Util {
     }
 
     /**
+     * Verifies if the property exist and if it is not empty string
+     * @parameters to compare
+     * @param name the property typeName
+     */
+    public static boolean isValidProperty(Map parameters, String name) {
+        parameters.containsKey(name) && !parameters[name].toString().equals("")
+    }
+
+    /**
      * Verify if the property is empty
      * @param name the property typeName
      */
     public static isEmptyProperty(Project project, String name) {
         project.hasProperty(name) && project.properties[name].toString().equals('')
     }
+
+    /**
+     * Verify if the property is empty
+     * @param name the property typeName
+     */
+    public static isEmptyProperty(Map parameters, String name) {
+        parameters.hasProperty(name) && parameters[name].toString().equals('')
+    }
+
     /**
      * Validates required parameters that should be entered via command line
      * @param project The project reference
@@ -184,11 +202,11 @@ class Util {
      */
     public static String getRelativePath(File file, String basePath, boolean normalizePath = true) {
         File root = new File(basePath)
-        String relativePath = root.toURI().relativize(file.toURI()).toString()
+        String relativePath = root.toPath().relativize(file.toPath()).toString()
         if (normalizePath) {
             return Paths.get(relativePath).toString()
         }
-        return relativePath
+        return relativePath.replaceAll(Constants.BACK_SLASH, Constants.SLASH)
     }
 
     /**
@@ -248,5 +266,15 @@ class Util {
      */
     public static String getFirstPath(String path) {
         return Paths.get(path).getName(ZERO_NUMBER_PATH)
+    }
+
+    /**
+     * Gets a object name from sub component member
+     * @param subComponentMember is a sub component member
+     * @return a object name
+     */
+    public static String getObjectName(String subComponentMember) {
+        String objectName = subComponentMember.substring(0, subComponentMember.indexOf('.'))
+        return objectName
     }
 }
