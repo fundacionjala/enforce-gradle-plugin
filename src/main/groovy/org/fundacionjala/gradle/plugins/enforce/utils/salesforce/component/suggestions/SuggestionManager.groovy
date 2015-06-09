@@ -1,12 +1,11 @@
 package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.suggestions
 
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
-import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
 
 import java.nio.file.Paths
 
 /**
- * Created by alex_ventura on 09-06-15.
+ * Manager to generate suggestion when the task failed
  */
 public class SuggestionManager {
     public static final String PROCESSING = 'Processing'
@@ -14,7 +13,7 @@ public class SuggestionManager {
         StringBuilder result = new StringBuilder()
         if (stateDetail.startsWith(PROCESSING)) {
             String filePath = stateDetail.replaceFirst(PROCESSING, "").trim()
-            String parentPath = Paths.get(filePath).getName(0)
+            String parentPath = Paths.get(filePath).getName(Constants.ZERO)
             if (parentPath != filePath) {
                 String folder = parentPath
                 result.append("Salesforce has reported an unexpected error:\n  A common cause is about $folder")
