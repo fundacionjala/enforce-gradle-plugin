@@ -192,26 +192,41 @@ abstract class SalesforceTask extends ForceTask {
     }
 
     /**
-     * Deletes a directory excluding another specific directory
-     * @param dirToDelete the directory to delete
-     * @param dirToExclude the directory to exclude
+     * Deletes a directory excluding others directories
+     * @param directoryToDelete
+     * @param directoriesToExclude
      */
-    public void deleteDir(String dirToDelete, String dirToExclude) {
+    public void deleteDir(String directoryToDelete, ArrayList<String> directoriesToExclude){
         String tempDirPath = System.getProperty(Constants.TEMP_DIR_PATH)
         File tempDir = new File(Paths.get(tempDirPath, "${Constants.TEMP_FOLDER_NAME}${Long.toString(System.nanoTime())}").toString())
 
         if (!tempDir.mkdir()) {
             throw new IOException("${Constants.IO_MESSAGE_TEMP_DIR}: ${tempDir.getAbsolutePath()}");
         }
-        project.copy {
-            from dirToExclude
-            into tempDir.absolutePath
+        if(directoriesToExclude && directoriesToExclude.size() > 0){
+            directoriesToExclude.each { directory ->
+                if(new File(directory).exists()) {
+                    project.copy {
+                        from directory
+                        into "${tempDir.absolutePath}${File.separator}${Paths.get(directory).fileName.toString()}"
+                    }
+                }
+            }
         }
-
-        project.delete project.files(dirToDelete)
-        project.copy {
-            from tempDir.absolutePath
-            into dirToExclude
+        project.delete project.file(directoryToDelete)
+        File logDirectory = new File("$directoryToDelete${File.separator}${Constants.LOGS_FOLDER_NAME}")
+        if (!logDirectory.mkdirs()) {
+            throw new IOException("${Constants.IO_MESSAGE_TEMP_DIR}: ${tempDir.getAbsolutePath()}");
+        }
+        if(directoriesToExclude && directoriesToExclude.size() > 0){
+            directoriesToExclude.each { directory ->
+                if(new File("${tempDir.absolutePath}${File.separator}${Paths.get(directory).fileName.toString()}").exists()) {
+                    project.copy {
+                        from "${tempDir.absolutePath}${File.separator}${Paths.get(directory).fileName.toString()}"
+                        into "$directoryToDelete${File.separator}${Paths.get(directory).fileName.toString()}"
+                    }
+                }
+            }
         }
     }
 
@@ -220,7 +235,8 @@ abstract class SalesforceTask extends ForceTask {
      */
     public void deleteTemporaryFiles() {
         if (project.enforce.deleteTemporaryFiles) {
-            deleteDir(buildFolderPath, Paths.get(buildFolderPath, Constants.LOGS_FOLDER_NAME).toString())
+            deleteDir(buildFolderPath, [Paths.get(buildFolderPath, Constants.LOGS_FOLDER_NAME).toString(),
+                                        Paths.get(buildFolderPath, Constants.REPORT_FOLDER_NAME).toString()])
         }
     }
 

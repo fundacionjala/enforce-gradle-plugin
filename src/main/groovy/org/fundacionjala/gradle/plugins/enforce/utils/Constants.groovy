@@ -30,6 +30,7 @@ public class Constants {
     public static final String TEMP_DIR_PATH = "java.io.tmpdir"
     public static final String TEMP_FOLDER_NAME = "temp_enforce"
     public static final String LOGS_FOLDER_NAME = "logs"
+    public static final String REPORT_FOLDER_NAME = "report"
 
     public static final int ZERO = 0
 
