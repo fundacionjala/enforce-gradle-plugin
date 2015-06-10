@@ -169,8 +169,8 @@ abstract class Deployment extends SalesforceTask {
     public ArrayList<String> getCriterias(String criterion) {
         ArrayList<String> criterias = new ArrayList<String>()
         criterion.split(Constants.COMMA).each { String critery ->
-            critery = critery.replaceAll(BACKSLASH, SLASH)
-            def criteriaSplitted = critery.split(SLASH)
+            critery = critery.replaceAll(BACKSLASH, Constants.SLASH)
+            def criteriaSplitted = critery.split(Constants.SLASH)
             if (criteriaSplitted.size() == FILE_NAME_POSITION) {
                 criterias.push("${critery}${File.separator}${Constants.WILDCARD}${Constants.WILDCARD}")
                 return
@@ -229,8 +229,8 @@ abstract class Deployment extends SalesforceTask {
         }
         validateParameter(fileNames)
         fileNames.split(Constants.COMMA).each {String fileName ->
-            def fileNameChanged = fileName.replaceAll(BACKSLASH, SLASH)
-            if (!fileNameChanged.contains(SLASH)) {
+            def fileNameChanged = fileName.replaceAll(BACKSLASH, Constants.SLASH)
+            if (!fileNameChanged.contains(Constants.SLASH)) {
                 return files
             }
             filesName.push(fileName)
@@ -277,7 +277,7 @@ abstract class Deployment extends SalesforceTask {
             if (parameter.contains(Constants.WILDCARD)) {
                 return
             }
-            if (parameter.contains(SLASH)) {
+            if (parameter.contains(Constants.SLASH)) {
                 fileNames.push(parameter)
             } else {
                 folderNames.push(parameter)
