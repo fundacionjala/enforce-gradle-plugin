@@ -11,6 +11,9 @@ import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.SalesforceTask
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageCombiner
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.SalesforceValidator
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.SalesforceValidatorManager
 import org.gradle.api.file.FileTree
 import org.gradle.api.tasks.bundling.Zip
 
@@ -20,12 +23,10 @@ import java.nio.file.Paths
  * Represent base class for needs deploy code in salesforce
  */
 abstract class Deployment extends SalesforceTask {
-
-    private final String NAME_TASK_ZIP = "createZip"
-    DeployMetadata componentDeploy
-    InterceptorManager componentManager
-    List<String> interceptorsToExecute = []
-    List<String> interceptors = []
+    public DeployMetadata componentDeploy
+    public InterceptorManager componentManager
+    public List<String> interceptorsToExecute = []
+    public List<String> interceptors = []
     public final String EXCLUDES = 'excludes'
     public String excludes
     public final int FILE_NAME_POSITION = 1
@@ -54,12 +55,7 @@ abstract class Deployment extends SalesforceTask {
         componentDeploy.setPath(pathZipToDeploy)
         logger.debug('Deploying components')
         componentDeploy.deploy(poll, waitTime, credential)
-        if(project.enforce.deleteTemporaryFiles) {
-            def deleteZipFile = new File(pathZipToDeploy)
-            def deleteFolder = new File(sourcePath)
-            deleteZipFile.delete()
-            deleteFolder.deleteDir()
-        }
+        deleteTemporaryFiles()
     }
 
     /**
@@ -104,35 +100,6 @@ abstract class Deployment extends SalesforceTask {
      */
     void createDeploymentDirectory(String pathDirectory) {
         fileManager.createNewDirectory(pathDirectory)
-    }
-
-    /**
-     * Creates a zip file
-     * @param destination is folder where will create zip
-     * @param fileName is name of file zip
-     * @param sourcePath is folder will compress
-     * @return a path zip  was created
-     */
-    String createZip(String sourcePath, String destination, String fileName) {
-        File folderDestination = new File(destination)
-
-        if (!folderDestination.exists()) {
-            throw new Exception("Cannot find the folder: $destination ")
-        }
-
-        String fileNameZip = "${fileName}.zip"
-        File fileZip = new File(Paths.get(destination, fileNameZip).toString())
-        if (fileZip.exists()) {
-            fileZip.delete()
-        }
-
-        project.task(NAME_TASK_ZIP, type: Zip, overwrite: true) {
-            destinationDir new File(destination)
-            archiveName fileNameZip
-            from sourcePath
-        }.execute()
-
-        return fileZip.getAbsolutePath()
     }
 
     /**
@@ -217,6 +184,69 @@ abstract class Deployment extends SalesforceTask {
     }
 
     /**
+     * Adds all files inside a folder and  subfolders
+     * @param files  list of files to the new files will be added
+     * @return files  list of files with the new files added
+     */
+    def addAllFilesInAFolder(ArrayList<File> files) {
+        if (!Util.isValidProperty(parameters, Constants.PARAMETER_FOLDERS) && !Util.isValidProperty(parameters, Constants.PARAMETER_FILES)) {
+            ArrayList<File> sourceFiles = fileManager.getValidElements(projectPath)
+            sourceFiles.remove(new File(Paths.get(projectPath, Constants.PACKAGE_FILE_NAME).toString()))
+            files.addAll(sourceFiles)
+        }
+        return files
+    }
+
+    /**
+     * Adds files from folders
+     * @param files  list of files to the new files will be added
+     * @return files  list of files with the new files added
+     */
+    def addFilesFromFolders(ArrayList<File> files) {
+        String folders
+        if (Util.isValidProperty(parameters, Constants.PARAMETER_FOLDERS)) {
+            folders = parameters[Constants.PARAMETER_FOLDERS].toString()
+        }
+        if (folders) {
+            ArrayList<String> foldersName = folders.split(Constants.COMMA)
+            validateFolders(foldersName)
+            files = fileManager.getFilesByFolders(projectPath, foldersName as ArrayList<String>)
+        }
+        files.unique()
+        return files
+    }
+
+    /**
+     * Adds files to ArrayList according to the parameters passed
+     * @return files  list of files with the new files added
+     */
+    public addFilesTo(ArrayList<File> files) {
+        String fileNames
+        if (Util.isValidProperty(parameters, Constants.PARAMETER_FILES) && !Util.isEmptyProperty(parameters, Constants.PARAMETER_FILES)) {
+            fileNames = parameters[Constants.PARAMETER_FILES].toString()
+        }
+        ArrayList<String> filesName = new ArrayList<String>()
+        if (fileNames == null) {
+            return files
+        }
+        validateParameter(fileNames)
+        fileNames.split(Constants.COMMA).each {String fileName ->
+            def fileNameChanged = fileName.replaceAll(BACKSLASH, SLASH)
+            if (!fileNameChanged.contains(SLASH)) {
+                return files
+            }
+            filesName.push(fileName)
+            filesName.push("${fileName}${Constants.META_XML}")
+        }
+
+        FileTree fileTree = project.fileTree(dir:projectPath, includes: filesName)
+        fileTree.each {File file ->
+            files.push(file)
+        }
+        return files
+    }
+
+    /**
      * Excludes files
      * @param filesToFilter files that will be filter
      * @return ArrayList with files filter
@@ -225,9 +255,10 @@ abstract class Deployment extends SalesforceTask {
         if (filesToFilter == null) {
             logger.error("${Constants.NULL_PARAM_EXCEPTION} filesToFilter")
         }
+
         ArrayList<File> filesFiltered = filesToFilter.clone() as ArrayList<File>
-        if (Util.isValidProperty(project, EXCLUDES) && !Util.isEmptyProperty(project, EXCLUDES)) {
-            excludes = project.excludes as String
+        if (Util.isValidProperty(parameters, Constants.PARAMETER_EXCLUDES) && !Util.isEmptyProperty(parameters, Constants.PARAMETER_EXCLUDES)) {
+            excludes = parameters[Constants.PARAMETER_EXCLUDES].toString()
         }
         if (excludes) {
             validateParameter(excludes)
@@ -296,8 +327,10 @@ abstract class Deployment extends SalesforceTask {
         ArrayList<String> notExistFiles = new ArrayList<String>()
         String errorMessage = ''
         filesName.each { String fileName ->
-            def extension = Util.getFileExtension(new File(Paths.get(projectPath, fileName).toString()))
-            if (!MetadataComponents.validExtension(extension)) {
+            File file = new File(Paths.get(projectPath, fileName).toString())
+            String parentName = Util.getFirstPath(fileName).toString()
+            SalesforceValidator validator = SalesforceValidatorManager.getValidator(parentName)
+            if (!validator.validateFileByFolder(parentName, file)) {
                 invalidFiles.push(fileName)
             }
             if (!new File(Paths.get(projectPath, fileName).toString()).exists()) {
@@ -312,6 +345,24 @@ abstract class Deployment extends SalesforceTask {
         }
         if (!errorMessage.isEmpty()) {
             throw new Exception(errorMessage)
+        }
+    }
+
+    public void combinePackage(String buildPackagePath) {
+        PackageCombiner.packageCombine(projectPackagePath, buildPackagePath)
+        if (excludes) {
+            PackageCombiner.removeMembersFromPackage(buildPackagePath, getFilesExcludes(excludes))
+        }
+    }
+
+    /**
+     * Combines package from build folder and package from source directory
+     * @return
+     */
+    def combinePackageToUpdate(String buildPackagePath) {
+        PackageCombiner.packageCombineToUpdate(projectPackagePath, buildPackagePath)
+        if (excludes) {
+            PackageCombiner.removeMembersFromPackage(buildPackagePath, getFilesExcludes(excludes))
         }
     }
 }

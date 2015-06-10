@@ -156,6 +156,7 @@ class RunTestTask extends SalesforceTask {
         }
         writeJenkinsPluginJson()
         generateUnitTestReportXml()
+        deleteTemporaryFiles()
     }
 
     /**

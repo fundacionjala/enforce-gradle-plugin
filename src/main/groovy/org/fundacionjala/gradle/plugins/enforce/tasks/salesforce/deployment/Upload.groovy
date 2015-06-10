@@ -17,28 +17,20 @@ import java.nio.file.Paths
  * Uploads files to an organization using metadata API without truncate values
  */
 class Upload extends Deployment {
-    private static final String DESCRIPTION_OF_TASK = "This task uploads all specific files or folders as user wants"
-    private final String ALL_FILES_UPLOAD = "All files will be uploaded from: "
-    private final String QUESTION_CONTINUE = " Do you want to continue? (y/n) :"
-    private final String UPLOAD_CANCELED ='Upload all files was canceled!!'
-    private final String DIR_UPLOAD_FOLDER = "upload"
-    private final String FILES_TO_UPLOAD = "files"
-    private final String ALL_FILES_TO_UPLOAD = "all"
-
     public ArrayList<File> specificFilesToUpload
     public ArrayList<File> filesToUpload
     public PackageGenerator packageGenerator
     public String pathUpload
+    public String uploadPackagePath
     public String files
     public String option = 'y'
-    public final String YES_OPTION = 'y'
     public String all = Constants.FALSE
 
     /**
      * Sets description and group task
      */
     Upload() {
-        super(DESCRIPTION_OF_TASK, Constants.DEPLOYMENT)
+        super(Constants.UPLOAD_DESCRIPTION, Constants.DEPLOYMENT)
         specificFilesToUpload = new ArrayList<File>()
         packageGenerator = new PackageGenerator()
         filesToUpload = new ArrayList<File>()
@@ -50,16 +42,18 @@ class Upload extends Deployment {
      */
     @Override
     void runTask() {
-        pathUpload = Paths.get(buildFolderPath, DIR_UPLOAD_FOLDER).toString()
+        pathUpload = Paths.get(buildFolderPath, Constants.DIR_UPLOAD_FOLDER).toString()
+        uploadPackagePath = Paths.get(pathUpload, PACKAGE_NAME).toString()
         createDeploymentDirectory(pathUpload)
         loadFilesChangedToUpload()
         loadParameter()
         loadAllFiles()
         if (specificFilesToUpload.empty && !Util.isValidProperty(project, EXCLUDES) && all == Constants.FALSE) {
-            logger.warn("${ALL_FILES_UPLOAD}${projectPath}")
-            option = System.console().readLine(QUESTION_CONTINUE)
+            logger.warn("${Constants.ALL_FILES_UPLOAD}${projectPath}")
+            option = System.console().readLine(Constants.QUESTION_CONTINUE)
+
         }
-        if (option == YES_OPTION) {
+        if (option == Constants.YES_OPTION) {
             loadFiles()
             copyFilesToUpload()
             createPackage()
@@ -67,7 +61,7 @@ class Upload extends Deployment {
             executeDeploy(pathUpload)
             saveMapOfFilesChanged()
         } else {
-            logger.error(UPLOAD_CANCELED)
+            logger.error(Constants.UPLOAD_CANCELED)
         }
     }
 
@@ -119,8 +113,8 @@ class Upload extends Deployment {
      * By default the 'all' variable has the value equals to false.
      */
     void loadAllFiles() {
-        if (Util.isValidProperty(project, ALL_FILES_TO_UPLOAD) && !Util.isEmptyProperty(project, ALL_FILES_TO_UPLOAD)) {
-            all = project.properties[ALL_FILES_TO_UPLOAD].toString()
+        if (Util.isValidProperty(project, Constants.ALL_FILES_TO_UPLOAD) && !Util.isEmptyProperty(project, Constants.ALL_FILES_TO_UPLOAD)) {
+            all = project.properties[Constants.ALL_FILES_TO_UPLOAD].toString()
         }
     }
 
@@ -128,8 +122,8 @@ class Upload extends Deployment {
      * Loads files that will be uploaded into specificFilesToUpload array.
      */
     def loadParameter() {
-        if (Util.isValidProperty(project, FILES_TO_UPLOAD) && !Util.isEmptyProperty(project, FILES_TO_UPLOAD)) {
-            files = project.properties[FILES_TO_UPLOAD].toString()
+        if (Util.isValidProperty(project, Constants.FILES_TO_UPLOAD) && !Util.isEmptyProperty(project, Constants.FILES_TO_UPLOAD)) {
+            files = project.properties[Constants.FILES_TO_UPLOAD].toString()
         }
         ArrayList<String> filesName = new ArrayList<String>()
         if (files == null) {
@@ -167,6 +161,7 @@ class Upload extends Deployment {
     public void createPackage() {
         if (!specificFilesToUpload.empty) {
             writePackage(Paths.get(pathUpload, PACKAGE_NAME).toString(), specificFilesToUpload)
+            combinePackageToUpdate(uploadPackagePath)
         }
     }
 
