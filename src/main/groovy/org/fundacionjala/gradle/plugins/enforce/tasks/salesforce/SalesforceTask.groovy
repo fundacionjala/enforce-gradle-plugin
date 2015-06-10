@@ -193,8 +193,8 @@ abstract class SalesforceTask extends ForceTask {
 
     /**
      * Deletes a directory excluding others directories
-     * @param directoryToDelete
-     * @param directoriesToExclude
+     * @param directoryToDelete the directory to delete
+     * @param directoriesToExclude the directories to exclude from directory will be deleted
      */
     public void deleteDirectory(String directoryToDelete, ArrayList<String> directoriesToExclude){
         String tempDirPath = System.getProperty(Constants.TEMP_DIR_PATH)
