@@ -54,6 +54,7 @@ class PackageCombiner {
             String parentName = Util.getFirstPath(componentName)
             if (parentName != componentName) {
                 componentToDelete.get(componentType).push(parentName)
+                componentToDelete.get(componentType).push(Util.getFileName(componentName))
             }
         }
 

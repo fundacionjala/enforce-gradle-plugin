@@ -225,6 +225,39 @@ class PackageCombinerTest extends Specification {
             xmlDiff.similar()
     }
 
+    def "Test should remove documents that doesn't have extension at package xml file"() {
+        given:
+            String packagePath = Paths.get(SRC_PATH, 'packageTestDocument.xml')
+            String packageContent = '''<?xml version='1.0' encoding='UTF-8'?>
+                                <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
+                                    <types>
+                                        <members>MyDocuments</members>
+                                        <members>MyDocuments/doc2</members>
+                                        <members>MyDocuments/doc1</members>
+                                        <name>Document</name>
+                                    </types>
+                                    <version>32.0</version>
+                                </Package>
+                                '''
+            File packageFile = new File(packagePath)
+            packageFile.write(packageContent)
+            String packageExpect = '''<?xml version='1.0' encoding='UTF-8'?>
+                                    <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
+                                        <types>
+                                            <members>MyDocuments/doc1</members>
+                                            <name>Document</name>
+                                        </types>
+                                        <version>32.0</version>
+                                    </Package>
+                                    '''
+        when:
+            PackageCombiner.removeMembersFromPackage(packagePath, ['documents/MyDocuments/doc2.txt'])
+            XMLUnit.ignoreWhitespace = true
+            def xmlDiff = new Diff(packageFile.text, packageExpect)
+        then:
+            xmlDiff.similar()
+    }
+
     def 'Test should remove reports component from package xml file'() {
         given:
             String packagePath = Paths.get(SRC_PATH, 'packageTestReport.xml')
