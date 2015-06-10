@@ -95,7 +95,6 @@ class Delete extends Deployment {
             }.each { group, files ->
                 logger.quiet("[ " + files.size() + " ] " + group)
             }
-            logger.quiet(numComponentes+" components")
         }
         else {
             showFiles.each { File file ->

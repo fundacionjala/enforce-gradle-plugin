@@ -12,6 +12,8 @@ import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageCombiner
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.SalesforceValidator
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.SalesforceValidatorManager
 import org.gradle.api.file.FileTree
 import org.gradle.api.tasks.bundling.Zip
 
@@ -325,8 +327,10 @@ abstract class Deployment extends SalesforceTask {
         ArrayList<String> notExistFiles = new ArrayList<String>()
         String errorMessage = ''
         filesName.each { String fileName ->
-            def extension = Util.getFileExtension(new File(Paths.get(projectPath, fileName).toString()))
-            if (!MetadataComponents.validExtension(extension)) {
+            File file = new File(Paths.get(projectPath, fileName).toString())
+            String parentName = Util.getFirstPath(fileName).toString()
+            SalesforceValidator validator = SalesforceValidatorManager.getValidator(parentName)
+            if (!validator.validateFileByFolder(parentName, file)) {
                 invalidFiles.push(fileName)
             }
             if (!new File(Paths.get(projectPath, fileName).toString()).exists()) {
