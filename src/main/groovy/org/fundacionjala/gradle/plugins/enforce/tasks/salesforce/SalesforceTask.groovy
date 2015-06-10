@@ -196,14 +196,14 @@ abstract class SalesforceTask extends ForceTask {
      * @param directoryToDelete
      * @param directoriesToExclude
      */
-    public void deleteDir(String directoryToDelete, ArrayList<String> directoriesToExclude){
+    public void deleteDirectory(String directoryToDelete, ArrayList<String> directoriesToExclude){
         String tempDirPath = System.getProperty(Constants.TEMP_DIR_PATH)
         File tempDir = new File(Paths.get(tempDirPath, "${Constants.TEMP_FOLDER_NAME}${Long.toString(System.nanoTime())}").toString())
 
         if (!tempDir.mkdir()) {
             throw new IOException("${Constants.IO_MESSAGE_TEMP_DIR}: ${tempDir.getAbsolutePath()}");
         }
-        if(directoriesToExclude && directoriesToExclude.size() > 0){
+        if(directoriesToExclude && directoriesToExclude.size() > Constants.ZERO){
             directoriesToExclude.each { directory ->
                 if(new File(directory).exists()) {
                     project.copy {
@@ -218,7 +218,7 @@ abstract class SalesforceTask extends ForceTask {
         if (!logDirectory.mkdirs()) {
             throw new IOException("${Constants.IO_MESSAGE_TEMP_DIR}: ${tempDir.getAbsolutePath()}");
         }
-        if(directoriesToExclude && directoriesToExclude.size() > 0){
+        if(directoriesToExclude && directoriesToExclude.size() > Constants.ZERO){
             directoriesToExclude.each { directory ->
                 if(new File("${tempDir.absolutePath}${File.separator}${Paths.get(directory).fileName.toString()}").exists()) {
                     project.copy {
@@ -235,7 +235,7 @@ abstract class SalesforceTask extends ForceTask {
      */
     public void deleteTemporaryFiles() {
         if (project.enforce.deleteTemporaryFiles) {
-            deleteDir(buildFolderPath, [Paths.get(buildFolderPath, Constants.LOGS_FOLDER_NAME).toString(),
+            deleteDirectory(buildFolderPath, [Paths.get(buildFolderPath, Constants.LOGS_FOLDER_NAME).toString(),
                                         Paths.get(buildFolderPath, Constants.REPORT_FOLDER_NAME).toString()])
         }
     }
