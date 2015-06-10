@@ -107,4 +107,5 @@ public class Constants {
     public static final String DESCRIPTION_DELETE_TASK = "This task deploys just the files that were changed"
     public static final String DIR_DELETE_FOLDER = "delete"
     public static final String PROCCES_DELETE_CANCELLED = "The delete process was canceled"
+    public static final String NOT_FILES_DELETED = "There are not files to delete"
 }

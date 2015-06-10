@@ -77,38 +77,24 @@ class Delete extends Deployment {
      * Shows files to delete
      */
     def showFilesToDelete() {
-        def numComponentes = 0;
         def limit = 15;
-        def nameFolder = ""
-        ArrayList<File> showFiles = new ArrayList<File>();
-        filesToDeleted.each { File file ->
-            if (!file.getName().endsWith("xml")) {
-                numComponentes++
-                showFiles.add(file)
-            }
+        ArrayList<File> showFiles = filesToDeleted.findAll { File file ->
+            !file.getName().endsWith("xml")
         }
-        showFiles.sort{it.getAbsolutePath()}
+        def numComponentes = showFiles.size()
 
         logger.quiet("*********************************************")
         logger.quiet("            Components to delete             ")
         logger.quiet("*********************************************")
         if(numComponentes == 0) {
-            logger.quiet("There are not files deleted")
+            logger.quiet(Constants.NOT_FILES_DELETED)
         }
         else if(numComponentes > limit) {
-            def numFiles = 0;
-            def fatherName;
-            nameFolder = showFiles[0].getParentFile().getName()
-            showFiles.each { File file ->
-                fatherName = file.getParentFile().getName()
-                if(!fatherName.equals(nameFolder)) {
-                    logger.quiet("[ " + numFiles + " ] " + nameFolder)
-                    nameFolder = fatherName
-                    numFiles = 0;
-                }
-                numFiles++;
+            showFiles.groupBy { File file ->
+                file.getParentFile().getName()
+            }.each { group, files ->
+                logger.quiet("[ " + files.size() + " ] " + group)
             }
-            logger.quiet("[ " + numFiles + " ] " + fatherName)
             logger.quiet(numComponentes+" components")
         }
         else
@@ -119,7 +105,6 @@ class Delete extends Deployment {
             logger.quiet(numComponentes+" components")
         }
         logger.quiet("*********************************************")
-
     }
 
     /**
