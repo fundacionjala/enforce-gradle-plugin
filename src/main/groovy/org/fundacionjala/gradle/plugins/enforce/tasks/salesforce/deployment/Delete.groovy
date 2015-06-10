@@ -77,7 +77,7 @@ class Delete extends Deployment {
      * Shows files to delete
      */
     def showFilesToDelete() {
-        def limit = 15;
+        def limit = 15
         ArrayList<File> showFiles = filesToDeleted.findAll { File file ->
             !file.getName().endsWith("xml")
         }
@@ -97,8 +97,7 @@ class Delete extends Deployment {
             }
             logger.quiet(numComponentes+" components")
         }
-        else
-        {
+        else {
             showFiles.each { File file ->
                 logger.quiet( Util.getRelativePath(file, projectPath))
             }
