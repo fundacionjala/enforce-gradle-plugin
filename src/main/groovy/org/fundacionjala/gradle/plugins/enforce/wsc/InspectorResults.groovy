@@ -113,7 +113,7 @@ class InspectorResults {
             progressBar.append("]   ${deployResult.numberComponentsDeployed}/${deployResult.numberComponentsTotal}(${percent}%)");
             outputStream.write("\r${progressBar.toString()}".getBytes(Charset.forName("UTF-8")))
         } else {
-            outputStream.write(Util.getBytes("\r\nDeploy Status: ${deployResult.status}...", "UTF-8"))
+            outputStream.write(Util.getBytes("\r\nProcess status: ${deployResult.status}...", "UTF-8"))
         }
         outputStream.flush()
     }

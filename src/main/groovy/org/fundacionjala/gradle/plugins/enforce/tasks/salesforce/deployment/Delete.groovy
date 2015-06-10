@@ -6,6 +6,8 @@
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
+import org.fundacionjala.gradle.plugins.enforce.utils.Util
+
 import java.nio.file.Paths
 
 /**
@@ -31,6 +33,8 @@ class Delete extends Deployment {
     @Override
     void runTask() {
         pathDelete = Paths.get(buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
+        componentDeploy.startMessage = Constants.START_DELETE_TASK
+        componentDeploy.successMessage = Constants.SUCCESSFULLY_DELETE_TASK
         createDeploymentDirectory(pathDelete)
         addAllFiles()
         addFoldersToDeleteFiles()
@@ -38,10 +42,13 @@ class Delete extends Deployment {
         excludeFilesToDelete()
         showFilesToDelete()
 
-        if( System.console().readLine(Constants.QUESTION_CONTINUE) == Constants.YES_OPTION ) {
+        if( System.console().readLine("\n"+Constants.QUESTION_CONTINUE_DELETE) == Constants.YES_OPTION ) {
             createDestructive()
             createPackageEmpty()
             executeDeploy(pathDelete)
+        }
+        else {
+            logger.quiet(Constants.PROCCES_DELETE_CANCELLED)
         }
     }
 
@@ -70,11 +77,33 @@ class Delete extends Deployment {
      * Shows files to delete
      */
     def showFilesToDelete() {
-        logger.quiet("\nFILES TO DELETE\n")
-        filesToDeleted.each { file->
-            logger.quiet(file.getAbsolutePath())
+        def limit = 15
+        ArrayList<File> showFiles = filesToDeleted.findAll { File file ->
+            !file.getName().endsWith("xml")
         }
-        logger.quiet(filesToDeleted.size() + " files \n")
+        def numComponentes = showFiles.size()
+
+        logger.quiet("*********************************************")
+        logger.quiet("            Components to delete             ")
+        logger.quiet("*********************************************")
+        if(numComponentes == 0) {
+            logger.quiet(Constants.NOT_FILES_DELETED)
+        }
+        else if(numComponentes > limit) {
+            showFiles.groupBy { File file ->
+                file.getParentFile().getName()
+            }.each { group, files ->
+                logger.quiet("[ " + files.size() + " ] " + group)
+            }
+            logger.quiet(numComponentes+" components")
+        }
+        else {
+            showFiles.each { File file ->
+                logger.quiet( Util.getRelativePath(file, projectPath))
+            }
+            logger.quiet(numComponentes+" components")
+        }
+        logger.quiet("*********************************************")
     }
 
     /**
@@ -88,7 +117,9 @@ class Delete extends Deployment {
      * Creates packages to all files which has been deleted
      */
     def createDestructive() {
-        writePackage(Paths.get(pathDelete, PACKAGE_NAME_DESTRUCTIVE).toString(), filesToDeleted)
+        String destructivePath = Paths.get(pathDelete, PACKAGE_NAME_DESTRUCTIVE).toString()
+        writePackage(destructivePath, filesToDeleted)
+        combinePackageToUpdate(destructivePath)
     }
 
     /**

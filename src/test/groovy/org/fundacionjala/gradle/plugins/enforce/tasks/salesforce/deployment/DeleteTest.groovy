@@ -11,6 +11,7 @@ import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentSerializer
 import org.fundacionjala.gradle.plugins.enforce.metadata.DeployMetadata
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
+import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -54,6 +55,7 @@ class DeleteTest extends Specification {
         deleteInstance.projectPath = Paths.get(SRC_PATH, 'src_delete').toString()
         deleteInstance.componentDeploy = new DeployMetadata()
         deleteInstance.project.enforce.deleteTemporaryFiles = true
+        deleteInstance.projectPackagePath = Paths.get(SRC_PATH,'src_delete', 'package.xml').toString()
 
         ArrayList<File> files = new ArrayList<File>()
         files.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class1.cls').toString()))
@@ -88,6 +90,27 @@ class DeleteTest extends Specification {
         files.each { file->
             new File(file.getAbsolutePath()).createNewFile()
         }
+
+        String packageXmlPath = deleteInstance.projectPackagePath
+        String packageXmlContent ='''<?xml version='1.0' encoding='UTF-8'?>
+            <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
+                <types>
+                    <members>*</members>
+                    <name>ApexClass</name>
+                </types>
+                <types>
+                    <members>*</members>
+                    <name>ApexTrigger</name>
+                </types>
+                <types>
+                    <members>*</members>
+                    <name>CustomObject</name>
+                </types>
+                <version>32.0</version>
+            </Package>
+             '''
+        File filePackageXml = new File(packageXmlPath)
+        filePackageXml.write(packageXmlContent)
     }
 
     def "Integration testing must list all the files to delete"() {

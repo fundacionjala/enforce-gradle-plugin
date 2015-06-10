@@ -188,7 +188,9 @@ abstract class Deployment extends SalesforceTask {
      */
     def addAllFilesInAFolder(ArrayList<File> files) {
         if (!Util.isValidProperty(parameters, Constants.PARAMETER_FOLDERS) && !Util.isValidProperty(parameters, Constants.PARAMETER_FILES)) {
-            files.addAll(fileManager.getAllFilesOf(projectPath))
+            ArrayList<File> sourceFiles = fileManager.getValidElements(projectPath)
+            sourceFiles.remove(new File(Paths.get(projectPath, Constants.PACKAGE_FILE_NAME).toString()))
+            files.addAll(sourceFiles)
         }
         return files
     }
