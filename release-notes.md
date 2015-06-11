@@ -1,4 +1,31 @@
 
+## 1.0.4 - 2015-06-10
+
+### Features
+
+* Delete task was created to delete components from your organization based in your package xml file or using folder parameter.
+
+### Bugs fixed
+
+* The deploy task ends with percentage less than 100%.
+* Support deleteTemporaryFiles parameter for Retrieve task.
+* Update task fails for files that have spaces in their name.
+* Update/Deploy/Upload command does not take in account the package.xml info for packaged objects.
+
+### Enhancements
+
+* Use unzip method of Gradle instead of unzip method of AntBuilder for the Retrieve task.
+
+### Known issues
+
+
+* When sent only a folder name as the value of the parameter file, the filter selects all project files
+* When we use the task status by showing components object type with the status changed, an empty line is created in the console after displaying the name and status of the object.
+* if a document, report or dashboard is deleted all documents, reports or dashboards will be deleted for the update task
+* It does not support the exclude parameter in the retrieve task
+* It does not support documents, reports and dashboards for the retrieve task
+
+
 ## 1.0.3 - 2015-05-25
 
 ### Features
