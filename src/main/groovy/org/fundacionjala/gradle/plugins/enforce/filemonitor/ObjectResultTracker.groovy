@@ -15,7 +15,7 @@ class ObjectResultTracker extends ResultTracker {
 
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder();
+        StringBuilder result = new StringBuilder()
         subComponentsResult.each { field,  fieldState ->
             result.append('\n\t')
             result.append(field)
