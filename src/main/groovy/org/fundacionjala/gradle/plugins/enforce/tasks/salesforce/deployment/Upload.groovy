@@ -131,8 +131,8 @@ class Upload extends Deployment {
         }
         validateParameter(files)
         files.split(Constants.COMMA).each {String fileName ->
-            def fileNameChanged = fileName.replaceAll(BACKSLASH, SLASH)
-            if (!fileNameChanged.contains(SLASH)) {
+            def fileNameChanged = fileName.replaceAll(Constants.BACK_SLASH, Constants.SLASH)
+            if (!fileNameChanged.contains(Constants.SLASH)) {
                 filesName.push("${fileName}${File.separator}${Constants.WILDCARD}${Constants.WILDCARD}")
                 return
             }
