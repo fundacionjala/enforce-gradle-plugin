@@ -3,7 +3,7 @@
 
 ### Features
 
-* Delete task was created to delete components from your organization based in your package xml file or using folder parameter.
+* Delete task was created to delete components from your organization based in your package xml file or using folder parameter. It doesn't truncate.
 
 ### Bugs fixed
 
@@ -11,6 +11,8 @@
 * Support deleteTemporaryFiles parameter for Retrieve task.
 * Update task fails for files that have spaces in their name.
 * Update/Deploy/Upload command does not take in account the package.xml info for packaged objects.
+* Excludes parameter into deploy task doesn't take in account documents component without extension into package xml file.
+* The validation of files parameter value does not work when it sends documents, reports or dashboard.
 
 ### Enhancements
 
@@ -19,11 +21,14 @@
 ### Known issues
 
 
-* When sent only a folder name as the value of the parameter file, the filter selects all project files
-* When we use the task status by showing components object type with the status changed, an empty line is created in the console after displaying the name and status of the object.
-* if a document, report or dashboard is deleted all documents, reports or dashboards will be deleted for the update task
-* It does not support the exclude parameter in the retrieve task
-* It does not support documents, reports and dashboards for the retrieve task
+
+* When the enforce version is changed and status task is executed all files are shown as deleted for the moment to avoid it you should execute reset task.
+* When you execute the delete task using files parameter and you use a folder name as a value, It is listing all files from the project.
+* When we use the status task to show objects it shows an empty line between objects names.
+* If a document or report or dashboard are deleted all documents or reports or dashboards are deleted for the update task.
+* Update task does not support the excludes parameter.
+* Once retrieve task is executed using files parameter with document file as value the validation doesn’t work.
+
 
 
 ## 1.0.3 - 2015-05-25
