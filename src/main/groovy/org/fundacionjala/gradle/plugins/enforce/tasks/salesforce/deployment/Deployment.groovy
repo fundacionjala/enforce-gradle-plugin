@@ -30,8 +30,6 @@ abstract class Deployment extends SalesforceTask {
     public final String EXCLUDES = 'excludes'
     public String excludes
     public final int FILE_NAME_POSITION = 1
-    public final String SLASH = "/"
-    public final String BACKSLASH = "\\\\"
 
     /**
      * Sets description and group task
@@ -171,8 +169,8 @@ abstract class Deployment extends SalesforceTask {
     public ArrayList<String> getCriterias(String criterion) {
         ArrayList<String> criterias = new ArrayList<String>()
         criterion.split(Constants.COMMA).each { String critery ->
-            critery = critery.replaceAll(BACKSLASH, SLASH)
-            def criteriaSplitted = critery.split(SLASH)
+            critery = critery.replaceAll(Constants.BACK_SLASH, Constants.SLASH)
+            def criteriaSplitted = critery.split(Constants.SLASH)
             if (criteriaSplitted.size() == FILE_NAME_POSITION) {
                 criterias.push("${critery}${File.separator}${Constants.WILDCARD}${Constants.WILDCARD}")
                 return
@@ -231,8 +229,8 @@ abstract class Deployment extends SalesforceTask {
         }
         validateParameter(fileNames)
         fileNames.split(Constants.COMMA).each {String fileName ->
-            def fileNameChanged = fileName.replaceAll(BACKSLASH, SLASH)
-            if (!fileNameChanged.contains(SLASH)) {
+            def fileNameChanged = fileName.replaceAll(Constants.BACK_SLASH, Constants.SLASH)
+            if (!fileNameChanged.contains(Constants.SLASH)) {
                 return files
             }
             filesName.push(fileName)
@@ -272,14 +270,14 @@ abstract class Deployment extends SalesforceTask {
      * @param parameterValues are files name that will be excluded
      */
     public void validateParameter(String parameterValues) {
-        parameterValues = parameterValues.replaceAll(BACKSLASH, SLASH)
+        parameterValues = parameterValues.replaceAll(Constants.BACK_SLASH, Constants.SLASH)
         ArrayList<String> fileNames = new ArrayList<String>()
         ArrayList<String> folderNames = new ArrayList<String>()
         parameterValues.split(Constants.COMMA).each { String parameter ->
             if (parameter.contains(Constants.WILDCARD)) {
                 return
             }
-            if (parameter.contains(SLASH)) {
+            if (parameter.contains(Constants.SLASH)) {
                 fileNames.push(parameter)
             } else {
                 folderNames.push(parameter)
