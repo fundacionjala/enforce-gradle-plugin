@@ -18,6 +18,7 @@ public class Constants {
     public static final String DEPLOYMENT = "Deployment"
     public static final String INVALID_FOLDER = "Invalid folders"
     public static final String INVALID_FILE = "Invalid files"
+    public static final String VALID_FILE = "valid files"
     public static final String DOES_NOT_EXIST_FILES = "Not exist files:"
     public static final String DOES_NOT_EXIST_FOLDER = "Not exist folders:"
     public static final String NOT_FILES = "There are not files into folders"
