@@ -4,8 +4,6 @@ import com.sforce.soap.metadata.PackageTypeMembers
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 
-import java.lang.reflect.Array
-
 class PackageCombiner {
     private static final ArrayList<String> SUB_COMPONENTS = ['CustomField', 'FieldSet', 'ValidationRule',
                                                              'CompactLayout', 'SharingReason', 'RecordType',
@@ -87,7 +85,7 @@ class PackageCombiner {
 
         getMembersByNameType(packageFromSourceFolder).each { String name, ArrayList<String> members ->
             if (COMPONENTS_WITH_SUB_FOLDERS.contains(name) && membersByNameOfPackageBuild.containsKey(name)
-                    && buildPackagePath.contains('package.xml')) {
+                    && buildPackagePath.contains(Constants.PACKAGE_FILE_NAME)) {
                 ArrayList<String> membersToUpdate = []
                 membersByNameOfPackageBuild.get(name).each {String membersFromPackageBuild ->
                     String folderName = Util.getFirstPath(membersFromPackageBuild)
