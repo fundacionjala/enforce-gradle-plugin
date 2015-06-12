@@ -14,6 +14,7 @@ class ContentParameterValidator {
 
     /**
      * Validates names of files
+     * @param projectPath is a String that contains source path code for a project
      * @param filesName is type array list contents names of files
      */
     public static Map<String,ArrayList<String>> validateFiles(String projectPath, ArrayList<String> filesName) {
