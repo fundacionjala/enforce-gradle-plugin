@@ -4,6 +4,8 @@ import com.sforce.soap.metadata.PackageTypeMembers
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 
+import java.lang.reflect.Array
+
 class PackageCombiner {
     private static final ArrayList<String> SUB_COMPONENTS = ['CustomField', 'FieldSet', 'ValidationRule',
                                                              'CompactLayout', 'SharingReason', 'RecordType',
@@ -84,9 +86,16 @@ class PackageCombiner {
         ArrayList<String> objectToDelete = []
 
         getMembersByNameType(packageFromSourceFolder).each { String name, ArrayList<String> members ->
-            if (COMPONENTS_WITH_SUB_FOLDERS.contains(name) && membersByNameOfPackageBuild.containsKey(name)) {
-                packageFromBuildFolder.removeMembers(name, membersByNameOfPackageBuild.get(name))
-                packageFromBuildFolder.update(name, members)
+            if (COMPONENTS_WITH_SUB_FOLDERS.contains(name) && membersByNameOfPackageBuild.containsKey(name)
+                    && buildPackagePath.contains('package.xml')) {
+                ArrayList<String> membersToUpdate = []
+                membersByNameOfPackageBuild.get(name).each {String membersFromPackageBuild ->
+                    String folderName = Util.getFirstPath(membersFromPackageBuild)
+                    if (members.contains(folderName)) {
+                        membersToUpdate.push(folderName)
+                    }
+                }
+                packageFromBuildFolder.update(name, membersToUpdate.unique())
             }
 
             if (SUB_COMPONENTS.contains(name) && membersByNameOfPackageBuild.containsKey(CUSTOM_OBJECT)) {
