@@ -131,7 +131,6 @@ class DeployTest extends Specification {
             new File(Paths.get(deployPath, 'classes', 'Class1.cls').toString()).exists()
             new File(Paths.get(deployPath, 'classes', 'Class1.cls-meta.xml').toString()).exists()
             new File(Paths.get(deployPath, 'objects', 'Object1__c.object').toString()).exists()
-            new File(Paths.get(deployPath, 'objects', 'Account.object').toString()).exists()
             new File(Paths.get(deployPath, 'triggers', 'Trigger1.trigger').toString()).exists()
             new File(Paths.get(deployPath, 'triggers', 'Trigger1.trigger-meta.xml').toString()).exists()
             new File(Paths.get(SRC_PATH, 'build', 'deploy.zip').toString()).exists()
@@ -294,7 +293,6 @@ class DeployTest extends Specification {
                                      new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls-meta.xml').toString()),
                                      new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger').toString()),
                                      new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger-meta.xml').toString()),
-                                     new File(Paths.get(SRC_PATH, 'src', 'objects', 'Account.object').toString()),
                                      new File(Paths.get(SRC_PATH, 'src', 'objects', 'Object1__c.object').toString())]
             String criterion = "**${File.separator}*.cls"
             instanceDeploy.projectPath = Paths.get(SRC_PATH, 'src').toString()
@@ -303,7 +301,6 @@ class DeployTest extends Specification {
         then:
             arrayFiltered.sort() == [new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger').toString()),
                                      new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger-meta.xml').toString()),
-                                     new File(Paths.get(SRC_PATH, 'src', 'objects', 'Account.object').toString()),
                                      new File(Paths.get(SRC_PATH, 'src', 'objects', 'Object1__c.object').toString())].sort()
 
     }
@@ -395,11 +392,10 @@ class DeployTest extends Specification {
             String criterion = "**/Account.object"
             instanceDeploy.projectPath = SRC_PATH
             String accountObject1 = "objects${File.separator}Account.object"
-            String accountObject2 = "src${File.separator}objects${File.separator}Account.object"
         when:
             ArrayList<String> result = instanceDeploy.getFilesExcludes(criterion)
         then:
-            result.sort() == [accountObject1, accountObject2].sort()
+            result.sort() == [accountObject1].sort()
     }
 
     def "Test should return Document component that was excluded"() {
