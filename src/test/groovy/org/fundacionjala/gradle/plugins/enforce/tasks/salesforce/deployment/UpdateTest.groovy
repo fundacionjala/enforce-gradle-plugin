@@ -61,11 +61,10 @@ class UpdateTest extends Specification {
         def class1Cls = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString())
         def class1ClsXml = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls-meta.xml').toString())
         def object1__c = new File(Paths.get(SRC_PATH, 'src', 'objects', 'Object1__c.object').toString())
-        def account = new File(Paths.get(SRC_PATH, 'src', 'objects', 'Account.object').toString())
         def trigger = new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger').toString())
         def triggerXml = new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger-meta.xml').toString())
 
-        def mapMock = componentMonitor.getComponentsSignature([class1, class1Cls, class1ClsXml, object1__c, object1__c, account, trigger, triggerXml])
+        def mapMock = componentMonitor.getComponentsSignature([class1, class1Cls, class1ClsXml, object1__c, object1__c, trigger, triggerXml])
         componentSerializer.save(mapMock)
 
         credential = new Credential()
@@ -230,11 +229,10 @@ class UpdateTest extends Specification {
             updateInstance.packageGenerator.fileTrackerMap = [:]
             def class1Cls = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString())
             def object1__c = new File(Paths.get(SRC_PATH, 'src', 'objects', 'Object1__c.object').toString())
-            def account = new File(Paths.get(SRC_PATH, 'src', 'objects', 'Account.object').toString())
             def trigger = new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger').toString())
             componentMonitor.srcProject = Paths.get(SRC_PATH,'src').toString()
             componentSerializer.sourcePath = Paths.get(SRC_PATH,'src','.fileTracker.data').toString()
-            def mapMock = componentMonitor.getComponentsSignature([class1Cls, object1__c, account, trigger])
+            def mapMock = componentMonitor.getComponentsSignature([class1Cls, object1__c,trigger])
             componentSerializer.save(mapMock)
             updateInstance.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
             updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
