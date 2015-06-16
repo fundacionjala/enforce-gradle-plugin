@@ -176,7 +176,9 @@ class Update extends Deployment {
      * ExcludeFiles from filesExcludes map
      */
     private void excludeFilesFromFilesChanged() {
-        ArrayList<File> filesFiltered = excludeFiles(packageGenerator.getFiles())
-        filesExcludes = packageGenerator.excludeFiles(filesFiltered)
+        ArrayList<File> files = packageGenerator.getFiles(projectPath)
+        ArrayList<File> filesFiltered = excludeFiles(files)
+        packageGenerator.updateFileTracker(filesFiltered)
+        filesExcludes = files - filesFiltered
     }
 }

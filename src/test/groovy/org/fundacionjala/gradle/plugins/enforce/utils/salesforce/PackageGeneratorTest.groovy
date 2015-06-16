@@ -196,8 +196,8 @@ class PackageGeneratorTest extends Specification {
             packageGenerator.fileTrackerMap = fileTrackerMap
             ArrayList<File> files = [new File('classes/Class2.cls')]
         when:
-            ArrayList<File> result = packageGenerator.excludeFiles(files)
+            packageGenerator.updateFileTracker(files)
         then:
-            result == [new File('classes/Class1.cls')]
+            packageGenerator.fileTrackerMap['classes/Class2.cls'].state == ComponentStates.CHANGED
     }
 }
