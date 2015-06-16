@@ -5,6 +5,7 @@ import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ObjectResultTracker
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
 import org.fundacionjala.gradle.plugins.enforce.undeploy.SmartFilesValidator
+import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 
@@ -128,22 +129,6 @@ class PackageGenerator {
         fileTrackerMap = foldersFiltered;
     }
 
-    public ArrayList<File> excludeFiles(ArrayList<File> filteredFiles) {
-        Map<String, ResultTracker> fileTrackerMapClone = fileTrackerMap.clone() as Map<String, ResultTracker>
-        ArrayList<File> excludedFiles = []
-        fileTrackerMapClone.each { fileName, resultTracker ->
-            File fileChanged = new File(fileName.toString())
-            ArrayList<File> foundFile = filteredFiles.findAll { file->
-                file.name == fileChanged.name
-            }
-            if (foundFile.size() == 0) {
-                fileTrackerMap.remove(fileName.toString())
-                excludedFiles.push(fileChanged)
-            }
-        }
-        return excludedFiles
-    }
-
     /**
      * Updates the file tracker map according to the filtered files
      * @param filteredFiles the filtered files
@@ -155,7 +140,7 @@ class PackageGenerator {
             ArrayList<File> foundFile = filteredFiles.findAll { file->
                 file.name == fileChanged.name
             }
-            if (foundFile.size() == 0) {
+            if (foundFile.size() == Constants.ZERO) {
                 fileTrackerMap.remove(fileName.toString())
             }
         }
