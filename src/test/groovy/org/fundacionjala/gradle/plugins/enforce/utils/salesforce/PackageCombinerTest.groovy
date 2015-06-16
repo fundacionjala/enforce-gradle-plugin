@@ -602,6 +602,7 @@ class PackageCombinerTest extends Specification {
 
     def cleanupSpec() {
         new File(Paths.get(SRC_PATH, 'projectPackage.xml').toString()).delete()
+        new File(Paths.get(SRC_PATH, 'package.xml').toString()).delete()
         new File(Paths.get(SRC_PATH, 'buildPackage.xml').toString()).delete()
         new File(Paths.get(SRC_PATH, 'destructiveChanges.xml').toString()).delete()
         new File(Paths.get(SRC_PATH, 'packageTest.xml').toString()).delete()
