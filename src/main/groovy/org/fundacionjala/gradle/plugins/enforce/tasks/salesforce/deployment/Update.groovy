@@ -45,6 +45,7 @@ class Update extends Deployment {
     @Override
     void runTask() {
         pathUpdate = Paths.get(buildFolderPath, Constants.DIR_UPDATE_FOLDER).toString()
+
         updatePackagePath = Paths.get(pathUpdate, PACKAGE_NAME).toString()
         createDeploymentDirectory(pathUpdate)
         loadFilesChanged()
@@ -108,6 +109,7 @@ class Update extends Deployment {
         }
 
         if (folders) {
+
             ArrayList<String> foldersName = folders.split(Constants.COMMA)
             ArrayList<String> invalidFolders = Util.getInvalidFolders(foldersName)
             validateFolders(foldersName)
@@ -176,7 +178,9 @@ class Update extends Deployment {
      * ExcludeFiles from filesExcludes map
      */
     private void excludeFilesFromFilesChanged() {
-        ArrayList<File> filesFiltered = excludeFiles(packageGenerator.getFiles())
-        filesExcludes = packageGenerator.excludeFiles(filesFiltered)
+        ArrayList<File> files = packageGenerator.getFiles(projectPath)
+        ArrayList<File> filesFiltered = excludeFiles(files)
+        packageGenerator.updateFileTracker(filesFiltered)
+        filesExcludes = files - filesFiltered
     }
 }

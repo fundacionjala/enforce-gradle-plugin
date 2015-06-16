@@ -41,10 +41,10 @@ class PackageGenerator {
         fileTrackerMap = componentMonitor.getComponentChanged(files)
     }
 
-    public ArrayList<File> getFiles() {
+    public ArrayList<File> getFiles(String projectPath) {
         ArrayList<File> files = []
         fileTrackerMap.each { fileName, resultTracker ->
-            files.add(new File(fileName))
+            files.add(new File(Paths.get(projectPath, fileName).toString()))
         }
         return files
     }
@@ -128,16 +128,36 @@ class PackageGenerator {
         fileTrackerMap = foldersFiltered;
     }
 
-    public ArrayList<File> excludeFiles(ArrayList<File> files) {
+    public ArrayList<File> excludeFiles(ArrayList<File> filteredFiles) {
         Map<String, ResultTracker> fileTrackerMapClone = fileTrackerMap.clone() as Map<String, ResultTracker>
         ArrayList<File> excludedFiles = []
         fileTrackerMapClone.each { fileName, resultTracker ->
             File fileChanged = new File(fileName.toString())
-            if (!files.contains(fileChanged)) {
+            ArrayList<File> foundFile = filteredFiles.findAll { file->
+                file.name == fileChanged.name
+            }
+            if (foundFile.size() == 0) {
                 fileTrackerMap.remove(fileName.toString())
                 excludedFiles.push(fileChanged)
             }
         }
         return excludedFiles
+    }
+
+    /**
+     * Updates the file tracker map according to the filtered files
+     * @param filteredFiles the filtered files
+     */
+    public void updateFileTracker(ArrayList<File> filteredFiles) {
+        Map<String, ResultTracker> fileTrackerMapClone = fileTrackerMap.clone() as Map<String, ResultTracker>
+        fileTrackerMapClone.each { fileName, resultTracker ->
+            File fileChanged = new File(fileName.toString())
+            ArrayList<File> foundFile = filteredFiles.findAll { file->
+                file.name == fileChanged.name
+            }
+            if (foundFile.size() == 0) {
+                fileTrackerMap.remove(fileName.toString())
+            }
+        }
     }
 }
