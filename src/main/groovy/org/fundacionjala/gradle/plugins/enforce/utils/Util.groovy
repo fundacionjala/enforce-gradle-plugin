@@ -5,6 +5,7 @@
 
 package org.fundacionjala.gradle.plugins.enforce.utils
 
+import org.apache.commons.lang.StringUtils
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 import org.gradle.api.Project
 
@@ -276,5 +277,22 @@ class Util {
     public static String getObjectName(String subComponentMember) {
         String objectName = subComponentMember.substring(0, subComponentMember.indexOf('.'))
         return objectName
+    }
+
+    /**
+     * Returns true if the apiName belongs on a packaged code and is a custom component/subComponent. The apiName parameter can also be used for
+     * CustomObjects, CustomFields, etc and any other kind of component/subComponent that follows SF API name format.
+     * <br/>
+     * EG:
+     * <br/>
+     * <ul>
+     *   <li>myprefix__CustomObject__c</li>
+     *   <li>myprefix__CustomFielName__c</li>
+     * </ul>
+     * @param apiName, An string value to be verified.
+     * @return Boolean, It is true if apiName belongs on packaged code, other wise false.
+     **/
+    public static Boolean isPackaged(String apiName) {
+        return (apiName) ? (StringUtils.countMatches(apiName, "__") == 2) : false;
     }
 }
