@@ -366,14 +366,4 @@ abstract class Deployment extends SalesforceTask {
             PackageCombiner.removeMembersFromPackage(buildPackagePath, filter.getFilesExcludes(excludes))
         }
     }
-
-    /**
-     * Returns files filtered based at excludes parameter
-     * @param filesToFilter is an array of files to filter
-     * @return an array list with files filtered.
-     */
-    public ArrayList<File> newExcludeFiles(ArrayList<File> filesToFilter) {
-        filter = new Filter(project, projectPath)
-        return filter.excludeFiles(filesToFilter)
-    }
 }

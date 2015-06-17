@@ -28,236 +28,59 @@ class FilterTest extends Specification{
             filter instanceof Filter
     }
 
-    def "Test should exclude a file by file"() {
+    def "Test should return a map with parameter as key and its content as value"() {
         given:
-            ArrayList<File> files = [new File(Paths.get(projectPath, 'classes', 'class1.cls').toString()),
-                                     new File(Paths.get(projectPath, 'classes', 'class1.cls-meta.xml').toString()),
-                                     new File(Paths.get(projectPath, 'triggers', 'LunesTrigger.trigger').toString()),
-                                     new File(Paths.get(projectPath, 'triggers', 'LunesTrigger.trigger-meta.xml').toString())]
-            String criterion = "classes${File.separator}class1.cls"
+            ArrayList<String> parametersName = ['files']
+            Map<String, String> properties = [:]
+            properties.put('files', 'classes')
         when:
-            def arrayFiltered = filter.excludeFilesByCriterion(files, criterion)
+            Map<String, String> result = filter.getContentParameter(parametersName, properties)
         then:
-            arrayFiltered.sort() == [new File(Paths.get(projectPath, 'triggers', 'LunesTrigger.trigger').toString()),
-                                 new File(Paths.get(projectPath, 'triggers', 'LunesTrigger.trigger-meta.xml').toString())]
+            result.containsKey('files')
+            result.get('files') == 'classes'
     }
 
-    def "Test should exclude a files by folder"() {
+    def "Test should return a map with pall parameters and their values"() {
         given:
-            ArrayList<File> files = [new File(Paths.get(projectPath, 'classes', 'class1.cls').toString()),
-                                     new File(Paths.get(projectPath, 'classes', 'class1.cls-meta.xml').toString()),
-                                     new File(Paths.get(projectPath, 'triggers', 'LunesTrigger.trigger').toString()),
-                                     new File(Paths.get(projectPath, 'triggers', 'LunesTrigger.trigger-meta.xml').toString()),
-                                     new File(Paths.get(projectPath, 'objects', 'Account.object').toString()),
-                                     new File(Paths.get(projectPath, 'objects', 'Object1__c.object').toString()),
-                                     new File(Paths.get(projectPath, 'objects', 'Object2__c.object').toString())]
-            String criterion = "classes"
+            ArrayList<String> parametersName = ['files', 'excludes']
+            Map<String, String> properties = [:]
+            properties.put('files', 'classes,objects')
+            properties.put('excludes', "*${File.separator}class1.cls,objects${File.separator}Object1__c.object")
         when:
-            def arrayFiltered = filter.excludeFilesByCriterion(files, criterion)
+            Map<String, String> result = filter.getContentParameter(parametersName, properties)
         then:
-            arrayFiltered.sort() == [new File(Paths.get(projectPath, 'triggers', 'LunesTrigger.trigger').toString()),
-                                     new File(Paths.get(projectPath, 'triggers', 'LunesTrigger.trigger-meta.xml').toString()),
-                                     new File(Paths.get(projectPath, 'objects', 'Account.object').toString()),
-                                     new File(Paths.get(projectPath, 'objects', 'Object1__c.object').toString()),
-                                     new File(Paths.get(projectPath, 'objects', 'Object2__c.object').toString())].sort()
+            result.containsKey('files')
+            result.get('files') == 'classes,objects'
+            result.containsKey('excludes')
+            result.get('excludes') == "*${File.separator}class1.cls,objects${File.separator}Object1__c.object"
     }
 
-    def "Test should exclude a file when you sent as criterion a wilcard"() {
+    def "Test should return all classes from project path"() {
         given:
-            ArrayList<File> files = [new File(Paths.get(projectPath, 'classes', 'class1.cls').toString()),
-                                     new File(Paths.get(projectPath, 'classes', 'class1.cls-meta.xml').toString()),
-                                     new File(Paths.get(projectPath, 'triggers', 'LunesTrigger.trigger').toString()),
-                                     new File(Paths.get(projectPath, 'triggers', 'LunesTrigger.trigger-meta.xml').toString()),
-                                     new File(Paths.get(projectPath, 'objects', 'Account.object').toString()),
-                                     new File(Paths.get(projectPath, 'objects', 'Object1__c.object').toString()),
-                                     new File(Paths.get(projectPath, 'objects', 'Object2__c.object').toString())]
-            String criterion = "*${File.separator}class1.cls"
+            ArrayList<String> parametersName = ['files']
+            Map<String, String> properties = [:]
+            properties.put('files', 'classes')
         when:
-            def arrayFiltered = filter.excludeFilesByCriterion(files, criterion)
+            ArrayList<File> result = filter.getFiles(parametersName, properties)
         then:
-            arrayFiltered.sort() == [new File(Paths.get(projectPath, 'triggers', 'LunesTrigger.trigger').toString()),
-                                     new File(Paths.get(projectPath, 'triggers', 'LunesTrigger.trigger-meta.xml').toString()),
-                                     new File(Paths.get(projectPath, 'objects', 'Account.object').toString()),
-                                     new File(Paths.get(projectPath, 'objects', 'Object1__c.object').toString()),
-                                     new File(Paths.get(projectPath, 'objects', 'Object2__c.object').toString())].sort()
+            result.sort() == [new File(Paths.get(projectPath, 'classes', 'class1.cls').toString()),
+                              new File(Paths.get(projectPath, 'classes', 'class1.cls-meta.xml').toString())].sort()
     }
 
-    def "Test should exclude a files when you sent as criterion a wilcard equal to classes/*"() {
+    def "Test should return all components less classes" () {
         given:
-            ArrayList<File> files = [new File(Paths.get(projectPath, 'classes', 'class1.cls').toString()),
-                                     new File(Paths.get(projectPath, 'classes', 'class1.cls-meta.xml').toString()),
-                                     new File(Paths.get(projectPath, 'triggers', 'LunesTrigger.trigger').toString()),
-                                     new File(Paths.get(projectPath, 'triggers', 'LunesTrigger.trigger-meta.xml').toString()),
-                                     new File(Paths.get(projectPath, 'objects', 'Account.object').toString()),
-                                     new File(Paths.get(projectPath, 'objects', 'Object1__c.object').toString()),
-                                     new File(Paths.get(projectPath, 'objects', 'Object2__c.object').toString())]
-            String criterion = "objects${File.separator}**"
+            Filter myFilter = new Filter(project, Paths.get(projectPath, 'src').toString())
+            ArrayList<String> parametersName = []
+            Map<String, String> properties = [:]
+            properties.put('excludes', 'classes')
         when:
-            def arrayFiltered = filter.excludeFilesByCriterion(files, criterion)
+            ArrayList<File> result = myFilter.getFiles(parametersName, properties)
         then:
-            arrayFiltered.sort() == [new File(Paths.get(projectPath, 'classes', 'class1.cls').toString()),
-                                     new File(Paths.get(projectPath, 'classes', 'class1.cls-meta.xml').toString()),
-                                     new File(Paths.get(projectPath, 'triggers', 'LunesTrigger.trigger').toString()),
-                                     new File(Paths.get(projectPath, 'triggers', 'LunesTrigger.trigger-meta.xml').toString())].sort()
-    }
-
-    def "Test should exclude a list of files"() {
-        given:
-            ArrayList<File> files = [new File(Paths.get(projectPath, 'classes', 'class1.cls').toString()),
-                                     new File(Paths.get(projectPath, 'classes', 'class1.cls-meta.xml').toString()),
-                                     new File(Paths.get(projectPath, 'triggers', 'LunesTrigger.trigger').toString()),
-                                     new File(Paths.get(projectPath, 'triggers', 'LunesTrigger.trigger-meta.xml').toString()),
-                                     new File(Paths.get(projectPath, 'objects', 'Account.object').toString()),
-                                     new File(Paths.get(projectPath, 'objects', 'Object1__c.object').toString()),
-                                     new File(Paths.get(projectPath, 'objects', 'Object2__c.object').toString())]
-            String criterion = "classes${File.separator}class1.cls,triggers${File.separator}LunesTrigger.trigger"
-        when:
-            def arrayFiltered = filter.excludeFilesByCriterion(files, criterion)
-        then:
-            arrayFiltered.sort() == [new File(Paths.get(projectPath, 'objects', 'Account.object').toString()),
-                                 new File(Paths.get(projectPath, 'objects', 'Object1__c.object').toString()),
-                                 new File(Paths.get(projectPath, 'objects', 'Object2__c.object').toString())]
-    }
-
-    def "Test should exclude a list of files with it xml file"() {
-        given:
-            ArrayList<File> files = [new File(Paths.get(projectPath, 'classes', 'class1.cls').toString()),
-                                     new File(Paths.get(projectPath, 'classes', 'class1.cls-meta.xml').toString()),
-                                     new File(Paths.get(projectPath, 'triggers', 'LunesTrigger.trigger.trigger').toString()),
-                                     new File(Paths.get(projectPath, 'triggers', 'LunesTrigger.trigger-meta.xml').toString()),
-                                     new File(Paths.get(projectPath, 'objects', 'Account.object').toString()),
-                                     new File(Paths.get(projectPath, 'objects', 'Object1__c.object').toString()),
-                                     new File(Paths.get(projectPath, 'objects', 'Object2__c.object').toString())]
-            String criterion = "classes${File.separator}class1.cls,triggers${File.separator}LunesTrigger.trigger"
-        when:
-            def arrayFiltered = filter.excludeFilesByCriterion(files, criterion)
-        then:
-            arrayFiltered.sort() == [new File(Paths.get(projectPath, 'objects', 'Account.object').toString()),
-                                 new File(Paths.get(projectPath, 'objects', 'Object1__c.object').toString()),
-                                 new File(Paths.get(projectPath, 'objects', 'Object2__c.object').toString())]
-    }
-
-    def "Test should exclude files by wildcard sent 'classes/**'"() {
-        given:
-            Filter filter = new Filter(project, Paths.get(projectPath, 'src').toString())
-            ArrayList<File> files = [new File(Paths.get(projectPath, 'src', 'classes', 'Class1.cls').toString()),
-                                     new File(Paths.get(projectPath, 'src', 'classes', 'Class1.cls-meta.xml').toString()),
-                                     new File(Paths.get(projectPath, 'src', 'classes', 'class2.cls').toString()),
-                                     new File(Paths.get(projectPath, 'src', 'classes', 'class2.cls-meta.xml').toString()),
-                                     new File(Paths.get(projectPath, 'src', 'triggers', 'Trigger1.trigger').toString()),
-                                     new File(Paths.get(projectPath, 'src', 'triggers', 'Trigger1.trigger-meta.xml').toString())]
-            String criterion = "classes${File.separator}**"
-        when:
-            def arrayFiltered = filter.excludeFilesByCriterion(files, criterion)
-        then:
-            arrayFiltered.sort() == [new File(Paths.get(projectPath, 'src', 'triggers', 'Trigger1.trigger').toString()),
-                                 new File(Paths.get(projectPath, 'src', 'triggers', 'Trigger1.trigger-meta.xml').toString())].sort()
-    }
-
-    def "Test should exclude files by wildcard sent '**/*.object'"() {
-        given:
-            ArrayList<File> files = [new File(Paths.get(projectPath, 'src', 'classes', 'Class1.cls').toString()),
-                                     new File(Paths.get(projectPath, 'src', 'classes', 'Class1.cls-meta.xml').toString()),
-                                     new File(Paths.get(projectPath, 'src', 'triggers', 'Trigger1.trigger').toString()),
-                                     new File(Paths.get(projectPath, 'src', 'triggers', 'Trigger1.trigger-meta.xml').toString()),
-                                     new File(Paths.get(projectPath, 'src', 'objects', 'Account.object').toString()),
-                                     new File(Paths.get(projectPath, 'src', 'objects', 'Object1__c.object').toString())]
-            String criterion = "**${File.separator}*.object"
-        when:
-            def arrayFiltered = filter.excludeFilesByCriterion(files, criterion)
-        then:
-            arrayFiltered.sort() == [new File(Paths.get(projectPath, 'src', 'triggers', 'Trigger1.trigger').toString()),
-                                     new File(Paths.get(projectPath, 'src', 'triggers', 'Trigger1.trigger-meta.xml').toString()),
-                                     new File(Paths.get(projectPath, 'src', 'classes', 'Class1.cls-meta.xml').toString()),
-                                     new File(Paths.get(projectPath, 'src', 'classes', 'Class1.cls').toString())].sort()
-    }
-
-    def "Test should exclude files by wildcard sent '**/*.cls'"() {
-        given:
-            ArrayList<File> files = [new File(Paths.get(projectPath, 'src', 'classes', 'Class1.cls').toString()),
-                                     new File(Paths.get(projectPath, 'src', 'classes', 'Class1.cls-meta.xml').toString()),
-                                     new File(Paths.get(projectPath, 'src', 'triggers', 'Trigger1.trigger').toString()),
-                                     new File(Paths.get(projectPath, 'src', 'triggers', 'Trigger1.trigger-meta.xml').toString()),
-                                     new File(Paths.get(projectPath, 'src', 'objects', 'Object1__c.object').toString())]
-            String criterion = "**${File.separator}*.cls"
-        when:
-            def arrayFiltered = filter.excludeFilesByCriterion(files, criterion)
-        then:
-            arrayFiltered.sort() == [new File(Paths.get(projectPath, 'src', 'triggers', 'Trigger1.trigger').toString()),
-                                     new File(Paths.get(projectPath, 'src', 'triggers', 'Trigger1.trigger-meta.xml').toString()),
-                                     new File(Paths.get(projectPath, 'src', 'objects', 'Object1__c.object').toString())].sort()
-
-    }
-
-    def "Test should exclude files by wildcard sent '**/*Account*/**'"() {
-        given:
-            ArrayList<File> files = [new File(Paths.get(projectPath, 'src', 'classes', 'Class1.cls').toString()),
-                                     new File(Paths.get(projectPath, 'src', 'classes', 'Class1.cls-meta.xml').toString()),
-                                     new File(Paths.get(projectPath, 'src', 'triggers', 'Trigger1.trigger').toString()),
-                                     new File(Paths.get(projectPath, 'src', 'triggers', 'Trigger1.trigger-meta.xml').toString()),
-                                     new File(Paths.get(projectPath, 'src', 'objects', 'Account.object').toString()),
-                                     new File(Paths.get(projectPath, 'src', 'objects', 'Object1__c.object').toString())]
-            String criterion = "**${File.separator}*Account*${File.separator}**"
-        when:
-            def arrayFiltered = filter.excludeFilesByCriterion(files, criterion)
-        then:
-            arrayFiltered.sort() == [new File(Paths.get(projectPath, 'src', 'triggers', 'Trigger1.trigger').toString()),
-                                     new File(Paths.get(projectPath, 'src', 'triggers', 'Trigger1.trigger-meta.xml').toString()),
-                                     new File(Paths.get(projectPath, 'src', 'objects', 'Object1__c.object').toString()),
-                                     new File(Paths.get(projectPath, 'src', 'classes', 'Class1.cls').toString()),
-                                     new File(Paths.get(projectPath, 'src', 'classes', 'Class1.cls-meta.xml').toString())].sort()
-    }
-
-    def "Test should return class name that was excluded"() {
-        given:
-            String criterion = "classes${File.separator}class1.cls"
-        when:
-            ArrayList<String> result = filter.getFilesExcludes(criterion)
-        then:
-            result.size() == 1
-            result == ["classes${File.separator}class1.cls"]
-    }
-
-    def "Test should return objects that were excluded"() {
-        given:
-            String criterion = "objects"
-            String object2 = "objects${File.separator}Object2__c.object"
-            String object1 = "objects${File.separator}Object1__c.object"
-            String object3 = "objects${File.separator}Account.object"
-        when:
-            ArrayList<String> result = filter.getFilesExcludes(criterion)
-        then:
-            result.sort() == [object1, object2, object3].sort()
-    }
-
-    def "Test should return Account object that were excluded"() {
-        given:
-            String criterion = "**/Account.object"
-            String accountObject1 = "objects${File.separator}Account.object"
-        when:
-            ArrayList<String> result = filter.getFilesExcludes(criterion)
-        then:
-            result.sort() == [accountObject1].sort()
-    }
-
-    def "Test should return Document component that was excluded"() {
-        given:
-            String criterion = "documents"
-
-            String document1 = "documents${File.separator}myDocuments${File.separator}doc.txt"
-            String document2 = "documents${File.separator}myDocuments${File.separator}doc2.txt"
-        when:
-            ArrayList<String> result = filter.getFilesExcludes(criterion)
-        then:
-            result.sort() == [document1, document2].sort()
-    }
-
-    def "Test should return Report component that was excluded"() {
-        given:
-            String criterion = "reports"
-        when:
-            ArrayList<String> result = filter.getFilesExcludes(criterion)
-        then:
-            result.sort() == ["reports${File.separator}myreports${File.separator}reportTest.report"].sort()
+            result.sort() == [new File(Paths.get(projectPath, 'src', 'classes', 'Class1.cls').toString()),
+                              new File(Paths.get(projectPath, 'src', 'classes', 'Class1.cls-meta.xml').toString()),
+                              new File(Paths.get(projectPath, 'src', 'objects', 'Object1__c.object').toString()),
+                              new File(Paths.get(projectPath, 'src', 'package.xml').toString()),
+                              new File(Paths.get(projectPath, 'src', 'triggers', 'Trigger1.trigger').toString()),
+                              new File(Paths.get(projectPath, 'src', 'triggers', 'Trigger1.trigger-meta.xml').toString())].sort()
     }
 }
