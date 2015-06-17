@@ -290,9 +290,9 @@ class Util {
      *   <li>myprefix__CustomFielName__c</li>
      * </ul>
      * @param apiName, An string value to be verified.
-     * @return Boolean, It is true if apiName belongs on packaged code, other wise false.
+     * @return Boolean, It is true if apiName belongs on packaged code, otherwise false.
      **/
     public static Boolean isPackaged(String apiName) {
-        return (apiName) ? (StringUtils.countMatches(apiName, "__") == 2) : false;
+        return (apiName) ? (StringUtils.countMatches(apiName, "__") == 2) : false
     }
 }
