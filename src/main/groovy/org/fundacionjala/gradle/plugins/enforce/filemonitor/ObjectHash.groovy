@@ -1,5 +1,7 @@
 package org.fundacionjala.gradle.plugins.enforce.filemonitor
 
+import org.fundacionjala.gradle.plugins.enforce.utils.Util
+
 /**
  * This class represents the state of the object component and its sub components
  */
@@ -38,18 +40,19 @@ class ObjectHash extends ComponentHash {
     private Map<String, String> getChangedFields(ObjectHash objectHash) {
         Map<String, String> result = [:]
         objectHash.subComponents.each { String fieldAPIName, String fieldHash ->
-            if (!this.subComponents.containsKey(fieldAPIName)) {
+            Boolean isPackaged = Util.isPackaged(fieldAPIName)
+            if (!isPackaged && !this.subComponents.containsKey(fieldAPIName)) {
                 result.put(fieldAPIName, ComponentStates.ADDED)
             }
 
-            if (this.subComponents.containsKey(fieldAPIName) &&
+            if (!isPackaged && this.subComponents.containsKey(fieldAPIName) &&
                     !this.subComponents.get(fieldAPIName).toString().equals(fieldHash)) {
                 result.put(fieldAPIName, ComponentStates.CHANGED)
             }
         }
 
         this.subComponents.each { String fieldAPIName, String fieldHash ->
-            if(!objectHash.subComponents.containsKey(fieldAPIName)) {
+            if(!Util.isPackaged(fieldAPIName) && !objectHash.subComponents.containsKey(fieldAPIName)) {
                 result.put(fieldAPIName, ComponentStates.DELETED)
             }
         }
