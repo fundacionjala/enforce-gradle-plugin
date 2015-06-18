@@ -5,6 +5,7 @@
 
 package org.fundacionjala.gradle.plugins.enforce.utils
 
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.FileValidator
 import spock.lang.Shared
 import spock.lang.Specification
 
