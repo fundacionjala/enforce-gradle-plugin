@@ -8,6 +8,7 @@ package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 import org.fundacionjala.gradle.plugins.enforce.interceptor.InterceptorManager
 import org.fundacionjala.gradle.plugins.enforce.metadata.DeployMetadata
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.SalesforceTask
+import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.filter.Filter
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
@@ -15,7 +16,6 @@ import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageCombiner
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.SalesforceValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.SalesforceValidatorManager
 import org.gradle.api.file.FileTree
-import org.gradle.api.tasks.bundling.Zip
 
 import java.nio.file.Paths
 
@@ -30,6 +30,7 @@ abstract class Deployment extends SalesforceTask {
     public final String EXCLUDES = 'excludes'
     public String excludes
     public final int FILE_NAME_POSITION = 1
+    private Filter filter
 
     /**
      * Sets description and group task
@@ -346,6 +347,10 @@ abstract class Deployment extends SalesforceTask {
         }
     }
 
+    /**
+     * Combines package that was updated from build folder and package from source directory
+     * @param buildPackagePath is path of package that is into build directory
+     */
     public void combinePackage(String buildPackagePath) {
         PackageCombiner.packageCombine(projectPackagePath, buildPackagePath)
         if (excludes) {
@@ -355,9 +360,9 @@ abstract class Deployment extends SalesforceTask {
 
     /**
      * Combines package from build folder and package from source directory
-     * @return
+     * @param buildPackagePath is path of package that is into build directory
      */
-    def combinePackageToUpdate(String buildPackagePath) {
+    public void combinePackageToUpdate(String buildPackagePath) {
         PackageCombiner.packageCombineToUpdate(projectPackagePath, buildPackagePath)
         if (excludes) {
             PackageCombiner.removeMembersFromPackage(buildPackagePath, getFilesExcludes(excludes))

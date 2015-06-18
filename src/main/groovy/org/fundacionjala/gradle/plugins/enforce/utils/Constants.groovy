@@ -110,4 +110,25 @@ public class Constants {
     public static final String DIR_DELETE_FOLDER = "delete"
     public static final String PROCCES_DELETE_CANCELLED = "The delete process was canceled"
     public static final String NOT_FILES_DELETED = "There are not files to delete"
+
+    //Unit test task
+    public static final String CLASS_PARAM = 'cls'
+    public static final String CLASS_DIRECTORY = 'classes'
+    public static final String WILDCARD_ALL_TEST = '*'
+    public static final String NAME_FOLDER_REPORT = 'report'
+    public static final String NAME_FOLDER_PAGES = 'pages'
+    public static final String NAME_FILE = 'index.html'
+    public static final String NAME_FILE_UNIT_TEXT_XML = 'unitTest.xml'
+    public static final String NAME_FILE_COVERAGE_REPORT_XML = 'coverage.xml'
+    public static final String PARAMETER_ASYNC = 'async'
+    public static final String QUERY_CLASSES = "SELECT Id, Name FROM ApexClass"
+    public static final String QUERY_TRIGGERS = "SELECT Id, Name FROM ApexTrigger"
+    public static final String NOT_HAVE_UNIT_TEST_MESSAGE = "You don't have any test class to execute in your local repository"
+    public static final String IS_TEST = "@isTest"
+    public static final String UNIT_TEST_SUCCESS = 'Success'
+    public static final String UNIT_TEST_FAIL = 'Fail'
+    public static final String QUERY_COVERAGE = "SELECT NumLinesCovered, NumLinesUncovered, ApexClassorTriggerId, Coverage" +
+            " FROM ApexCodeCoverageAggregate"
+    public static final int TIME_RUN_TEST_ASYNC = 1000
+    public static final int ZERO_NUMBER = 0
 }
