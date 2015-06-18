@@ -40,6 +40,7 @@ abstract class Deployment extends SalesforceTask {
         super(descriptionTask, groupTask)
         componentDeploy = new DeployMetadata()
         componentManager = new InterceptorManager()
+        componentManager.encoding = project.property(Constants.FORCE_EXTENSION).encoding
         componentManager.buildInterceptors()
     }
 

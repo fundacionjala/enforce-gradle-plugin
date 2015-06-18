@@ -31,6 +31,8 @@ class TabInterceptor extends MetadataInterceptor {
      */
     @Override
     void loadInterceptors() {
-        addInterceptor(Interceptor.TRUNCATE_TABS.id, new Tab().execute)
+        Tab tab = new Tab()
+        tab.encoding = encoding
+        addInterceptor(Interceptor.TRUNCATE_TABS.id, tab.execute)
     }
 }

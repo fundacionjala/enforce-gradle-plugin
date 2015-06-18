@@ -5,12 +5,17 @@
 
 package org.fundacionjala.gradle.plugins.enforce.interceptor.commands
 
+import groovy.util.logging.Slf4j
+import org.fundacionjala.gradle.plugins.enforce.utils.Util
+
+import java.nio.charset.StandardCharsets
 import java.util.regex.Matcher
 
 /**
  * Implements the truncated algorithm to replace a formula by default for all formulas
  * that matches with the regex in an object file
  */
+@Slf4j
 class ObjectFormula {
     private final String FIELDS_REGEX = /<fields>.*([^\n]*?\n+?)*?.*<\/fields>/
     private final String FORMULA_REGEX = /<formula>(([^\n]*?\n+?)*?.*)<\/formula>/
@@ -21,13 +26,18 @@ class ObjectFormula {
     private final String DATE_BY_DEFAULT = 'NOW()'
     private final String CHECKBOK_BY_DEFAULT = 'true'
     private final String TAG_FORMULA = '<formula>%s</formula>'
+    String encoding
+
+    ObjectFormula() {
+        this.encoding = StandardCharsets.UTF_8.displayName()
+    }
 
     /**
      * A closure to replace a formula by default for all formulas that matches with the regex in an object file
      */
     Closure execute = { file ->
         if (!file) return
-
+        String charset = Util.getCharset(file)
         String objectFormula = file.text
         Matcher fieldMatcher = objectFormula =~ FIELDS_REGEX
         fieldMatcher.each { fieldIt->
@@ -78,6 +88,12 @@ class ObjectFormula {
                 }
             }
         }
-        file.text = objectFormula
+        log.debug "[${file.name}]-->[charset:${charset}]"
+        if (charset) {
+            file.write(objectFormula, charset)
+        } else {
+            log.warn  "No encoding detected for ${file.name}. The encoding by default is ${encoding}."
+            file.write(objectFormula, encoding)
+        }
     }
 }

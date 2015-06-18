@@ -37,7 +37,7 @@ class Util {
      * @param fullName is a tag of custom field
      * @return developerName of custom field
      */
-    public static String getDeveloperName(String fullName){
+    public static String getDeveloperName(String fullName) {
         return fullName.substring(fullName.indexOf('.') + 1, fullName.length() - 7)
     }
 
@@ -234,7 +234,7 @@ class Util {
         foldersName.each { String folderName ->
             File file = new File(Paths.get(projectPath, folderName).toString())
             if (file.isDirectory()) {
-                if (file.exists() && file.list().length == 0 ) {
+                if (file.exists() && file.list().length == 0) {
                     emptyFolders.push(folderName)
                 }
             }
@@ -276,5 +276,15 @@ class Util {
     public static String getObjectName(String subComponentMember) {
         String objectName = subComponentMember.substring(0, subComponentMember.indexOf('.'))
         return objectName
+    }
+    /**
+     * Gets the file charset
+     * @param file the file to get the encoding
+     * @return the charset
+     */
+    public static String getCharset(File file) {
+        CharsetToolkit toolkit = new CharsetToolkit(file);
+        Charset guessedCharset = toolkit.getCharset();
+        return guessedCharset.displayName()
     }
 }

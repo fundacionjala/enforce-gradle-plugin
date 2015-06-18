@@ -187,7 +187,7 @@ class ManagementFileTest extends Specification {
 
     def "Test load directories not deploy"() {
         expect:
-            managementFile.getFoldersNotDeploy(targetPath).sort() == ["web"].sort()
+            managementFile.getFoldersNotDeploy(targetPath).sort() == ["web", "encoding"].sort()
     }
 
     def "should throw a exception because managementFie constructor value is nothing"() {
@@ -276,7 +276,7 @@ class ManagementFileTest extends Specification {
             dirNames.add(it.name)
         }
         then:
-        dirNames.sort() == ['classes', 'objects', 'reports', 'web'].sort()
+        dirNames.sort() == ['classes', 'encoding', 'objects', 'reports', 'web'].sort()
     }
 
     def "Test should create the directories if it doesn't exist"(){
