@@ -17,7 +17,7 @@ class FileValidator {
     /**
      * Validates names of files
      * @param projectPath is a String that contains source path code for a project
-     * @param filesName is type array list contents names of files
+     * @param files is type array list
      */
     public static Map<String,ArrayList<File>> validateFiles(String projectPath, ArrayList<File> files) {
         Map<String,ArrayList<File>> filesState = [:]
