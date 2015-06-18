@@ -350,8 +350,7 @@ abstract class Deployment extends SalesforceTask {
     public void combinePackage(String buildPackagePath) {
         PackageCombiner.packageCombine(projectPackagePath, buildPackagePath)
         if (excludes) {
-            filter = new Filter(project, projectPath)
-            PackageCombiner.removeMembersFromPackage(buildPackagePath, filter.getFilesExcludes(excludes))
+            PackageCombiner.removeMembersFromPackage(buildPackagePath, getFilesExcludes(excludes))
         }
     }
 
@@ -362,8 +361,7 @@ abstract class Deployment extends SalesforceTask {
     public void combinePackageToUpdate(String buildPackagePath) {
         PackageCombiner.packageCombineToUpdate(projectPackagePath, buildPackagePath)
         if (excludes) {
-            filter = new Filter(project, projectPath)
-            PackageCombiner.removeMembersFromPackage(buildPackagePath, filter.getFilesExcludes(excludes))
+            PackageCombiner.removeMembersFromPackage(buildPackagePath, getFilesExcludes(excludes))
         }
     }
 }

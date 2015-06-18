@@ -23,9 +23,7 @@ class Filter {
     public static ArrayList<String> getCriteria(String criterion) {
         ArrayList<String> criteria = new ArrayList<String>()
         criterion.split(Constants.COMMA).each { String critery ->
-            critery = critery.replaceAll(Constants.BACK_SLASH, Constants.SLASH)
-            def criteriaSplit = critery.split(Constants.SLASH)
-            if (criteriaSplit.size() == 1) {
+            if (!critery.contains('.')) {
                 criteria.push("${critery}${File.separator}${Constants.WILDCARD}${Constants.WILDCARD}")
                 return
             }
