@@ -1,10 +1,13 @@
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.filter
 
+import org.apache.commons.lang.StringUtils
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 import org.gradle.api.Project
 import org.gradle.api.file.FileTree
+
+import java.nio.file.Paths
 
 class Filter {
     private Project project
@@ -20,10 +23,13 @@ class Filter {
      * @param criterion is an String with criteria
      * @return an ArrayList of criteria
      */
-    public static ArrayList<String> getCriteria(String criterion) {
+    public ArrayList<String> getCriteria(String criterion) {
         ArrayList<String> criteria = new ArrayList<String>()
         criterion.split(Constants.COMMA).each { String critery ->
-            if (!critery.contains('.')) {
+            critery = critery.trim()
+            File fileFromProjectDirectory = new File(Paths.get(projectPath, critery).toString())
+
+            if (fileFromProjectDirectory.isDirectory()) {
                 criteria.push("${critery}${File.separator}${Constants.WILDCARD}${Constants.WILDCARD}")
                 return
             }

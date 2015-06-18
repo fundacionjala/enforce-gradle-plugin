@@ -347,6 +347,10 @@ abstract class Deployment extends SalesforceTask {
         }
     }
 
+    /**
+     * Combines package that was updated from build folder and package from source directory
+     * @param buildPackagePath is path of package that is into build directory
+     */
     public void combinePackage(String buildPackagePath) {
         PackageCombiner.packageCombine(projectPackagePath, buildPackagePath)
         if (excludes) {
@@ -356,7 +360,7 @@ abstract class Deployment extends SalesforceTask {
 
     /**
      * Combines package from build folder and package from source directory
-     * @return
+     * @param buildPackagePath is path of package that is into build directory
      */
     public void combinePackageToUpdate(String buildPackagePath) {
         PackageCombiner.packageCombineToUpdate(projectPackagePath, buildPackagePath)

@@ -523,11 +523,21 @@ class FilterTest extends Specification{
     def "Test should return a criteria when you send a sub folder name" () {
         given:
             Filter myFilter = new Filter(project, Paths.get(SRC_PATH, 'src_temporary').toString())
-            String criterion = "documents${File.separator}myFolder"
+            String criterion = "documents${File.separator}DocumentsFolder1"
         when:
             ArrayList<String> result = myFilter.getCriteria(criterion)
         then:
-            result.sort() == ["documents${File.separator}myFolder${File.separator}**"].sort()
+            result.sort() == ["documents${File.separator}DocumentsFolder1${File.separator}**"].sort()
+    }
+
+    def "Test should return a criteria when you send a folders name with spaces" () {
+        given:
+            Filter myFilter = new Filter(project, Paths.get(SRC_PATH, 'src_temporary').toString())
+            String criterion = "documents, classes , objects"
+        when:
+            ArrayList<String> result = myFilter.getCriteria(criterion)
+        then:
+            result.sort() == ["documents${File.separator}**", "classes${File.separator}**", "objects${File.separator}**"].sort()
     }
 
     def cleanupSpec() {
