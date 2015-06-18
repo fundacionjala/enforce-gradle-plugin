@@ -182,6 +182,20 @@ class UtilTest extends Specification {
             objectName == 'Object5__c'
     }
 
+    def "Test should return true if api name has prefix" () {
+        when:
+            def result = Util.isPackaged('myprefix__CustomObject__c')
+        then:
+            result
+    }
+
+    def "Test should return false if api name hasn't perfix" () {
+        when:
+            def result = Util.isPackaged('CustomObject__c')
+        then:
+            !result
+    }
+
     def cleanupSpec() {
         new File(Paths.get(resourcesPath, 'triggers').toString()).deleteDir()
         new File(Paths.get(resourcesPath, 'relativeTest').toString()).deleteDir()
