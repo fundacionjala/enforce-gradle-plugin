@@ -72,8 +72,7 @@ class UploadTest extends Specification {
             uploadInstance.uploadPackagePath = Paths.get(SRC_PATH, 'build', 'package.xml').toString()
             uploadInstance.specificFilesToUpload = [new File(Paths.get(SRC_PATH, "src", "classes", "Class1.cls").toString()),
                                                     new File(Paths.get(SRC_PATH, "src", "classes", "Class1.cls-meta.xml").toString()),
-                                                    new File(Paths.get(SRC_PATH, "src", "objects", "Object1__c.object").toString()),
-                                                    new File(Paths.get(SRC_PATH, "src", "objects", "Account.object").toString())]
+                                                    new File(Paths.get(SRC_PATH, "src", "objects", "Object1__c.object").toString())]
         when:
             uploadInstance.createPackage()
         then:
@@ -219,8 +218,7 @@ class UploadTest extends Specification {
         when:
             uploadInstance.loadParameter()
         then:
-            uploadInstance.specificFilesToUpload.sort() == [new File(Paths.get(SRC_PATH, 'objects', 'Account.object').toString()),
-                                                        new File(Paths.get(SRC_PATH, 'src', 'objects', 'Account.object').toString())].sort()
+            uploadInstance.specificFilesToUpload == [new File(Paths.get(SRC_PATH, 'objects', 'Account.object').toString())]
     }
 
     def "Test should fill specificFilesToUpload array following a wildcard sent '**/*.cls' "() {
