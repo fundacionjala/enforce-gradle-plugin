@@ -5,6 +5,7 @@
 
 package org.fundacionjala.gradle.plugins.enforce.utils.salesforce
 
+import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 
 import java.nio.file.Paths
@@ -15,7 +16,7 @@ import java.nio.file.Paths
 public enum MetadataComponents {
     PERMISSIONSETS("PermissionSet", "permissionset", "permissionsets"),
     COMMUNITIES("Community", "community", "communities"),
-    SCONTROLS("Scontrol", "scf", "scontrols"),
+    SCONTROLS("Scontrol", "scf", "scontrols", Constants.CONTAINS_XML_FILE),
     SAMLSSOCONFIGS("SamlSsoConfig", "samlssoconfig", "samlssoconfigs"),
     WORKFLOWS("Workflow", "workflow", "workflows"),
     SETTINGS("Settings", "settings", "settings"),
@@ -39,19 +40,19 @@ public enum MetadataComponents {
     FLOWS("Flow", "flow", "flows"),
     AUTHPROVIDERS("AuthProvider", "authprovider", "authproviders"),
     INSTALLEDPACKAGES("InstalledPackage", "installedPackage", "installedPackages"),
-    EMAIL("EmailTemplate", "email", "email"),
+    EMAIL("EmailTemplate", "email", "email", Constants.CONTAINS_XML_FILE),
     ROLES("Role", "role", "roles"),
-    COMPONENTS("ApexComponent", "component", "components"),
+    COMPONENTS("ApexComponent", "component", "components", Constants.CONTAINS_XML_FILE),
     CUSTOMAPPLICATIONCOMPONENTS("CustomApplicationComponent", "customApplicationComponent", "customApplicationComponents"),
     LAYOUTS("Layout", "layout", "layouts"),
     HOMEPAGELAYOUTS("HomePageLayout", "homePageLayout", "homePageLayouts"),
     ANALYTICSNAPSHOTS("AnalyticSnapshot", "analyticsnapshot", "analyticSnapshots"),
     AUTORESPONSERULES("AutoResponseRules", "autoResponseRules", "autoResponseRules"),
     DATACATEGORYGROUPS("DataCategoryGroup", "datacategorygroup", "datacategorygroups"),
-    CLASSES("ApexClass", "cls", "classes"),
+    CLASSES("ApexClass", "cls", "classes", Constants.CONTAINS_XML_FILE),
     SITES("CustomSite", "site", "sites"),
-    DOCUMENTS("Document", "", "documents"),
-    PAGES("ApexPage", "page", "pages"),
+    DOCUMENTS("Document", "", "documents", Constants.CONTAINS_XML_FILE),
+    PAGES("ApexPage", "page", "pages", Constants.CONTAINS_XML_FILE),
     LETTERHEAD("Letterhead", "letter", "letterhead"),
     REPORTTYPES("ReportType", "reportType", "reportTypes"),
     SYNONYMDICTIONARIES("SynonymDictionary", "synonymDictionary", "synonymDictionaries"),
@@ -59,7 +60,7 @@ public enum MetadataComponents {
     QUICKACTIONS("QuickAction", "quickAction", "quickActions"),
     CALLCENTERS("CallCenter", "callCenter", "callCenters"),
     QUEUES("Queue", "queue", "queues"),
-    TRIGGERS("ApexTrigger", "trigger", "triggers"),
+    TRIGGERS("ApexTrigger", "trigger", "triggers", Constants.CONTAINS_XML_FILE),
     PROFILES("Profile", "profile", "profiles"),
     TABS("CustomTab", "tab", "tabs"),
     TRANSLATIONS("Translations", "translation", "translations"),
@@ -88,11 +89,13 @@ public enum MetadataComponents {
     private final String typeName
     private final String extension
     private final String directory
+    private final boolean test
 
-    MetadataComponents(String typeName, String extension, String directory) {
+    MetadataComponents(String typeName, String extension, String directory, boolean test=false) {
         this.typeName = typeName
         this.extension = extension
         this.directory = directory
+        this.test = test
     }
 
     String getTypeName() {
