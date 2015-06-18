@@ -50,12 +50,6 @@ class ObjectFieldSet {
         }
         fieldNames.append(REGEX_END)
         contentResult = contentResult.replaceAll(REGEX_END, fieldNames.toString())
-        log.debug "[${file.name}]-->[charset:${charset}]"
-        if (charset) {
-            file.write(contentResult, charset)
-        } else {
-            log.warn  "No encoding detected for ${file.name}. The encoding by default is ${encoding}."
-            file.write(contentResult, encoding)
-        }
+        Util.writeFile(file, contentResult, charset, encoding)
     }
 }

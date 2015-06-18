@@ -52,12 +52,6 @@ class Component {
             newAttributes += "\n${String.format(ATTRIBUTE_BY_DEFAULT, attributeName)}"
         }
         String content = String.format(COMPONENT_BY_DEFAULT, newAttributes)
-        log.debug "[${file.name}]-->[charset:${charset}]"
-        if (charset) {
-            file.write(content, charset)
-        } else {
-            log.warn  "No encoding detected for ${file.name}. The encoding by default is ${encoding}."
-            file.write(content, encoding)
-        }
+        Util.writeFile(file, content, charset, encoding)
     }
 }

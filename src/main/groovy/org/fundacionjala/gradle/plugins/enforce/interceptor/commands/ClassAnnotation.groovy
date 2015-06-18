@@ -34,12 +34,6 @@ class ClassAnnotation {
         String regex = "${annotation[INDEX_AT_SIGN]}[${annotation[INDEX_FIRST_LETTER].toUpperCase()}"
         regex = "${regex}${annotation[INDEX_FIRST_LETTER].toLowerCase()}]${annotation.substring(INDEX_FIRST_LETTER + INDEX_NEXT)}"
         String content = file.text.replaceAll(regex, '')
-        log.debug "[${file.name}]-->[charset:${charset}]"
-        if (charset) {
-            file.write(content, charset)
-        } else {
-            log.warn  "No encoding detected for ${file.name}. The encoding by default is ${encoding}."
-            file.write(content, encoding)
-        }
+        Util.writeFile(file, content, charset, encoding)
     }
 }

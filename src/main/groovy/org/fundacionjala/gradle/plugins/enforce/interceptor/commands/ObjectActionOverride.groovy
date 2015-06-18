@@ -39,12 +39,6 @@ class ObjectActionOverride {
         if (!file) return
         String charset = Util.getCharset(file)
         String content = file.text.replaceAll(REGEX_ACTION, REPLACEMENT_TEXT)
-        log.debug "[${file.name}]-->[charset:${charset}]"
-        if (charset) {
-            file.write(content, charset)
-        } else {
-            log.warn  "No encoding detected for ${file.name}. The encoding by default is ${encoding}."
-            file.write(content, encoding)
-        }
+        Util.writeFile(file, content, charset, encoding)
     }
 }

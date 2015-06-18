@@ -36,12 +36,6 @@ class Class {
             String exceptionName = Util.getFileName(EXCEPTION_FILE_NAME)
             content = String.format(CLASS_DECLARATION_EXCEPTION, className, exceptionName)
         }
-        log.debug "[${file.name}]-->[charset:${charset}]"
-        if (charset) {
-            file.write(content, charset)
-        } else {
-            log.warn  "No encoding detected for ${file.name}. The encoding by default is ${encoding}."
-            file.write(content, encoding)
-        }
+        Util.writeFile(file, content, charset, encoding)
     }
 }

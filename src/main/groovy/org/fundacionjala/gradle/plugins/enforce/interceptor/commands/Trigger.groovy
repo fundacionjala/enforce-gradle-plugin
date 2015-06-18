@@ -37,12 +37,6 @@ class Trigger {
             truncatedCode = truncatedCode.substring(1, truncatedCode.indexOf('{'))
             truncatedCode = "${truncatedCode}{}"
         }
-        log.debug "[${file.name}]-->[charset:${charset}]"
-        if (charset) {
-            file.write(truncatedCode, charset)
-        } else {
-            log.warn  "No encoding detected for ${file.name}. The encoding by default is ${encoding}."
-            file.write(truncatedCode, encoding)
-        }
+        Util.writeFile(file, truncatedCode, charset, encoding)
     }
 }

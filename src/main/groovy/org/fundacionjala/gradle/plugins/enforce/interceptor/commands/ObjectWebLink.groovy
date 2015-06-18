@@ -68,13 +68,7 @@ class ObjectWebLink {
                 }
             }
         }
-        log.debug "[${file.name}]-->[charset:${charset}]"
-        if (charset) {
-            file.write(objectWebLink, charset)
-        } else {
-            log.warn  "No encoding detected for ${file.name}. The encoding by default is ${encoding}."
-            file.write(objectWebLink, encoding)
-        }
+        Util.writeFile(file, objectWebLink, charset, encoding)
     }
 
 }

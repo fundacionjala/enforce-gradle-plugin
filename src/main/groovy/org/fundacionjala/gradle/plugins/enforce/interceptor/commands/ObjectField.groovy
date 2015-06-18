@@ -56,12 +56,6 @@ class ObjectField {
                 objectField = objectField.replace(field, newField)
             }
         }
-        log.debug "[${file.name}]-->[charset:${charset}]"
-        if (charset) {
-            file.write(objectField, charset)
-        } else {
-            log.warn  "No encoding detected for ${file.name}. The encoding by default is ${encoding}."
-            file.write(objectField, encoding)
-        }
+        Util.writeFile(file, objectField, charset, encoding)
     }
 }

@@ -33,13 +33,7 @@ class Tab {
         if (!file.text.contains(TAG_PAGES) && !file.text.contains(TAG_CUSTOM_OBJECT)) {
             def nameFile = Util.getFileName(file.getName())
             def contentWebTab = getWebTabString(nameFile)
-            log.debug "[${file.name}]-->[charset:${charset}]"
-            if (charset) {
-                file.write(contentWebTab, charset)
-            } else {
-                log.warn  "No encoding detected for ${file.name}. The encoding by default is ${encoding}."
-                file.write(contentWebTab, encoding)
-            }
+            Util.writeFile(file, contentWebTab, charset, encoding)
         }
     }
 

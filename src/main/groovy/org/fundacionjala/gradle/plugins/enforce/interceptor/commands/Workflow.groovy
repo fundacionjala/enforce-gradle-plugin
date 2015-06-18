@@ -35,13 +35,6 @@ class Workflow {
         truncatedContent = truncatedContent.replaceAll(REGEX_CRITERIA_ITEM, '') //Cleans criteria item
         truncatedContent = truncatedContent.replaceAll(REGEX_FORMULA, '')      //Cleans formula
         truncatedContent = truncatedContent.replaceAll(REGEX_ACTIVE, "</active>${FORMULA_BY_DEFAULT}")
-        file.text = truncatedContent
-        log.debug "[${file.name}]-->[charset:${charset}]"
-        if (charset) {
-            file.write(truncatedContent, charset)
-        } else {
-            log.warn  "No encoding detected for ${file.name}. The encoding by default is ${encoding}."
-            file.write(truncatedContent, encoding)
-        }
+        Util.writeFile(file, truncatedContent, charset, encoding)
     }
 }

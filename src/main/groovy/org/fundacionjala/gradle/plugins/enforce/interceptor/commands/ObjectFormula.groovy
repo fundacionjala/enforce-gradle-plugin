@@ -88,12 +88,6 @@ class ObjectFormula {
                 }
             }
         }
-        log.debug "[${file.name}]-->[charset:${charset}]"
-        if (charset) {
-            file.write(objectFormula, charset)
-        } else {
-            log.warn  "No encoding detected for ${file.name}. The encoding by default is ${encoding}."
-            file.write(objectFormula, encoding)
-        }
+        Util.writeFile(file, objectFormula, charset, encoding)
     }
 }
