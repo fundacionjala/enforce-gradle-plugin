@@ -64,6 +64,7 @@ public class Constants {
     public static final String TRUNCATE_CODE = 'sourceCode'
 
     public static final Integer NOT_FOUND = -1
+    public static final boolean CONTAINS_XML_FILE = true;
 
     public static final ArrayList<String> FOLDERS_TO_TRUNCATE = ['classes', 'objects', 'triggers', 'pages', 'components', 'workflows']
 
