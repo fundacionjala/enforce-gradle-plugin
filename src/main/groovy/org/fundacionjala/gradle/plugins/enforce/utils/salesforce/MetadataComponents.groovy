@@ -91,7 +91,7 @@ public enum MetadataComponents {
     private final String directory
     private final boolean containsXMLFile
 
-    MetadataComponents(String typeName, String extension, String directory, boolean containsXMLFile=false) {
+    MetadataComponents(String typeName, String extension, String directory, boolean containsXMLFile = false) {
         this.typeName = typeName
         this.extension = extension
         this.directory = directory
