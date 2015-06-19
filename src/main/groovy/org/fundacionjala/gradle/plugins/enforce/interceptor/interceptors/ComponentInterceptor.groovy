@@ -31,6 +31,8 @@ class ComponentInterceptor extends MetadataInterceptor {
      */
     @Override
     void loadInterceptors() {
-        addInterceptor(Interceptor.TRUNCATE_COMPONENTS.id, new Component().execute)
+        Component component = new Component()
+        component.encoding = encoding
+        addInterceptor(Interceptor.TRUNCATE_COMPONENTS.id, component.execute)
     }
 }
