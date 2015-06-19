@@ -33,10 +33,12 @@ class ClassInterceptor extends MetadataInterceptor {
      */
     @Override
     void loadInterceptors() {
-        ClassAnnotation annotationCmd = new ClassAnnotation()
-        annotationCmd.annotation = DEPRECATE_ANNOTATION
-        addInterceptor(Interceptor.REMOVE_DEPRECATE.id, annotationCmd.execute)
-        Class contentCmd = new Class()
-        addInterceptor(Interceptor.TRUNCATE_CLASSES.id, contentCmd.execute)
+        ClassAnnotation classAnnotation = new ClassAnnotation()
+        classAnnotation.encoding = encoding
+        classAnnotation.annotation = DEPRECATE_ANNOTATION
+        addInterceptor(Interceptor.REMOVE_DEPRECATE.id, classAnnotation.execute)
+        Class classCmd = new Class()
+        classCmd.encoding = encoding
+        addInterceptor(Interceptor.TRUNCATE_CLASSES.id, classCmd.execute)
     }
 }

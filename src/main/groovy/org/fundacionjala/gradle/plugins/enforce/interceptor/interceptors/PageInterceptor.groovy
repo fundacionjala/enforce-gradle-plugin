@@ -31,6 +31,8 @@ class PageInterceptor extends MetadataInterceptor {
      */
     @Override
     void loadInterceptors() {
-        addInterceptor(Interceptor.TRUNCATE_PAGES.id, new Page().execute)
+        Page page = new Page()
+        page.encoding = encoding
+        addInterceptor(Interceptor.TRUNCATE_PAGES.id, page.execute)
     }
 }
