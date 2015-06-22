@@ -13,6 +13,7 @@ import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentSerializer
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
 import org.fundacionjala.gradle.plugins.enforce.metadata.DeployMetadata
+import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.LoginType
@@ -255,8 +256,17 @@ class UpdateTest extends Specification {
             def packageExpect = "${"<?xml version='1.0' encoding='UTF-8'?>"}${"<Package xmlns='http://soap.sforce.com/2006/04/metadata'>"}${"<types><members>Class2</members><name>ApexClass</name></types><version>32.0</version></Package>"}"
             def destructiveExpect = "${"<?xml version='1.0' encoding='UTF-8'?>"}${"<Package xmlns='http://soap.sforce.com/2006/04/metadata'>"}${"<version>32.0</version>"}${"</Package>"}"
         when:
-            updateInstance.runTask()
-            println 'package ' + new File(Paths.get(SRC_PATH, 'build', 'update', 'package.xml').toString()).exists()
+            updateInstance.pathUpdate = Paths.get(updateInstance.buildFolderPath, Constants.DIR_UPDATE_FOLDER).toString()
+            updateInstance.updatePackagePath = Paths.get(updateInstance.pathUpdate, updateInstance.PACKAGE_NAME).toString()
+            updateInstance.createDeploymentDirectory(updateInstance.pathUpdate)
+            updateInstance.loadFilesChanged()
+            updateInstance.verifyParameter()
+            updateInstance.excludeFilesFromFilesChanged()
+            updateInstance.showFilesChanged()
+            updateInstance.createDestructive()
+            updateInstance.createPackage()
+            updateInstance.copyFilesChanged()
+            updateInstance.showFilesExcludes()
             def packageXml =  new File(Paths.get(SRC_PATH, 'build', 'update', 'package.xml').toString()).text
             def destructiveXml =  new File(Paths.get(SRC_PATH, 'build', 'update', 'destructiveChanges.xml').toString()).text
             def class2Xml =  new File(Paths.get(SRC_PATH, 'build', 'update', 'classes', 'Class2.cls-meta.xml').toString()).text
@@ -296,11 +306,22 @@ class UpdateTest extends Specification {
             writerClass.close()
             writerXml.close()
             def updateFileZipPath = Paths.get(SRC_PATH,'build','update.zip').toString()
-            def updateFolderPath = Paths.get(SRC_PATH,'build','update').toString()
+            def updateFolderPath = Paths.get(updateInstance.buildFolderPath, Constants.DIR_UPDATE_FOLDER).toString()
             File updateFileZip = new File(updateFileZipPath)
             File updateFolder = new File(updateFolderPath)
         when:
-            updateInstance.runTask()
+            updateInstance.pathUpdate = Paths.get(updateInstance.buildFolderPath, Constants.DIR_UPDATE_FOLDER).toString()
+            updateInstance.updatePackagePath = Paths.get(updateInstance.pathUpdate, updateInstance.PACKAGE_NAME).toString()
+            updateInstance.createDeploymentDirectory(updateInstance.pathUpdate)
+            updateInstance.loadFilesChanged()
+            updateInstance.verifyParameter()
+            updateInstance.excludeFilesFromFilesChanged()
+            updateInstance.showFilesChanged()
+            updateInstance.createDestructive()
+            updateInstance.createPackage()
+            updateInstance.copyFilesChanged()
+            updateInstance.showFilesExcludes()
+            updateInstance.deleteTemporaryFiles()
         then:
             !updateFileZip.exists()
             !updateFolder.exists()
