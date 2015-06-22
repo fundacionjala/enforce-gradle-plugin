@@ -223,181 +223,182 @@ class UploadTest extends Specification {
 
     def "Test should load files into build folder before to execute deploy to 'gradle upload -Pall=true' command"() {
         given:
-        uploadInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
-        uploadInstance.pathUpload = pathUpload
-        uploadInstance.uploadPackagePath = Paths.get(pathUpload, Constants.PACKAGE_FILE_NAME).toString()
-        uploadInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', Constants.PACKAGE_FILE_NAME).toString()
-        uploadInstance.parameters.put('all', 'true')
-        String packageExpect = '''<?xml version='1.0' encoding='UTF-8'?>
-                                    <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
-                                        <types>
-                                            <members>Object1__c</members>
-                                            <name>CustomObject</name>
-                                        </types>
-                                        <types>
-                                            <members>Trigger1</members>
-                                            <name>ApexTrigger</name>
-                                        </types>
-                                        <types>
-                                            <members>Class1</members>
-                                            <name>ApexClass</name>
-                                        </types>
-                                        <version>32.0</version>
-                                    </Package>
-                                    '''
-        File packageFromBuildDirectory = new File(Paths.get(pathUpload, Constants.PACKAGE_FILE_NAME).toString())
-        when:
-        uploadInstance.createDeploymentDirectory(pathUpload)
-        uploadInstance.loadFilesChangedToUpload()
-        uploadInstance.loadParameter()
-        uploadInstance.loadAllFiles()
-        uploadInstance.loadFiles()
-        uploadInstance.copyFilesToUpload()
-        uploadInstance.createPackage()
-        uploadInstance.truncate(pathUpload)
-
-        XMLUnit.ignoreWhitespace = true
-        def xmlDiff = new Diff(packageFromBuildDirectory.text, packageExpect)
-        then:
-        new File(Paths.get(pathUpload, 'classes', 'Class1.cls').toString()).exists()
-        new File(Paths.get(pathUpload, 'classes', 'Class1.cls-meta.xml').toString()).exists()
-        new File(Paths.get(pathUpload, 'objects', 'Object1__c.object').toString()).exists()
-        new File(Paths.get(pathUpload, 'triggers', 'Trigger1.trigger').toString()).exists()
-        new File(Paths.get(pathUpload, 'triggers', 'Trigger1.trigger-meta.xml').toString()).exists()
-        xmlDiff.similar()
-    }
-
-    def "Test should load files into build folder before to execute deploy to 'gradle upload -Pfiles=classes,objects' command"() {
-        given:
-        uploadInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
-        uploadInstance.pathUpload = pathUpload
-        uploadInstance.uploadPackagePath = Paths.get(pathUpload, Constants.PACKAGE_FILE_NAME).toString()
-        uploadInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', Constants.PACKAGE_FILE_NAME).toString()
-        uploadInstance.parameters.put('files', 'classes,objects')
-        String packageExpect = '''<?xml version='1.0' encoding='UTF-8'?>
-                                    <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
-                                        <types>
-                                            <members>Object1__c</members>
-                                            <name>CustomObject</name>
-                                        </types>
-                                        <types>
-                                            <members>Class1</members>
-                                            <name>ApexClass</name>
-                                        </types>
-                                        <version>32.0</version>
-                                    </Package>
-                                    '''
-        File packageFromBuildDirectory = new File(Paths.get(pathUpload, Constants.PACKAGE_FILE_NAME).toString())
-        when:
-        uploadInstance.createDeploymentDirectory(pathUpload)
-        uploadInstance.loadFilesChangedToUpload()
-        uploadInstance.loadParameter()
-        uploadInstance.loadAllFiles()
-        uploadInstance.loadFiles()
-        uploadInstance.copyFilesToUpload()
-        uploadInstance.createPackage()
-        uploadInstance.truncate(pathUpload)
-
-        XMLUnit.ignoreWhitespace = true
-        def xmlDiff = new Diff(packageFromBuildDirectory.text, packageExpect)
-        then:
-        new File(Paths.get(pathUpload, 'classes', 'Class1.cls').toString()).exists()
-        new File(Paths.get(pathUpload, 'classes', 'Class1.cls-meta.xml').toString()).exists()
-        new File(Paths.get(pathUpload, 'objects', 'Object1__c.object').toString()).exists()
-        !new File(Paths.get(pathUpload, 'triggers', 'Trigger1.trigger').toString()).exists()
-        !new File(Paths.get(pathUpload, 'triggers', 'Trigger1.trigger-meta.xml').toString()).exists()
-        xmlDiff.similar()
-    }
-
-    def "Test should load files into build folder before to execute deploy to 'gradle upload -Pexcludes=classes' command"() {
-        given:
-        uploadInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
-        uploadInstance.pathUpload = pathUpload
-        uploadInstance.uploadPackagePath = Paths.get(pathUpload, Constants.PACKAGE_FILE_NAME).toString()
-        uploadInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', Constants.PACKAGE_FILE_NAME).toString()
-        uploadInstance.parameters.put('excludes', 'classes')
-        String packageExpect = '''<?xml version='1.0' encoding='UTF-8'?>
-                                    <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
-                                        <types>
-                                            <members>Object1__c</members>
-                                            <name>CustomObject</name>
-                                        </types>
-                                        <types>
-                                            <members>Trigger1</members>
-                                            <name>ApexTrigger</name>
-                                        </types>
-                                        <version>32.0</version>
-                                    </Package>
-                                    '''
-        File packageFromBuildDirectory = new File(Paths.get(pathUpload, Constants.PACKAGE_FILE_NAME).toString())
-        when:
-        uploadInstance.createDeploymentDirectory(pathUpload)
-        uploadInstance.loadFilesChangedToUpload()
-        uploadInstance.loadParameter()
-        uploadInstance.loadAllFiles()
-        uploadInstance.loadFiles()
-        uploadInstance.copyFilesToUpload()
-        uploadInstance.createPackage()
-        uploadInstance.truncate(pathUpload)
-
-        XMLUnit.ignoreWhitespace = true
-        def xmlDiff = new Diff(packageFromBuildDirectory.text, packageExpect)
-        then:
-        !new File(Paths.get(pathUpload, 'classes', 'Class1.cls').toString()).exists()
-        !new File(Paths.get(pathUpload, 'classes', 'Class1.cls-meta.xml').toString()).exists()
-        new File(Paths.get(pathUpload, 'objects', 'Object1__c.object').toString()).exists()
-        new File(Paths.get(pathUpload, 'triggers', 'Trigger1.trigger').toString()).exists()
-        new File(Paths.get(pathUpload, 'triggers', 'Trigger1.trigger-meta.xml').toString()).exists()
-        xmlDiff.similar()
-    }
-
-    def "Test should load files into build folder before to execute deploy to 'gradle upload -Pfiles=classes -Pexcludes=classes/Class1.cls' command"() {
-        given:
-        File class2 = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class2.cls').toString())
-        File classXml2 = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class2.cls-meta.xml').toString())
-        class2.createNewFile()
-        classXml2.createNewFile()
-        File class3 = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class3.cls').toString())
-        File classXml3 = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class3.cls-meta.xml').toString())
-        class3.createNewFile()
-        classXml3.createNewFile()
-        uploadInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
-        uploadInstance.pathUpload = pathUpload
-        uploadInstance.uploadPackagePath = Paths.get(pathUpload, Constants.PACKAGE_FILE_NAME).toString()
-        uploadInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', Constants.PACKAGE_FILE_NAME).toString()
-        uploadInstance.parameters.put('excludes', "classes${File.separator}Class1.cls")
-        uploadInstance.parameters.put('files', 'classes')
-        String packageExpect = '''<?xml version='1.0' encoding='UTF-8'?>
+            uploadInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
+            uploadInstance.pathUpload = pathUpload
+            uploadInstance.uploadPackagePath = Paths.get(pathUpload, Constants.PACKAGE_FILE_NAME).toString()
+            uploadInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', Constants.PACKAGE_FILE_NAME).toString()
+            uploadInstance.parameters.put('all', 'true')
+            String packageExpect = '''<?xml version='1.0' encoding='UTF-8'?>
                                         <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
                                             <types>
-                                                <members>Class3</members>
-                                                <members>Class2</members>
+                                                <members>Object1__c</members>
+                                                <name>CustomObject</name>
+                                            </types>
+                                            <types>
+                                                <members>Trigger1</members>
+                                                <name>ApexTrigger</name>
+                                            </types>
+                                            <types>
+                                                <members>Class1</members>
                                                 <name>ApexClass</name>
                                             </types>
                                             <version>32.0</version>
                                         </Package>
                                         '''
-        File packageFromBuildDirectory = new File(Paths.get(pathUpload, Constants.PACKAGE_FILE_NAME).toString())
+            File packageFromBuildDirectory = new File(Paths.get(pathUpload, Constants.PACKAGE_FILE_NAME).toString())
         when:
-        uploadInstance.createDeploymentDirectory(pathUpload)
-        uploadInstance.loadFilesChangedToUpload()
-        uploadInstance.loadParameter()
-        uploadInstance.loadAllFiles()
-        uploadInstance.loadFiles()
-        uploadInstance.copyFilesToUpload()
-        uploadInstance.createPackage()
-        uploadInstance.truncate(pathUpload)
+            uploadInstance.createDeploymentDirectory(pathUpload)
+            uploadInstance.loadFilesChangedToUpload()
+            uploadInstance.loadParameter()
+            uploadInstance.loadAllFiles()
+            uploadInstance.loadFiles()
+            uploadInstance.copyFilesToUpload()
+            uploadInstance.createPackage()
+            uploadInstance.truncate(pathUpload)
 
-        XMLUnit.ignoreWhitespace = true
-        def xmlDiff = new Diff(packageFromBuildDirectory.text, packageExpect)
+            XMLUnit.ignoreWhitespace = true
+            def xmlDiff = new Diff(packageFromBuildDirectory.text, packageExpect)
         then:
-        !new File(Paths.get(pathUpload, 'classes', 'Class1.cls').toString()).exists()
-        !new File(Paths.get(pathUpload, 'classes', 'Class1.cls-meta.xml').toString()).exists()
-        new File(Paths.get(pathUpload, 'classes', 'Class2.cls').toString()).exists()
-        new File(Paths.get(pathUpload, 'classes', 'Class2.cls-meta.xml').toString()).exists()
-        new File(Paths.get(pathUpload, 'classes', 'Class3.cls').toString()).exists()
-        new File(Paths.get(pathUpload, 'classes', 'Class3.cls-meta.xml').toString()).exists()
-        xmlDiff.similar()
+            new File(Paths.get(pathUpload, 'classes', 'Class1.cls').toString()).exists()
+            new File(Paths.get(pathUpload, 'classes', 'Class1.cls-meta.xml').toString()).exists()
+            new File(Paths.get(pathUpload, 'objects', 'Object1__c.object').toString()).exists()
+            new File(Paths.get(pathUpload, 'triggers', 'Trigger1.trigger').toString()).exists()
+            new File(Paths.get(pathUpload, 'triggers', 'Trigger1.trigger-meta.xml').toString()).exists()
+            xmlDiff.similar()
+    }
+
+    def "Test should load files into build folder before to execute deploy to 'gradle upload -Pfiles=classes,objects' command"() {
+        given:
+            uploadInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
+            uploadInstance.pathUpload = pathUpload
+            uploadInstance.uploadPackagePath = Paths.get(pathUpload, Constants.PACKAGE_FILE_NAME).toString()
+            uploadInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', Constants.PACKAGE_FILE_NAME).toString()
+            uploadInstance.parameters.put('files', 'classes,objects')
+            String packageExpect = '''<?xml version='1.0' encoding='UTF-8'?>
+                                        <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
+                                            <types>
+                                                <members>Object1__c</members>
+                                                <name>CustomObject</name>
+                                            </types>
+                                            <types>
+                                                <members>Class1</members>
+                                                <name>ApexClass</name>
+                                            </types>
+                                            <version>32.0</version>
+                                        </Package>
+                                        '''
+            File packageFromBuildDirectory = new File(Paths.get(pathUpload, Constants.PACKAGE_FILE_NAME).toString())
+        when:
+            uploadInstance.createDeploymentDirectory(pathUpload)
+            uploadInstance.loadFilesChangedToUpload()
+            uploadInstance.loadParameter()
+            uploadInstance.loadAllFiles()
+            uploadInstance.loadFiles()
+            uploadInstance.copyFilesToUpload()
+            uploadInstance.createPackage()
+            uploadInstance.truncate(pathUpload)
+
+            XMLUnit.ignoreWhitespace = true
+            def xmlDiff = new Diff(packageFromBuildDirectory.text, packageExpect)
+        then:
+            new File(Paths.get(pathUpload, 'classes', 'Class1.cls').toString()).exists()
+            new File(Paths.get(pathUpload, 'classes', 'Class1.cls-meta.xml').toString()).exists()
+            new File(Paths.get(pathUpload, 'objects', 'Object1__c.object').toString()).exists()
+            !new File(Paths.get(pathUpload, 'triggers', 'Trigger1.trigger').toString()).exists()
+            !new File(Paths.get(pathUpload, 'triggers', 'Trigger1.trigger-meta.xml').toString()).exists()
+            xmlDiff.similar()
+    }
+
+    def "Test should load files into build folder before to execute deploy to 'gradle upload -Pexcludes=classes' command"() {
+        given:
+            uploadInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
+            uploadInstance.pathUpload = pathUpload
+            uploadInstance.uploadPackagePath = Paths.get(pathUpload, Constants.PACKAGE_FILE_NAME).toString()
+            uploadInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', Constants.PACKAGE_FILE_NAME).toString()
+            uploadInstance.parameters.put('excludes', 'classes')
+            String packageExpect = '''<?xml version='1.0' encoding='UTF-8'?>
+                                        <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
+                                            <types>
+                                                <members>Object1__c</members>
+                                                <name>CustomObject</name>
+                                            </types>
+                                            <types>
+                                                <members>Trigger1</members>
+                                                <name>ApexTrigger</name>
+                                            </types>
+                                            <version>32.0</version>
+                                        </Package>
+                                        '''
+            File packageFromBuildDirectory = new File(Paths.get(pathUpload, Constants.PACKAGE_FILE_NAME).toString())
+        when:
+            uploadInstance.createDeploymentDirectory(pathUpload)
+            uploadInstance.loadFilesChangedToUpload()
+            uploadInstance.loadParameter()
+            uploadInstance.loadAllFiles()
+            uploadInstance.loadFiles()
+            uploadInstance.copyFilesToUpload()
+            uploadInstance.createPackage()
+            uploadInstance.truncate(pathUpload)
+
+            XMLUnit.ignoreWhitespace = true
+            def xmlDiff = new Diff(packageFromBuildDirectory.text, packageExpect)
+        then:
+            !new File(Paths.get(pathUpload, 'classes', 'Class1.cls').toString()).exists()
+            !new File(Paths.get(pathUpload, 'classes', 'Class1.cls-meta.xml').toString()).exists()
+            new File(Paths.get(pathUpload, 'objects', 'Object1__c.object').toString()).exists()
+            new File(Paths.get(pathUpload, 'triggers', 'Trigger1.trigger').toString()).exists()
+            new File(Paths.get(pathUpload, 'triggers', 'Trigger1.trigger-meta.xml').toString()).exists()
+            xmlDiff.similar()
+    }
+
+    def "Test should load files into build folder before to execute deploy to 'gradle upload -Pfiles=classes -Pexcludes=classes/Class1.cls' command"() {
+        given:
+            File class2 = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class2.cls').toString())
+            File classXml2 = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class2.cls-meta.xml').toString())
+            class2.createNewFile()
+            classXml2.createNewFile()
+            File class3 = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class3.cls').toString())
+            File classXml3 = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class3.cls-meta.xml').toString())
+            class3.createNewFile()
+            classXml3.createNewFile()
+            uploadInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
+            uploadInstance.pathUpload = pathUpload
+            uploadInstance.uploadPackagePath = Paths.get(pathUpload, Constants.PACKAGE_FILE_NAME).toString()
+            uploadInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', Constants.PACKAGE_FILE_NAME).toString()
+            uploadInstance.parameters.put('excludes', "classes${File.separator}Class1.cls")
+            uploadInstance.parameters.put('files', 'classes')
+            String packageExpect = '''<?xml version='1.0' encoding='UTF-8'?>
+                                            <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
+                                                <types>
+                                                    <members>Class3</members>
+                                                    <members>Class2</members>
+                                                    <name>ApexClass</name>
+                                                </types>
+                                                <version>32.0</version>
+                                            </Package>
+                                            '''
+            File packageFromBuildDirectory = new File(Paths.get(pathUpload, Constants.PACKAGE_FILE_NAME).toString())
+        when:
+            uploadInstance.createDeploymentDirectory(pathUpload)
+            uploadInstance.loadFilesChangedToUpload()
+            uploadInstance.loadParameter()
+            uploadInstance.loadAllFiles()
+            uploadInstance.loadFiles()
+            uploadInstance.copyFilesToUpload()
+            uploadInstance.createPackage()
+            uploadInstance.truncate(pathUpload)
+
+
+            XMLUnit.ignoreWhitespace = true
+            def xmlDiff = new Diff(packageFromBuildDirectory.text, packageExpect)
+        then:
+            !new File(Paths.get(pathUpload, 'classes', 'Class1.cls').toString()).exists()
+            !new File(Paths.get(pathUpload, 'classes', 'Class1.cls-meta.xml').toString()).exists()
+            new File(Paths.get(pathUpload, 'classes', 'Class2.cls').toString()).exists()
+            new File(Paths.get(pathUpload, 'classes', 'Class2.cls-meta.xml').toString()).exists()
+            new File(Paths.get(pathUpload, 'classes', 'Class3.cls').toString()).exists()
+            new File(Paths.get(pathUpload, 'classes', 'Class3.cls-meta.xml').toString()).exists()
+            xmlDiff.similar()
     }
 
     def cleanupSpec() {
