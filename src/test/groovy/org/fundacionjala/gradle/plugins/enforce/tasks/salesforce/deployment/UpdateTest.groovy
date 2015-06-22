@@ -484,7 +484,7 @@ class UpdateTest extends Specification {
 
     }
 
-    def cleanupSpec() {
+    def cleanup() {
         new File(Paths.get(SRC_PATH, 'build').toString()).deleteDir()
         new File(Paths.get(SRC_PATH, 'classes', 'Class2.cls').toString()).delete()
         new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class2.cls').toString()).delete()
