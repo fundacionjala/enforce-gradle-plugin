@@ -115,194 +115,194 @@ class DeleteTest extends Specification {
 
     def "Integration testing must list all the files to delete"() {
         given:
-            ArrayList<File> filesExpected = new ArrayList<File>();
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class1.cls').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class1.cls-meta.xml').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class2.cls').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class2.cls-meta.xml').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class3.cls').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class3.cls-meta.xml').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger1.trigger').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger1.trigger-meta.xml').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger2.trigger').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger2.trigger-meta.xml').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger3.trigger').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger3.trigger-meta.xml').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object1__c.object').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object2__c.object').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object3__c.object').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object4__c.object').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object5__c.object').toString()))
+        ArrayList<File> filesExpected = new ArrayList<File>();
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class1.cls').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class1.cls-meta.xml').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class2.cls').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class2.cls-meta.xml').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class3.cls').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class3.cls-meta.xml').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger1.trigger').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger1.trigger-meta.xml').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger2.trigger').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger2.trigger-meta.xml').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger3.trigger').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger3.trigger-meta.xml').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object1__c.object').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object2__c.object').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object3__c.object').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object4__c.object').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object5__c.object').toString()))
 
         when:
-            deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
-            deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
-            deleteInstance.addAllFiles()
-            deleteInstance.addFoldersToDeleteFiles()
-            deleteInstance.addFilesToDelete()
-            deleteInstance.excludeFilesToDelete()
-            deleteInstance.createDestructive()
-            deleteInstance.createPackageEmpty()
+        deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
+        deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
+        deleteInstance.addAllFiles()
+        deleteInstance.addFoldersToDeleteFiles()
+        deleteInstance.addFilesToDelete()
+        deleteInstance.excludeFilesToDelete()
+        deleteInstance.createDestructive()
+        deleteInstance.createPackageEmpty()
 
         then:
-            filesExpected.sort().equals(deleteInstance.filesToDeleted.sort())
+        filesExpected.sort().equals(deleteInstance.filesToDeleted.sort())
     }
 
     def "Integration testing must list files filtered for folders to delete"() {
         given:
-            deleteInstance.parameters.put('folders','classes,triggers')
+        deleteInstance.parameters.put('folders','classes,triggers')
 
-            ArrayList<File> filesExpected = new ArrayList<File>();
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class1.cls').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class1.cls-meta.xml').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class2.cls').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class2.cls-meta.xml').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class3.cls').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class3.cls-meta.xml').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger1.trigger').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger1.trigger-meta.xml').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger2.trigger').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger2.trigger-meta.xml').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger3.trigger').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger3.trigger-meta.xml').toString()))
+        ArrayList<File> filesExpected = new ArrayList<File>();
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class1.cls').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class1.cls-meta.xml').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class2.cls').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class2.cls-meta.xml').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class3.cls').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class3.cls-meta.xml').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger1.trigger').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger1.trigger-meta.xml').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger2.trigger').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger2.trigger-meta.xml').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger3.trigger').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger3.trigger-meta.xml').toString()))
 
         when:
-            deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, DIR_DELETE_FOLDER).toString()
-            deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
-            deleteInstance.addAllFiles()
-            deleteInstance.addFoldersToDeleteFiles()
-            deleteInstance.addFilesToDelete()
-            deleteInstance.excludeFilesToDelete()
-            deleteInstance.createDestructive()
-            deleteInstance.createPackageEmpty()
+        deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, DIR_DELETE_FOLDER).toString()
+        deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
+        deleteInstance.addAllFiles()
+        deleteInstance.addFoldersToDeleteFiles()
+        deleteInstance.addFilesToDelete()
+        deleteInstance.excludeFilesToDelete()
+        deleteInstance.createDestructive()
+        deleteInstance.createPackageEmpty()
 
         then:
-            filesExpected.sort().equals(deleteInstance.filesToDeleted.sort())
+        filesExpected.sort().equals(deleteInstance.filesToDeleted.sort())
     }
 
     def "Integration testing must list files filtered for files to delete"() {
         given:
-            deleteInstance.parameters.put('files','classes/Class1.cls,triggers/Trigger1.trigger')
+        deleteInstance.parameters.put('files','classes/Class1.cls,triggers/Trigger1.trigger')
 
-            ArrayList<File> filesExpected = new ArrayList<File>();
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class1.cls').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class1.cls-meta.xml').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger1.trigger').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger1.trigger-meta.xml').toString()))
+        ArrayList<File> filesExpected = new ArrayList<File>();
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class1.cls').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class1.cls-meta.xml').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger1.trigger').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger1.trigger-meta.xml').toString()))
 
         when:
-            deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, DIR_DELETE_FOLDER).toString()
-            deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
-            deleteInstance.addAllFiles()
-            deleteInstance.addFoldersToDeleteFiles()
-            deleteInstance.addFilesToDelete()
-            deleteInstance.excludeFilesToDelete()
-            deleteInstance.createDestructive()
-            deleteInstance.createPackageEmpty()
+        deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, DIR_DELETE_FOLDER).toString()
+        deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
+        deleteInstance.addAllFiles()
+        deleteInstance.addFoldersToDeleteFiles()
+        deleteInstance.addFilesToDelete()
+        deleteInstance.excludeFilesToDelete()
+        deleteInstance.createDestructive()
+        deleteInstance.createPackageEmpty()
 
         then:
-            filesExpected.sort().equals(deleteInstance.filesToDeleted.sort())
+        filesExpected.sort().equals(deleteInstance.filesToDeleted.sort())
     }
 
     def "Integration testing must list all the files less exclude to delete"() {
         given:
-            deleteInstance.parameters.put('excludes','classes/Class1.cls,triggers/*.trigger')
+        deleteInstance.parameters.put('excludes','classes/Class1.cls,triggers/*.trigger')
 
-            ArrayList<File> filesExpected = new ArrayList<File>();
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class2.cls').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class2.cls-meta.xml').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class3.cls').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class3.cls-meta.xml').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object1__c.object').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object2__c.object').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object3__c.object').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object4__c.object').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object5__c.object').toString()))
+        ArrayList<File> filesExpected = new ArrayList<File>();
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class2.cls').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class2.cls-meta.xml').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class3.cls').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class3.cls-meta.xml').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object1__c.object').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object2__c.object').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object3__c.object').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object4__c.object').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object5__c.object').toString()))
 
         when:
-            deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
-            deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
-            deleteInstance.addAllFiles()
-            deleteInstance.addFoldersToDeleteFiles()
-            deleteInstance.addFilesToDelete()
-            deleteInstance.excludeFilesToDelete()
-            deleteInstance.createDestructive()
-            deleteInstance.createPackageEmpty()
+        deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
+        deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
+        deleteInstance.addAllFiles()
+        deleteInstance.addFoldersToDeleteFiles()
+        deleteInstance.addFilesToDelete()
+        deleteInstance.excludeFilesToDelete()
+        deleteInstance.createDestructive()
+        deleteInstance.createPackageEmpty()
 
         then:
-            filesExpected.sort().equals( deleteInstance.filesToDeleted.sort())
+        filesExpected.sort().equals( deleteInstance.filesToDeleted.sort())
     }
 
     def "Integration testing must list all the files less exclude all objects and classes"() {
         given:
-            deleteInstance.parameters.put('folders','classes,triggers,objects')
-            deleteInstance.parameters.put('excludes','classes/*.cls,objects/**')
+        deleteInstance.parameters.put('folders','classes,triggers,objects')
+        deleteInstance.parameters.put('excludes','classes/*.cls,objects/**')
 
-            ArrayList<File> filesExpected = new ArrayList<File>();
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger1.trigger').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger1.trigger-meta.xml').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger2.trigger').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger2.trigger-meta.xml').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger3.trigger').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger3.trigger-meta.xml').toString()))
+        ArrayList<File> filesExpected = new ArrayList<File>();
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger1.trigger').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger1.trigger-meta.xml').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger2.trigger').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger2.trigger-meta.xml').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger3.trigger').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger3.trigger-meta.xml').toString()))
 
         when:
-            deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
-            deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
-            deleteInstance.addAllFiles()
-            deleteInstance.addFoldersToDeleteFiles()
-            deleteInstance.addFilesToDelete()
-            deleteInstance.excludeFilesToDelete()
-            deleteInstance.createDestructive()
-            deleteInstance.createPackageEmpty()
+        deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
+        deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
+        deleteInstance.addAllFiles()
+        deleteInstance.addFoldersToDeleteFiles()
+        deleteInstance.addFilesToDelete()
+        deleteInstance.excludeFilesToDelete()
+        deleteInstance.createDestructive()
+        deleteInstance.createPackageEmpty()
 
         then:
-            filesExpected.sort().equals( deleteInstance.filesToDeleted.sort())
+        filesExpected.sort().equals( deleteInstance.filesToDeleted.sort())
     }
 
     def "Integration testing must list all the files less exclude all files that contain the number 1 or 2"() {
         given:
-            deleteInstance.parameters.put('folders','classes,triggers,objects')
-            deleteInstance.parameters.put('excludes','*/*1*.*,*/*2*.*')
+        deleteInstance.parameters.put('folders','classes,triggers,objects')
+        deleteInstance.parameters.put('excludes','*/*1*.*,*/*2*.*')
 
-            ArrayList<File> filesExpected = new ArrayList<File>();
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class3.cls').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class3.cls-meta.xml').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger3.trigger').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger3.trigger-meta.xml').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object3__c.object').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object4__c.object').toString()))
-            filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object5__c.object').toString()))
+        ArrayList<File> filesExpected = new ArrayList<File>();
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class3.cls').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class3.cls-meta.xml').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger3.trigger').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger3.trigger-meta.xml').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object3__c.object').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object4__c.object').toString()))
+        filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object5__c.object').toString()))
 
         when:
-            deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
-            deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
-            deleteInstance.addAllFiles()
-            deleteInstance.addFoldersToDeleteFiles()
-            deleteInstance.addFilesToDelete()
-            deleteInstance.excludeFilesToDelete()
-            deleteInstance.createDestructive()
-            deleteInstance.createPackageEmpty()
+        deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
+        deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
+        deleteInstance.addAllFiles()
+        deleteInstance.addFoldersToDeleteFiles()
+        deleteInstance.addFilesToDelete()
+        deleteInstance.excludeFilesToDelete()
+        deleteInstance.createDestructive()
+        deleteInstance.createPackageEmpty()
 
         then:
-            filesExpected.sort().equals( deleteInstance.filesToDeleted.sort())
+        filesExpected.sort().equals( deleteInstance.filesToDeleted.sort())
     }
 
     def "Integration testing must list all the files less exclude all files"() {
         given:
-            deleteInstance.parameters.put('excludes','*/**.*')
+        deleteInstance.parameters.put('excludes','*/**.*')
         when:
-            deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
-            deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
-            deleteInstance.addAllFiles()
-            deleteInstance.addFoldersToDeleteFiles()
-            deleteInstance.addFilesToDelete()
-            deleteInstance.excludeFilesToDelete()
-            deleteInstance.createDestructive()
-            deleteInstance.createPackageEmpty()
+        deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
+        deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
+        deleteInstance.addAllFiles()
+        deleteInstance.addFoldersToDeleteFiles()
+        deleteInstance.addFilesToDelete()
+        deleteInstance.excludeFilesToDelete()
+        deleteInstance.createDestructive()
+        deleteInstance.createPackageEmpty()
 
         then:
-            deleteInstance.filesToDeleted.isEmpty()
+        deleteInstance.filesToDeleted.isEmpty()
     }
 
     def cleanupSpec() {
