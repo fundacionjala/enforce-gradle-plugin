@@ -48,6 +48,10 @@ public class Constants {
     public static final String PARAMETER_FOLDERS = 'folders'
     public static final String PARAMETER_FILES = 'files'
     public static final String PARAMETER_EXCLUDES = 'excludes'
+    public static final String PARAMETER_VALIDATE_ORG = 'validate'
+    public static final String YES_OPTION = 'y'
+    public static final String TRUE_OPTION = 'true'
+    public static final String FALSE_OPTION = 'false'
 
     //Deploy task constants
     public static final String DEPLOYING_TRUNCATED_CODE = 'Deploying truncated code'
@@ -91,7 +95,6 @@ public class Constants {
     public static final String DIR_UPLOAD_FOLDER = "upload"
     public static final String FILES_TO_UPLOAD = "files"
     public static final String ALL_FILES_TO_UPLOAD = "all"
-    public static final String YES_OPTION = 'y'
 
     //Update task constants
     public static final String UPDATE_DESCRIPTION = "This task deploys just the files that were changed"

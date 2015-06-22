@@ -5,8 +5,11 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 
+import org.fundacionjala.gradle.plugins.enforce.undeploy.SmartFilesValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
+import org.fundacionjala.gradle.plugins.enforce.wsc.rest.QueryBuilder
+import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
 
 import java.nio.file.Paths
 
@@ -40,7 +43,9 @@ class Delete extends Deployment {
         addFoldersToDeleteFiles()
         addFilesToDelete()
         excludeFilesToDelete()
+        validateFilesInOrg()
         showFilesToDelete()
+
 
         if( System.console().readLine("\n"+Constants.QUESTION_CONTINUE_DELETE) == Constants.YES_OPTION ) {
             createDestructive()
@@ -51,6 +56,7 @@ class Delete extends Deployment {
             logger.quiet(Constants.PROCCES_DELETE_CANCELLED)
         }
     }
+
 
     /**
      * Adds all files into an org
@@ -71,6 +77,29 @@ class Delete extends Deployment {
      */
     def addFilesToDelete() {
         filesToDeleted = addFilesTo(filesToDeleted)
+    }
+
+    /**
+     * Excludes Files from filesExcludes map
+     */
+    def excludeFilesToDelete() {
+        filesToDeleted = excludeFiles(filesToDeleted)
+    }
+
+    /**
+     * Filter the files into Org
+     */
+    def validateFilesInOrg() {
+        ToolingAPI toolingAPI = new ToolingAPI(credential)
+        QueryBuilder queryBuilder = new QueryBuilder()
+        ArrayList<String> jsonQueries = []
+        if(!parameters.get(Constants.PARAMETER_VALIDATE_ORG).equals(Constants.FALSE_OPTION)) {
+            queryBuilder.createQueryFromPackage(projectPackagePath).each { query ->
+                jsonQueries.push(toolingAPI.httpAPIClient.executeQuery(query as String))
+            }
+            SmartFilesValidator smartFilesValidator = new SmartFilesValidator(jsonQueries)
+            filesToDeleted = smartFilesValidator.filterFilesAccordingOrganization(filesToDeleted, projectPath)
+        }
     }
 
     /**
@@ -95,21 +124,14 @@ class Delete extends Deployment {
             }.each { group, files ->
                 logger.quiet("[ " + files.size() + " ] " + group)
             }
+            logger.quiet(numComponentes+" components")
         }
         else {
             showFiles.each { File file ->
                 logger.quiet( Util.getRelativePath(file, projectPath))
             }
-            logger.quiet(numComponentes+" components")
         }
         logger.quiet("*********************************************")
-    }
-
-    /**
-     * Excludes Files from filesExcludes map
-     */
-    def excludeFilesToDelete() {
-        filesToDeleted = excludeFiles(filesToDeleted)
     }
 
     /**

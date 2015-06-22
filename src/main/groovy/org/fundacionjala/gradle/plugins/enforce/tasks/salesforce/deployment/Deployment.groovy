@@ -233,7 +233,8 @@ abstract class Deployment extends SalesforceTask {
         fileNames.split(Constants.COMMA).each {String fileName ->
             def fileNameChanged = fileName.replaceAll(Constants.BACK_SLASH, Constants.SLASH)
             if (!fileNameChanged.contains(Constants.SLASH)) {
-                return files
+                filesName.push("${fileName}${File.separator}${Constants.WILDCARD}${Constants.WILDCARD}")
+                return
             }
             filesName.push(fileName)
             filesName.push("${fileName}${Constants.META_XML}")
