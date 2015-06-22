@@ -51,9 +51,8 @@ class Update extends Deployment {
         verifyParameter()
         excludeFilesFromFilesChanged()
         showFilesChanged()
-        if (packageGenerator.fileTrackerMap.isEmpty()) {
-            logger.quiet(Constants.NOT_FILES_CHANGED)
-            return
+        if(isEmptyChangedFiles()) {
+            return;
         }
         createDestructive()
         createPackage()
@@ -139,7 +138,10 @@ class Update extends Deployment {
     /**
      * Prints files changed
      */
-    def showFilesChanged() {
+    public void showFilesChanged() {
+        if (isEmptyChangedFiles()) {
+            logger.quiet(Constants.NOT_FILES_CHANGED)
+        }
         if (packageGenerator.fileTrackerMap.size() > 0) {
             logger.quiet("*********************************************")
             logger.quiet("              Status Files Changed             ")
@@ -149,6 +151,13 @@ class Update extends Deployment {
             }
             logger.quiet("*********************************************")
         }
+    }
+
+    private boolean isEmptyChangedFiles() {
+        if(packageGenerator.fileTrackerMap.isEmpty()) {
+            return true
+        }
+        return false
     }
 
     /**

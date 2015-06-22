@@ -111,7 +111,8 @@ class UpdateTest extends Specification {
         System.out = stdOut
         def lineAux = is.readLines()
         then:
-        lineAux == []
+            lineAux.size() == 1
+            lineAux[0].contains('There are not files changed')
     }
 
     def "Test should create a package XML file" () {
@@ -214,7 +215,7 @@ class UpdateTest extends Specification {
             def stdOut = System.out
             def os = new ByteArrayOutputStream()
             System.out = new PrintStream(os)
-            updateInstance.runTask()
+            updateInstance.showFilesChanged()
             def array = os.toByteArray()
             def is = new ByteArrayInputStream(array)
             System.out = stdOut
