@@ -27,11 +27,12 @@ class Filter {
         ArrayList<String> criteria = new ArrayList<String>()
         criterion.split(Constants.COMMA).each { String critery ->
             critery = critery.trim()
-            File fileFromProjectDirectory = new File(Paths.get(projectPath, critery).toString())
-
-            if (fileFromProjectDirectory.isDirectory()) {
-                criteria.push("${critery}${File.separator}${Constants.WILDCARD}${Constants.WILDCARD}")
-                return
+            if (!critery.contains(Constants.WILDCARD)){
+                File fileFromProjectDirectory = new File(Paths.get(projectPath, critery).toString())
+                if (fileFromProjectDirectory.isDirectory()) {
+                    criteria.push("${critery}${File.separator}${Constants.WILDCARD}${Constants.WILDCARD}")
+                    return
+                }
             }
             criteria.push(critery)
             criteria.push("${critery}${Constants.META_XML}")
