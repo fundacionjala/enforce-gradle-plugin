@@ -154,6 +154,10 @@ class Update extends Deployment {
         }
     }
 
+    /**
+     * Verifies if there are not changed files
+     * @return boolean
+     */
     private boolean isEmptyChangedFiles() {
         if(packageGenerator.fileTrackerMap.isEmpty()) {
             return true
