@@ -71,8 +71,8 @@ class Filter {
             criteriaToExclude = getCriteria(contentParameterMap.get(Constants.PARAMETER_EXCLUDES))
         }
 
-        if(contentParameterMap.containsKey(Constants.PARAMETER_FILES)) {
-            criteriaToInclude = getCriteria(contentParameterMap.get(Constants.PARAMETER_FILES))
+        if(contentParameterMap.containsKey(Constants.PARAMETER_INCLUDES)) {
+            criteriaToInclude = getCriteria(contentParameterMap.get(Constants.PARAMETER_INCLUDES))
         }
         FileTree fileTree = project.fileTree(dir: projectPath, includes: criteriaToInclude, excludes: criteriaToExclude)
 

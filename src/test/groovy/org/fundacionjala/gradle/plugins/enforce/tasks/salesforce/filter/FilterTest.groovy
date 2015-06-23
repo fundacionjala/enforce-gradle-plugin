@@ -174,9 +174,9 @@ class FilterTest extends Specification{
 
     def "Test should return all classes from project path"() {
         given:
-            ArrayList<String> parametersName = ['files']
+            ArrayList<String> parametersName = ['includes']
             Map<String, String> properties = [:]
-            properties.put('files', 'classes')
+            properties.put('includes', 'classes')
         when:
             ArrayList<File> result = filter.getFiles(parametersName, properties)
         then:
@@ -187,9 +187,9 @@ class FilterTest extends Specification{
     def "Test should return the Class1 file" () {
         given:
             Filter myFilter = new Filter(project, Paths.get(SRC_PATH, 'src_temporary').toString())
-            ArrayList<String> parametersName = [Constants.PARAMETER_FILES]
+            ArrayList<String> parametersName = [Constants.PARAMETER_INCLUDES]
             Map<String, String> properties = [:]
-            properties.put(Constants.PARAMETER_FILES, 'classes/Class1.cls')
+            properties.put(Constants.PARAMETER_INCLUDES, 'classes/Class1.cls')
             ArrayList<File> filesExpected = []
             filesExpected.add(new File(Paths.get(SRC_PATH,'src_temporary','classes','Class1.cls').toString()))
             filesExpected.add(new File(Paths.get(SRC_PATH,'src_temporary','classes','Class1.cls-meta.xml').toString()))
@@ -202,9 +202,9 @@ class FilterTest extends Specification{
     def "Test should return the Class1,Class2 files" () {
         given:
             Filter myFilter = new Filter(project, Paths.get(SRC_PATH, 'src_temporary').toString())
-            ArrayList<String> parametersName = [Constants.PARAMETER_FILES]
+            ArrayList<String> parametersName = [Constants.PARAMETER_INCLUDES]
             Map<String, String> properties = [:]
-            properties.put(Constants.PARAMETER_FILES, 'classes/Class1.cls,classes/Class2.cls')
+            properties.put(Constants.PARAMETER_INCLUDES, 'classes/Class1.cls,classes/Class2.cls')
             ArrayList<File> filesExpected = []
             filesExpected.add(new File(Paths.get(SRC_PATH,'src_temporary','classes','Class1.cls').toString()))
             filesExpected.add(new File(Paths.get(SRC_PATH,'src_temporary','classes','Class1.cls-meta.xml').toString()))
@@ -219,9 +219,9 @@ class FilterTest extends Specification{
     def "Test should return all classes with the criteria [files:classes/**] " () {
         given:
             Filter myFilter = new Filter(project, Paths.get(SRC_PATH, 'src_temporary').toString())
-            ArrayList<String> parametersName = [Constants.PARAMETER_FILES]
+            ArrayList<String> parametersName = [Constants.PARAMETER_INCLUDES]
             Map<String, String> properties = [:]
-            properties.put(Constants.PARAMETER_FILES, 'classes/**')
+            properties.put(Constants.PARAMETER_INCLUDES, 'classes/**')
             ArrayList<File> filesExpected = []
             filesExpected.addAll(classFiles)
         when:
@@ -233,9 +233,9 @@ class FilterTest extends Specification{
     def "Test should return all classes with the criteria [files:classes/*.cls] " () {
         given:
             Filter myFilter = new Filter(project, Paths.get(SRC_PATH, 'src_temporary').toString())
-            ArrayList<String> parametersName = [Constants.PARAMETER_FILES]
+            ArrayList<String> parametersName = [Constants.PARAMETER_INCLUDES]
             Map<String, String> properties = [:]
-            properties.put(Constants.PARAMETER_FILES, 'classes/*.cls')
+            properties.put(Constants.PARAMETER_INCLUDES, 'classes/*.cls')
             ArrayList<File> filesExpected = []
             filesExpected.addAll(classFiles)
         when:
@@ -247,9 +247,9 @@ class FilterTest extends Specification{
     def "Test should return all classes [files:classes]  " () {
         given:
             Filter myFilter = new Filter(project, Paths.get(SRC_PATH, 'src_temporary').toString())
-            ArrayList<String> parametersName = [Constants.PARAMETER_FILES,Constants.PARAMETER_EXCLUDES]
+            ArrayList<String> parametersName = [Constants.PARAMETER_INCLUDES,Constants.PARAMETER_EXCLUDES]
             Map<String, String> properties = [:]
-            properties.put(Constants.PARAMETER_FILES, 'classes')
+            properties.put(Constants.PARAMETER_INCLUDES, 'classes')
             ArrayList<File> filesExpected = []
             filesExpected.addAll(classFiles)
         when:
@@ -261,9 +261,9 @@ class FilterTest extends Specification{
     def "Test should return all classes excluding class 3 and 4 with the criteria [files:classes/*.cls] [classes/Class3.cls,classes/Class4.cls] " () {
         given:
             Filter myFilter = new Filter(project, Paths.get(SRC_PATH, 'src_temporary').toString())
-            ArrayList<String> parametersName = [Constants.PARAMETER_FILES,Constants.PARAMETER_EXCLUDES]
+            ArrayList<String> parametersName = [Constants.PARAMETER_INCLUDES,Constants.PARAMETER_EXCLUDES]
             Map<String, String> properties = [:]
-            properties.put(Constants.PARAMETER_FILES, 'classes/*.cls')
+            properties.put(Constants.PARAMETER_INCLUDES, 'classes/*.cls')
             properties.put(Constants.PARAMETER_EXCLUDES, 'classes/Class3.cls,classes/Class4.cls')
             ArrayList<File> filesExpected = []
             filesExpected.add(new File(Paths.get(SRC_PATH,'src_temporary','classes','Class1.cls').toString()))
@@ -293,7 +293,7 @@ class FilterTest extends Specification{
     def "Test should return all classes excludig Class1.cls [excludes:classes/Class1.cls]  " () {
         given:
             Filter myFilter = new Filter(project, Paths.get(SRC_PATH, 'src_temporary').toString())
-            ArrayList<String> parametersName = [Constants.PARAMETER_FILES,Constants.PARAMETER_EXCLUDES]
+            ArrayList<String> parametersName = [Constants.PARAMETER_INCLUDES,Constants.PARAMETER_EXCLUDES]
             Map<String, String> properties = [:]
             properties.put(Constants.PARAMETER_EXCLUDES, 'classes/Class1.cls')
             ArrayList<File> filesExpected = allFiles.clone()
@@ -308,9 +308,9 @@ class FilterTest extends Specification{
     def "Test should return cero components [files:classes/*.cls] [excludes:classes/*.cls]  " () {
         given:
             Filter myFilter = new Filter(project, Paths.get(SRC_PATH, 'src_temporary').toString())
-            ArrayList<String> parametersName = [Constants.PARAMETER_FILES,Constants.PARAMETER_EXCLUDES]
+            ArrayList<String> parametersName = [Constants.PARAMETER_INCLUDES,Constants.PARAMETER_EXCLUDES]
             Map<String, String> properties = [:]
-            properties.put(Constants.PARAMETER_FILES, 'classes/*.cls')
+            properties.put(Constants.PARAMETER_INCLUDES, 'classes/*.cls')
             properties.put(Constants.PARAMETER_EXCLUDES, 'classes/*.cls')
             ArrayList<File> filesExpected = []
         when:
@@ -322,7 +322,7 @@ class FilterTest extends Specification{
     def "Test should return all components less classes [excludes:triggers,objects]  " () {
         given:
             Filter myFilter = new Filter(project, Paths.get(SRC_PATH, 'src_temporary').toString())
-            ArrayList<String> parametersName = [Constants.PARAMETER_FILES,Constants.PARAMETER_EXCLUDES]
+            ArrayList<String> parametersName = [Constants.PARAMETER_INCLUDES,Constants.PARAMETER_EXCLUDES]
             Map<String, String> properties = [:]
             properties.put(Constants.PARAMETER_EXCLUDES, 'triggers,objects')
             ArrayList<File> filesExpected = []
@@ -341,7 +341,7 @@ class FilterTest extends Specification{
     def "Test should return all components less classes [excludes:triggers,objects,object,object/Object1__c.object]  " () {
         given:
             Filter myFilter = new Filter(project, Paths.get(SRC_PATH, 'src_temporary').toString())
-            ArrayList<String> parametersName = [Constants.PARAMETER_FILES,Constants.PARAMETER_EXCLUDES]
+            ArrayList<String> parametersName = [Constants.PARAMETER_INCLUDES,Constants.PARAMETER_EXCLUDES]
             Map<String, String> properties = [:]
             properties.put(Constants.PARAMETER_EXCLUDES, 'triggers,objects,object/Object1__c.object')
             ArrayList<File> filesExpected = []
@@ -375,7 +375,7 @@ class FilterTest extends Specification{
             Filter myFilter = new Filter(project, Paths.get(SRC_PATH, 'src_temporary').toString())
             ArrayList<String> parametersName = []
             Map<String, String> properties = [:]
-            properties.put(Constants.PARAMETER_FILES, 'classes')
+            properties.put(Constants.PARAMETER_INCLUDES, 'classes')
             ArrayList<File> filesExpected = allFiles.clone()
         when:
             ArrayList<File> result = myFilter.getFiles(parametersName, properties)
@@ -386,9 +386,9 @@ class FilterTest extends Specification{
     def "Test should return all documents [files:documents/**] " () {
         given:
             Filter myFilter = new Filter(project, Paths.get(SRC_PATH, 'src_temporary').toString())
-            ArrayList<String> parametersName = [Constants.PARAMETER_FILES,Constants.PARAMETER_EXCLUDES]
+            ArrayList<String> parametersName = [Constants.PARAMETER_INCLUDES,Constants.PARAMETER_EXCLUDES]
             Map<String, String> properties = [:]
-            properties.put(Constants.PARAMETER_FILES, 'documents/**')
+            properties.put(Constants.PARAMETER_INCLUDES, 'documents/**')
             ArrayList<File> filesExpected = []
             filesExpected.addAll(documentFiles)
             filesExpected.addAll(documentFolder1)
@@ -402,9 +402,9 @@ class FilterTest extends Specification{
     def "Test should return  documents in folder documents1 [files:documents/DocumentsFolder1/**] " () {
         given:
             Filter myFilter = new Filter(project, Paths.get(SRC_PATH, 'src_temporary').toString())
-            ArrayList<String> parametersName = [Constants.PARAMETER_FILES,Constants.PARAMETER_EXCLUDES]
+            ArrayList<String> parametersName = [Constants.PARAMETER_INCLUDES,Constants.PARAMETER_EXCLUDES]
             Map<String, String> properties = [:]
-            properties.put(Constants.PARAMETER_FILES, 'documents/DocumentsFolder1/**')
+            properties.put(Constants.PARAMETER_INCLUDES, 'documents/DocumentsFolder1/**')
             ArrayList<File> filesExpected = []
             filesExpected.addAll(documentFolder1)
         when:
@@ -416,9 +416,9 @@ class FilterTest extends Specification{
     def "Test should return  documents in folder documents2 [files:documents/DocumentsFolder2/*.*] " () {
         given:
             Filter myFilter = new Filter(project, Paths.get(SRC_PATH, 'src_temporary').toString())
-            ArrayList<String> parametersName = [Constants.PARAMETER_FILES,Constants.PARAMETER_EXCLUDES]
+            ArrayList<String> parametersName = [Constants.PARAMETER_INCLUDES,Constants.PARAMETER_EXCLUDES]
             Map<String, String> properties = [:]
-            properties.put(Constants.PARAMETER_FILES, 'documents/DocumentsFolder2/*.*')
+            properties.put(Constants.PARAMETER_INCLUDES, 'documents/DocumentsFolder2/*.*')
             ArrayList<File> filesExpected = []
             filesExpected.addAll(documentFolder2)
         when:
@@ -430,9 +430,9 @@ class FilterTest extends Specification{
     def "Test should return documents in folder documents1 [files:documents/DocumentsFolder1] " () {
         given:
             Filter myFilter = new Filter(project, Paths.get(SRC_PATH, 'src_temporary').toString())
-            ArrayList<String> parametersName = [Constants.PARAMETER_FILES,Constants.PARAMETER_EXCLUDES]
+            ArrayList<String> parametersName = [Constants.PARAMETER_INCLUDES,Constants.PARAMETER_EXCLUDES]
             Map<String, String> properties = [:]
-            properties.put(Constants.PARAMETER_FILES, 'documents/DocumentsFolder1')
+            properties.put(Constants.PARAMETER_INCLUDES, 'documents/DocumentsFolder1')
             ArrayList<File> filesExpected = []
             filesExpected.addAll(documentFolder1)
         when:
@@ -444,7 +444,7 @@ class FilterTest extends Specification{
     def "Test should return all components less documents in folder documents1 [exclude:documents/DocumentsFolder1/**] " () {
         given:
             Filter myFilter = new Filter(project, Paths.get(SRC_PATH, 'src_temporary').toString())
-            ArrayList<String> parametersName = [Constants.PARAMETER_FILES,Constants.PARAMETER_EXCLUDES]
+            ArrayList<String> parametersName = [Constants.PARAMETER_INCLUDES,Constants.PARAMETER_EXCLUDES]
             Map<String, String> properties = [:]
             properties.put(Constants.PARAMETER_EXCLUDES, 'documents/DocumentsFolder1/**')
             ArrayList<File> filesExpected = allFiles.clone()
@@ -458,7 +458,7 @@ class FilterTest extends Specification{
     def "Test should return  all components less documents in folder documents1 [exclude:documents/DocumentsFolder1] " () {
         given:
             Filter myFilter = new Filter(project, Paths.get(SRC_PATH, 'src_temporary').toString())
-            ArrayList<String> parametersName = [Constants.PARAMETER_FILES,Constants.PARAMETER_EXCLUDES]
+            ArrayList<String> parametersName = [Constants.PARAMETER_INCLUDES,Constants.PARAMETER_EXCLUDES]
             Map<String, String> properties = [:]
             properties.put(Constants.PARAMETER_EXCLUDES, 'documents/DocumentsFolder1')
             ArrayList<File> filesExpected = allFiles.clone()
@@ -472,9 +472,9 @@ class FilterTest extends Specification{
     def "Test should return  the documentes less documents in folder documents1 [files:documents/DocumentsFolder1/DocumentTest_1_1.txt] " () {
         given:
             Filter myFilter = new Filter(project, Paths.get(SRC_PATH, 'src_temporary').toString())
-            ArrayList<String> parametersName = [Constants.PARAMETER_FILES,Constants.PARAMETER_EXCLUDES]
+            ArrayList<String> parametersName = [Constants.PARAMETER_INCLUDES,Constants.PARAMETER_EXCLUDES]
             Map<String, String> properties = [:]
-            properties.put(Constants.PARAMETER_FILES, 'documents/DocumentsFolder1/DocumentTest_1_1.txt')
+            properties.put(Constants.PARAMETER_INCLUDES, 'documents/DocumentsFolder1/DocumentTest_1_1.txt')
             ArrayList<File> filesExpected = []
             filesExpected.add(new File(Paths.get(SRC_PATH,'src_temporary','documents','DocumentsFolder1','DocumentTest_1_1.txt').toString()))
             filesExpected.add(new File(Paths.get(SRC_PATH,'src_temporary','documents','DocumentsFolder1','DocumentTest_1_1.txt-meta.xml').toString()))
@@ -487,9 +487,9 @@ class FilterTest extends Specification{
     def "Test should return all folder documents less documents1 folder  [files:documents/**] [excludes: documents/DocumentsFolder1/**] " () {
         given:
             Filter myFilter = new Filter(project, Paths.get(SRC_PATH, 'src_temporary').toString())
-            ArrayList<String> parametersName = [Constants.PARAMETER_FILES,Constants.PARAMETER_EXCLUDES]
+            ArrayList<String> parametersName = [Constants.PARAMETER_INCLUDES,Constants.PARAMETER_EXCLUDES]
             Map<String, String> properties = [:]
-            properties.put(Constants.PARAMETER_FILES, 'documents/**')
+            properties.put(Constants.PARAMETER_INCLUDES, 'documents/**')
             properties.put(Constants.PARAMETER_EXCLUDES, 'documents/DocumentsFolder1/**')
             ArrayList<File> filesExpected = []
             filesExpected.addAll(documentFiles)
