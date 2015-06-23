@@ -341,6 +341,9 @@ class UpdateTest extends Specification {
             updateInstance.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
             updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
             updateInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
+            ManagementFile.createDirectories(Paths.get(SRC_PATH, 'src', 'reports/MyReports').toString())
+            ManagementFile.createDirectories(Paths.get(SRC_PATH, 'src', 'dashboards/MyDashboards').toString())
+            ManagementFile.createDirectories(Paths.get(SRC_PATH, 'src', 'documents/MyDocuments').toString())
             def newReportPath = Paths.get(SRC_PATH, 'src', 'reports/MyReports', 'newReport.report').toString()
             def newDashboardPath = Paths.get(SRC_PATH, 'src', 'dashboards/MyDashboards', 'newDashboard.dashboard').toString()
             def newDocumentPath = Paths.get(SRC_PATH, 'src', 'documents/MyDocuments', 'newDocument.txt').toString()
@@ -445,16 +448,16 @@ class UpdateTest extends Specification {
             myDocumentFolderXmlFile.close()
             def packageExpect = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Package xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n" +
                     "\t<types>\n" +
-                    "        <members>MyReports/newReport</members>\n" +
-                    "    <name>Report</name>\n" +
-                    "\t</types>\n" +
-                    "\t<types>\n" +
                     "\t\t<members>MyDashboards/newDashboard</members>\n" +
                     "\t\t<name>Dashboard</name>\n" +
                     "\t</types>\n" +
                     "\t<types>\n" +
                     "\t\t<members>MyDocuments/newDocument</members>\n" +
                     "\t\t<name>Document</name>\n" +
+                    "\t</types>\n" +
+                    "\t<types>\n" +
+                    "        <members>MyReports/newReport</members>\n" +
+                    "    <name>Report</name>\n" +
                     "\t</types>\n" +
                     "\t<version>32.0</version>\n" +
                     "</Package>"
@@ -481,7 +484,6 @@ class UpdateTest extends Specification {
             new File((Paths.get(SRC_PATH, 'build', 'update', 'reports/MyReports-meta.xml').toString())).exists()
             new File((Paths.get(SRC_PATH, 'build', 'update', 'dashboards/MyDashboards-meta.xml').toString())).exists()
             new File((Paths.get(SRC_PATH, 'build', 'update', 'documents/MyDocuments-meta.xml').toString())).exists()
-
     }
 
     def cleanup() {
@@ -497,5 +499,8 @@ class UpdateTest extends Specification {
         new File(Paths.get(SRC_PATH, 'src', 'reports/MyReports-meta.xml').toString()).delete()
         new File(Paths.get(SRC_PATH, 'src', 'dashboards/MyDashboards-meta.xml').toString()).delete()
         new File(Paths.get(SRC_PATH, 'src', 'documents/MyDocuments-meta.xml').toString()).delete()
+        new File(Paths.get(SRC_PATH, 'src', 'reports/MyReports').toString()).deleteDir()
+        new File(Paths.get(SRC_PATH, 'src', 'dashboards/MyDashboards').toString()).deleteDir()
+        new File(Paths.get(SRC_PATH, 'src', 'documents/MyDocuments').toString()).deleteDir()
     }
 }
