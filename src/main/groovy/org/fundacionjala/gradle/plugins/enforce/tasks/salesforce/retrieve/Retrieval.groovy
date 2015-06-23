@@ -80,8 +80,8 @@ abstract class Retrieval extends SalesforceTask {
      * Validates names of files
      * @param filesName is type array list contents names of files
      */
-    public void validateFiles(ArrayList<String> filesName) {
-        Map<String, ArrayList<String>> validatedMapFiles = FileValidator.validateFiles(projectPath, filesName)
+    public void validateFiles(ArrayList<File> files) {
+        Map<String, ArrayList<String>> validatedMapFiles = FileValidator.validateFiles(projectPath, files)
         if (!validatedMapFiles[Constants.INVALID_FILE].isEmpty()) {
             throw new Exception("${Constants.INVALID_FILE}: ${validatedMapFiles[Constants.INVALID_FILE]}")
         }
