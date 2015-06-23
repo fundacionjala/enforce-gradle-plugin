@@ -10,7 +10,7 @@ import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.SalesforceTask
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.ZipFileManager
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.FileValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.Package
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageBuilder
 
@@ -81,17 +81,9 @@ abstract class Retrieval extends SalesforceTask {
      * @param filesName is type array list contents names of files
      */
     public void validateFiles(ArrayList<String> filesName) {
-        ArrayList<String> invalidFiles = new ArrayList<String>()
-        filesName.each { String fileName ->
-            File file = new File(Paths.get(projectPath, fileName).toString())
-            String extension = Util.getFileExtension(file)
-            String parentFileName = Util.getFirstPath(fileName)
-            if (!MetadataComponents.validExtension(extension) || !MetadataComponents.validFolder(parentFileName)) {
-                invalidFiles.push(fileName)
-            }
-        }
-        if (!invalidFiles.isEmpty()) {
-            throw new Exception("${Constants.INVALID_FILE}: ${invalidFiles}")
+        Map<String, ArrayList<String>> validatedMapFiles = FileValidator.validateFiles(projectPath, filesName)
+        if (!validatedMapFiles[Constants.INVALID_FILE].isEmpty()) {
+            throw new Exception("${Constants.INVALID_FILE}: ${validatedMapFiles[Constants.INVALID_FILE]}")
         }
     }
 }

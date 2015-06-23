@@ -5,6 +5,9 @@
 
 package org.fundacionjala.gradle.plugins.enforce.interceptor
 import groovy.util.logging.Slf4j
+
+import java.nio.charset.StandardCharsets
+
 /**
  * This class provides a skeletal implementation of the interceptor for all metadata types supported
  */
@@ -14,6 +17,8 @@ abstract class MetadataInterceptor {
     List<File> files
     protected Map<String, Closure> interceptors
     protected final int INDEX_ZERO = 0
+    String encoding
+
     /**
      * Initializes the class properties by default
      */
@@ -21,6 +26,7 @@ abstract class MetadataInterceptor {
         files = []
         interceptors = new LinkedHashMap<String, Closure>()
         interceptorsToExecute = []
+        encoding = StandardCharsets.UTF_8.displayName()
     }
 
     Map<String, Closure> getInterceptors() {

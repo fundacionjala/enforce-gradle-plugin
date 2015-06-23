@@ -12,10 +12,10 @@ import java.nio.file.Paths
 
 class UtilTest extends Specification {
     @Shared
-        String resourcesPath
+        String RESOURCES_PATH
 
     def setup() {
-        resourcesPath = Paths.get(System.getProperty("user.dir"), 'src', 'test', 'groovy', 'org', 'fundacionjala', 'gradle', 'plugins','enforce', 'utils', 'resources').toString()
+        RESOURCES_PATH = Paths.get(System.getProperty("user.dir"), 'src', 'test', 'groovy', 'org', 'fundacionjala', 'gradle', 'plugins','enforce', 'utils', 'resources').toString()
     }
 
     def "Test should return true if emails are valid"() {
@@ -91,7 +91,7 @@ class UtilTest extends Specification {
     def "Test should return an arrayList empty if the folders aren't empty" () {
         given:
             def foldersName = ['objects', 'classes']
-            def projectPath = resourcesPath
+            def projectPath = RESOURCES_PATH
         when:
             def result = Util.getEmptyFolders(foldersName, projectPath)
         then:
@@ -100,9 +100,9 @@ class UtilTest extends Specification {
 
     def "Test should return an arrayList with folders empty" () {
         given:
-            new File(Paths.get(resourcesPath, 'triggers').toString()).mkdir()
+            new File(Paths.get(RESOURCES_PATH, 'triggers').toString()).mkdir()
             def foldersName = ['objects', 'classes', 'triggers']
-            def projectPath = resourcesPath
+            def projectPath = RESOURCES_PATH
         when:
             def result = Util.getEmptyFolders(foldersName, projectPath)
         then:
@@ -111,7 +111,7 @@ class UtilTest extends Specification {
 
     def "Test should return an extension from a file" () {
         given:
-            def file = new File(Paths.get(resourcesPath, 'objects', 'Maintenance_Ticket_WO__c.object').toString())
+            def file = new File(Paths.get(RESOURCES_PATH, 'objects', 'Maintenance_Ticket_WO__c.object').toString())
         when:
             def extension = Util.getFileExtension(file)
         then:
@@ -120,7 +120,7 @@ class UtilTest extends Specification {
 
     def "Test should return an extension from a file if there is more than one dot" () {
         given:
-            def file = new File(Paths.get(resourcesPath, 'objects', 'My_New.CustomObject__c.object').toString())
+            def file = new File(Paths.get(RESOURCES_PATH, 'objects', 'My_New.CustomObject__c.object').toString())
         when:
             def extension = Util.getFileExtension(file)
         then:
@@ -157,7 +157,7 @@ class UtilTest extends Specification {
 
     def "Test get relative path"() {
         given:
-        String basePath = Paths.get(resourcesPath, 'relativeTest')
+        String basePath = Paths.get(RESOURCES_PATH, 'relativeTest')
         File file = new File(Paths.get(basePath, "classes/class1").toString())
         when:
         def relativePath = Util.getRelativePath(file, basePath)
@@ -167,7 +167,7 @@ class UtilTest extends Specification {
 
     def "Test should gets relative path when the path has a space"() {
         given:
-            String basePath = Paths.get(resourcesPath, 'relativeTest')
+            String basePath = Paths.get(RESOURCES_PATH, 'relativeTest')
             File file = new File(Paths.get(basePath, "classes/class 1").toString())
         when:
             def relativePath = Util.getRelativePath(file, basePath)
@@ -182,8 +182,41 @@ class UtilTest extends Specification {
             objectName == 'Object5__c'
     }
 
+    def "Test should return true if api name has prefix" () {
+        when:
+            def result = Util.isPackaged('myprefix__CustomObject__c')
+        then:
+            result
+    }
+
+    def "Test should return false if api name hasn't perfix" () {
+        when:
+            def result = Util.isPackaged('CustomObject__c')
+        then:
+            !result
+    }
+
+    def "Test should get file encoding" () {
+        given:
+            def path = Paths.get(RESOURCES_PATH, 'encoding').toString()
+            def fileEncodingUTF16BE = new File(Paths.get(path, "Client.cls").toString())
+            def fileEncodingUTF16LE = new File(Paths.get(path, "Client.cls-meta.xml").toString())
+            def fileEncodingUTF8 = new File(Paths.get(path, "Opportunity.cls").toString())
+            def fileEncodingUTF16LE1 = new File(Paths.get(path, "Opportunity.cls-meta.xml").toString())
+        when:
+            def encodingUTF16BE = Util.getCharset(fileEncodingUTF16BE)
+            def encodingUTF16LE = Util.getCharset(fileEncodingUTF16LE)
+            def encodingUTF8 = Util.getCharset(fileEncodingUTF8)
+            def encodingUTF16LE1 = Util.getCharset(fileEncodingUTF16LE1)
+        then:
+            encodingUTF16BE
+            encodingUTF16LE
+            encodingUTF8
+            encodingUTF16LE1
+    }
+
     def cleanupSpec() {
-        new File(Paths.get(resourcesPath, 'triggers').toString()).deleteDir()
-        new File(Paths.get(resourcesPath, 'relativeTest').toString()).deleteDir()
+        new File(Paths.get(RESOURCES_PATH, 'triggers').toString()).deleteDir()
+        new File(Paths.get(RESOURCES_PATH, 'relativeTest').toString()).deleteDir()
     }
 }

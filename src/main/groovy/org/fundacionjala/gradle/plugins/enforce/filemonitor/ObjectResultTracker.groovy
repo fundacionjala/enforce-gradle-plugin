@@ -15,10 +15,13 @@ class ObjectResultTracker extends ResultTracker {
 
     @Override
     public String toString() {
-        String result = '';
+        StringBuilder result = new StringBuilder()
         subComponentsResult.each { field,  fieldState ->
-            result += field + ' -> '+ fieldState.value() + '\n\t'
+            result.append('\n\t')
+            result.append(field)
+            result.append(' -> ')
+            result.append(fieldState.value())
         }
-        return state.value() + '\n\t' + result
+        return state.value() + result.toString()
     }
 }

@@ -5,6 +5,7 @@ import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ObjectResultTracker
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
 import org.fundacionjala.gradle.plugins.enforce.undeploy.SmartFilesValidator
+import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 
@@ -41,10 +42,10 @@ class PackageGenerator {
         fileTrackerMap = componentMonitor.getComponentChanged(files)
     }
 
-    public ArrayList<File> getFiles() {
+    public ArrayList<File> getFiles(String projectPath) {
         ArrayList<File> files = []
         fileTrackerMap.each { fileName, resultTracker ->
-            files.add(new File(fileName))
+            files.add(new File(Paths.get(projectPath, fileName).toString()))
         }
         return files
     }
@@ -93,6 +94,7 @@ class PackageGenerator {
 
     public void buildPackage(Writer writer) {
         ArrayList<File> files = getFiles(ComponentStates.ADDED) + getFiles(ComponentStates.CHANGED) + getSubComponents(ComponentStates.ADDED) + getSubComponents(ComponentStates.CHANGED)
+        files.sort()
         packageBuilder.createPackage(files, projectPath)
         packageBuilder.write(writer)
     }
@@ -128,16 +130,20 @@ class PackageGenerator {
         fileTrackerMap = foldersFiltered;
     }
 
-    public ArrayList<File> excludeFiles(ArrayList<File> files) {
+    /**
+     * Updates the file tracker map according to the filtered files
+     * @param filteredFiles the filtered files
+     */
+    public void updateFileTracker(ArrayList<File> filteredFiles) {
         Map<String, ResultTracker> fileTrackerMapClone = fileTrackerMap.clone() as Map<String, ResultTracker>
-        ArrayList<File> excludedFiles = []
         fileTrackerMapClone.each { fileName, resultTracker ->
             File fileChanged = new File(fileName.toString())
-            if (!files.contains(fileChanged)) {
+            ArrayList<File> foundFile = filteredFiles.findAll { file->
+                file.name == fileChanged.name
+            }
+            if (foundFile.size() == Constants.ZERO) {
                 fileTrackerMap.remove(fileName.toString())
-                excludedFiles.push(fileChanged)
             }
         }
-        return excludedFiles
     }
 }

@@ -8,6 +8,7 @@ package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 import org.fundacionjala.gradle.plugins.enforce.interceptor.InterceptorManager
 import org.fundacionjala.gradle.plugins.enforce.metadata.DeployMetadata
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.SalesforceTask
+import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.filter.Filter
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
@@ -15,7 +16,6 @@ import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageCombiner
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.SalesforceValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.SalesforceValidatorManager
 import org.gradle.api.file.FileTree
-import org.gradle.api.tasks.bundling.Zip
 
 import java.nio.file.Paths
 
@@ -30,8 +30,7 @@ abstract class Deployment extends SalesforceTask {
     public final String EXCLUDES = 'excludes'
     public String excludes
     public final int FILE_NAME_POSITION = 1
-    public final String SLASH = "/"
-    public final String BACKSLASH = "\\\\"
+    private Filter filter
 
     /**
      * Sets description and group task
@@ -42,6 +41,7 @@ abstract class Deployment extends SalesforceTask {
         super(descriptionTask, groupTask)
         componentDeploy = new DeployMetadata()
         componentManager = new InterceptorManager()
+        componentManager.encoding = project.property(Constants.FORCE_EXTENSION).encoding
         componentManager.buildInterceptors()
     }
 
@@ -171,8 +171,8 @@ abstract class Deployment extends SalesforceTask {
     public ArrayList<String> getCriterias(String criterion) {
         ArrayList<String> criterias = new ArrayList<String>()
         criterion.split(Constants.COMMA).each { String critery ->
-            critery = critery.replaceAll(BACKSLASH, SLASH)
-            def criteriaSplitted = critery.split(SLASH)
+            critery = critery.replaceAll(Constants.BACK_SLASH, Constants.SLASH)
+            def criteriaSplitted = critery.split(Constants.SLASH)
             if (criteriaSplitted.size() == FILE_NAME_POSITION) {
                 criterias.push("${critery}${File.separator}${Constants.WILDCARD}${Constants.WILDCARD}")
                 return
@@ -231,8 +231,8 @@ abstract class Deployment extends SalesforceTask {
         }
         validateParameter(fileNames)
         fileNames.split(Constants.COMMA).each {String fileName ->
-            def fileNameChanged = fileName.replaceAll(BACKSLASH, SLASH)
-            if (!fileNameChanged.contains(SLASH)) {
+            def fileNameChanged = fileName.replaceAll(Constants.BACK_SLASH, Constants.SLASH)
+            if (!fileNameChanged.contains(Constants.SLASH)) {
                 return files
             }
             filesName.push(fileName)
@@ -272,14 +272,14 @@ abstract class Deployment extends SalesforceTask {
      * @param parameterValues are files name that will be excluded
      */
     public void validateParameter(String parameterValues) {
-        parameterValues = parameterValues.replaceAll(BACKSLASH, SLASH)
+        parameterValues = parameterValues.replaceAll(Constants.BACK_SLASH, Constants.SLASH)
         ArrayList<String> fileNames = new ArrayList<String>()
         ArrayList<String> folderNames = new ArrayList<String>()
         parameterValues.split(Constants.COMMA).each { String parameter ->
             if (parameter.contains(Constants.WILDCARD)) {
                 return
             }
-            if (parameter.contains(SLASH)) {
+            if (parameter.contains(Constants.SLASH)) {
                 fileNames.push(parameter)
             } else {
                 folderNames.push(parameter)
@@ -348,6 +348,10 @@ abstract class Deployment extends SalesforceTask {
         }
     }
 
+    /**
+     * Combines package that was updated from build folder and package from source directory
+     * @param buildPackagePath is path of package that is into build directory
+     */
     public void combinePackage(String buildPackagePath) {
         PackageCombiner.packageCombine(projectPackagePath, buildPackagePath)
         if (excludes) {
@@ -357,9 +361,9 @@ abstract class Deployment extends SalesforceTask {
 
     /**
      * Combines package from build folder and package from source directory
-     * @return
+     * @param buildPackagePath is path of package that is into build directory
      */
-    def combinePackageToUpdate(String buildPackagePath) {
+    public void combinePackageToUpdate(String buildPackagePath) {
         PackageCombiner.packageCombineToUpdate(projectPackagePath, buildPackagePath)
         if (excludes) {
             PackageCombiner.removeMembersFromPackage(buildPackagePath, getFilesExcludes(excludes))

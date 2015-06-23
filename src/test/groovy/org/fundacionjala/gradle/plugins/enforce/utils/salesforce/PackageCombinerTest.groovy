@@ -408,7 +408,7 @@ class PackageCombinerTest extends Specification {
     def 'Test should take in account documents with their folders name as member into package xml file '() {
         given:
             String projectPackagePath = Paths.get(SRC_PATH, 'projectPackage.xml')
-            String buildPackagePath = Paths.get(SRC_PATH, 'buildPackage.xml')
+            String buildPackagePath = Paths.get(SRC_PATH, 'package.xml')
             String projectPackageContent = '''<?xml version='1.0' encoding='UTF-8'?>
                                     <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
                                         <types>
@@ -476,18 +476,18 @@ class PackageCombinerTest extends Specification {
                                             <name>CustomObject</name>
                                         </types>
                                         <types>
+                                            <members>MyDocuments/doc2.txt</members>
+                                            <members>MyDocuments/doc1.txt</members>
+                                            <members>MyDocuments</members>
+                                            <name>Document</name>
+                                        </types>
+                                        <types>
                                             <members>Class1</members>
                                             <name>ApexClass</name>
                                         </types>
                                         <types>
                                             <members>Object1__c.MyCustomField1</members>
                                             <name>CustomField</name>
-                                        </types>
-                                        <types>
-                                            <members>MyDocuments</members>
-                                            <members>MyDocuments/doc2.txt</members>
-                                            <members>MyDocuments/doc1.txt</members>
-                                            <name>Document</name>
                                         </types>
                                         <types>
                                             <members>Object1__c.MyFieldSet1</members>
@@ -505,9 +505,106 @@ class PackageCombinerTest extends Specification {
             xmlDiff.similar()
     }
 
+    def 'Test should take in account documents with their folders name when it is added '() {
+        given:
+            String projectPackagePath = Paths.get(SRC_PATH, 'projectPackage.xml')
+            String buildPackagePath = Paths.get(SRC_PATH, 'package.xml')
+            //the next variable is content of my project package
+            String projectPackageContent = '''<?xml version='1.0' encoding='UTF-8'?>
+                                        <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
+                                            <types>
+                                                <members>MyDocuments</members>
+                                                <members>MyDocuments/doc2.txt</members>
+                                                <members>MyDocuments/doc1.txt</members>
+                                                <name>Document</name>
+                                            </types>
+                                            <version>32.0</version>
+                                        </Package>
+                                        '''
+            //The next is the content of my build package
+            String buildPackageContent ='''<?xml version='1.0' encoding='UTF-8'?>
+                                        <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
+                                            <types>
+                                                <members>MyDocuments/doc3.txt</members>
+                                                <name>Document</name>
+                                            </types>
+                                        <version>32.0</version></Package>
+                                        '''
+            File projectPackageFile = new File(projectPackagePath)
+            projectPackageFile.write(projectPackageContent)
+            File buildPackageFile = new File(buildPackagePath)
+            buildPackageFile.write(buildPackageContent)
+            String packageContentExpect = '''<?xml version='1.0' encoding='UTF-8'?>
+                                        <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
+                                            <types>
+                                                <members>MyDocuments/doc3.txt</members>
+                                                <members>MyDocuments</members>
+                                                <name>Document</name>
+                                            </types>
+                                            <version>32.0</version>
+                                        </Package>
+                                        '''
+        when:
+            PackageCombiner.packageCombineToUpdate(projectPackagePath, buildPackagePath)
+            XMLUnit.ignoreWhitespace = true
+            def xmlDiff = new Diff(buildPackageFile.text, packageContentExpect)
+        then:
+            new File(Paths.get(SRC_PATH, 'buildPackage.xml').toString()).exists()
+            xmlDiff.similar()
+    }
+
+    def "Test shouldn't take in account documents with their folders name when it is deleted "() {
+        given:
+            String projectPackagePath = Paths.get(SRC_PATH, 'projectPackage.xml')
+            String destructivePath = Paths.get(SRC_PATH, 'destructiveChanges.xml')
+            //the next variable is content of my project package
+            String projectPackageContent = '''<?xml version='1.0' encoding='UTF-8'?>
+                                            <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
+                                                <types>
+                                                    <members>MyDocuments</members>
+                                                    <members>MyDocuments/doc2.txt</members>
+                                                    <members>MyDocuments/doc1.txt</members>
+                                                    <name>Document</name>
+                                                </types>
+                                                <version>32.0</version>
+                                            </Package>
+                                            '''
+            //The next is the content of my build package
+            String destructiveContent ='''<?xml version='1.0' encoding='UTF-8'?>
+                                            <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
+                                                <types>
+                                                    <members>MyDocuments/doc1.txt</members>
+                                                    <name>Document</name>
+                                                </types>
+                                            <version>32.0</version></Package>
+                                            '''
+            File projectPackageFile = new File(projectPackagePath)
+            projectPackageFile.write(projectPackageContent)
+            File buildPackageFile = new File(destructivePath)
+            buildPackageFile.write(destructiveContent)
+            String packageContentExpect = '''<?xml version='1.0' encoding='UTF-8'?>
+                                            <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
+                                                <types>
+                                                    <members>MyDocuments/doc1.txt</members>
+                                                    <name>Document</name>
+                                                </types>
+                                                <version>32.0</version>
+                                            </Package>
+                                            '''
+        when:
+            PackageCombiner.packageCombineToUpdate(projectPackagePath, destructivePath)
+            XMLUnit.ignoreWhitespace = true
+            def xmlDiff = new Diff(buildPackageFile.text, packageContentExpect)
+        then:
+            new File(Paths.get(SRC_PATH, 'destructiveChanges.xml').toString()).exists()
+            xmlDiff.similar()
+    }
+
     def cleanupSpec() {
         new File(Paths.get(SRC_PATH, 'projectPackage.xml').toString()).delete()
+        new File(Paths.get(SRC_PATH, 'package.xml').toString()).delete()
         new File(Paths.get(SRC_PATH, 'buildPackage.xml').toString()).delete()
+        new File(Paths.get(SRC_PATH, 'destructiveChanges.xml').toString()).delete()
         new File(Paths.get(SRC_PATH, 'packageTest.xml').toString()).delete()
         new File(Paths.get(SRC_PATH, 'packageTestDocument.xml').toString()).delete()
         new File(Paths.get(SRC_PATH, 'packageTestReport.xml').toString()).delete()
