@@ -6,8 +6,8 @@
 package org.fundacionjala.gradle.plugins.enforce.utils
 
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.SalesforceValidator
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.SalesforceValidatorManager
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files.SalesforceValidator
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files.SalesforceValidatorManager
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -84,7 +84,7 @@ class ManagementFile {
                 result.push(xmlReportFile)
             }
             SalesforceValidator validator = SalesforceValidatorManager.getValidator(parentName)
-            if (validator.validateFileByFolder(parentName, reportFile)) {
+            if (validator.validateFile(reportFile, parentName)) {
                 result.push(reportFile)
             }
         }
@@ -286,7 +286,7 @@ class ManagementFile {
         ArrayList<File> result = []
         folder.eachFile { file ->
             SalesforceValidator validator = SalesforceValidatorManager.getValidator(folder.getName())
-            if (validator.validateFileByFolder(folder.getName(), file)) {
+            if (validator.validateFile(file, folder.getName())) {
                 result.push(file)
                 File xmlFile = new File("${file.getAbsolutePath().toString()}${METADATA_EXTENSION}")
                 if (xmlFile.exists()) {
