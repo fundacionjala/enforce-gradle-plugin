@@ -48,7 +48,7 @@ class Upload extends Deployment {
         loadFilesChangedToUpload()
         loadParameter()
         loadAllFiles()
-        if (specificFilesToUpload.empty && !Util.isValidProperty(project, EXCLUDES) && all == Constants.FALSE) {
+        if (specificFilesToUpload.empty && !Util.isValidProperty(parameters, EXCLUDES) && all == Constants.FALSE) {
             logger.warn("${Constants.ALL_FILES_UPLOAD}${projectPath}")
             option = System.console().readLine(Constants.QUESTION_CONTINUE)
 
@@ -113,8 +113,8 @@ class Upload extends Deployment {
      * By default the 'all' variable has the value equals to false.
      */
     void loadAllFiles() {
-        if (Util.isValidProperty(project, Constants.ALL_FILES_TO_UPLOAD) && !Util.isEmptyProperty(project, Constants.ALL_FILES_TO_UPLOAD)) {
-            all = project.properties[Constants.ALL_FILES_TO_UPLOAD].toString()
+        if (Util.isValidProperty(parameters, Constants.ALL_FILES_TO_UPLOAD) && !Util.isEmptyProperty(parameters, Constants.ALL_FILES_TO_UPLOAD)) {
+            all = parameters[Constants.ALL_FILES_TO_UPLOAD].toString()
         }
     }
 
@@ -122,8 +122,8 @@ class Upload extends Deployment {
      * Loads files that will be uploaded into specificFilesToUpload array.
      */
     def loadParameter() {
-        if (Util.isValidProperty(project, Constants.FILES_TO_UPLOAD) && !Util.isEmptyProperty(project, Constants.FILES_TO_UPLOAD)) {
-            files = project.properties[Constants.FILES_TO_UPLOAD].toString()
+        if (Util.isValidProperty(parameters, Constants.FILES_TO_UPLOAD) && !Util.isEmptyProperty(parameters, Constants.FILES_TO_UPLOAD)) {
+            files = parameters[Constants.FILES_TO_UPLOAD].toString()
         }
         ArrayList<String> filesName = new ArrayList<String>()
         if (files == null) {
@@ -149,7 +149,7 @@ class Upload extends Deployment {
     /**
      * Loads all files from project directory to specificFilesToUpload array
      */
-    def loadFiles() {
+    public void loadFiles() {
         if (specificFilesToUpload.isEmpty()) {
             specificFilesToUpload = getFilesFiltered()
         }
