@@ -5,6 +5,8 @@
 
 package org.fundacionjala.gradle.plugins.enforce.utils
 
+import org.apache.commons.lang.StringUtils
+import groovy.util.logging.Slf4j
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 import org.gradle.api.Project
 
@@ -17,6 +19,7 @@ import java.util.regex.Pattern
 /**
  * A set methods of utility
  */
+@Slf4j
 class Util {
     private static final String PATTERN_EMAIL = '([\\w-]+(\\.[\\w-]+)*@[\\w-]+(\\.[\\w-]+)*(\\.[\\w-]+))'
     private static final String PATTERN_FILE_EXT = ~/[.][^.]+$/
@@ -37,7 +40,7 @@ class Util {
      * @param fullName is a tag of custom field
      * @return developerName of custom field
      */
-    public static String getDeveloperName(String fullName){
+    public static String getDeveloperName(String fullName) {
         return fullName.substring(fullName.indexOf('.') + 1, fullName.length() - 7)
     }
 
@@ -234,7 +237,7 @@ class Util {
         foldersName.each { String folderName ->
             File file = new File(Paths.get(projectPath, folderName).toString())
             if (file.isDirectory()) {
-                if (file.exists() && file.list().length == 0 ) {
+                if (file.exists() && file.list().length == 0) {
                     emptyFolders.push(folderName)
                 }
             }
@@ -276,5 +279,50 @@ class Util {
     public static String getObjectName(String subComponentMember) {
         String objectName = subComponentMember.substring(0, subComponentMember.indexOf('.'))
         return objectName
+    }
+
+    /**
+     * Returns true if the apiName belongs on a packaged code and is a custom component/subComponent. The apiName parameter can also be used for
+     * CustomObjects, CustomFields, etc and any other kind of component/subComponent that follows SF API name format.
+     * <br/>
+     * EG:
+     * <br/>
+     * <ul>
+     *   <li>myprefix__CustomObject__c</li>
+     *   <li>myprefix__CustomFielName__c</li>
+     * </ul>
+     * @param apiName, An string value to be verified.
+     * @return Boolean, It is true if apiName belongs on packaged code, otherwise false.
+     **/
+    public static Boolean isPackaged(String apiName) {
+        return (apiName) ? (StringUtils.countMatches(apiName, "__") == 2) : false
+    }
+
+    /**
+     * Gets the file charset
+     * @param file the file to get the encoding
+     * @return the charset
+     */
+    public static String getCharset(File file) {
+        CharsetToolkit toolkit = new CharsetToolkit(file);
+        Charset guessedCharset = toolkit.getCharset();
+        return guessedCharset.displayName()
+    }
+
+    /**
+     * Writes new file content using original encoding if it doesn't exist uses encoding from user
+     * @param file the file to write new content
+     * @param content the new content
+     * @param charset the original encoding
+     * @param encoding the encoding from user
+     */
+    public static void writeFile(File file, String content, String charset, String encoding){
+        log.debug "[${file.name}]-->[charset:${charset}]"
+        if (charset) {
+            file.write(content, charset)
+        } else {
+            log.warn  "No encoding detected for ${file.name}. The encoding by default is ${encoding}."
+            file.write(content, encoding)
+        }
     }
 }

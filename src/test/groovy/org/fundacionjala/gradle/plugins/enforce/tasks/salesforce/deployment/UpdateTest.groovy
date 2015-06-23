@@ -13,6 +13,7 @@ import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentSerializer
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
 import org.fundacionjala.gradle.plugins.enforce.metadata.DeployMetadata
+import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.LoginType
@@ -61,11 +62,10 @@ class UpdateTest extends Specification {
         def class1Cls = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString())
         def class1ClsXml = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls-meta.xml').toString())
         def object1__c = new File(Paths.get(SRC_PATH, 'src', 'objects', 'Object1__c.object').toString())
-        def account = new File(Paths.get(SRC_PATH, 'src', 'objects', 'Account.object').toString())
         def trigger = new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger').toString())
         def triggerXml = new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger-meta.xml').toString())
 
-        def mapMock = componentMonitor.getComponentsSignature([class1, class1Cls, class1ClsXml, object1__c, object1__c, account, trigger, triggerXml])
+        def mapMock = componentMonitor.getComponentsSignature([class1, class1Cls, class1ClsXml, object1__c, object1__c, trigger, triggerXml])
         componentSerializer.save(mapMock)
 
         credential = new Credential()
@@ -112,7 +112,8 @@ class UpdateTest extends Specification {
         System.out = stdOut
         def lineAux = is.readLines()
         then:
-        lineAux == []
+            lineAux.size() == 1
+            lineAux[0].contains('There are not files changed')
     }
 
     def "Test should create a package XML file" () {
@@ -215,7 +216,7 @@ class UpdateTest extends Specification {
             def stdOut = System.out
             def os = new ByteArrayOutputStream()
             System.out = new PrintStream(os)
-            updateInstance.runTask()
+            updateInstance.showFilesChanged()
             def array = os.toByteArray()
             def is = new ByteArrayInputStream(array)
             System.out = stdOut
@@ -230,11 +231,10 @@ class UpdateTest extends Specification {
             updateInstance.packageGenerator.fileTrackerMap = [:]
             def class1Cls = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString())
             def object1__c = new File(Paths.get(SRC_PATH, 'src', 'objects', 'Object1__c.object').toString())
-            def account = new File(Paths.get(SRC_PATH, 'src', 'objects', 'Account.object').toString())
             def trigger = new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger').toString())
             componentMonitor.srcProject = Paths.get(SRC_PATH,'src').toString()
             componentSerializer.sourcePath = Paths.get(SRC_PATH,'src','.fileTracker.data').toString()
-            def mapMock = componentMonitor.getComponentsSignature([class1Cls, object1__c, account, trigger])
+            def mapMock = componentMonitor.getComponentsSignature([class1Cls, object1__c,trigger])
             componentSerializer.save(mapMock)
             updateInstance.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
             updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
@@ -256,8 +256,17 @@ class UpdateTest extends Specification {
             def packageExpect = "${"<?xml version='1.0' encoding='UTF-8'?>"}${"<Package xmlns='http://soap.sforce.com/2006/04/metadata'>"}${"<types><members>Class2</members><name>ApexClass</name></types><version>32.0</version></Package>"}"
             def destructiveExpect = "${"<?xml version='1.0' encoding='UTF-8'?>"}${"<Package xmlns='http://soap.sforce.com/2006/04/metadata'>"}${"<version>32.0</version>"}${"</Package>"}"
         when:
-            updateInstance.runTask()
-            println 'package ' + new File(Paths.get(SRC_PATH, 'build', 'update', 'package.xml').toString()).exists()
+            updateInstance.pathUpdate = Paths.get(updateInstance.buildFolderPath, Constants.DIR_UPDATE_FOLDER).toString()
+            updateInstance.updatePackagePath = Paths.get(updateInstance.pathUpdate, updateInstance.PACKAGE_NAME).toString()
+            updateInstance.createDeploymentDirectory(updateInstance.pathUpdate)
+            updateInstance.loadFilesChanged()
+            updateInstance.verifyParameter()
+            updateInstance.excludeFilesFromFilesChanged()
+            updateInstance.showFilesChanged()
+            updateInstance.createDestructive()
+            updateInstance.createPackage()
+            updateInstance.copyFilesChanged()
+            updateInstance.showFilesExcludes()
             def packageXml =  new File(Paths.get(SRC_PATH, 'build', 'update', 'package.xml').toString()).text
             def destructiveXml =  new File(Paths.get(SRC_PATH, 'build', 'update', 'destructiveChanges.xml').toString()).text
             def class2Xml =  new File(Paths.get(SRC_PATH, 'build', 'update', 'classes', 'Class2.cls-meta.xml').toString()).text
@@ -297,21 +306,201 @@ class UpdateTest extends Specification {
             writerClass.close()
             writerXml.close()
             def updateFileZipPath = Paths.get(SRC_PATH,'build','update.zip').toString()
-            def updateFolderPath = Paths.get(SRC_PATH,'build','update').toString()
+            def updateFolderPath = Paths.get(updateInstance.buildFolderPath, Constants.DIR_UPDATE_FOLDER).toString()
             File updateFileZip = new File(updateFileZipPath)
             File updateFolder = new File(updateFolderPath)
         when:
-            updateInstance.runTask()
+            updateInstance.pathUpdate = Paths.get(updateInstance.buildFolderPath, Constants.DIR_UPDATE_FOLDER).toString()
+            updateInstance.updatePackagePath = Paths.get(updateInstance.pathUpdate, updateInstance.PACKAGE_NAME).toString()
+            updateInstance.createDeploymentDirectory(updateInstance.pathUpdate)
+            updateInstance.loadFilesChanged()
+            updateInstance.verifyParameter()
+            updateInstance.excludeFilesFromFilesChanged()
+            updateInstance.showFilesChanged()
+            updateInstance.createDestructive()
+            updateInstance.createPackage()
+            updateInstance.copyFilesChanged()
+            updateInstance.showFilesExcludes()
+            updateInstance.deleteTemporaryFiles()
         then:
             !updateFileZip.exists()
             !updateFolder.exists()
     }
 
-    def cleanupSpec() {
+    def "should upload the new reports, documents or dashboard added to the organization with package.xml updated"() {
+        given:
+            updateInstance.packageGenerator.projectPath = Paths.get(SRC_PATH, 'src').toString()
+            updateInstance.packageGenerator.fileTrackerMap = [:]
+            def class1Cls = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString())
+            def object1__c = new File(Paths.get(SRC_PATH, 'src', 'objects', 'Object1__c.object').toString())
+            def trigger = new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger').toString())
+            componentMonitor.srcProject = Paths.get(SRC_PATH,'src').toString()
+            componentSerializer.sourcePath = Paths.get(SRC_PATH,'src','.fileTracker.data').toString()
+            def mapMock = componentMonitor.getComponentsSignature([class1Cls, object1__c,trigger])
+            componentSerializer.save(mapMock)
+            updateInstance.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
+            updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
+            updateInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
+            ManagementFile.createDirectories(Paths.get(SRC_PATH, 'src', 'reports/MyReports').toString())
+            ManagementFile.createDirectories(Paths.get(SRC_PATH, 'src', 'dashboards/MyDashboards').toString())
+            ManagementFile.createDirectories(Paths.get(SRC_PATH, 'src', 'documents/MyDocuments').toString())
+            def newReportPath = Paths.get(SRC_PATH, 'src', 'reports/MyReports', 'newReport.report').toString()
+            def newDashboardPath = Paths.get(SRC_PATH, 'src', 'dashboards/MyDashboards', 'newDashboard.dashboard').toString()
+            def newDocumentPath = Paths.get(SRC_PATH, 'src', 'documents/MyDocuments', 'newDocument.txt').toString()
+            def newDocumentXmlPath = Paths.get(SRC_PATH, 'src', 'documents/MyDocuments', 'newDocument.txt-meta.xml').toString()
+            def myReportFolderXmlPath = Paths.get(SRC_PATH, 'src', 'reports/MyReports-meta.xml').toString()
+            def myDashboardFolderXmlPath = Paths.get(SRC_PATH, 'src', 'dashboards/MyDashboards-meta.xml').toString()
+            def myDocumentFolderXmlPath = Paths.get(SRC_PATH, 'src', 'documents/MyDocuments-meta.xml').toString()
+            FileWriter newReportFile = new FileWriter(newReportPath)
+            FileWriter newDashboardFile = new FileWriter(newDashboardPath)
+            FileWriter newDocumentFile = new FileWriter(newDocumentPath)
+            FileWriter newDocumentXmlFile = new FileWriter(newDocumentXmlPath)
+            FileWriter myReportFolderXmlFile = new FileWriter(myReportFolderXmlPath)
+            FileWriter myDashboardFolderXmlFile = new FileWriter(myDashboardFolderXmlPath)
+            FileWriter myDocumentFolderXmlFile = new FileWriter(myDocumentFolderXmlPath)
+            def reportContent = "<Report xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n" +
+                    "    <columns>\n" +
+                    "        <field>USERS.NAME</field>\n" +
+                    "    </columns>\n" +
+                    "    <columns>\n" +
+                    "        <field>ACCOUNT.NAME</field>\n" +
+                    "    </columns>\n" +
+                    "    <format>Tabular</format>\n" +
+                    "    <name>newReport</name>\n" +
+                    "    <params>\n" +
+                    "        <name>co</name>\n" +
+                    "        <value>1</value>\n" +
+                    "    </params>\n" +
+                    "    <reportType>AccountList</reportType>\n" +
+                    "    <scope>user</scope>\n" +
+                    "    <showDetails>true</showDetails>\n" +
+                    "    <timeFrameFilter>\n" +
+                    "        <dateColumn>CREATED_DATE</dateColumn>\n" +
+                    "        <interval>INTERVAL_CUSTOM</interval>\n" +
+                    "        <startDate>2015-05-18</startDate>\n" +
+                    "    </timeFrameFilter>\n" +
+                    "</Report>"
+            def dashboardContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                    "<Dashboard xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n" +
+                    "    <backgroundEndColor>#FFFFFF</backgroundEndColor>\n" +
+                    "    <backgroundFadeDirection>Diagonal</backgroundFadeDirection>\n" +
+                    "    <backgroundStartColor>#FFFFFF</backgroundStartColor>\n" +
+                    "    <dashboardType>SpecifiedUser</dashboardType>\n" +
+                    "    <leftSection>\n" +
+                    "        <columnSize>Medium</columnSize>\n" +
+                    "    </leftSection>\n" +
+                    "    <middleSection>\n" +
+                    "        <columnSize>Medium</columnSize>\n" +
+                    "    </middleSection>\n" +
+                    "    <rightSection>\n" +
+                    "        <columnSize>Medium</columnSize>\n" +
+                    "    </rightSection>\n" +
+                    "    <runningUser>alex.rv11@gmail.com</runningUser>\n" +
+                    "    <textColor>#000000</textColor>\n" +
+                    "    <title>newDashboard</title>\n" +
+                    "    <titleColor>#000000</titleColor>\n" +
+                    "    <titleSize>12</titleSize>\n" +
+                    "</Dashboard>"
+            def documentContent = "the test adds this document"
+            def documentXmlContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                    "<Document xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n" +
+                    "    <internalUseOnly>false</internalUseOnly>\n" +
+                    "    <name>newDocument</name>\n" +
+                    "    <public>false</public>\n" +
+                    "</Document>"
+            def myReportFolderXmlContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                    "<ReportFolder xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n" +
+                    "    <folderShares>\n" +
+                    "        <accessLevel>Manage</accessLevel>\n" +
+                    "        <sharedTo>alex.rv11@gmail.com</sharedTo>\n" +
+                    "        <sharedToType>User</sharedToType>\n" +
+                    "    </folderShares>\n" +
+                    "    <name>testFolder</name>\n" +
+                    "</ReportFolder>"
+            def myDashboardFolderXmlContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                    "<DashboardFolder xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n" +
+                    "    <folderShares>\n" +
+                    "        <accessLevel>Manage</accessLevel>\n" +
+                    "        <sharedTo>alex.rv11@gmail.com</sharedTo>\n" +
+                    "        <sharedToType>User</sharedToType>\n" +
+                    "    </folderShares>\n" +
+                    "    <name>DashboardFolder</name>\n" +
+                    "</DashboardFolder>"
+            def myDocumentFolderXmlContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                    "<DocumentFolder xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n" +
+                    "    <accessType>Public</accessType>\n" +
+                    "    <name>DocumentTest</name>\n" +
+                    "    <publicFolderAccess>ReadWrite</publicFolderAccess>\n" +
+                    "</DocumentFolder>"
+            newReportFile.write(reportContent)
+            newDashboardFile.write(dashboardContent)
+            newDocumentFile.write(documentContent)
+            newDocumentXmlFile.write(documentXmlContent)
+            myReportFolderXmlFile.write(myReportFolderXmlContent)
+            myDashboardFolderXmlFile.write(myDashboardFolderXmlContent)
+            myDocumentFolderXmlFile.write(myDocumentFolderXmlContent)
+            newReportFile.close()
+            newDashboardFile.close()
+            newDocumentFile.close()
+            newDocumentXmlFile.close()
+            myReportFolderXmlFile.close()
+            myDashboardFolderXmlFile.close()
+            myDocumentFolderXmlFile.close()
+            def packageExpect = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Package xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n" +
+                    "\t<types>\n" +
+                    "\t\t<members>MyDashboards/newDashboard</members>\n" +
+                    "\t\t<name>Dashboard</name>\n" +
+                    "\t</types>\n" +
+                    "\t<types>\n" +
+                    "\t\t<members>MyDocuments/newDocument</members>\n" +
+                    "\t\t<name>Document</name>\n" +
+                    "\t</types>\n" +
+                    "\t<types>\n" +
+                    "        <members>MyReports/newReport</members>\n" +
+                    "    <name>Report</name>\n" +
+                    "\t</types>\n" +
+                    "\t<version>32.0</version>\n" +
+                    "</Package>"
+        when:
+            updateInstance.pathUpdate = Paths.get(updateInstance.buildFolderPath, Constants.DIR_UPDATE_FOLDER).toString()
+            updateInstance.updatePackagePath = Paths.get(updateInstance.pathUpdate, updateInstance.PACKAGE_NAME).toString()
+            updateInstance.createDeploymentDirectory(updateInstance.pathUpdate)
+            updateInstance.loadFilesChanged()
+            updateInstance.verifyParameter()
+            updateInstance.excludeFilesFromFilesChanged()
+            updateInstance.showFilesChanged()
+            updateInstance.createPackage()
+            updateInstance.copyFilesChanged()
+            updateInstance.showFilesExcludes()
+            def packageXml =  new File(Paths.get(SRC_PATH, 'build', 'update', 'package.xml').toString()).text
+            XMLUnit.ignoreWhitespace = true
+            def packageXmlDifference = new Diff(packageXml, packageExpect)
+        then:
+            packageXmlDifference.similar()
+            new File((Paths.get(SRC_PATH, 'build', 'update', 'reports/MyReports', 'newReport.report').toString())).exists()
+            new File((Paths.get(SRC_PATH, 'build', 'update', 'dashboards/MyDashboards', 'newDashboard.dashboard').toString())).exists()
+            new File((Paths.get(SRC_PATH, 'build', 'update', 'documents/MyDocuments', 'newDocument.txt').toString())).exists()
+            new File((Paths.get(SRC_PATH, 'build', 'update', 'documents/MyDocuments', 'newDocument.txt-meta.xml').toString())).exists()
+            new File((Paths.get(SRC_PATH, 'build', 'update', 'reports/MyReports-meta.xml').toString())).exists()
+            new File((Paths.get(SRC_PATH, 'build', 'update', 'dashboards/MyDashboards-meta.xml').toString())).exists()
+            new File((Paths.get(SRC_PATH, 'build', 'update', 'documents/MyDocuments-meta.xml').toString())).exists()
+    }
+
+    def cleanup() {
         new File(Paths.get(SRC_PATH, 'build').toString()).deleteDir()
         new File(Paths.get(SRC_PATH, 'classes', 'Class2.cls').toString()).delete()
         new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class2.cls').toString()).delete()
         new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class2.cls-meta.xml').toString()).delete()
         new File(Paths.get(SRC_PATH, 'src', '.fileTracker.data').toString()).delete()
+        new File(Paths.get(SRC_PATH, 'src', 'reports/MyReports', 'newReport.report').toString()).delete()
+        new File(Paths.get(SRC_PATH, 'src', 'dashboards/MyDashboards', 'newDashboard.dashboard').toString()).delete()
+        new File(Paths.get(SRC_PATH, 'src', 'documents/MyDocuments', 'newDocument.txt-meta.xml').toString()).delete()
+        new File(Paths.get(SRC_PATH, 'src', 'documents/MyDocuments', 'newDocument.txt').toString()).delete()
+        new File(Paths.get(SRC_PATH, 'src', 'reports/MyReports-meta.xml').toString()).delete()
+        new File(Paths.get(SRC_PATH, 'src', 'dashboards/MyDashboards-meta.xml').toString()).delete()
+        new File(Paths.get(SRC_PATH, 'src', 'documents/MyDocuments-meta.xml').toString()).delete()
+        new File(Paths.get(SRC_PATH, 'src', 'reports/MyReports').toString()).deleteDir()
+        new File(Paths.get(SRC_PATH, 'src', 'dashboards/MyDashboards').toString()).deleteDir()
+        new File(Paths.get(SRC_PATH, 'src', 'documents/MyDocuments').toString()).deleteDir()
     }
 }

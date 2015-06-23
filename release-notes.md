@@ -1,4 +1,55 @@
 
+## 1.0.5 - 2015-06-22
+
+### Bugs fixed
+
+* Update command tries to delete packaged sub-components.
+* @isTest annotation should be case insensitive.
+* Special characters not deployed properly.
+* The status task is showing empty space by every changed object .
+* Update task doesn't support excludes parameter.
+* Once that a document is added and the update task is executed, it didn't upload that document to your organization.
+* Once that a document is deleted and the update task is executed, it deletes all documents from your organization.
+* When I execute retrieve task using the -Pfiles with documents is not working.
+
+
+
+### Known issues
+
+* Once a folder of documents is deleted, it isn’t deleted from your organization.
+* Update Command: 400 Bad Request error is displayed when trying to delete validation rules.
+
+
+## 1.0.4 - 2015-06-10
+
+### Features
+
+* Delete task was created to delete components from your organization based in your package xml file or using folder parameter. It doesn't truncate.
+
+### Bugs fixed
+
+* The deploy task ends with percentage less than 100%.
+* Support deleteTemporaryFiles parameter for Retrieve task.
+* Update task fails for files that have spaces in their name.
+* Update/Deploy/Upload command does not take in account the package.xml info for packaged objects.
+* Excludes parameter into deploy task doesn't take in account documents component without extension into package xml file.
+* The validation of files parameter value does not work when it sends documents, reports or dashboard.
+
+### Enhancements
+
+* Use unzip method of Gradle instead of unzip method of AntBuilder for the Retrieve task.
+
+### Known issues
+
+* When the enforce version is changed and status task is executed all files are shown as deleted for the moment to avoid it you should execute reset task.
+* When you execute the delete task using files parameter and you use a folder name as a value, It is listing all files from the project.
+* When we use the status task to show objects it shows an empty line between objects names.
+* If a document or report or dashboard are deleted all documents or reports or dashboards are deleted for the update task.
+* Update task does not support the excludes parameter.
+* Once retrieve task is executed using files parameter with document file as value the validation doesn’t work.
+
+
+
 ## 1.0.3 - 2015-05-25
 
 ### Features

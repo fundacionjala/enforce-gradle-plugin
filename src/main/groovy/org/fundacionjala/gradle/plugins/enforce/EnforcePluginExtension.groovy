@@ -4,6 +4,9 @@
  */
 
 package org.fundacionjala.gradle.plugins.enforce
+
+import java.nio.charset.StandardCharsets
+
 /**
  * This class creates a plugin extension to assign properties of the plugin.
  */
@@ -34,6 +37,8 @@ class EnforcePluginExtension {
     int waitTime = 10
 
     String integration = "no"
+
+    String encoding = StandardCharsets.UTF_8.displayName()
 
     String foldersToDownload = "objects,staticresources,classes,pages,triggers,components"
 

@@ -5,11 +5,16 @@
 
 package org.fundacionjala.gradle.plugins.enforce.interceptor.commands
 
+import groovy.util.logging.Slf4j
+import org.fundacionjala.gradle.plugins.enforce.utils.Util
+
+import java.nio.charset.StandardCharsets
 import java.util.regex.Matcher
 
 /**
  * Implements the truncated algorithm to replace a "field.description" and "field.inlineHelpText" by a default value
  */
+@Slf4j
 class ObjectField {
     private final String FIELDS_REGEX = /<fields>.*([^\n]*?\n+?)*?.*<\/fields>/
     private final String DESCRIPTION_REGEX = /<description>(([^\n]*?\n+?)*?.*<\/description>){0,1}/
@@ -19,6 +24,11 @@ class ObjectField {
     private final int HELP_TEXT_INDEX = 0
     private final String DESCRIPTION_TAG = "<description>new description</description>"
     private final String HELP_TEXT_TAG = "<inlineHelpText>new help text</inlineHelpText>"
+    String encoding
+
+    ObjectField() {
+        this.encoding = StandardCharsets.UTF_8.displayName()
+    }
 
     /**
      * A closure to replace a "field.description" and "field.inlineHelpText" by default for all "fields" that matches
@@ -28,6 +38,7 @@ class ObjectField {
         if (!file) {
             return
         }
+        String charset = Util.getCharset(file)
         String objectField = file.text
         Matcher fieldMatcher = objectField =~ FIELDS_REGEX
         fieldMatcher.each { fieldIt ->
@@ -45,6 +56,6 @@ class ObjectField {
                 objectField = objectField.replace(field, newField)
             }
         }
-        file.text = objectField
+        Util.writeFile(file, objectField, charset, encoding)
     }
 }

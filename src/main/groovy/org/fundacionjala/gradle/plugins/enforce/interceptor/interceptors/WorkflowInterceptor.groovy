@@ -31,6 +31,8 @@ class WorkflowInterceptor extends MetadataInterceptor {
      */
     @Override
     void loadInterceptors() {
-        addInterceptor(Interceptor.TRUNCATE_WORKFLOWS.id, new Workflow().execute)
+        Workflow workflow = new Workflow()
+        workflow.encoding = encoding
+        addInterceptor(Interceptor.TRUNCATE_WORKFLOWS.id, workflow.execute)
     }
 }

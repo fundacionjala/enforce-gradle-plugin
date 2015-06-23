@@ -5,6 +5,7 @@
 
 package org.fundacionjala.gradle.plugins.enforce.utils
 
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.FileValidator
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -34,6 +35,8 @@ class ManagementFileTest extends Specification {
                                              new File(Paths.get(targetPath, 'objects', 'Object2__c.object').toString()),
                                              new File(Paths.get(targetPath, 'reports', 'testFolder', 'testReport.report').toString()),
                                              new File(Paths.get(targetPath, 'reports', 'testFolder-meta.xml').toString()),
+                                             new File(Paths.get(targetPath, 'documents', 'mydocs/doc1.doc').toString()),
+                                             new File(Paths.get(targetPath, 'documents', 'mydocs/image.png').toString()),
                                              new File(Paths.get(targetPath, 'package.xml').toString())]
         then:
             arrayResult.sort() == arrayExpected.sort()
@@ -49,6 +52,8 @@ class ManagementFileTest extends Specification {
                                new File(Paths.get(targetPath, 'objects', 'Account.object').toString()),
                                new File(Paths.get(targetPath, 'objects', 'Object1__c.object').toString()),
                                new File(Paths.get(targetPath, 'objects', 'Object2__c.object').toString()),
+                               new File(Paths.get(targetPath, 'documents', 'mydocs/doc1.doc').toString()),
+                               new File(Paths.get(targetPath, 'documents', 'mydocs/image.png').toString()),
                                new File(Paths.get(targetPath, 'reports', 'testFolder', 'testReport.report').toString())].sort()
     }
 
@@ -63,6 +68,8 @@ class ManagementFileTest extends Specification {
                                new File(Paths.get(targetPath, 'objects', 'Account.object').toString()),
                                new File(Paths.get(targetPath, 'objects', 'Object1__c.object').toString()),
                                new File(Paths.get(targetPath, 'objects', 'Object2__c.object').toString()),
+                               new File(Paths.get(targetPath, 'documents', 'mydocs/doc1.doc').toString()),
+                               new File(Paths.get(targetPath, 'documents', 'mydocs/image.png').toString()),
                                new File(Paths.get(targetPath, 'package.xml').toString()),
                                new File(Paths.get(targetPath, 'reports', 'testFolder', 'testReport.report').toString()),
                                new File(Paths.get(targetPath, 'reports', 'testFolder-meta.xml').toString())].sort()
@@ -74,7 +81,9 @@ class ManagementFileTest extends Specification {
         when:
             ArrayList<File> arrayResult = managementFile.getValidElements(targetPath, typesToExclude)
         then:
-            arrayResult.sort() == [new File(Paths.get(targetPath, 'classes', 'class1.cls').toString())].sort()
+            arrayResult.sort() == [new File(Paths.get(targetPath, 'classes', 'class1.cls').toString()),
+                                   new File(Paths.get(targetPath, 'documents', 'mydocs/doc1.doc').toString()),
+                                   new File(Paths.get(targetPath, 'documents', 'mydocs/image.png').toString())].sort()
     }
 
     def "Test should copy from source path"() {
@@ -187,7 +196,7 @@ class ManagementFileTest extends Specification {
 
     def "Test load directories not deploy"() {
         expect:
-            managementFile.getFoldersNotDeploy(targetPath).sort() == ["web"].sort()
+            managementFile.getFoldersNotDeploy(targetPath).sort() == ["web", "encoding"].sort()
     }
 
     def "should throw a exception because managementFie constructor value is nothing"() {
@@ -269,17 +278,18 @@ class ManagementFileTest extends Specification {
 
     def "should get subdirectories form source directory by file extension"() {
         given:
-        def dirNames = []
+            def dirNames = []
         when:
-        def files = managementFile.getSubdirectories()
-        files.each {
-            dirNames.add(it.name)
-        }
+            def files = managementFile.getSubdirectories()
+            files.each {
+                dirNames.add(it.name)
+            }
         then:
-        dirNames.sort() == ['classes', 'objects', 'reports', 'web'].sort()
+            dirNames.sort() == ['classes', 'documents', 'encoding', 'objects', 'reports', 'web'].sort()
+
     }
 
-    def "Test should create the directories if it doesn't exist"(){
+    def "Test should create the directories if it doesn't exist"() {
         expect:
         Path path = Paths.get(targetPath, 'test', 'testOne', 'testTwo', 'testThree')
         ManagementFile.createDirectories(path.toString())

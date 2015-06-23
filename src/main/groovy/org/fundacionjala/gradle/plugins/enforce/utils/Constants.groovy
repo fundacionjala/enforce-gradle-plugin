@@ -18,6 +18,7 @@ public class Constants {
     public static final String DEPLOYMENT = "Deployment"
     public static final String INVALID_FOLDER = "Invalid folders"
     public static final String INVALID_FILE = "Invalid files"
+    public static final String VALID_FILE = "valid files"
     public static final String DOES_NOT_EXIST_FILES = "Not exist files:"
     public static final String DOES_NOT_EXIST_FOLDER = "Not exist folders:"
     public static final String NOT_FILES = "There are not files into folders"
@@ -47,6 +48,10 @@ public class Constants {
     public static final String PARAMETER_FOLDERS = 'folders'
     public static final String PARAMETER_FILES = 'files'
     public static final String PARAMETER_EXCLUDES = 'excludes'
+    public static final String PARAMETER_VALIDATE_ORG = 'validate'
+    public static final String YES_OPTION = 'y'
+    public static final String TRUE_OPTION = 'true'
+    public static final String FALSE_OPTION = 'false'
 
     //Deploy task constants
     public static final String DEPLOYING_TRUNCATED_CODE = 'Deploying truncated code'
@@ -63,6 +68,7 @@ public class Constants {
     public static final String TRUNCATE_CODE = 'sourceCode'
 
     public static final Integer NOT_FOUND = -1
+    public static final boolean CONTAINS_XML_FILE = true;
 
     public static final ArrayList<String> FOLDERS_TO_TRUNCATE = ['classes', 'objects', 'triggers', 'pages', 'components', 'workflows']
 
@@ -89,7 +95,6 @@ public class Constants {
     public static final String DIR_UPLOAD_FOLDER = "upload"
     public static final String FILES_TO_UPLOAD = "files"
     public static final String ALL_FILES_TO_UPLOAD = "all"
-    public static final String YES_OPTION = 'y'
 
     //Update task constants
     public static final String UPDATE_DESCRIPTION = "This task deploys just the files that were changed"
@@ -109,4 +114,25 @@ public class Constants {
     public static final String DIR_DELETE_FOLDER = "delete"
     public static final String PROCCES_DELETE_CANCELLED = "The delete process was canceled"
     public static final String NOT_FILES_DELETED = "There are not files to delete"
+
+    //Unit test task
+    public static final String CLASS_PARAM = 'cls'
+    public static final String CLASS_DIRECTORY = 'classes'
+    public static final String WILDCARD_ALL_TEST = '*'
+    public static final String NAME_FOLDER_REPORT = 'report'
+    public static final String NAME_FOLDER_PAGES = 'pages'
+    public static final String NAME_FILE = 'index.html'
+    public static final String NAME_FILE_UNIT_TEXT_XML = 'unitTest.xml'
+    public static final String NAME_FILE_COVERAGE_REPORT_XML = 'coverage.xml'
+    public static final String PARAMETER_ASYNC = 'async'
+    public static final String QUERY_CLASSES = "SELECT Id, Name FROM ApexClass"
+    public static final String QUERY_TRIGGERS = "SELECT Id, Name FROM ApexTrigger"
+    public static final String NOT_HAVE_UNIT_TEST_MESSAGE = "You don't have any test class to execute in your local repository"
+    public static final String IS_TEST = "@isTest"
+    public static final String UNIT_TEST_SUCCESS = 'Success'
+    public static final String UNIT_TEST_FAIL = 'Fail'
+    public static final String QUERY_COVERAGE = "SELECT NumLinesCovered, NumLinesUncovered, ApexClassorTriggerId, Coverage" +
+            " FROM ApexCodeCoverageAggregate"
+    public static final int TIME_RUN_TEST_ASYNC = 1000
+    public static final int ZERO_NUMBER = 0
 }

@@ -5,12 +5,17 @@
 
 package org.fundacionjala.gradle.plugins.enforce.interceptor.commands
 
+import groovy.util.logging.Slf4j
+import org.fundacionjala.gradle.plugins.enforce.utils.Util
+
+import java.nio.charset.StandardCharsets
 import java.util.regex.Matcher
 
 /**
  * Implements the truncated algorithm to replace a "web link" by default for all "web links"
  * that matches with the regex in an object file
  */
+@Slf4j
 class ObjectWebLink {
     private final String TAG_URL = '<url>%s</url>'
     private final String WEB_LINK_REGEX = /<webLinks>.*([^\n]*?\n+?)*?.*<\/webLinks>/
@@ -20,6 +25,11 @@ class ObjectWebLink {
     private final String URL_BY_DEFAULT = "http://www.google.com"
     private final int CONTENT_MATCHED_INDEX = 0
     private final int TYPE_INDEX = 1
+    String encoding
+
+    ObjectWebLink() {
+        this.encoding = StandardCharsets.UTF_8.displayName()
+    }
 
     /**
      * A closure to replace a "web link" by default for all "web links"
@@ -27,6 +37,7 @@ class ObjectWebLink {
      */
     Closure execute = { file ->
         if (!file) return
+        String charset = Util.getCharset(file)
         String objectWebLink = file.text
         Matcher webLinkMatcher = objectWebLink =~ WEB_LINK_REGEX
         webLinkMatcher.each { webLinkIt->
@@ -57,7 +68,7 @@ class ObjectWebLink {
                 }
             }
         }
-        file.text = objectWebLink
+        Util.writeFile(file, objectWebLink, charset, encoding)
     }
 
 }
