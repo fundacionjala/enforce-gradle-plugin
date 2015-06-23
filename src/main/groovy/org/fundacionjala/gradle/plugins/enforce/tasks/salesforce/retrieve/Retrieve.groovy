@@ -289,17 +289,17 @@ class Retrieve extends Retrieval {
         }
         String parameterValues = files
         parameterValues = parameterValues.replaceAll(BACKSLASH, SLASH)
-        ArrayList<String> fileNames = new ArrayList<String>()
+        ArrayList<File> filesToRetrieve = new ArrayList<File>()
         ArrayList<String> folderNames = new ArrayList<String>()
         parameterValues.split(Constants.COMMA).each { String parameter ->
             if (parameter.contains(SLASH)) {
-                fileNames.push(parameter)
+                filesToRetrieve.push(new File(Paths.get(projectPath,parameter).toString()))
             } else {
                 folderNames.push(parameter)
             }
         }
         validateFolders(folderNames)
-        validateFiles(fileNames)
+        validateFiles(filesToRetrieve)
     }
 
     /**
