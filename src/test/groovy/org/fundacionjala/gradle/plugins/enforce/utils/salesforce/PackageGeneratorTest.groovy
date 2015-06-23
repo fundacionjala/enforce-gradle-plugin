@@ -114,17 +114,22 @@ class PackageGeneratorTest extends Specification {
             packageGenerator.buildPackage(stringWriter)
 
         then:
+            println packageGenerator.packageBuilder.metaPackage.types[0].name
+            println packageGenerator.packageBuilder.metaPackage.types[1].name
+            println packageGenerator.packageBuilder.metaPackage.types[2].name
             packageGenerator.packageBuilder.metaPackage.types[0].members[0] == "File"
             packageGenerator.packageBuilder.metaPackage.types[0].members[1] == "Util"
             packageGenerator.packageBuilder.metaPackage.types[0].name == "ApexClass"
-            packageGenerator.packageBuilder.metaPackage.types[1].members[0] == "ObjectUtil"
-            packageGenerator.packageBuilder.metaPackage.types[1].members[1] == "ObjectFile"
-            packageGenerator.packageBuilder.metaPackage.types[1].name == "CustomObject"
 
-            packageGenerator.packageBuilder.metaPackage.types[2].members[0] == "ObjectFile.fieldTwo"
-            packageGenerator.packageBuilder.metaPackage.types[2].members[1] == "ObjectFile.fieldOne"
-            packageGenerator.packageBuilder.metaPackage.types[2].members[2] == "ObjectFile.fieldThree"
-            packageGenerator.packageBuilder.metaPackage.types[2].name == "CustomField"
+            packageGenerator.packageBuilder.metaPackage.types[1].members[0] == "ObjectFile.fieldOne"
+            packageGenerator.packageBuilder.metaPackage.types[1].members[1] == "ObjectFile.fieldThree"
+            packageGenerator.packageBuilder.metaPackage.types[1].members[2] == "ObjectFile.fieldTwo"
+            packageGenerator.packageBuilder.metaPackage.types[1].name == "CustomField"
+
+
+            packageGenerator.packageBuilder.metaPackage.types[2].members[0] == "ObjectFile"
+            packageGenerator.packageBuilder.metaPackage.types[2].members[1] == "ObjectUtil"
+            packageGenerator.packageBuilder.metaPackage.types[2].name == "CustomObject"
     }
 
     def "Test should build a package from deleted files"() {

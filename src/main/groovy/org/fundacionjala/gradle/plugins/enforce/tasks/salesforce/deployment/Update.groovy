@@ -77,7 +77,6 @@ class Update extends Deployment {
                 filesToCopy.add(new File(Paths.get(projectPath, nameFile).toString()))
             }
         }
-        filesToCopy.sort()
         packageGenerator.buildPackage(updatePackagePath)
         combinePackageToUpdate(updatePackagePath)
     }
