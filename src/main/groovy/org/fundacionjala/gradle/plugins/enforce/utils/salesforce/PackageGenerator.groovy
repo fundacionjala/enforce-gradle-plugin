@@ -94,6 +94,7 @@ class PackageGenerator {
 
     public void buildPackage(Writer writer) {
         ArrayList<File> files = getFiles(ComponentStates.ADDED) + getFiles(ComponentStates.CHANGED) + getSubComponents(ComponentStates.ADDED) + getSubComponents(ComponentStates.CHANGED)
+        files.sort()
         packageBuilder.createPackage(files, projectPath)
         packageBuilder.write(writer)
     }
