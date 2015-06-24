@@ -7,6 +7,7 @@ public class DocumentSalesforceValidator implements SalesforceValidator{
     /**
      * Validates the document file that belongs to documents folder defined in Salesforce
      * @param file is a File
+     * @param folderComponent is a String, based in Salesforce folders definitions
      * @return boolean
      */
     @Override

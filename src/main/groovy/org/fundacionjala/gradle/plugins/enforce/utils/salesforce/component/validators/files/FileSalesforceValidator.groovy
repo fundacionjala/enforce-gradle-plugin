@@ -7,7 +7,8 @@ public class FileSalesforceValidator implements SalesforceValidator{
 
     /**
      * Validates the file based in the folder name who belongs, following the Saleforce definitions
-     * @param file
+     * @param file is a File
+     * @param folderComponent is a String, based in Salesforce folders definitions
      * @return boolean
      */
     @Override
