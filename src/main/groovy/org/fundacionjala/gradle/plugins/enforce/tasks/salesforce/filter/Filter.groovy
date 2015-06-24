@@ -50,11 +50,11 @@ class Filter {
         ArrayList<String> criteriaToExclude = []
         ArrayList<String> criteriaToInclude = []
 
-        if(!excludes.isEmpty()) {
+        if(excludes && !excludes.isEmpty()) {
             criteriaToExclude = getCriteria(excludes)
         }
 
-        if(!includes.isEmpty()) {
+        if(includes && !includes.isEmpty()) {
             criteriaToInclude = getCriteria(includes)
         }
         FileTree fileTree = project.fileTree(dir: projectPath, includes: criteriaToInclude, excludes: criteriaToExclude)
