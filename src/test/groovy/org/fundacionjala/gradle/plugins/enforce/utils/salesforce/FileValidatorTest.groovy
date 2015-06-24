@@ -185,11 +185,11 @@ class FileValidatorTest extends Specification {
         invalidFiles.add(invalidFolderByDocument)
         invalidFiles.add(invalidFileWithoutExtension)
         invalidFiles.add(invalidExtensionFile)
-        expected.put(Constants.INVALID_FILE, invalidFiles)
+        expected.put(Constants.INVALID_FILE_BY_FOLDER, invalidFiles)
         when:
         Map<String, ArrayList<File>> result = FileValidator.validateFiles(projectPath, files)
         then:
-        result[Constants.INVALID_FILE].sort() == expected[Constants.INVALID_FILE].sort()
+        result[Constants.INVALID_FILE_BY_FOLDER].sort() == expected[Constants.INVALID_FILE_BY_FOLDER].sort()
     }
 
     def "Test should returns a map that contains all files by states: invalid, not_found, and valid" () {
@@ -240,7 +240,7 @@ class FileValidatorTest extends Specification {
             validFiles.add(validDoc)
             validFiles.add(validObj)
             validFiles.add(validReport)
-            expected.put(Constants.INVALID_FILE, invalidFiles)
+            expected.put(Constants.INVALID_FILE_BY_FOLDER, invalidFiles)
             expected.put(Constants.VALID_FILE, validFiles)
             expected.put(Constants.DOES_NOT_EXIST_FILES, notFoundFiles)
 
