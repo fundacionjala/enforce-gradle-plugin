@@ -19,6 +19,7 @@ public class FileSalesforceValidator extends XMLFileSalesforceValidator implemen
             return false
         }
 
-        return Util.getFileExtension(file).equals(componentExtension) || validateXMLFileByFolder(folderName, file)
+        return Util.getFileExtension(file).equals(componentExtension) ||
+                validateXMLFile(file, folderComponent)
     }
 }

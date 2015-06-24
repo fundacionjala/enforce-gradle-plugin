@@ -13,8 +13,8 @@ import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageCombiner
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.SalesforceValidator
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.SalesforceValidatorManager
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files.SalesforceValidator
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files.SalesforceValidatorManager
 import org.gradle.api.file.FileTree
 
 import java.nio.file.Paths
@@ -30,7 +30,6 @@ abstract class Deployment extends SalesforceTask {
     public final String EXCLUDES = 'excludes'
     public String excludes
     public final int FILE_NAME_POSITION = 1
-    private Filter filter
 
     /**
      * Sets description and group task
@@ -40,8 +39,6 @@ abstract class Deployment extends SalesforceTask {
     Deployment(String descriptionTask, String groupTask) {
         super(descriptionTask, groupTask)
         componentDeploy = new DeployMetadata()
-        interceptorManager = new InterceptorManager()
-        interceptorManager.buildInterceptors()
         interceptorManager = new InterceptorManager()
         interceptorManager.encoding = project.property(Constants.FORCE_EXTENSION).encoding
         interceptorManager.buildInterceptors()

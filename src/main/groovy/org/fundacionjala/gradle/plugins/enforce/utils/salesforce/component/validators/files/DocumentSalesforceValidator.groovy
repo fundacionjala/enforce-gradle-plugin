@@ -12,14 +12,10 @@ public class DocumentSalesforceValidator extends XMLFileSalesforceValidator impl
      */
     @Override
     boolean validateFile(File file, String folderComponent) {
-        if (folderComponent == MetadataComponents.DOCUMENTS.getDirectory() && !file.isDirectory()) {
-            return true
-        }
 
-        if(validateXMLFileByFolder(folderName, file)) {
-            return true
-        }
 
-        return false
+        return (folderComponent == MetadataComponents.DOCUMENTS.getDirectory() &&
+               !file.isDirectory()) ||
+               validateXMLFile(file, folderComponent)
     }
 }
