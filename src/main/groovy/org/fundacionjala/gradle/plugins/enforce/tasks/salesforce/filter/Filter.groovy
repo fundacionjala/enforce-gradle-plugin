@@ -41,41 +41,23 @@ class Filter {
     }
 
     /**
-     * Gets content parameters
-     * @param parametersName is an array lis with parameters names
-     * @param properties is a map with parameters names and its values
-     * @return a map with parameter name as key and its content as value
-     */
-    public static Map<String,String> getContentParameter(ArrayList<String> parametersName, Map<String, String> properties) {
-        Map<String,String> result = [:]
-        parametersName.each {String parameter ->
-            if (Util.isValidProperty(properties, parameter) && !Util.isEmptyProperty(properties, parameter)) {
-                result.put(parameter, properties[parameter].toString())
-            }
-        }
-        return result
-    }
-
-    /**
      * Gets files from project directory by parameter and all by default
      * @param parametersName is an array list with parameters names
      * @param properties is a map with parameter name as key and its content as value
      * @return an array list of files
      */
-    public ArrayList<File> getFiles(ArrayList<String> parametersName, Map<String, String> properties) {
-        Map<String, String> contentParameterMap = getContentParameter(parametersName, properties)
+    public ArrayList<File> getFiles(String includes, String excludes) {
         ArrayList<String> criteriaToExclude = []
         ArrayList<String> criteriaToInclude = []
 
-        if(contentParameterMap.containsKey(Constants.PARAMETER_EXCLUDES)) {
-            criteriaToExclude = getCriteria(contentParameterMap.get(Constants.PARAMETER_EXCLUDES))
+        if(!excludes.isEmpty()) {
+            criteriaToExclude = getCriteria(excludes)
         }
 
-        if(contentParameterMap.containsKey(Constants.PARAMETER_INCLUDES)) {
-            criteriaToInclude = getCriteria(contentParameterMap.get(Constants.PARAMETER_INCLUDES))
+        if(!includes.isEmpty()) {
+            criteriaToInclude = getCriteria(includes)
         }
         FileTree fileTree = project.fileTree(dir: projectPath, includes: criteriaToInclude, excludes: criteriaToExclude)
-
         return fileTree.getFiles() as ArrayList<File>
     }
 }
