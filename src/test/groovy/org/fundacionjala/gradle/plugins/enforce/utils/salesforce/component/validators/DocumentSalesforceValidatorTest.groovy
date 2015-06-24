@@ -1,4 +1,4 @@
-package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators
+package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files
 
 import spock.lang.Shared
 import spock.lang.Specification
@@ -20,7 +20,7 @@ class DocumentSalesforceValidatorTest extends Specification {
             def file = new File('account.docx')
             def folder = 'classes'
         when:
-            def result = validator.validateFileByFolder(folder, file)
+            def result = validator.validateFile(file, folder)
         then:
             !result
     }
@@ -30,7 +30,7 @@ class DocumentSalesforceValidatorTest extends Specification {
             def file = new File(Paths.get('mydocuments/doc1.docx').toString())
             def folder = 'documents'
         when:
-            def result = validator.validateFileByFolder(folder, file)
+            def result = validator.validateFile(file, folder)
         then:
             result
     }
