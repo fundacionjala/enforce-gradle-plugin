@@ -2,8 +2,8 @@ package org.fundacionjala.gradle.plugins.enforce.utils.salesforce
 
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.SalesforceValidator
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.SalesforceValidatorManager
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files.SalesforceValidator
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files.SalesforceValidatorManager
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -34,7 +34,7 @@ class FileValidator {
                 filesState[Constants.DOES_NOT_EXIST_FILES].add(file)
                 isValid = false
             }
-            if (!validator.validateFileByFolder(parentFileName, file)) {
+            if (!validator.validateFile(file, parentFileName)) {
                 filesState[Constants.INVALID_FILE].add(file)
                 isValid = false
             }

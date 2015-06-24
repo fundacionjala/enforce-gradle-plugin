@@ -1,4 +1,25 @@
 
+## 1.0.5 - 2015-06-22
+
+### Bugs fixed
+
+* Update command tries to delete packaged sub-components.
+* @isTest annotation should be case insensitive.
+* Special characters not deployed properly.
+* The status task is showing empty space by every changed object .
+* Update task doesn't support excludes parameter.
+* Once that a document is added and the update task is executed, it didn't upload that document to your organization.
+* Once that a document is deleted and the update task is executed, it deletes all documents from your organization.
+* When I execute retrieve task using the -Pfiles with documents is not working.
+
+
+
+### Known issues
+
+* Once a folder of documents is deleted, it isn’t deleted from your organization.
+* Update Command: 400 Bad Request error is displayed when trying to delete validation rules.
+
+
 ## 1.0.4 - 2015-06-10
 
 ### Features
@@ -19,8 +40,6 @@
 * Use unzip method of Gradle instead of unzip method of AntBuilder for the Retrieve task.
 
 ### Known issues
-
-
 
 * When the enforce version is changed and status task is executed all files are shown as deleted for the moment to avoid it you should execute reset task.
 * When you execute the delete task using files parameter and you use a folder name as a value, It is listing all files from the project.

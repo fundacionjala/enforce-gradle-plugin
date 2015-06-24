@@ -5,9 +5,13 @@
 
 package org.fundacionjala.gradle.plugins.enforce.interceptor.commands
 
+import groovy.util.logging.Slf4j
 import groovy.xml.StreamingMarkupBuilder
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 
+import java.nio.charset.StandardCharsets
+
+@Slf4j
 class Tab {
     private final String TAG_PAGES = "pages"
     private final String TAG_CUSTOM_OBJECT = "customObject"
@@ -17,15 +21,19 @@ class Tab {
     private final String URL = "https://www.google.com"
     private final String ENCODING = "UTF-8"
     private final int FRAME = 600
+    String encoding
 
+    Tab() {
+        this.encoding = StandardCharsets.UTF_8.displayName()
+    }
 
     Closure execute = { file ->
         if (!file) return
-
+        String charset = Util.getCharset(file)
         if (!file.text.contains(TAG_PAGES) && !file.text.contains(TAG_CUSTOM_OBJECT)) {
             def nameFile = Util.getFileName(file.getName())
             def contentWebTab = getWebTabString(nameFile)
-            file.text = contentWebTab
+            Util.writeFile(file, contentWebTab, charset, encoding)
         }
     }
 

@@ -31,10 +31,20 @@ class ObjectInterceptor extends MetadataInterceptor {
      */
     @Override
     void loadInterceptors() {
-        addInterceptor(Interceptor.TRUNCATE_FORMULAS.id, new ObjectFormula().execute)
-        addInterceptor(Interceptor.TRUNCATE_WEB_LINKS.id, new ObjectWebLink().execute)
-        addInterceptor(Interceptor.TRUNCATE_FIELD_SETS.id, new ObjectFieldSet().execute)
-        addInterceptor(Interceptor.TRUNCATE_ACTION_OVERRIDES.id, new ObjectActionOverride().execute)
-        addInterceptor(Interceptor.TRUNCATE_FIELD.id, new ObjectField().execute)
+        ObjectFormula objectFormula = new ObjectFormula()
+        objectFormula.encoding = encoding
+        addInterceptor(Interceptor.TRUNCATE_FORMULAS.id, objectFormula.execute)
+        ObjectWebLink objectWebLink = new ObjectWebLink()
+        objectWebLink.encoding = encoding
+        addInterceptor(Interceptor.TRUNCATE_WEB_LINKS.id, objectWebLink.execute)
+        ObjectFieldSet objectFieldSet = new ObjectFieldSet()
+        objectFieldSet.encoding = encoding
+        addInterceptor(Interceptor.TRUNCATE_FIELD_SETS.id, objectFieldSet.execute)
+        ObjectActionOverride objectActionOverride = new ObjectActionOverride()
+        objectActionOverride.encoding = encoding
+        addInterceptor(Interceptor.TRUNCATE_ACTION_OVERRIDES.id, objectActionOverride.execute)
+        ObjectField objectField = new ObjectField()
+        objectField.encoding = encoding
+        addInterceptor(Interceptor.TRUNCATE_FIELD.id, objectField.execute)
     }
 }

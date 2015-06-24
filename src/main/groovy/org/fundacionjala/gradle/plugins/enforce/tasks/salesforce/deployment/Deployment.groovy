@@ -30,6 +30,7 @@ abstract class Deployment extends SalesforceTask {
     public final String EXCLUDES = 'excludes'
     public String excludes
     public final int FILE_NAME_POSITION = 1
+    private Filter filter
 
     /**
      * Sets description and group task
@@ -40,6 +41,9 @@ abstract class Deployment extends SalesforceTask {
         super(descriptionTask, groupTask)
         componentDeploy = new DeployMetadata()
         interceptorManager = new InterceptorManager()
+        interceptorManager.buildInterceptors()
+        interceptorManager = new InterceptorManager()
+        interceptorManager.encoding = project.property(Constants.FORCE_EXTENSION).encoding
         interceptorManager.buildInterceptors()
     }
 
@@ -231,7 +235,8 @@ abstract class Deployment extends SalesforceTask {
         fileNames.split(Constants.COMMA).each {String fileName ->
             def fileNameChanged = fileName.replaceAll(Constants.BACK_SLASH, Constants.SLASH)
             if (!fileNameChanged.contains(Constants.SLASH)) {
-                return files
+                filesName.push("${fileName}${File.separator}${Constants.WILDCARD}${Constants.WILDCARD}")
+                return
             }
             filesName.push(fileName)
             filesName.push("${fileName}${Constants.META_XML}")
@@ -328,7 +333,7 @@ abstract class Deployment extends SalesforceTask {
             File file = new File(Paths.get(projectPath, fileName).toString())
             String parentName = Util.getFirstPath(fileName).toString()
             SalesforceValidator validator = SalesforceValidatorManager.getValidator(parentName)
-            if (!validator.validateFileByFolder(parentName, file)) {
+            if (!validator.validateFile(file, parentName)) {
                 invalidFiles.push(fileName)
             }
             if (!new File(Paths.get(projectPath, fileName).toString()).exists()) {

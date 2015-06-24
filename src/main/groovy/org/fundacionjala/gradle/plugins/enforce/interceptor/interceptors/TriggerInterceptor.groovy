@@ -31,6 +31,8 @@ class TriggerInterceptor extends MetadataInterceptor {
      */
     @Override
     void loadInterceptors() {
-        addInterceptor(Interceptor.TRUNCATE_TRIGGERS.id, new Trigger().execute)
+        Trigger trigger = new Trigger()
+        trigger.encoding = encoding
+        addInterceptor(Interceptor.TRUNCATE_TRIGGERS.id, trigger.execute)
     }
 }
