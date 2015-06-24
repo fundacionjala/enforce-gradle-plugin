@@ -110,6 +110,10 @@ public enum MetadataComponents {
         return directory
     }
 
+    boolean containsXMLFile() {
+        return containsXMLFile
+    }
+
     public static MetadataComponents getComponent(String name) {
         return COMPONENT.get(name.toUpperCase());
     }

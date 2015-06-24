@@ -49,6 +49,10 @@ public class Constants {
     public static final String PARAMETER_FILES = 'files'
     public static final String PARAMETER_EXCLUDES = 'excludes'
 
+    //Truncate constants
+    public static final String TRUNCATE_DESCRIPTION = 'This task truncates classes, objects, triggers, pages, components, workflows and tabs from your code'
+    public static final String TRUNCATE_FOLDER_NAME = 'truncate'
+
     //Deploy task constants
     public static final String DEPLOYING_TRUNCATED_CODE = 'Deploying truncated code'
     public static final String DEPLOYING_TRUNCATED_CODE_SUCCESSFULLY = 'Truncated code were successfully deployed'

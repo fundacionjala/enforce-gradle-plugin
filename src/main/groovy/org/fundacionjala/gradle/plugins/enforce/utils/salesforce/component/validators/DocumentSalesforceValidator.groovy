@@ -2,7 +2,7 @@ package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.vali
 
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 
-public class DocumentSalesforceValidator implements SalesforceValidator{
+public class DocumentSalesforceValidator extends XMLFileSalesforceValidator implements SalesforceValidator{
 
     /**
      * Validates the document file that belongs to documents folder defined in Salesforce
@@ -13,6 +13,10 @@ public class DocumentSalesforceValidator implements SalesforceValidator{
     @Override
     boolean validateFileByFolder(String folderName, File file) {
         if (folderName == MetadataComponents.DOCUMENTS.getDirectory() && !file.isDirectory()) {
+            return true
+        }
+
+        if(validateXMLFileByFolder(folderName, file)) {
             return true
         }
 
