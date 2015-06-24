@@ -69,7 +69,7 @@ class FileValidatorTest extends Specification {
         return files
     }
 
-    def crateFolderWithXml(String folder, int initFiles, int endFiles, String ext, boolean createFile ,boolean createXml) {
+    def createFolderWithXml(String folder, int initFiles, int endFiles, String ext, boolean createFile ,boolean createXml) {
         ArrayList<File> files = []
         for(int i = initFiles; i <= endFiles; i++) {
             if(createFile) {
@@ -135,9 +135,9 @@ class FileValidatorTest extends Specification {
     }
 
     def createAllFiles() {
-        crateFolderWithXml('classes', 1, 5, 'cls', true , true)
-        crateFolderWithXml('triggers', 1, 5, 'trigger', true , true)
-        crateFolderWithXml('objects', 1, 5, 'object', true , false)
+        createFolderWithXml('classes', 1, 5, 'cls', true , true)
+        createFolderWithXml('triggers', 1, 5, 'trigger', true , true)
+        createFolderWithXml('objects', 1, 5, 'object', true , false)
         crateFolderWithXml('documents', 'DocumentsFolder1', 1, 5, 'txt', true , true)
         crateFolderWithXml('documents', 'DocumentsFolder2', 1, 5, 'txt', true , true)
         crateFolderWithXml('dashboards', 'DashboardFolder1', 1, 5, 'dashboard', true , true)
@@ -169,7 +169,7 @@ class FileValidatorTest extends Specification {
     def "Test should returns all invalid files" () {
         given:
         File invalidFolderByDocument = new File(Paths.get(projectPath, 'reports/mydocs/doc1.doc').toString())
-        File invalidExtensionFile = new File(Paths.get(projectPath, 'classes/Class1.cls-meta.xml').toString())
+        File invalidExtensionFile = new File(Paths.get(projectPath, 'classes/Class2.cls-meta.xml').toString())
         File invalidFileWithoutExtension = new File(Paths.get(projectPath, 'classes/Class1').toString())
         ArrayList<File> files = []
         files.add(new File(Paths.get(projectPath, 'documents/mydocs/doc1.doc').toString()))
@@ -187,9 +187,9 @@ class FileValidatorTest extends Specification {
         invalidFiles.add(invalidExtensionFile)
         expected.put(Constants.INVALID_FILE_BY_FOLDER, invalidFiles)
         when:
-        Map<String, ArrayList<File>> result = FileValidator.validateFiles(projectPath, files)
+            Map<String, ArrayList<File>> result = FileValidator.validateFiles(projectPath, files)
         then:
-        result[Constants.INVALID_FILE_BY_FOLDER].sort() == expected[Constants.INVALID_FILE_BY_FOLDER].sort()
+            result[Constants.INVALID_FILE_BY_FOLDER].sort() == expected[Constants.INVALID_FILE_BY_FOLDER].sort()
     }
 
     def "Test should returns a map that contains all files by states: invalid, not_found, and valid" () {
@@ -254,12 +254,11 @@ class FileValidatorTest extends Specification {
 
     def "Test should returns a map that contains [ VALID_FILES: 5 class files ]" () {
         given:
-            crateFolderWithXml('classes', 1, 5, 'cls', true , true)
+            createFolderWithXml('classes', 1, 5, 'cls', true , true)
             addFolderExpected(Constants.VALID_FILE,'classes', 1, 5, 'cls', true , true)
 
         when:
             Map<String, ArrayList<File>> result = FileValidator.validateFiles(SRC_PATH, allFiles)
-             
         then:
             result[Constants.INVALID_FILE_BY_FOLDER].sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
             result[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
@@ -269,14 +268,14 @@ class FileValidatorTest extends Specification {
 
     def "Test should returns a map that contains [ INVALID_FILE_BY_FOLDER: 5, VALID_FILE: 5 class files ]" () {
         given:
-            crateFolderWithXml('classes', 1, 3, 'cls', true , true)
-            crateFolderWithXml('classes', 1, 3, 'trigger', true , true)
+            createFolderWithXml('classes', 1, 3, 'cls', true , true)
+            createFolderWithXml('classes', 1, 3, 'trigger', true , true)
             addFolderExpected(Constants.VALID_FILE,'classes', 1, 3, 'cls', true , true)
             addFolderExpected(Constants.INVALID_FILE_BY_FOLDER,'classes', 1, 3, 'trigger', true , true)
 
         when:
             Map<String, ArrayList<File>> result = FileValidator.validateFiles(SRC_PATH, allFiles)
-             
+            showMaps(true, mapExpected, result)
         then:
             result[Constants.INVALID_FILE_BY_FOLDER].sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
             result[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
@@ -286,8 +285,8 @@ class FileValidatorTest extends Specification {
 
     def "Test should returns a map that contains [ INVALID_FILE_BY_FOLDER: 5, VALID_FILE: 5 triggers files ]" () {
         given:
-            crateFolderWithXml('triggers', 1, 2, 'cls', true , true)
-            crateFolderWithXml('triggers', 1, 2, 'trigger', true , true)
+            createFolderWithXml('triggers', 1, 2, 'cls', true , true)
+            createFolderWithXml('triggers', 1, 2, 'trigger', true , true)
             addFolderExpected(Constants.VALID_FILE,'triggers', 1, 2, 'trigger', true , true)
             addFolderExpected(Constants.INVALID_FILE_BY_FOLDER,'triggers', 1, 2, 'cls', true , true)
 
@@ -303,7 +302,7 @@ class FileValidatorTest extends Specification {
 
     def "Test should returns a map that contains [ DOES_NOT_EXIST_FILES: 5 class files ]" () {
         given:
-            crateFolderWithXml('classes', 1, 5, 'cls', true , true)
+            createFolderWithXml('classes', 1, 5, 'cls', true , true)
             allFiles.each {it.delete()}
             addFolderExpected(Constants.DOES_NOT_EXIST_FILES,'classes', 1, 5, 'cls', true , true)
 
@@ -319,7 +318,7 @@ class FileValidatorTest extends Specification {
 
     def "Test should returns a map that contains [ FILE_WHITOUT_XML: 5 class files ]" () {
         given:
-            crateFolderWithXml('classes', 1, 5, 'cls', true , false)
+            createFolderWithXml('classes', 1, 5, 'cls', true , false)
             addFolderExpected(Constants.FILE_WHITOUT_XML,'classes', 1, 5, 'cls', true , false)
 
         when:
@@ -334,8 +333,8 @@ class FileValidatorTest extends Specification {
 
     def "Test should returns a map that contains [ XML_WHITOUT_FILE: 5 tiggers files ]" () {
         given:
-            crateFolderWithXml('triggers', 1, 3, 'trigger', true , true)
-            crateFolderWithXml('triggers', 4, 5, 'trigger', false , true)
+            createFolderWithXml('triggers', 1, 3, 'trigger', true , true)
+            createFolderWithXml('triggers', 4, 5, 'trigger', false , true)
             addFolderExpected(Constants.VALID_FILE,'triggers', 1, 3, 'trigger', true , true)
             addFolderExpected(Constants.INVALID_FILE_BY_FOLDER,'triggers', 4, 5, 'trigger', false , true)
 
@@ -366,7 +365,7 @@ class FileValidatorTest extends Specification {
             result[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 
-    def cleanupSpec() {
-        new File(Paths.get(SRC_PATH).toString()).deleteDir()
+    def cleanup() {
+      new File(Paths.get(SRC_PATH).toString()).deleteDir()
     }
 }

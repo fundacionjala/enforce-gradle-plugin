@@ -1,9 +1,10 @@
 package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files
 
+import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 
-public class FileSalesforceValidator implements SalesforceValidator{
+public class FileSalesforceValidator extends XMLFileSalesforceValidator implements SalesforceValidator{
 
     /**
      * Validates the file based in the folder name who belongs, following the Saleforce definitions
@@ -17,6 +18,8 @@ public class FileSalesforceValidator implements SalesforceValidator{
         if (!componentExtension) {
             return false
         }
-        return Util.getFileExtension(file).equals(componentExtension)
+
+        return Util.getFileExtension(file).equals(componentExtension) ||
+                validateXMLFile(file, folderComponent)
     }
 }

@@ -24,13 +24,12 @@ import java.nio.file.Paths
  */
 abstract class Deployment extends SalesforceTask {
     public DeployMetadata componentDeploy
-    public InterceptorManager componentManager
+    public InterceptorManager interceptorManager
     public List<String> interceptorsToExecute = []
     public List<String> interceptors = []
     public final String EXCLUDES = 'excludes'
     public String excludes
     public final int FILE_NAME_POSITION = 1
-    private Filter filter
 
     /**
      * Sets description and group task
@@ -40,9 +39,9 @@ abstract class Deployment extends SalesforceTask {
     Deployment(String descriptionTask, String groupTask) {
         super(descriptionTask, groupTask)
         componentDeploy = new DeployMetadata()
-        componentManager = new InterceptorManager()
-        componentManager.encoding = project.property(Constants.FORCE_EXTENSION).encoding
-        componentManager.buildInterceptors()
+        interceptorManager = new InterceptorManager()
+        interceptorManager.encoding = project.property(Constants.FORCE_EXTENSION).encoding
+        interceptorManager.buildInterceptors()
     }
 
     /**
@@ -64,14 +63,14 @@ abstract class Deployment extends SalesforceTask {
      */
     def truncateComponents(String dirToTruncate) {
         logger.debug('Loading files to truncate')
-        componentManager.loadFiles(dirToTruncate)
+        interceptorManager.loadFiles(dirToTruncate)
         logger.debug('Adding interceptors')
-        componentManager.addInterceptors(interceptorsToExecute)
-        componentManager.addInterceptorsRegistered(project.property(Constants.FORCE_EXTENSION).interceptors as Map)
+        interceptorManager.addInterceptors(interceptorsToExecute)
+        interceptorManager.addInterceptorsRegistered(project.property(Constants.FORCE_EXTENSION).interceptors as Map)
         logger.debug('Validating interceptors')
-        componentManager.validateInterceptors()
+        interceptorManager.validateInterceptors()
         logger.debug('Executing truncate process')
-        componentManager.executeTruncate()
+        interceptorManager.executeTruncate()
     }
 
     /**
@@ -81,7 +80,7 @@ abstract class Deployment extends SalesforceTask {
      * @param interceptorAction the interceptor closure
      */
     void interceptor(String metadataComponent, String interceptorName = '', Closure interceptorAction) {
-        componentManager.addInterceptor(metadataComponent, interceptorName, interceptorAction)
+        interceptorManager.addInterceptor(metadataComponent, interceptorName, interceptorAction)
     }
 
     /**
@@ -91,7 +90,7 @@ abstract class Deployment extends SalesforceTask {
      * @param interceptorAction the new interceptor
      */
     void firstInterceptor(String componentName, String interceptorName = '', Closure interceptorAction) {
-        componentManager.addFirstInterceptor(componentName, interceptorName, interceptorAction)
+        interceptorManager.addFirstInterceptor(componentName, interceptorName, interceptorAction)
     }
 
     /**
