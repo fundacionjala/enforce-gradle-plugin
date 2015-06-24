@@ -1,4 +1,4 @@
-package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators
+package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files
 
 import org.codehaus.groovy.runtime.GStringImpl
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
