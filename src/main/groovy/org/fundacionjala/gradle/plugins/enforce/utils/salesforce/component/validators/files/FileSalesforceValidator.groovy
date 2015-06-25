@@ -11,7 +11,7 @@ public class FileSalesforceValidator implements SalesforceValidator {
      * Validates the file based in the folder name who belongs, following the Salesforce definitions
      * @param file is a File
      * @param folderComponent is a String, based in Salesforce folders definitions
-     * @return boolean
+     * @return returns true if the file is valid
      */
     @Override
     public boolean validateFile(File file, String folderComponent) {
@@ -24,10 +24,10 @@ public class FileSalesforceValidator implements SalesforceValidator {
     }
 
     /**
-     * Validates the file validate defines and contains a xml file
+     * Validates the file defines and contains a xml file
      * @param file is a File
      * @param folderComponent is a String, based in Salesforce folders definitions
-     * @return boolean
+     * @return returns true if the file contains a xml file
      */
     @Override
     public boolean validateFileContainsXML(File file, String folderComponent) {

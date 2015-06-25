@@ -30,7 +30,7 @@ public class SalesforceValidatorManager {
     /**
      * Returns a valid key for validator map
      * @param folderName defines the folder that contains the salesforces components
-     * @return GString
+     * @return GString that contains key map
      */
     private static GString createKey(String folderName) {
         GString key = "${folderName}"

@@ -11,10 +11,10 @@ import java.nio.file.Paths
 class XMLFileSalesforceValidator implements SalesforceValidator {
 
     /**
-     * Validates the file component has xml file
+     * Validates the file component if it has xml file
      * @param file is based in the salesforce metadata types
      * @param folderComponent is a String, based in Salesforce folders metadata types
-     * @return boolean
+     * @return returns true if the file is valid
      */
     public boolean validateFile(File file, String folderComponent) {
         String componentExtension = MetadataComponents.getExtensionByFolder(folderComponent)
@@ -37,12 +37,12 @@ class XMLFileSalesforceValidator implements SalesforceValidator {
      * Validates the file validate defines and contains a xml file
      * @param file is based in the salesforce metadata types
      * @param folderComponent is a String, based in Salesforce folders definitions
-     * @return boolean
+     * @return returns true if the file contains a xml file
      */
     @Override
     public boolean validateFileContainsXML(File file, String folderComponent) {
         if (!file.getName().endsWith(Constants.META_XML) && file.exists()) {
-            String xmlFileName = Paths.get(file.getAbsolutePath() + Constants.META_XML).toString()
+            String xmlFileName = "${file.getAbsolutePath()}${Constants.META_XML}".toString()
             File xmlFile = new File(xmlFileName)
             return xmlFile.exists()
         }
