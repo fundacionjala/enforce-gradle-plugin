@@ -93,12 +93,13 @@ class DeployTest extends Specification {
 
     def "Test should update file tracker"() {
         given:
-            instanceDeploy.projectPath = SRC_PATH
+            String srcPath = Paths.get(SRC_PATH, 'src').toString()
+            instanceDeploy.projectPath = srcPath
             String FILE_TRACKING = '/.fileTracker.data'
         when:
             instanceDeploy.updateFileTracker()
         then:
-            new File(Paths.get(SRC_PATH, FILE_TRACKING).toString()).exists()
+            new File(Paths.get(srcPath, FILE_TRACKING).toString()).exists()
     }
 
     def "Test should create a directory in build directory"() {
