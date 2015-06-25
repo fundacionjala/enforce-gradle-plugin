@@ -46,7 +46,7 @@ public class Constants {
     public static final String BACK_SLASH = '\\\\'
 
     public static final String OBJECT_EXTENSION = 'object'
-
+    public static final String PARAMETER_INCLUDES = 'includes'
 
     //Deployment task constants
     public static final String PARAMETER_FOLDERS = 'folders'
