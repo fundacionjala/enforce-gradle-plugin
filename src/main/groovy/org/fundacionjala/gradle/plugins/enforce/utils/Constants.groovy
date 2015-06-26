@@ -47,7 +47,7 @@ public class Constants {
     public static final String BACK_SLASH = '\\\\'
 
     public static final String OBJECT_EXTENSION = 'object'
-
+    public static final String PARAMETER_INCLUDES = 'includes'
 
     //Deployment task constants
     public static final String PARAMETER_FOLDERS = 'folders'
@@ -57,6 +57,10 @@ public class Constants {
     public static final String YES_OPTION = 'y'
     public static final String TRUE_OPTION = 'true'
     public static final String FALSE_OPTION = 'false'
+
+    //Truncate constants
+    public static final String TRUNCATE_DESCRIPTION = 'This task truncates classes, objects, triggers, pages, components, workflows and tabs from your code'
+    public static final String TRUNCATE_FOLDER_NAME = 'truncate'
 
     //Deploy task constants
     public static final String DEPLOYING_TRUNCATED_CODE = 'Deploying truncated code'

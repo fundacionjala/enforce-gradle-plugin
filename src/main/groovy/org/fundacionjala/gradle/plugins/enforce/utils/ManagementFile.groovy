@@ -288,10 +288,6 @@ class ManagementFile {
             SalesforceValidator validator = SalesforceValidatorManager.getValidator(folder.getName())
             if (validator.validateFile(file, folder.getName())) {
                 result.push(file)
-                File xmlFile = new File("${file.getAbsolutePath().toString()}${METADATA_EXTENSION}")
-                if (xmlFile.exists()) {
-                    result.push(xmlFile)
-                }
             } else if (COMPONENTS_HAVE_SUB_FOLDER.contains(folder.getName())) {
                 if (file.isDirectory()) {
                     result.addAll(getFilesByFolder(folder.getName(), file))

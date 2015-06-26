@@ -29,6 +29,15 @@ class FileValidator {
             Path path = Paths.get(file.getPath())
             String relativePath = Util.getRelativePath(file, projectPath)
             String parentFileName = Util.getFirstPath(relativePath)
+            if (file.getName() == Constants.PACKAGE_FILE_NAME) {
+                filesState[Constants.VALID_FILE].add(file)
+                return
+            }
+            if (!isValidFolder(parentFileName)) {
+                filesState[Constants.INVALID_FILE_BY_FOLDER].add(file)
+                return
+            }
+
             SalesforceValidator validator = SalesforceValidatorManager.getValidator(parentFileName)
             boolean isValid = true
             if (!Files.exists(path)) {
@@ -39,10 +48,24 @@ class FileValidator {
                 filesState[Constants.INVALID_FILE_BY_FOLDER].add(file)
                 isValid = false
             }
+            if (!validator.validateFileContainsXML(file, parentFileName)) {
+                filesState[Constants.FILE_WHITOUT_XML].add(file)
+                isValid = false
+            }
             if(isValid){
                 filesState[Constants.VALID_FILE].add(file)
             }
         }
         return filesState
+    }
+
+    /**
+     * Validates if the folder is defined in the Salesforce's Metadata types
+     * @param folderComponent is a string
+     * @return boolean value
+     */
+    public static boolean isValidFolder(String folderComponent) {
+        MetadataComponents component = MetadataComponents.getComponentByFolder(folderComponent)
+        return component != null
     }
 }
