@@ -7,7 +7,7 @@ class SalesforceValidatorManagerTest extends Specification {
 
     def "Test should return a FileSalesforceValidator"() {
         given:
-            def folder = 'classes'
+            def folder = 'objects'
         when:
         def validator = SalesforceValidatorManager.getValidator(folder)
         then:
@@ -21,5 +21,14 @@ class SalesforceValidatorManagerTest extends Specification {
         def validator = SalesforceValidatorManager.getValidator(folder)
         then:
         validator instanceof DocumentSalesforceValidator
+    }
+
+    def "Test should return a XMLFileSalesforceValidator"() {
+        given:
+        def folder = 'classes'
+        when:
+        def validator = SalesforceValidatorManager.getValidator(folder)
+        then:
+        validator instanceof XMLFileSalesforceValidator
     }
 }
