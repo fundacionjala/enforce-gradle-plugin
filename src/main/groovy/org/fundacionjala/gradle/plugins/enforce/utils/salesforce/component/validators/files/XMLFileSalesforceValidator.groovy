@@ -46,6 +46,6 @@ class XMLFileSalesforceValidator implements SalesforceValidator {
             File xmlFile = new File(xmlFileName)
             return xmlFile.exists()
         }
-        return true;
+        return true
     }
 }
