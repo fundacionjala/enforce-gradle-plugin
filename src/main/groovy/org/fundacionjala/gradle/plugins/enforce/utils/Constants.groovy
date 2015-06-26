@@ -21,6 +21,7 @@ public class Constants {
     public static final String VALID_FILE = "Valid files"
     public static final String INVALID_FILE_BY_FOLDER = "Invalid file by folder"
     public static final String FILE_WHITOUT_XML = "File whitout xml"
+    public static final String FILE_WHITOUT_VALIDATOR = "File whitout validator"
 
 
     public static final String DOES_NOT_EXIST_FILES = "Not exist files:"
