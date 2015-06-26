@@ -137,6 +137,58 @@ class OrgValidatorTest extends Specification {
             mapResponse[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
             mapResponse[Constants.FILE_WHITOUT_VALIDATOR].sort() == mapExpected[Constants.FILE_WHITOUT_VALIDATOR].sort()
     }
+
+    def "Test should returns a map that contains all invalid class" () {
+        given:
+            mapExpected[Constants.DOES_NOT_EXIST_FILES].addAll(invalidClassFiles)
+            allFiles.addAll(invalidClassFiles)
+
+        when:
+            Map<String,ArrayList<File>> mapResponse = orgValidator.validateFiles(credential, allFiles, SRC_PATH)
+
+        then:
+            mapResponse[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
+            mapResponse[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
+            mapResponse[Constants.FILE_WHITOUT_VALIDATOR].sort() == mapExpected[Constants.FILE_WHITOUT_VALIDATOR].sort()
+    }
+
+    def "Test should returns a map that contains all valid and invalid trigger" () {
+        given:
+            mapExpected[Constants.VALID_FILE].addAll(validTriggerFiles)
+            mapExpected[Constants.DOES_NOT_EXIST_FILES].addAll(invalidTriggerFiles)
+            allFiles.addAll(validTriggerFiles)
+            allFiles.addAll(invalidTriggerFiles)
+
+        when:
+            Map<String,ArrayList<File>> mapResponse = orgValidator.validateFiles(credential, allFiles, SRC_PATH)
+
+        then:
+            mapResponse[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
+            mapResponse[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
+            mapResponse[Constants.FILE_WHITOUT_VALIDATOR].sort() == mapExpected[Constants.FILE_WHITOUT_VALIDATOR].sort()
+    }
+
+    def "Test should returns a map that contains all valid and invalid class and triggers" () {
+        given:
+            mapExpected[Constants.VALID_FILE].addAll(validClassFiles)
+            mapExpected[Constants.VALID_FILE].addAll(validTriggerFiles)
+            mapExpected[Constants.DOES_NOT_EXIST_FILES].addAll(invalidClassFiles)
+            mapExpected[Constants.DOES_NOT_EXIST_FILES].addAll(invalidTriggerFiles)
+
+            allFiles.addAll(validClassFiles)
+            allFiles.addAll(validTriggerFiles)
+            allFiles.addAll(invalidClassFiles)
+            allFiles.addAll(invalidTriggerFiles)
+
+        when:
+            Map<String,ArrayList<File>> mapResponse = orgValidator.validateFiles(credential, allFiles, SRC_PATH)
+            showMaps(true,mapExpected,mapResponse)
+
+        then:
+            mapResponse[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
+            mapResponse[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
+            mapResponse[Constants.FILE_WHITOUT_VALIDATOR].sort() == mapExpected[Constants.FILE_WHITOUT_VALIDATOR].sort()
+    }
 }
 
 
