@@ -43,6 +43,7 @@ class FileValidatorTest extends Specification {
         folders.add(new File(Paths.get(SRC_PATH,'documents').toString()))
         folders.add(new File(Paths.get(SRC_PATH,'documents','DocumentsFolder1').toString()))
         folders.add(new File(Paths.get(SRC_PATH,'documents','DocumentsFolder2').toString()))
+        folders.add(new File(Paths.get(SRC_PATH,'webs').toString()))
 
         folders.each { folder->
             new File(folder.getAbsolutePath()).mkdir()
@@ -275,6 +276,39 @@ class FileValidatorTest extends Specification {
             result[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
             result[Constants.FILE_WHITOUT_XML].sort() == mapExpected[Constants.FILE_WHITOUT_XML].sort()
             result[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
+    }
+
+    def "Test should returns invalid folders in the project source root" () {
+        given:
+        createFolderWithXml('webs', 1, 3, 'trigger', true , true)
+        addFolderExpected(Constants.INVALID_FILE_BY_FOLDER,'webs', 1, 3, 'trigger', true , true)
+
+        when:
+        Map<String, ArrayList<File>> result = FileValidator.validateFiles(SRC_PATH, allFiles)
+        showMaps(true, mapExpected, result)
+        then:
+        result[Constants.INVALID_FILE_BY_FOLDER].sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
+        result[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
+        result[Constants.FILE_WHITOUT_XML].sort() == mapExpected[Constants.FILE_WHITOUT_XML].sort()
+        result[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
+    }
+
+    def "Test should returns a package.xml valid file" () {
+        given:
+        createFolderWithXml('webs', 1, 3, 'trigger', true , true)
+        addFolderExpected(Constants.INVALID_FILE_BY_FOLDER,'webs', 1, 3, 'trigger', true , true)
+        File packageFile = new File(Paths.get(SRC_PATH, 'package.xml').toString())
+        packageFile.createNewFile()
+        allFiles.add(packageFile)
+        mapExpected[Constants.VALID_FILE].add(packageFile)
+        when:
+        Map<String, ArrayList<File>> result = FileValidator.validateFiles(SRC_PATH, allFiles)
+        showMaps(true, mapExpected, result)
+        then:
+        result[Constants.INVALID_FILE_BY_FOLDER].sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
+        result[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
+        result[Constants.FILE_WHITOUT_XML].sort() == mapExpected[Constants.FILE_WHITOUT_XML].sort()
+        result[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 
     def cleanup() {
