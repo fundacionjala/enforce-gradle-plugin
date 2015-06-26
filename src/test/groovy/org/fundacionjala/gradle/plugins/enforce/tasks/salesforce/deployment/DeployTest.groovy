@@ -8,10 +8,7 @@ package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 import org.custommonkey.xmlunit.Diff
 import org.custommonkey.xmlunit.XMLUnit
 import org.fundacionjala.gradle.plugins.enforce.EnforcePlugin
-import org.fundacionjala.gradle.plugins.enforce.metadata.DeployMetadata
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
-import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
-import org.fundacionjala.gradle.plugins.enforce.wsc.LoginType
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Shared
@@ -29,8 +26,6 @@ class DeployTest extends Specification {
     @Shared
     def SRC_PATH = Paths.get(System.getProperty("user.dir"), "src", "test", "groovy", "org",
                    "fundacionjala", "gradle", "plugins","enforce","tasks", "salesforce", "resources").toString()
-    @Shared
-    Credential credential
 
     def setup() {
         project = ProjectBuilder.builder().build()
@@ -42,14 +37,6 @@ class DeployTest extends Specification {
         instanceDeploy.createDeploymentDirectory(Paths.get(SRC_PATH, 'build').toString())
         instanceDeploy.createDeploymentDirectory(Paths.get(SRC_PATH, 'build', 'deploy').toString())
         instanceDeploy.createDeploymentDirectory(Paths.get(SRC_PATH, 'build', 'deploy', 'folderOne').toString())
-
-        credential = new Credential()
-        credential.id = 'id'
-        credential.username = 'salesforce2014.test@gmail.com'
-        credential.password = '123qwe2014'
-        credential.token = 'UO1Jx5vDQl97xCKkwXBH8tg3T'
-        credential.loginFormat = LoginType.DEV.value()
-        credential.type = 'normal'
     }
 
     def "Test should show folders that aren't deployed"() {
@@ -110,30 +97,28 @@ class DeployTest extends Specification {
             new File(newDirectoryPath).exists()
     }
 
-    def "Integration test should deploy files"() {
+    def "Test should setup files into build/deploy directory to deploy"() {
         given:
-            def deployPath = Paths.get(SRC_PATH, 'build', 'deploy').toString()
+            def folderDeploy = Paths.get(SRC_PATH, 'build', 'deploy').toString()
             instanceDeploy.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
             instanceDeploy.projectPath = Paths.get(SRC_PATH, 'src').toString()
-            instanceDeploy.componentDeploy = new DeployMetadata()
-            instanceDeploy.poll = 200
-            instanceDeploy.waitTime = 10
-            instanceDeploy.credential = credential
             instanceDeploy.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
         when:
-            instanceDeploy.runTask()
+            instanceDeploy.setupFilesToDeploy()
+            instanceDeploy.createDeploymentDirectory(folderDeploy)
+            instanceDeploy.displayFolderNoDeploy()
+            instanceDeploy.deployAllComponents()
             def packageXmlToDeployDirectory =  new File(Paths.get(SRC_PATH, 'build', 'deploy', 'package.xml').toString()).text
             def packageXmlToSrcDirectory =  new File(Paths.get(SRC_PATH, 'build', 'deploy', 'package.xml').toString()).text
             XMLUnit.ignoreWhitespace = true
             def xmlDiff = new Diff(packageXmlToDeployDirectory, packageXmlToSrcDirectory)
         then:
             xmlDiff.similar()
-            new File(Paths.get(deployPath, 'classes', 'Class1.cls').toString()).exists()
-            new File(Paths.get(deployPath, 'classes', 'Class1.cls-meta.xml').toString()).exists()
-            new File(Paths.get(deployPath, 'objects', 'Object1__c.object').toString()).exists()
-            new File(Paths.get(deployPath, 'triggers', 'Trigger1.trigger').toString()).exists()
-            new File(Paths.get(deployPath, 'triggers', 'Trigger1.trigger-meta.xml').toString()).exists()
-            new File(Paths.get(SRC_PATH, 'build', 'deploy.zip').toString()).exists()
+            new File(Paths.get(folderDeploy, 'classes', 'Class1.cls').toString()).exists()
+            new File(Paths.get(folderDeploy, 'classes', 'Class1.cls-meta.xml').toString()).exists()
+            new File(Paths.get(folderDeploy, 'objects', 'Object1__c.object').toString()).exists()
+            new File(Paths.get(folderDeploy, 'triggers', 'Trigger1.trigger').toString()).exists()
+            new File(Paths.get(folderDeploy, 'triggers', 'Trigger1.trigger-meta.xml').toString()).exists()
     }
 
     def "Test should exclude a file by file"() {
@@ -343,21 +328,23 @@ class DeployTest extends Specification {
             thrown(Exception)
     }
 
-    def "Integration testing must deploy the organization files and delete temporary files generated"() {
+    def "Test should setup files to deploy at build directory and delete temporary files generated"() {
         given:
             instanceDeploy.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
             instanceDeploy.projectPath = Paths.get(SRC_PATH, 'src').toString()
             instanceDeploy.project.enforce.deleteTemporaryFiles = true
-            instanceDeploy.poll = 200
-            instanceDeploy.waitTime = 10
-            instanceDeploy.credential = credential
             instanceDeploy.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
             def deployFileZipPath = Paths.get(SRC_PATH,'build','deploy.zip').toString()
             def deployFolderPath = Paths.get(SRC_PATH,'build','deploy').toString()
             File deployFileZip = new File(deployFileZipPath)
             File deployFolder = new File(deployFolderPath)
+            String folderDeploy = Paths.get(SRC_PATH, 'build', 'deploy').toString()
         when:
-            instanceDeploy.runTask()
+            instanceDeploy.setupFilesToDeploy()
+            instanceDeploy.createDeploymentDirectory(folderDeploy)
+            instanceDeploy.displayFolderNoDeploy()
+            instanceDeploy.deployAllComponents()
+            instanceDeploy.deleteTemporaryFiles()
         then:
             !deployFileZip.exists()
             !deployFolder.exists()

@@ -1,7 +1,6 @@
-package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.filter
+package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.filter
 
 import org.fundacionjala.gradle.plugins.enforce.EnforcePlugin
-import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Shared

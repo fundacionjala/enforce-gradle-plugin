@@ -5,8 +5,6 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 
-import org.custommonkey.xmlunit.Diff
-import org.custommonkey.xmlunit.XMLUnit
 import org.fundacionjala.gradle.plugins.enforce.EnforcePlugin
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker

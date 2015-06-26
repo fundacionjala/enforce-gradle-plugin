@@ -1,9 +1,6 @@
-package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.filter
+package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.filter
 
-import org.apache.commons.lang.StringUtils
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
-import org.fundacionjala.gradle.plugins.enforce.utils.Util
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 import org.gradle.api.Project
 import org.gradle.api.file.FileTree
 

@@ -11,8 +11,6 @@ import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentSerializer
 import org.fundacionjala.gradle.plugins.enforce.metadata.DeployMetadata
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
-import org.fundacionjala.gradle.plugins.enforce.utils.Util
-import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Shared
@@ -31,9 +29,6 @@ class DeleteTest extends Specification {
             "fundacionjala", "gradle", "plugins","enforce","tasks", "salesforce", "resources").toString()
     @Shared
     def DIR_DELETE_FOLDER = 'delete'
-
-    @Shared
-    Credential credential
 
     @Shared
     ComponentSerializer componentSerializer
