@@ -1,9 +1,6 @@
-package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.filter
+package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.filter
 
-import org.apache.commons.lang.StringUtils
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
-import org.fundacionjala.gradle.plugins.enforce.utils.Util
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 import org.gradle.api.Project
 import org.gradle.api.file.FileTree
 
@@ -47,11 +44,11 @@ class Filter {
      * @return an array list of files
      */
     public ArrayList<File> getFiles(String includes, String excludes) {
-        ArrayList<String> criteriaToExclude = []
+        ArrayList<String> criteriaToExclude = [Constants.FILE_TRACKER_NAME]
         ArrayList<String> criteriaToInclude = []
 
         if(excludes && !excludes.isEmpty()) {
-            criteriaToExclude = getCriteria(excludes)
+            criteriaToExclude.addAll(getCriteria(excludes))
         }
 
         if(includes && !includes.isEmpty()) {

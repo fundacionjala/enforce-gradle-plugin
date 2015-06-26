@@ -46,7 +46,7 @@ public class Constants {
     public static final String BACK_SLASH = '\\\\'
 
     public static final String OBJECT_EXTENSION = 'object'
-    public static final String PARAMETER_INCLUDES = 'includes'
+    public static final String FILE_TRACKER_NAME = ".fileTracker.data"
 
     //Deployment task constants
     public static final String PARAMETER_FOLDERS = 'folders'
