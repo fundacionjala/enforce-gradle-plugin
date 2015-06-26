@@ -37,6 +37,8 @@ class ManagementFileTest extends Specification {
                                              new File(Paths.get(targetPath, 'reports', 'testFolder-meta.xml').toString()),
                                              new File(Paths.get(targetPath, 'documents', 'mydocs/doc1.doc').toString()),
                                              new File(Paths.get(targetPath, 'documents', 'mydocs/image.png').toString()),
+                                             new File(Paths.get(targetPath, 'documents', 'mydocs/doc1.doc-meta.xml').toString()),
+                                             new File(Paths.get(targetPath, 'documents', 'mydocs/image.png-meta.xml').toString()),
                                              new File(Paths.get(targetPath, 'package.xml').toString())]
         then:
             arrayResult.sort() == arrayExpected.sort()
@@ -70,6 +72,8 @@ class ManagementFileTest extends Specification {
                                new File(Paths.get(targetPath, 'objects', 'Object2__c.object').toString()),
                                new File(Paths.get(targetPath, 'documents', 'mydocs/doc1.doc').toString()),
                                new File(Paths.get(targetPath, 'documents', 'mydocs/image.png').toString()),
+                               new File(Paths.get(targetPath, 'documents', 'mydocs/doc1.doc-meta.xml').toString()),
+                               new File(Paths.get(targetPath, 'documents', 'mydocs/image.png-meta.xml').toString()),
                                new File(Paths.get(targetPath, 'package.xml').toString()),
                                new File(Paths.get(targetPath, 'reports', 'testFolder', 'testReport.report').toString()),
                                new File(Paths.get(targetPath, 'reports', 'testFolder-meta.xml').toString())].sort()

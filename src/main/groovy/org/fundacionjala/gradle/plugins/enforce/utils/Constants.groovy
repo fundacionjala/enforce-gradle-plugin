@@ -16,9 +16,13 @@ public class Constants {
     public static final String FORCE_EXTENSION = "enforce"
     public static final String TYPE_CLASS = "Class"
     public static final String DEPLOYMENT = "Deployment"
-    public static final String INVALID_FOLDER = "Invalid folders"
+    public static final String INVALID_FOLDER = "Invalid folder"
     public static final String INVALID_FILE = "Invalid files"
-    public static final String VALID_FILE = "valid files"
+    public static final String VALID_FILE = "Valid files"
+    public static final String INVALID_FILE_BY_FOLDER = "Invalid file by folder"
+    public static final String FILE_WHITOUT_XML = "File whitout xml"
+
+
     public static final String DOES_NOT_EXIST_FILES = "Not exist files:"
     public static final String DOES_NOT_EXIST_FOLDER = "Not exist folders:"
     public static final String NOT_FILES = "There are not files into folders"
@@ -42,7 +46,7 @@ public class Constants {
     public static final String BACK_SLASH = '\\\\'
 
     public static final String OBJECT_EXTENSION = 'object'
-
+    public static final String PARAMETER_INCLUDES = 'includes'
 
     //Deployment task constants
     public static final String PARAMETER_FOLDERS = 'folders'
@@ -52,6 +56,10 @@ public class Constants {
     public static final String YES_OPTION = 'y'
     public static final String TRUE_OPTION = 'true'
     public static final String FALSE_OPTION = 'false'
+
+    //Truncate constants
+    public static final String TRUNCATE_DESCRIPTION = 'This task truncates classes, objects, triggers, pages, components, workflows and tabs from your code'
+    public static final String TRUNCATE_FOLDER_NAME = 'truncate'
 
     //Deploy task constants
     public static final String DEPLOYING_TRUNCATED_CODE = 'Deploying truncated code'
