@@ -74,6 +74,7 @@ class TruncateTest extends Specification {
         def componentsFiles = ['objects': 3, 'classes': 8, 'components': 2, 'triggers': 4, 'pages': 6]
         when:
         truncateInstance.setup()
+        println truncateInstance.projectPath
         ArrayList<File> files = truncateInstance.getValidFiles()
         truncateInstance.copyValidFiles(files)
         then:

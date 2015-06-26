@@ -1,16 +1,17 @@
 package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files
 
-import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
-
-public class FileSalesforceValidator extends XMLFileSalesforceValidator implements SalesforceValidator{
+/**
+ * Generic file validator based in the salesforce definitions
+ */
+public class FileSalesforceValidator implements SalesforceValidator {
 
     /**
-     * Validates the file based in the folder name who belongs, following the Saleforce definitions
+     * Validates the file based in the folder name who belongs, following the Salesforce definitions
      * @param file is a File
      * @param folderComponent is a String, based in Salesforce folders definitions
-     * @return boolean
+     * @return returns true if the file is valid
      */
     @Override
     public boolean validateFile(File file, String folderComponent) {
@@ -19,7 +20,18 @@ public class FileSalesforceValidator extends XMLFileSalesforceValidator implemen
             return false
         }
 
-        return Util.getFileExtension(file).equals(componentExtension) ||
-                validateXMLFile(file, folderComponent)
+        return Util.getFileExtension(file).equals(componentExtension)
+    }
+
+    /**
+     * Validates the file defines and contains a xml file
+     * @param file is a File
+     * @param folderComponent is a String, based in Salesforce folders definitions
+     * @return returns true if the file contains a xml file
+     */
+    @Override
+    public boolean validateFileContainsXML(File file, String folderComponent) {
+        MetadataComponents component = MetadataComponents.getComponentByFolder(folderComponent)
+        return !component.containsXMLFile()
     }
 }

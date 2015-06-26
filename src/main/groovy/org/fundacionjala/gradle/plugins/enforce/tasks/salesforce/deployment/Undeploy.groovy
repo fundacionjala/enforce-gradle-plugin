@@ -60,11 +60,15 @@ class Undeploy extends Deployment {
     void runTask() {
         setupFilesToUnDeploy()
         initializeQueries(getJsonQueries())
+        //truncating process
         truncateFiles()
         deployTruncatedComponents()
+        executeDeploy(folderUnDeploy)
+        //Deploying process
         addNewStandardObjects()
         createDeploymentDirectory(folderUnDeploy)
         deployToDeleteComponents()
+        executeDeploy(folderUnDeploy)
     }
 
     /**
@@ -107,7 +111,6 @@ class Undeploy extends Deployment {
         combinePackage(unDeployPackagePath)
         componentDeploy.startMessage = Constants.START_MESSAGE_TRUNCATE
         componentDeploy.successMessage = Constants.SUCCESS_MESSAGE_TRUNCATE
-        executeDeploy(folderUnDeploy)
     }
 
     /**
@@ -137,7 +140,6 @@ class Undeploy extends Deployment {
         componentDeploy.startMessage = ""
         componentDeploy.successMessage = Constants.SUCCESS_MESSAGE_DELETE
         combinePackage(unDeployDestructivePath)
-        executeDeploy(folderUnDeploy)
     }
 
     /**

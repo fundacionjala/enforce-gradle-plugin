@@ -39,6 +39,10 @@ class FileValidator {
                 filesState[Constants.INVALID_FILE_BY_FOLDER].add(file)
                 isValid = false
             }
+            if (!validator.validateFileContainsXML(file, parentFileName)) {
+                filesState[Constants.FILE_WHITOUT_XML].add(file)
+                isValid = false
+            }
             if(isValid){
                 filesState[Constants.VALID_FILE].add(file)
             }

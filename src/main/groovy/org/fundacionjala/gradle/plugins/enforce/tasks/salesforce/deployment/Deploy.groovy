@@ -44,13 +44,15 @@ class Deploy extends Deployment {
         setupFilesToDeploy()
         logger.debug("${'Creating folder  Deploy at: '}${folderDeploy}")
         createDeploymentDirectory(folderDeploy)
-        if (Util.isValidProperty(project, Constants.FOLDERS_DEPLOY)) {
+        if (Util.isValidProperty(parameters, Constants.FOLDERS_DEPLOY)) {
             deployByFolder()
         } else {
             checkStatusTruncate()
             displayFolderNoDeploy()
             deployTruncateFiles()
+            deployAllComponents()
         }
+        deployToSalesForce()
     }
 
     /**
@@ -67,7 +69,7 @@ class Deploy extends Deployment {
      * Deploys by folder
      */
     public void deployByFolder() {
-        folders = project.folders
+        folders = parameters[Constants.PARAMETER_FOLDERS].toString()
         if (folders) {
             ArrayList<String> foldersName = getFoldersName()
             ArrayList<File> filesByFolders = fileManager.getFilesByFolders(projectPath, foldersName)
@@ -75,7 +77,6 @@ class Deploy extends Deployment {
             fileManager.copy(projectPath, filesByFolders, folderDeploy)
             writePackage(deployPackagePath, filesByFolders)
             combinePackageToUpdate(deployPackagePath)
-            deployToSalesForce()
         }
     }
 
@@ -117,23 +118,28 @@ class Deploy extends Deployment {
             executeDeploy(folderDeploy)
             createDeploymentDirectory(folderDeploy)
         }
+    }
+
+    /**
+     * Deploys all components from project directory
+     */
+    public void deployAllComponents() {
         ArrayList<File> filteredFiles = excludeFiles(fileManager.getValidElements(projectPath))
         fileManager.copy(projectPath, filteredFiles, folderDeploy)
         writePackage(deployPackagePath, filteredFiles)
         combinePackage(deployPackagePath)
         componentDeploy.startMessage = Constants.DEPLOYING_CODE
         componentDeploy.successMessage = Constants.DEPLOYING_CODE_SUCCESSFULLY
-        deployToSalesForce()
     }
 
     /**
      * Checks if property turn off truncate exists and sets respective values
      */
     private void checkStatusTruncate() {
-        if (!Util.isValidProperty(project, Constants.TURN_OFF_TRUNCATE)) {
+        if (!Util.isValidProperty(parameters, Constants.TURN_OFF_TRUNCATE)) {
             return
         }
-        String turnOffOptionTruncate = project.turnOffTruncate
+        String turnOffOptionTruncate = parameters[Constants.TURN_OFF_TRUNCATE].toString()
         if (turnOffOptionTruncate.indexOf(Constants.TRUNCATE_DEPRECATE) != Constants.NOT_FOUND) {
             deprecateTruncateOn = false
             logger.quiet(Constants.TRUNCATE_DEPRECATE_TURNED_OFF)

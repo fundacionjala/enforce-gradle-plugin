@@ -40,6 +40,15 @@ class UndeployTest extends Specification {
     @Shared
     Credential credential
 
+    @Shared
+    SmartFilesValidator smartFilesValidator
+
+    @Shared
+    String destructiveExpect
+
+    @Shared
+    String packageExpect
+
     def setup() {
         project = ProjectBuilder.builder().build()
         project.apply(plugin: EnforcePlugin)
@@ -53,6 +62,8 @@ class UndeployTest extends Specification {
         undeployInstance = project.tasks.undeploy
         undeployInstance.fileManager = new ManagementFile(SRC_PATH)
         undeployInstance.project.enforce.deleteTemporaryFiles = false
+        undeployInstance.smartFilesValidator = Mock(SmartFilesValidator)
+
         credential = new Credential()
         credential.id = 'id'
         credential.username = 'salesforce2014.test@gmail.com'
@@ -60,6 +71,29 @@ class UndeployTest extends Specification {
         credential.token = 'UO1Jx5vDQl97xCKkwXBH8tg3T'
         credential.loginFormat = LoginType.DEV.value()
         credential.type = 'normal'
+
+        destructiveExpect = '''<?xml version='1.0' encoding='UTF-8'?>
+                                            <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
+                                                <types>
+                                                    <members>Class1</members>
+                                                    <name>ApexClass</name>
+                                                </types>
+                                                <types>
+                                                    <members>Trigger1</members>
+                                                    <name>ApexTrigger</name>
+                                                </types>
+                                                <types>
+                                                    <members>Object1__c</members>
+                                                    <name>CustomObject</name>
+                                                </types>
+                                                <version>32.0</version>
+                                            </Package>
+                                        '''
+        packageExpect =  '''<?xml version='1.0' encoding='UTF-8'?>
+                                            <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
+                                                <version>32.0</version>
+                                            </Package>
+                                        '''
     }
 
     def "Test should apply plugin and sets extension values"() {
@@ -96,7 +130,7 @@ class UndeployTest extends Specification {
             result == ['**/Account.object', "**/Opportunity.object", "**/Contact.object", "**/Admin.profile", "**/CMC.app"]
     }
 
-    def "Integration test should deploy truncate components"() {
+    def "Test should create a package xml file into build directory to truncate components"() {
         given:
             undeployInstance.createDeploymentDirectory(Paths.get(SRC_PATH, 'build').toString())
             def undeployDirectory = Paths.get(SRC_PATH, 'build', 'undeploy').toString()
@@ -107,71 +141,63 @@ class UndeployTest extends Specification {
             undeployInstance.folderUnDeploy = undeployDirectory
             undeployInstance.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
             undeployInstance.createDeploymentDirectory(undeployDirectory)
-            undeployInstance.fileManager.copy(SRC_PATH, undeployInstance.filesToTruncate, undeployDirectory)
             undeployInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
-            undeployInstance.poll = 200
-            undeployInstance.waitTime = 10
-            undeployInstance.credential = credential
         when:
             undeployInstance.deployTruncatedComponents()
         then:
             new File(Paths.get(SRC_PATH,'build', 'undeploy', 'package.xml').toString()).exists()
-            new File(Paths.get(SRC_PATH,'build', 'undeploy.zip').toString()).exists()
     }
 
-    def "Integration test should deploy To Delete Components"() {
+    def "Test should build a destructiveChanges xml file with Class1, Trigger1 and Object1__c values"() {
         given:
             undeployInstance.createDeploymentDirectory(Paths.get(SRC_PATH, 'build').toString())
-            def srcpath = Paths.get(SRC_PATH, 'src').toString()
             def undeployDirectory = Paths.get(SRC_PATH, 'build', 'undeploy').toString()
             undeployInstance.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
-            undeployInstance.componentDeploy = new DeployMetadata()
-            undeployInstance.poll = 200
-            undeployInstance.waitTime = 10
-            undeployInstance.credential = credential
-            undeployInstance.executeDeploy(srcpath)
-            undeployInstance.unDeployPackagePath = Paths.get(undeployDirectory,'package.xml').toString()
-            undeployInstance.folderUnDeploy = undeployDirectory
-            undeployInstance.projectPath = srcpath
-            undeployInstance.createDeploymentDirectory(undeployDirectory)
-            undeployInstance.setupFilesToUnDeploy()
+            undeployInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
             undeployInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
-            undeployInstance.smartFilesValidator = new SmartFilesValidator(undeployInstance.getJsonQueries())
-            undeployInstance.truncateFiles()
+            undeployInstance.setupFilesToUnDeploy()
+            undeployInstance.packageComponent = Mock(PackageComponent)
             Files.copy(Paths.get(SRC_PATH, 'src', 'package.xml' ), Paths.get(undeployDirectory, 'package.xml'), StandardCopyOption.REPLACE_EXISTING)
-            undeployInstance.packageComponent = new PackageComponent(Paths.get(undeployDirectory,'package.xml').toString())
-            def destructiveExpect = "${"<Package xmlns='http://soap.sforce.com/2006/04/metadata'>\n"}${"<types>\n<members>Class1</members><name>ApexClass</name>\n</types>"}${"<types>\n<members>Object1__c</members><name>CustomObject</name>\n</types>"}${"<types><members>Trigger1</members><name>ApexTrigger</name></types>"}${"<version>32.0</version></Package>"}"
-            def packageExpect = "${"<?xml version='1.0' encoding='UTF-8'?>"}${"<Package xmlns='http://soap.sforce.com/2006/04/metadata'>"}${"<version>32.0</version></Package>"}"
+            ArrayList<File> files = [new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString()),
+                                     new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger').toString()),
+                                     new File(Paths.get(SRC_PATH, 'src', 'objects', 'Object1__c.object').toString()),]
         when:
+            undeployInstance.packageComponent.components >> ["classes/*.cls", "triggers/*.trigger", "objects/*.object"]
+            undeployInstance.smartFilesValidator.filterFilesAccordingOrganization(_,_) >> files
+            undeployInstance.setupFilesToUnDeploy()
             undeployInstance.addNewStandardObjects()
             undeployInstance.createDeploymentDirectory(undeployDirectory)
             undeployInstance.deployToDeleteComponents()
-            def destructiveXmlContent =  new File(Paths.get(SRC_PATH, 'build', 'undeploy', 'destructiveChanges.xml').toString()).text
-            def packageXmlContent =  new File(Paths.get(SRC_PATH, 'build', 'undeploy', 'package.xml').toString()).text
+            def destructiveXmlContent =  new File(Paths.get(undeployDirectory, 'destructiveChanges.xml').toString()).text
+            def packageXmlContent =  new File(Paths.get(undeployDirectory, 'package.xml').toString()).text
             XMLUnit.ignoreWhitespace = true
             def destructiveXmlDiff = new Diff(destructiveXmlContent, destructiveExpect)
             def packageXmlDiff = new Diff(packageXmlContent, packageExpect)
         then:
-            destructiveXmlDiff.similar()
             packageXmlDiff.similar()
+            destructiveXmlDiff.similar()
     }
 
-    def "Integration test should undeploy files"() {
+    def "Test should build destructive before to execute deploy taking in account all function called into runTask() function"() {
         given:
             undeployInstance.createDeploymentDirectory(Paths.get(SRC_PATH, 'build').toString())
             undeployInstance.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
             undeployInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
-            undeployInstance.unDeployPackagePath = Paths.get(SRC_PATH, 'build', 'undeploy').toString()
-            undeployInstance.componentDeploy = new DeployMetadata()
-            undeployInstance.poll = 200
-            undeployInstance.waitTime = 10
-            undeployInstance.credential = credential
             undeployInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
-            undeployInstance.executeDeploy(Paths.get(SRC_PATH, 'src').toString())
-            def destructiveExpect = "${"<Package xmlns='http://soap.sforce.com/2006/04/metadata'>"}${"<types><members>Class1</members><name>ApexClass</name></types>"}${"<types><members>Object1__c</members><name>CustomObject</name></types>"}${"<types><members>Trigger1</members><name>ApexTrigger</name></types>"}${"<version>32.0</version></Package>"}"
-            def packageExpect = "${"<?xml version='1.0' encoding='UTF-8'?>"}${"<Package xmlns='http://soap.sforce.com/2006/04/metadata'>"}${"<version>32.0</version></Package>"}"
+            undeployInstance.unDeployPackagePath = Paths.get(SRC_PATH, 'build', 'undeploy').toString()
+            undeployInstance.packageComponent = Mock(PackageComponent)
+            ArrayList<File> files = [new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString()),
+                                     new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger').toString()),
+                                     new File(Paths.get(SRC_PATH, 'src', 'objects', 'Object1__c.object').toString()),]
         when:
-            undeployInstance.runTask()
+            undeployInstance.packageComponent.components >> ["classes/*.cls", "triggers/*.trigger", "objects/*.object"]
+            undeployInstance.smartFilesValidator.filterFilesAccordingOrganization(_,_) >> files
+            undeployInstance.setupFilesToUnDeploy()
+            undeployInstance.truncateFiles()
+            undeployInstance.deployTruncatedComponents()
+            undeployInstance.addNewStandardObjects()
+            undeployInstance.createDeploymentDirectory(undeployInstance.folderUnDeploy)
+            undeployInstance.deployToDeleteComponents()
             def destructiveXmlContent =  new File(Paths.get(SRC_PATH, 'build', 'undeploy', 'destructiveChanges.xml').toString()).text
             def packageXmlContent =  new File(Paths.get(SRC_PATH, 'build', 'undeploy', 'package.xml').toString()).text
             XMLUnit.ignoreWhitespace = true
@@ -209,13 +235,13 @@ class UndeployTest extends Specification {
 
     def 'Should get the custom fields from an standard object file'() {
         given:
-        def expected = ["Account.MyLookupField1__c", "Account.MyLookupField2__c"]
-        def path = Paths.get(SRC_PATH, "objects", "Account.object").toString()
+            def expected = ["Account.MyLookupField1__c", "Account.MyLookupField2__c"]
+            def path = Paths.get(SRC_PATH, "objects", "Account.object").toString()
         when:
-        def result = undeployInstance.getCustomFields(new File(path))
+            def result = undeployInstance.getCustomFields(new File(path))
         then:
-        result.size() == 2
-        expected == result
+            result.size() == 2
+            expected == result
     }
 
     def cleanupSpec() {

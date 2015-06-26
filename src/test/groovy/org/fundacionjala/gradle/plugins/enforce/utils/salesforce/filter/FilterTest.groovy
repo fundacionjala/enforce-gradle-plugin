@@ -1,7 +1,6 @@
-package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.filter
+package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.filter
 
 import org.fundacionjala.gradle.plugins.enforce.EnforcePlugin
-import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Shared
@@ -420,6 +419,17 @@ class FilterTest extends Specification{
             ArrayList<File> result = myFilter.getFiles(includes, excludes)
         then:
             result.sort() == filesExpected.sort()
+    }
+
+    def "Test should return all files less .fileTracker.data file" () {
+        given:
+            Filter myFilter = new Filter(project, Paths.get(SRC_PATH, 'src_temporary').toString())
+            File fileTracker = new File(Paths.get(SRC_PATH, 'src_temporary', '.fileTracker.data').toString())
+            fileTracker.write('This is a fileTracker file content')
+        when:
+            ArrayList<File> result = myFilter.getFiles("", "")
+        then:
+            result.sort() == allFiles.sort()
     }
 
     def "Test should return a criteria when you send a wildcard " () {

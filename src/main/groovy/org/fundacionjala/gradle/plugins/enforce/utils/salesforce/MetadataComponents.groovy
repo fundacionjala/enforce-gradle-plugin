@@ -115,7 +115,7 @@ public enum MetadataComponents {
     }
 
     public static MetadataComponents getComponent(String name) {
-        return COMPONENT.get(name.toUpperCase());
+        return COMPONENT.get(name.toUpperCase())
     }
 
     /**
