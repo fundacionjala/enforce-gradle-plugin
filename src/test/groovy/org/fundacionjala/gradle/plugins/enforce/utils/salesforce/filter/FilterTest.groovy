@@ -421,6 +421,17 @@ class FilterTest extends Specification{
             result.sort() == filesExpected.sort()
     }
 
+    def "Test should return all files less .fileTracker.data file" () {
+        given:
+            Filter myFilter = new Filter(project, Paths.get(SRC_PATH, 'src_temporary').toString())
+            File fileTracker = new File(Paths.get(SRC_PATH, 'src_temporary', '.fileTracker.data').toString())
+            fileTracker.write('This is a fileTracker file content')
+        when:
+            ArrayList<File> result = myFilter.getFiles("", "")
+        then:
+            result.sort() == allFiles.sort()
+    }
+
     def "Test should return a criteria when you send a wildcard " () {
         given:
             Filter myFilter = new Filter(project, Paths.get(SRC_PATH, 'src_temporary').toString())

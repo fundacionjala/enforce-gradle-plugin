@@ -60,11 +60,11 @@ class Undeploy extends Deployment {
     void runTask() {
         setupFilesToUnDeploy()
         initializeQueries(getJsonQueries())
-
+        //truncating process
         truncateFiles()
         deployTruncatedComponents()
         executeDeploy(folderUnDeploy)
-
+        //Deploying process
         addNewStandardObjects()
         createDeploymentDirectory(folderUnDeploy)
         deployToDeleteComponents()

@@ -44,11 +44,11 @@ class Filter {
      * @return an array list of files
      */
     public ArrayList<File> getFiles(String includes, String excludes) {
-        ArrayList<String> criteriaToExclude = []
+        ArrayList<String> criteriaToExclude = [Constants.FILE_TRACKER_NAME]
         ArrayList<String> criteriaToInclude = []
 
         if(excludes && !excludes.isEmpty()) {
-            criteriaToExclude = getCriteria(excludes)
+            criteriaToExclude.addAll(getCriteria(excludes))
         }
 
         if(includes && !includes.isEmpty()) {

@@ -46,14 +46,13 @@ class Deploy extends Deployment {
         createDeploymentDirectory(folderDeploy)
         if (Util.isValidProperty(parameters, Constants.FOLDERS_DEPLOY)) {
             deployByFolder()
-            deployToSalesForce()
         } else {
             checkStatusTruncate()
             displayFolderNoDeploy()
             deployTruncateFiles()
             deployAllComponents()
-            deployToSalesForce()
         }
+        deployToSalesForce()
     }
 
     /**
