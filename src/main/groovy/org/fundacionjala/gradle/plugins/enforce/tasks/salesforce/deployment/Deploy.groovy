@@ -70,7 +70,7 @@ class Deploy extends Deployment {
      * Deploys by folder
      */
     public void deployByFolder() {
-        folders = parameters["folders"].toString()
+        folders = parameters[Constants.PARAMETER_FOLDERS].toString()
         if (folders) {
             ArrayList<String> foldersName = getFoldersName()
             ArrayList<File> filesByFolders = fileManager.getFilesByFolders(projectPath, foldersName)
@@ -140,7 +140,7 @@ class Deploy extends Deployment {
         if (!Util.isValidProperty(parameters, Constants.TURN_OFF_TRUNCATE)) {
             return
         }
-        String turnOffOptionTruncate = parameters["turnOffTruncate"].toString()
+        String turnOffOptionTruncate = parameters[Constants.TURN_OFF_TRUNCATE].toString()
         if (turnOffOptionTruncate.indexOf(Constants.TRUNCATE_DEPRECATE) != Constants.NOT_FOUND) {
             deprecateTruncateOn = false
             logger.quiet(Constants.TRUNCATE_DEPRECATE_TURNED_OFF)

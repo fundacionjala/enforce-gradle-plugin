@@ -98,9 +98,6 @@ class Undeploy extends Deployment {
         filesToTruncate = fileManager.getFilesByFolders(projectPath, packageComponent.truncatedDirectories).sort()
         filesToTruncate = smartFilesValidator.filterFilesAccordingOrganization(filesToTruncate, projectPath)
         filesToTruncate = excludeFiles(filesToTruncate)
-        println projectPath
-        println filesToTruncate
-        println folderUnDeploy
         fileManager.copy(projectPath, filesToTruncate, folderUnDeploy)
         interceptorsToExecute += interceptors
         truncateComponents(folderUnDeploy)
@@ -126,7 +123,7 @@ class Undeploy extends Deployment {
         workflowNames = packageComponent.components.grep(~/.*.workflow$/) as ArrayList<String>
         excludeComponents.addAll(workflowNames)
         files = project.fileTree(dir: projectPath, includes: includesComponents, excludes: excludeComponents)
-        ArrayList<File> filesFiltered =  smartFilesValidator.filterFilesAccordingOrganization(files.getFiles().sort() as ArrayList<File>, projectPath)
+        ArrayList<File> filesFiltered = smartFilesValidator.filterFilesAccordingOrganization(files.getFiles().sort() as ArrayList<File>, projectPath)
         filesFiltered = excludeFiles(filesFiltered)
         preparePackage(unDeployDestructivePath, filesFiltered)
         includesComponents = getComponentsWithWildcard(standardComponents).grep(~/.*.object$/)
@@ -143,10 +140,6 @@ class Undeploy extends Deployment {
         componentDeploy.startMessage = ""
         componentDeploy.successMessage = Constants.SUCCESS_MESSAGE_DELETE
         combinePackage(unDeployDestructivePath)
-    }
-
-    def getFilesAccordingOrganization(ArrayList<File> filesToFilter) {
-        return smartFilesValidator.filterFilesAccordingOrganization(filesToFilter, projectPath)
     }
 
     /**
