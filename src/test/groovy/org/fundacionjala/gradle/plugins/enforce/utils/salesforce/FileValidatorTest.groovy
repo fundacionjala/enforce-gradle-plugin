@@ -278,7 +278,7 @@ class FileValidatorTest extends Specification {
             result[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 
-    def "Test should returns a invalida folders in the project source root" () {
+    def "Test should returns invalid folders in the project source root" () {
         given:
         createFolderWithXml('webs', 1, 3, 'trigger', true , true)
         addFolderExpected(Constants.INVALID_FILE_BY_FOLDER,'webs', 1, 3, 'trigger', true , true)
