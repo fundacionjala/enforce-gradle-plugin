@@ -10,7 +10,6 @@ import spock.lang.Specification
 import java.nio.file.Paths
 
 class TruncateTest extends Specification {
-
     @Shared
     Project project
 
