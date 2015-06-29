@@ -10,9 +10,11 @@ import java.nio.file.Paths
 
 class Truncate extends Deployment {
     Filter filter
-    ArrayList<String> parameterNames
+    Map<String, String> parameters
     ArrayList<File> filteredFiles
-    List<String> directoriesToTruncate
+    private
+    final List<String> COMPONENTS_TO_TRUNCATE = ['classes', 'objects', 'triggers', 'pages', 'components', 'workflows', 'tabs']
+    List<String> componentsToTruncate
     String pathTruncate
     String pathPackage
     String files
@@ -24,8 +26,7 @@ class Truncate extends Deployment {
      */
     Truncate() {
         super(Constants.TRUNCATE_DESCRIPTION, Constants.DEPLOYMENT)
-        parameterNames = [Constants.PARAMETER_FILES, Constants.PARAMETER_EXCLUDES]
-        directoriesToTruncate = ['classes', 'objects', 'triggers', 'pages', 'components', 'workflows', 'tabs']
+        componentsToTruncate = COMPONENTS_TO_TRUNCATE
         files = ''
         excludes = ''
     }
@@ -36,7 +37,9 @@ class Truncate extends Deployment {
     @Override
     void runTask() {
         setup()
-        copyValidFiles()
+        loadParameters(project.properties as Map<String, String>)
+        copyValidFiles(validFiles)
+        writePackage(pathPackage, validFiles)
         truncateComponents()
         executeDeploy(pathTruncate)
     }
@@ -46,7 +49,7 @@ class Truncate extends Deployment {
      * @return A list of all valid files
      */
     ArrayList<File> getValidFiles() {
-        filteredFiles = filter.getFiles(parameterNames, getParameters(project.properties))
+        filteredFiles = filter.getFiles(files, excludes)
         Map<String, ArrayList<File>> allFiles = FileValidator.validateFiles(projectPath, filteredFiles)
         ArrayList<File> validFiles = allFiles[Constants.VALID_FILE]
         return validFiles
@@ -55,10 +58,8 @@ class Truncate extends Deployment {
     /**
      * Copy all valid files from source code to build directory
      */
-    void copyValidFiles() {
-        ArrayList<File> validFiles = getValidFiles()
+    void copyValidFiles(ArrayList<File> validFiles) {
         fileManager.copy(projectPath, validFiles, pathTruncate)
-        writePackage(pathPackage, validFiles)
     }
 
     /**
@@ -77,27 +78,6 @@ class Truncate extends Deployment {
     }
 
     /**
-     * Gets all task parameters
-     * @param properties the task properties
-     * @return A map of all task parameter
-     */
-    Map<String, String> getParameters(Map<String, String> properties) {
-        Map<String, String> parameters = new HashMap<String, String>()
-        if (Util.isValidProperty(properties, Constants.PARAMETER_FILES)) {
-            files = properties[Constants.PARAMETER_FILES]
-        } else {
-            files = directoriesToTruncate.join(', ')
-        }
-
-        if (Util.isValidProperty(properties, Constants.PARAMETER_EXCLUDES)) {
-            excludes = properties[Constants.PARAMETER_FILES]
-        }
-        parameters.put(Constants.PARAMETER_FILES, files)
-        parameters.put(Constants.PARAMETER_EXCLUDES, excludes)
-        return parameters
-    }
-
-    /**
      * Truncates classes, objects, triggers, pages, components, workflows and tabs
      */
     public void truncateComponents() {
@@ -105,5 +85,22 @@ class Truncate extends Deployment {
         interceptorsToExecute += interceptors
         logger.debug("Truncating components at: $pathTruncate")
         truncateComponents(pathTruncate)
+    }
+
+    /**
+     * Gets all task parameters
+     * @param properties the task properties
+     * @return A map of all task parameters
+     */
+    void loadParameters(Map<String, String> properties) {
+        if (Util.isValidProperty(properties, Constants.PARAMETER_FILES)) {
+            files = properties[Constants.PARAMETER_FILES]
+        } else {
+            files = COMPONENTS_TO_TRUNCATE.join(', ')
+        }
+
+        if (Util.isValidProperty(properties, Constants.PARAMETER_EXCLUDES)) {
+            excludes = properties[Constants.PARAMETER_EXCLUDES]
+        }
     }
 }
