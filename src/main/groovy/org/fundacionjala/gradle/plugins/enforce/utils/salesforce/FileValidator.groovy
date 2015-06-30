@@ -24,7 +24,7 @@ class FileValidator {
         filesState.put(Constants.INVALID_FILE_BY_FOLDER, new ArrayList<File>())
         filesState.put(Constants.VALID_FILE, new ArrayList<File>())
         filesState.put(Constants.DOES_NOT_EXIST_FILES, new ArrayList<File>())
-        filesState.put(Constants.FILE_WHITOUT_XML, new ArrayList<File>())
+        filesState.put(Constants.FILE_WITHOUT_XML, new ArrayList<File>())
         files.each { File file ->
             Path path = Paths.get(file.getPath())
             String relativePath = Util.getRelativePath(file, projectPath)
@@ -49,7 +49,7 @@ class FileValidator {
                 isValid = false
             }
             if (!validator.validateFileContainsXML(file, parentFileName)) {
-                filesState[Constants.FILE_WHITOUT_XML].add(file)
+                filesState[Constants.FILE_WITHOUT_XML].add(file)
                 isValid = false
             }
             if(isValid){
