@@ -30,7 +30,7 @@ class FileValidatorTest extends Specification {
         mapExpected.put(Constants.INVALID_FILE_BY_FOLDER,[])
         mapExpected.put(Constants.VALID_FILE,[])
         mapExpected.put(Constants.DOES_NOT_EXIST_FILES,[])
-        mapExpected.put(Constants.FILE_WHITOUT_XML,[])
+        mapExpected.put(Constants.FILE_WITHOUT_XML,[])
 
         ArrayList<File> folders = new ArrayList<File>()
         folders.add(new File(Paths.get(SRC_PATH).toString()))
@@ -177,7 +177,7 @@ class FileValidatorTest extends Specification {
         then:
             result[Constants.INVALID_FILE_BY_FOLDER].sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
             result[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
-            result[Constants.FILE_WHITOUT_XML].sort() == mapExpected[Constants.FILE_WHITOUT_XML].sort()
+            result[Constants.FILE_WITHOUT_XML].sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
             result[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 
@@ -194,7 +194,7 @@ class FileValidatorTest extends Specification {
         then:
             result[Constants.INVALID_FILE_BY_FOLDER].sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
             result[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
-            result[Constants.FILE_WHITOUT_XML].sort() == mapExpected[Constants.FILE_WHITOUT_XML].sort()
+            result[Constants.FILE_WITHOUT_XML].sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
             result[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 
@@ -211,7 +211,7 @@ class FileValidatorTest extends Specification {
         then:
             result[Constants.INVALID_FILE_BY_FOLDER].sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
             result[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
-            result[Constants.FILE_WHITOUT_XML].sort() == mapExpected[Constants.FILE_WHITOUT_XML].sort()
+            result[Constants.FILE_WITHOUT_XML].sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
             result[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 
@@ -227,14 +227,14 @@ class FileValidatorTest extends Specification {
         then:
             result[Constants.INVALID_FILE_BY_FOLDER].sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
             result[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
-            result[Constants.FILE_WHITOUT_XML].sort() == mapExpected[Constants.FILE_WHITOUT_XML].sort()
+            result[Constants.FILE_WITHOUT_XML].sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
             result[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 
     def "Test should returns a map that contains [ FILE_WHITOUT_XML: 5 class files ]" () {
         given:
             createFolderWithXml('classes', 1, 5, 'cls', true , false)
-            addFolderExpected(Constants.FILE_WHITOUT_XML,'classes', 1, 5, 'cls', true , false)
+            addFolderExpected(Constants.FILE_WITHOUT_XML,'classes', 1, 5, 'cls', true , false)
 
         when:
             Map<String, ArrayList<File>> result = FileValidator.validateFiles(SRC_PATH, allFiles)
@@ -242,7 +242,7 @@ class FileValidatorTest extends Specification {
         then:
             result[Constants.INVALID_FILE_BY_FOLDER].sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
             result[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
-            result[Constants.FILE_WHITOUT_XML].sort() == mapExpected[Constants.FILE_WHITOUT_XML].sort()
+            result[Constants.FILE_WITHOUT_XML].sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
             result[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 
@@ -257,7 +257,7 @@ class FileValidatorTest extends Specification {
         then:
             result[Constants.INVALID_FILE_BY_FOLDER].sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
             result[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
-            result[Constants.FILE_WHITOUT_XML].sort() == mapExpected[Constants.FILE_WHITOUT_XML].sort()
+            result[Constants.FILE_WITHOUT_XML].sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
             result[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 
@@ -266,7 +266,7 @@ class FileValidatorTest extends Specification {
             crateFolderWithXml('documents','DocumentsFolder1', 1, 2, 'txt', true , true)
             crateFolderWithXml('documents','DocumentsFolder1', 3, 4, 'txt', true , false)
             addFolderExpected(Constants.VALID_FILE,'documents','DocumentsFolder1', 1, 2, 'txt', true , true)
-            addFolderExpected(Constants.FILE_WHITOUT_XML,'documents','DocumentsFolder1', 3, 4, 'txt', true , false)
+            addFolderExpected(Constants.FILE_WITHOUT_XML,'documents','DocumentsFolder1', 3, 4, 'txt', true , false)
 
         when:
             Map<String, ArrayList<File>> result = FileValidator.validateFiles(SRC_PATH, allFiles)
@@ -274,7 +274,7 @@ class FileValidatorTest extends Specification {
         then:
             result[Constants.INVALID_FILE_BY_FOLDER].sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
             result[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
-            result[Constants.FILE_WHITOUT_XML].sort() == mapExpected[Constants.FILE_WHITOUT_XML].sort()
+            result[Constants.FILE_WITHOUT_XML].sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
             result[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 
@@ -289,7 +289,7 @@ class FileValidatorTest extends Specification {
         then:
         result[Constants.INVALID_FILE_BY_FOLDER].sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
         result[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
-        result[Constants.FILE_WHITOUT_XML].sort() == mapExpected[Constants.FILE_WHITOUT_XML].sort()
+        result[Constants.FILE_WITHOUT_XML].sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
         result[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 
@@ -307,7 +307,7 @@ class FileValidatorTest extends Specification {
         then:
         result[Constants.INVALID_FILE_BY_FOLDER].sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
         result[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
-        result[Constants.FILE_WHITOUT_XML].sort() == mapExpected[Constants.FILE_WHITOUT_XML].sort()
+        result[Constants.FILE_WITHOUT_XML].sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
         result[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 

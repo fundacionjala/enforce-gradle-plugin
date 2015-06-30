@@ -20,7 +20,7 @@ public class Constants {
     public static final String INVALID_FILE = "Invalid files"
     public static final String VALID_FILE = "Valid files"
     public static final String INVALID_FILE_BY_FOLDER = "Invalid file by folder"
-    public static final String FILE_WHITOUT_XML = "File whitout xml"
+    public static final String FILE_WITHOUT_XML = "File without xml"
 
 
     public static final String DOES_NOT_EXIST_FILES = "Not exist files:"
@@ -44,6 +44,7 @@ public class Constants {
     public static final String WILDCARD = "*"
     public static final String SLASH = '/'
     public static final String BACK_SLASH = '\\\\'
+    public static final String EMPTY = ""
 
     public static final String OBJECT_EXTENSION = 'object'
     public static final String FILE_TRACKER_NAME = ".fileTracker.data"

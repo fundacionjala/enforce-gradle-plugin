@@ -26,8 +26,7 @@ abstract class Deployment extends SalesforceTask {
     public InterceptorManager interceptorManager
     public List<String> interceptorsToExecute = []
     public List<String> interceptors = []
-    public final String EXCLUDES = 'excludes'
-    public String excludes
+    public String excludes = ""
     public final int FILE_NAME_POSITION = 1
 
     /**
