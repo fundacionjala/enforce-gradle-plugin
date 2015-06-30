@@ -22,10 +22,10 @@ class Upload extends Deployment {
     public PackageGenerator packageGenerator
     public String pathUpload
     public String uploadPackagePath
-    public String option = 'y'
+    public String option = Constants.YES_OPTION
     public String all = Constants.FALSE
     public Filter filter
-    String files
+    String files = Constants.EMPTY
 
     Upload() {
         super(Constants.UPLOAD_DESCRIPTION, Constants.DEPLOYMENT)
@@ -46,7 +46,7 @@ class Upload extends Deployment {
             copyFilesToUpload()
             createPackage()
             combinePackageToUpdate(uploadPackagePath)
-            truncate()
+            addInterceptor()
             executeDeploy(pathUpload)
             saveMapOfFilesChanged()
         } else {
@@ -61,20 +61,16 @@ class Upload extends Deployment {
      * Creates an instance of Filter class
      * Initializes specificFilesToUpload map
      * Initializes interceptorsToExecute arrayList
-     * Initializes all, files and excludes parameters
      */
     void setup() {
         pathUpload = Paths.get(buildFolderPath, Constants.DIR_UPLOAD_FOLDER).toString()
         uploadPackagePath = Paths.get(pathUpload, PACKAGE_NAME).toString()
+        componentDeploy.startMessage = "Starting upload files process"
+        componentDeploy.successMessage = "The files were successfully uploaded"
         packageGenerator = new PackageGenerator()
         filter = new Filter(project, projectPath)
         specificFilesToUpload = [:]
         interceptorsToExecute = []
-        all = Constants.FALSE
-        files = ""
-        excludes = ""
-        componentDeploy.startMessage = "Starting upload files process"
-        componentDeploy.successMessage = "The files were successfully uploaded"
     }
 
     /**
@@ -127,7 +123,7 @@ class Upload extends Deployment {
      * @return exception message
      */
     private String getExceptionMessage(Map<String, ArrayList<File>> filesClassified) {
-        StringBuilder message = new StringBuilder("")
+        StringBuilder message = new StringBuilder(Constants.EMPTY)
         filesClassified.each { String info, ArrayList<File> files ->
             if (info != Constants.VALID_FILE && !files.isEmpty()) {
                 message.append("${info} : ${files}\n")
@@ -194,7 +190,10 @@ class Upload extends Deployment {
         packageGenerator.init(projectPath, validatedFiles, credential)
     }
 
-    public void truncate() {
+    /**
+     * Adds interceptors
+     */
+    public void addInterceptor() {
         interceptorsToExecute += interceptors
         truncateComponents(pathUpload)
     }

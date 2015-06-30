@@ -232,7 +232,7 @@ class UploadTest extends Specification {
             uploadInstance.copyFilesToUpload()
             uploadInstance.createPackage()
             uploadInstance.combinePackageToUpdate(uploadInstance.uploadPackagePath)
-            uploadInstance.truncate()
+            uploadInstance.addInterceptor()
 
             File packageFromBuildDirectory = new File(Paths.get(pathUpload, Constants.PACKAGE_FILE_NAME).toString())
             PackageBuilder packageBuilder = new PackageBuilder()
@@ -268,7 +268,7 @@ class UploadTest extends Specification {
             uploadInstance.copyFilesToUpload()
             uploadInstance.createPackage()
             uploadInstance.combinePackageToUpdate(uploadInstance.uploadPackagePath)
-            uploadInstance.truncate()
+            uploadInstance.addInterceptor()
 
             File packageFromBuildDirectory = new File(Paths.get(pathUpload, Constants.PACKAGE_FILE_NAME).toString())
             PackageBuilder packageBuilder = new PackageBuilder()
@@ -303,7 +303,7 @@ class UploadTest extends Specification {
             uploadInstance.copyFilesToUpload()
             uploadInstance.createPackage()
             uploadInstance.combinePackageToUpdate(uploadInstance.uploadPackagePath)
-            uploadInstance.truncate()
+            uploadInstance.addInterceptor()
 
             File packageFromBuildDirectory = new File(Paths.get(pathUpload, Constants.PACKAGE_FILE_NAME).toString())
             PackageBuilder packageBuilder = new PackageBuilder()
@@ -349,7 +349,7 @@ class UploadTest extends Specification {
             uploadInstance.copyFilesToUpload()
             uploadInstance.createPackage()
             uploadInstance.combinePackageToUpdate(uploadInstance.uploadPackagePath)
-            uploadInstance.truncate()
+            uploadInstance.addInterceptor()
 
             File packageFromBuildDirectory = new File(Paths.get(pathUpload, Constants.PACKAGE_FILE_NAME).toString())
             PackageBuilder packageBuilder = new PackageBuilder()
