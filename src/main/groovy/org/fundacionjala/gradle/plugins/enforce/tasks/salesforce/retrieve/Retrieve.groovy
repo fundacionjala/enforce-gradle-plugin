@@ -6,7 +6,6 @@
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.retrieve
 
 import com.sforce.soap.metadata.PackageTypeMembers
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const
 import org.fundacionjala.gradle.plugins.enforce.utils.AnsiColor
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
