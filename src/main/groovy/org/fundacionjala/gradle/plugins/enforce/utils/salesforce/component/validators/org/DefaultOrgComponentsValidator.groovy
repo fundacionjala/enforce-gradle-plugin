@@ -12,9 +12,9 @@ public class DefaultOrgComponentsValidator implements OrgInterfaceValidator{
         Map<String,ArrayList<File>> mapFiles = [:]
         mapFiles.put(Constants.VALID_FILE, new ArrayList<File>())
         mapFiles.put(Constants.DOES_NOT_EXIST_FILES, new ArrayList<File>())
-        mapFiles.put(Constants.FILE_WHITOUT_VALIDATOR, new ArrayList<File>())
+        mapFiles.put(Constants.FILE_WITHOUT_VALIDATOR, new ArrayList<File>())
 
-        mapFiles[Constants.FILE_WHITOUT_VALIDATOR].addAll(filesToVerify)
+        mapFiles[Constants.FILE_WITHOUT_VALIDATOR].addAll(filesToVerify)
 
         return mapFiles
     }

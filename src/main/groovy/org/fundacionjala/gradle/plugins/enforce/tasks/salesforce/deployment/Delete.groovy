@@ -46,7 +46,6 @@ class Delete extends Deployment {
         validateFilesInOrg()
         showFilesToDelete()
 
-
         if( System.console().readLine("\n"+Constants.QUESTION_CONTINUE_DELETE) == Constants.YES_OPTION ) {
             createDestructive()
             createPackageEmpty()
@@ -56,7 +55,6 @@ class Delete extends Deployment {
             logger.quiet(Constants.PROCCES_DELETE_CANCELLED)
         }
     }
-
 
     /**
      * Adds all files into an org

@@ -8,7 +8,6 @@ package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 import org.fundacionjala.gradle.plugins.enforce.interceptor.InterceptorManager
 import org.fundacionjala.gradle.plugins.enforce.metadata.DeployMetadata
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.SalesforceTask
-import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.filter.Filter
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
@@ -27,8 +26,7 @@ abstract class Deployment extends SalesforceTask {
     public InterceptorManager interceptorManager
     public List<String> interceptorsToExecute = []
     public List<String> interceptors = []
-    public final String EXCLUDES = 'excludes'
-    public String excludes
+    public String excludes = ""
     public final int FILE_NAME_POSITION = 1
 
     /**

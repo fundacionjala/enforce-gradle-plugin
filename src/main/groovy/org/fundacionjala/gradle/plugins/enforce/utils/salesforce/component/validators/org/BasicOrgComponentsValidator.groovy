@@ -28,7 +28,7 @@ public class BasicOrgComponentsValidator implements OrgInterfaceValidator{
         Map<String,ArrayList<File>> mapFiles = [:]
         mapFiles.put(Constants.VALID_FILE, new ArrayList<File>())
         mapFiles.put(Constants.DOES_NOT_EXIST_FILES, new ArrayList<File>())
-        mapFiles.put(Constants.FILE_WHITOUT_VALIDATOR, new ArrayList<File>())
+        mapFiles.put(Constants.FILE_WITHOUT_VALIDATOR, new ArrayList<File>())
 
         ArrayList<File> orgFiles = getFilesIntoOrg(credential, folderComponent, path)
 
@@ -41,7 +41,7 @@ public class BasicOrgComponentsValidator implements OrgInterfaceValidator{
             }
             else {
                 mapFiles[Constants.DOES_NOT_EXIST_FILES].add(file)
-                mapFiles[Constants.DOES_NOT_EXIST_FILES].add(new File(file.getAbsolutePath() + +Constants.META_XML))
+                mapFiles[Constants.DOES_NOT_EXIST_FILES].add(new File(file.getAbsolutePath() + Constants.META_XML))
             }
         }
         return mapFiles

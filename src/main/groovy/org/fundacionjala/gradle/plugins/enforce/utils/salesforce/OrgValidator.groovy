@@ -37,7 +37,7 @@ class OrgValidator {
         Map<String,ArrayList<File>> mapResponseFolder = [:]
         mapResponse.put(Constants.VALID_FILE, new ArrayList<File>())
         mapResponse.put(Constants.DOES_NOT_EXIST_FILES, new ArrayList<File>())
-        mapResponse.put(Constants.FILE_WHITOUT_VALIDATOR, new ArrayList<File>())
+        mapResponse.put(Constants.FILE_WITHOUT_VALIDATOR, new ArrayList<File>())
 
         mapFiles.each { folderComponent, files ->
             OrgInterfaceValidator val = getValidator(folderComponent)
