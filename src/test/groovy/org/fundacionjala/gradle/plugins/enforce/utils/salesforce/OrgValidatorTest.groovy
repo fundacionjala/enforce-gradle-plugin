@@ -30,11 +30,8 @@ class OrgValidatorTest extends Specification {
     @Shared
     Map<String, ArrayList<File>> mapExpected
 
-    @Shared
-    OrgValidator orgValidator
 
     def setup() {
-        orgValidator = new OrgValidator()
 
         credential = new Credential()
         credential.id = 'id'
@@ -128,7 +125,7 @@ class OrgValidatorTest extends Specification {
             allFiles.addAll(validClassFiles)
 
         when:
-            Map<String,ArrayList<File>> mapResponse = orgValidator.validateFiles(credential, allFiles, SRC_PATH)
+            Map<String,ArrayList<File>> mapResponse = OrgValidator.validateFiles(credential, allFiles, SRC_PATH)
 
         then:
             mapResponse[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
@@ -142,7 +139,7 @@ class OrgValidatorTest extends Specification {
             allFiles.addAll(invalidClassFiles)
 
         when:
-            Map<String,ArrayList<File>> mapResponse = orgValidator.validateFiles(credential, allFiles, SRC_PATH)
+            Map<String,ArrayList<File>> mapResponse = OrgValidator.validateFiles(credential, allFiles, SRC_PATH)
 
         then:
             mapResponse[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
@@ -158,7 +155,7 @@ class OrgValidatorTest extends Specification {
             allFiles.addAll(invalidTriggerFiles)
 
         when:
-            Map<String,ArrayList<File>> mapResponse = orgValidator.validateFiles(credential, allFiles, SRC_PATH)
+            Map<String,ArrayList<File>> mapResponse = OrgValidator.validateFiles(credential, allFiles, SRC_PATH)
 
         then:
             mapResponse[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
@@ -179,7 +176,7 @@ class OrgValidatorTest extends Specification {
             allFiles.addAll(invalidTriggerFiles)
 
         when:
-            Map<String,ArrayList<File>> mapResponse = orgValidator.validateFiles(credential, allFiles, SRC_PATH)
+            Map<String,ArrayList<File>> mapResponse = OrgValidator.validateFiles(credential, allFiles, SRC_PATH)
             showMaps(true,mapExpected,mapResponse)
 
         then:

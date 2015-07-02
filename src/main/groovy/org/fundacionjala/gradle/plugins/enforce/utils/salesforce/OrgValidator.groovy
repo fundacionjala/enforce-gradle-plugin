@@ -14,7 +14,7 @@ import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.valid
  */
 class OrgValidator {
 
-    public Map<String, SalesforceValidator> validators = [
+    public static Map<String, SalesforceValidator> validators = [
             'classes':new BasicOrgComponentsValidator(),
             'components':new BasicOrgComponentsValidator(),
             'pages':new BasicOrgComponentsValidator(),
@@ -23,14 +23,26 @@ class OrgValidator {
     ]
 
     /**
-     * Validates names of files
+     * @Returns a list with valid files
      * @param credential  contains the data needed to connect with the API sales force
      * @param filesToValidate ia a list of files that need to validate
-     * @param path orn repository
+     * @param projectPath our repository
      */
-    public  Map<String,ArrayList<File>> validateFiles(Credential credential,ArrayList<File> filesToValidate, String path) {
+    public static ArrayList<File> getValidFiles(Credential credential,ArrayList<File> filesToValidate, String projectPath) {
+        Map<String,ArrayList<File>> mapFiles = validateFiles(credential, filesToValidate, projectPath)
+        return mapFiles[Constants.VALID_FILE]
+    }
+
+
+    /**
+     * @return Map with all files validated and its states
+     * @param credential  contains the data needed to connect with the API sales force
+     * @param filesToValidate ia a list of files that need to validate
+     * @param projectPath our repository
+     */
+    public static Map<String,ArrayList<File>> validateFiles(Credential credential,ArrayList<File> filesToValidate, String projectPath) {
         Map<String, ArrayList<File>> mapFiles = filesToValidate.groupBy {
-            Util.getFirstPath(Util.getRelativePath(it,path))
+            Util.getFirstPath(Util.getRelativePath(it,projectPath))
         }
 
         Map<String,ArrayList<File>> mapResponse = [:]
@@ -41,7 +53,7 @@ class OrgValidator {
 
         mapFiles.each { folderComponent, files ->
             OrgInterfaceValidator val = getValidator(folderComponent)
-            mapResponseFolder = val.validateFiles(credential, files, folderComponent, path)
+            mapResponseFolder = val.validateFiles(credential, files, folderComponent, projectPath)
             mapResponseFolder.each { groupFile, filesValidates ->
                 mapResponse[groupFile].addAll(filesValidates)
             }
@@ -53,7 +65,7 @@ class OrgValidator {
      * Return the necesary validator
      * @param componentType is the component that need be validated
      */
-    public OrgInterfaceValidator getValidator(String componentType) {
+    public static OrgInterfaceValidator getValidator(String componentType) {
         if(validators.containsKey(componentType)) {
             return validators.get(componentType)
         }

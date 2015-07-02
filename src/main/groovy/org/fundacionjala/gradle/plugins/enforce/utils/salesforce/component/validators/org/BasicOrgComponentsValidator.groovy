@@ -20,17 +20,17 @@ public class BasicOrgComponentsValidator implements OrgInterfaceValidator{
      * @param credential  contains the data needed to connect with the API sales force
      * @param filesToValidate is a list of files that need to validate
      * @param folderComponent is a component type that we need validate
-     * @param path orn repository
+     * @param projectPath our repository
      */
     @Override
-    public Map<String,ArrayList<File>> validateFiles(Credential credential, ArrayList<File> filesToVerify, String folderComponent, String path) {
+    public Map<String,ArrayList<File>> validateFiles(Credential credential, ArrayList<File> filesToVerify, String folderComponent, String projectPath) {
 
         Map<String,ArrayList<File>> mapFiles = [:]
         mapFiles.put(Constants.VALID_FILE, new ArrayList<File>())
         mapFiles.put(Constants.DOES_NOT_EXIST_FILES, new ArrayList<File>())
         mapFiles.put(Constants.FILE_WITHOUT_VALIDATOR, new ArrayList<File>())
 
-        ArrayList<File> orgFiles = getFilesIntoOrg(credential, folderComponent, path)
+        ArrayList<File> orgFiles = getFilesIntoOrg(credential, folderComponent, projectPath)
 
         filesToVerify.findAll{ File file ->
             !file.getAbsolutePath().endsWith(Constants.META_XML)
@@ -53,7 +53,7 @@ public class BasicOrgComponentsValidator implements OrgInterfaceValidator{
      * @param folderComponent is a component type that we need validate
      * @param path orn repository
      */
-    public ArrayList<File> getFilesIntoOrg(Credential credential, String folderComponent, String path) {
+    public ArrayList<File> getFilesIntoOrg(Credential credential, String folderComponent, String projectPath) {
 
         ToolingAPI toolingAPI = new ToolingAPI(credential)
         QueryBuilder queryBuilder = new QueryBuilder()
@@ -68,7 +68,7 @@ public class BasicOrgComponentsValidator implements OrgInterfaceValidator{
 
         for(def i = 0; i < jsonResulSet.records.size(); i++) {
             def nameFile = "${jsonResulSet.records[i]['Name']}.${extensionComponent}"
-            orgFiles.add(new File(Paths.get(path,folderComponent, nameFile ).toString()))
+            orgFiles.add(new File(Paths.get(projectPath,folderComponent, nameFile ).toString()))
         }
         return orgFiles
     }
