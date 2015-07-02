@@ -11,7 +11,9 @@ import org.fundacionjala.gradle.plugins.enforce.EnforcePlugin
 import org.fundacionjala.gradle.plugins.enforce.metadata.DeployMetadata
 import org.fundacionjala.gradle.plugins.enforce.undeploy.PackageComponent
 import org.fundacionjala.gradle.plugins.enforce.undeploy.SmartFilesValidator
+import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
+import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.LoginType
 import org.gradle.api.Project
@@ -121,15 +123,6 @@ class UndeployTest extends Specification {
         project.extensions.findByName('enforce').tool == "metadata"
     }
 
-    def "Test should get components with wildcard"() {
-        given:
-            def standardComponents = ['Account.object', 'Opportunity.object', 'Contact.object', 'Admin.profile', 'CMC.app']
-        when:
-            def result = undeployInstance.getComponentsWithWildcard(standardComponents)
-        then:
-            result == ['**/Account.object', "**/Opportunity.object", "**/Contact.object", "**/Admin.profile", "**/CMC.app"]
-    }
-
     def "Test should create a package xml file into build directory to truncate components"() {
         given:
             undeployInstance.createDeploymentDirectory(Paths.get(SRC_PATH, 'build').toString())
@@ -143,7 +136,8 @@ class UndeployTest extends Specification {
             undeployInstance.createDeploymentDirectory(undeployDirectory)
             undeployInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
         when:
-            undeployInstance.deployTruncatedComponents()
+            undeployInstance.writePackage(undeployInstance.unDeployPackagePath, undeployInstance.filesToTruncate)
+
         then:
             new File(Paths.get(SRC_PATH,'build', 'undeploy', 'package.xml').toString()).exists()
     }
@@ -155,17 +149,16 @@ class UndeployTest extends Specification {
             undeployInstance.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
             undeployInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
             undeployInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
-            undeployInstance.setupFilesToUnDeploy()
+            undeployInstance.credential = credential
+            undeployInstance.smartFilesValidator = Mock(SmartFilesValidator)
             undeployInstance.packageComponent = Mock(PackageComponent)
-            Files.copy(Paths.get(SRC_PATH, 'src', 'package.xml' ), Paths.get(undeployDirectory, 'package.xml'), StandardCopyOption.REPLACE_EXISTING)
             ArrayList<File> files = [new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString()),
                                      new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger').toString()),
                                      new File(Paths.get(SRC_PATH, 'src', 'objects', 'Object1__c.object').toString()),]
         when:
             undeployInstance.packageComponent.components >> ["classes/*.cls", "triggers/*.trigger", "objects/*.object"]
             undeployInstance.smartFilesValidator.filterFilesAccordingOrganization(_,_) >> files
-            undeployInstance.setupFilesToUnDeploy()
-            undeployInstance.addNewStandardObjects()
+            undeployInstance.setup()
             undeployInstance.createDeploymentDirectory(undeployDirectory)
             undeployInstance.deployToDeleteComponents()
             def destructiveXmlContent =  new File(Paths.get(undeployDirectory, 'destructiveChanges.xml').toString()).text
@@ -186,16 +179,14 @@ class UndeployTest extends Specification {
             undeployInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
             undeployInstance.unDeployPackagePath = Paths.get(SRC_PATH, 'build', 'undeploy').toString()
             undeployInstance.packageComponent = Mock(PackageComponent)
+            undeployInstance.credential = credential
             ArrayList<File> files = [new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString()),
                                      new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger').toString()),
                                      new File(Paths.get(SRC_PATH, 'src', 'objects', 'Object1__c.object').toString()),]
         when:
             undeployInstance.packageComponent.components >> ["classes/*.cls", "triggers/*.trigger", "objects/*.object"]
             undeployInstance.smartFilesValidator.filterFilesAccordingOrganization(_,_) >> files
-            undeployInstance.setupFilesToUnDeploy()
-            undeployInstance.truncateFiles()
-            undeployInstance.deployTruncatedComponents()
-            undeployInstance.addNewStandardObjects()
+            undeployInstance.setup()
             undeployInstance.createDeploymentDirectory(undeployInstance.folderUnDeploy)
             undeployInstance.deployToDeleteComponents()
             def destructiveXmlContent =  new File(Paths.get(SRC_PATH, 'build', 'undeploy', 'destructiveChanges.xml').toString()).text
@@ -209,6 +200,7 @@ class UndeployTest extends Specification {
     }
     
     def "Test should filter the trigger because the queries said that there isn't any trigger in org" () {
+        given:
             def unDeployPath = Paths.get(SRC_PATH, 'build', 'undeploy').toString()
             undeployInstance.createDeploymentDirectory(Paths.get(SRC_PATH, 'build').toString())
             undeployInstance.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
@@ -222,8 +214,10 @@ class UndeployTest extends Specification {
             jsonArrays.push(jsonString1)
             jsonArrays.push(jsonString2)
             undeployInstance.smartFilesValidator = new SmartFilesValidator(jsonArrays)
-            undeployInstance.setupFilesToUnDeploy()
-            undeployInstance.truncateFiles()
+            undeployInstance.setup()
+            undeployInstance.createDeploymentDirectory(undeployInstance.folderUnDeploy)
+            undeployInstance.loadFilesToTruncate()
+            undeployInstance.copyFilesToTruncate()
             File classFile = new File(Paths.get(unDeployPath, 'classes', 'Class1.cls').toString())
             File triggerFile = new File(Paths.get(unDeployPath, 'triggers', 'Trigger1.trigger').toString())
             File objectFile = new File(Paths.get(unDeployPath, 'objects', 'Object1__c.object').toString())
@@ -233,18 +227,23 @@ class UndeployTest extends Specification {
             objectFile.exists()
     }
 
-    def 'Should get the custom fields from an standard object file'() {
+    def "Test should return a Map with parameter and their values" () {
         given:
-            def expected = ["Account.MyLookupField1__c", "Account.MyLookupField2__c"]
-            def path = Paths.get(SRC_PATH, "objects", "Account.object").toString()
+            ArrayList<String> parameters = [Constants.PARAMETER_EXCLUDES, Constants.PARAMETER_FILES]
+            undeployInstance.parameters = [:]
+            undeployInstance.parameters.put(Constants.PARAMETER_EXCLUDES, "classes${File.separator}Class1.cls")
+            undeployInstance.parameters.put(Constants.PARAMETER_FILES, "classes,objects")
         when:
-            def result = undeployInstance.getCustomFields(new File(path))
+            Map<String, String> result = undeployInstance.getParameterWithTheirsValues(parameters)
         then:
+            result.containsKey(Constants.PARAMETER_FILES)
+            result.get(Constants.PARAMETER_FILES) == "classes,objects"
+            result.containsKey(Constants.PARAMETER_EXCLUDES)
+            result.get(Constants.PARAMETER_EXCLUDES) == "classes${File.separator}Class1.cls"
             result.size() == 2
-            expected == result
     }
 
     def cleanupSpec() {
-        new File(Paths.get(SRC_PATH, 'build').toString()).deleteDir()
+        //new File(Paths.get(SRC_PATH, 'build').toString()).deleteDir()
     }
 }

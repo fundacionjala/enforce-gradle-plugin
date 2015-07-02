@@ -7,7 +7,12 @@ package org.fundacionjala.gradle.plugins.enforce.utils
 
 import org.apache.commons.lang.StringUtils
 import groovy.util.logging.Slf4j
+import org.fundacionjala.gradle.plugins.enforce.undeploy.PackageComponent
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
+import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
+import org.fundacionjala.gradle.plugins.enforce.wsc.rest.QueryBuilder
+import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
+import org.gradle.api.GradleException
 import org.gradle.api.Project
 
 import java.nio.charset.Charset
@@ -324,5 +329,117 @@ class Util {
             log.warn  "No encoding detected for ${file.name}. The encoding by default is ${encoding}."
             file.write(content, encoding)
         }
+    }
+
+    /**
+     * Gets a exception message with invalid files
+     * @param filesClassified is a map with files classified by valid, invalid and not exist files
+     * @return exception message
+     */
+    public static String getExceptionMessage(Map<String, ArrayList<File>> filesClassified) {
+        StringBuilder message = new StringBuilder(Constants.EMPTY)
+        filesClassified.each { String info, ArrayList<File> files ->
+            if (info != Constants.VALID_FILE && !files.isEmpty()) {
+                message.append("${info} : ${files}\n")
+            }
+        }
+        return message.toString()
+    }
+
+    /**
+     * Gets rules from list of workflow
+     * @param workflowList contains workflow files
+     * @return an array strings which are rules
+     */
+    public static ArrayList<String> getRules(ArrayList<File> workflowList) {
+        def rules = []
+        workflowList.each { workflow ->
+            rules.addAll(getWorkflowRules(workflow))
+        }
+        return rules
+    }
+
+    /**
+     * Gets all rules from a workflow file
+     * @param workflowFile analyzes a workflow at once
+     * @return an array of rules in one workflow
+     */
+    public static ArrayList<String> getWorkflowRules(File workflowFile) {
+        def Workflow = new XmlParser().parseText(workflowFile.text)
+        def workflowName = getFileName(workflowFile.toPath().getFileName().toString())
+        def workflowRules = []
+        Workflow.rules.each { rule ->
+            workflowRules.add("${workflowName}.${rule.fullName.text()}")
+        }
+        return workflowRules
+    }
+
+    /**
+     * Gets all components included to truncate
+     * @param components the components names
+     * @return components
+     */
+    public static ArrayList<String> getComponentsWithWildcard(List components) {
+        def includesComponents = []
+        components.each { component ->
+            includesComponents.add("**/${component}")
+        }
+        return includesComponents
+    }
+
+    /**
+     * Gets fields from list of objects
+     * @param objectFiles contains objects to be analyzed
+     * @return a list of fields
+     */
+    public static ArrayList<String> getFields(ArrayList<File> objectFiles) {
+        def customFields = []
+        objectFiles.each { objFile ->
+            customFields.addAll(getCustomFields(objFile))
+        }
+        return customFields
+    }
+
+    /**
+     * Gets all custom fields from a object file
+     * @return a list of fields from an specific object
+     */
+    public static ArrayList<String> getCustomFields(File objectFile) {
+        if (!objectFile.exists()) {
+            throw new GradleException("File no found at:${objectFile.absolutePath}")
+        }
+        def CustomObject = new XmlParser().parseText(objectFile.text)
+        def customFields = []
+        def objectName = getFileName(objectFile.getName())
+        if (!CustomObject) {
+            throw new Exception("Object content is not valid")
+        }
+        CustomObject.namedFilters.each { namedFilter ->
+            customFields.add(namedFilter.field.text())
+        }
+        CustomObject.fields.each { field ->
+            def type = field.type.text()
+            String objReference = "${field.referenceTo.text()}.${MetadataComponents.OBJECTS.getExtension()}"
+            if (type == Constants.LOOKUP_NAME && PackageComponent.existObject(objectFile.parent, objReference)) {
+                customFields.add("${objectName}.${field.fullName.text()}")
+            }
+        }
+        return customFields
+    }
+
+    /**
+     * Gets queries from package.xml
+     * @return jsonQueries
+     */
+    public static ArrayList<String> getJsonQueries(String projectPackagePath, Credential credential) {
+        ToolingAPI toolingAPI = new ToolingAPI(credential)
+        QueryBuilder queryBuilder = new QueryBuilder()
+        ArrayList<String> jsonQueries = []
+        def queries = queryBuilder.createQueryFromPackage(projectPackagePath)
+        queries.each { query ->
+            jsonQueries.push(toolingAPI.httpAPIClient.executeQuery(query as String))
+        }
+        println jsonQueries
+        return jsonQueries
     }
 }

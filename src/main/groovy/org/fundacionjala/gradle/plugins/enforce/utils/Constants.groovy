@@ -86,9 +86,10 @@ public class Constants {
 
     //UnDeploy task constants
     public static final String UN_DEPLOY_DESCRIPTION = 'This task removes all components in your organization according to local repository'
-    public static final String START_MESSAGE_TRUNCATE = 'Starting undeploy...'
+    public static final String START_MESSAGE_TRUNCATE = 'Starting truncate proccess...'
     public static final String SUCCESS_MESSAGE_TRUNCATE = 'All components truncated were successfully uploaded'
     public static final String SUCCESS_MESSAGE_DELETE = 'The files were successfully deleted'
+    public static final String START_MESSAGE_UNDEPLOY = 'Starting undeploy proccess...'
     public static final String FILE_NAME_DESTRUCTIVE = "destructiveChanges.xml"
     public static final String CUSTOM_FIELD_NAME = 'CustomField'
     public static final String WORK_FLOW_RULE_NAME = 'WorkflowRule'

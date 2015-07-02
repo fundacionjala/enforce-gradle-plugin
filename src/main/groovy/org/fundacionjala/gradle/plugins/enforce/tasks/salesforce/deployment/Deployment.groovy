@@ -367,4 +367,19 @@ abstract class Deployment extends SalesforceTask {
             PackageCombiner.removeMembersFromPackage(buildPackagePath, getFilesExcludes(excludes))
         }
     }
+
+    /**
+     * Gets a map with parameters as key and their contents as values
+     * @param parameterNames is an ArrayList with parameters name
+     * @return a Map with parameters and their values
+     */
+    public Map<String, String> getParameterWithTheirsValues(ArrayList<String> parameterNames) {
+        Map<String, String> parameterValues = [:]
+        parameterNames.each { String parameterName ->
+            if (Util.isValidProperty(parameters, parameterName) && !Util.isEmptyProperty(parameters, parameterName)) {
+                parameterValues.put(parameterName, parameters[parameterName].toString())
+            }
+        }
+        return parameterValues
+    }
 }
