@@ -4,6 +4,9 @@ import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.org.OrgInterfaceValidator
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 
+/**
+ * This class defines a default validate for some salesforce component
+ */
 public class DefaultOrgComponentsValidator implements OrgInterfaceValidator{
 
     @Override
