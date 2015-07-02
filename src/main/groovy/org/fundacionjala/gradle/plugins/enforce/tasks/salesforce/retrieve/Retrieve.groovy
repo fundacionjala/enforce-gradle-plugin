@@ -22,14 +22,9 @@ class Retrieve extends Retrieval {
     private final String FILES_RETRIEVE = 'files'
     private final String DESTINATION_FOLDER = 'destination'
     private final String ALL_PARAMETER = 'all'
-    private final String COMMA = ','
-    private final String YES = 'y'
     private String option
-    public static final String WILDCARD = '*'
     public String files
     public String destination
-    public final String SLASH = '/'
-    public final String BACKSLASH = '\\\\'
     public String all = Constants.FALSE
     public final int CODE_TO_EXIT = 0
 
@@ -56,7 +51,7 @@ class Retrieve extends Retrieval {
                 createPackageFromFiles()
             }else{
                 showWarningMessage()
-                if (option == YES) {
+                if (option == Constants.YES_OPTION) {
                     loadFromPackage()
                 } else {
                     logger.warn(Constants.RETRIEVE_MESSAGE_CANCELED)
@@ -73,7 +68,7 @@ class Retrieve extends Retrieval {
      */
     private void createPackageFromFiles(){
         ArrayList<File> filesRetrieve = new ArrayList<File>()
-        ArrayList<String> arrayNameArchives = files.split(COMMA)
+        ArrayList<String> arrayNameArchives = files.split(Constants.COMMA)
         arrayNameArchives.each { nameFile ->
             filesRetrieve.push(new File(Paths.get(projectPath, nameFile).toString()))
         }
@@ -178,7 +173,7 @@ class Retrieve extends Retrieval {
     void createPackage() {
         if (files) {
             ArrayList<File> filesRetrieve = new ArrayList<File>()
-            ArrayList<String> arrayNameArchives = files.split(COMMA)
+            ArrayList<String> arrayNameArchives = files.split(Constants.COMMA)
             arrayNameArchives.each { nameFile ->
                 filesRetrieve.push(new File(Paths.get(projectPath, nameFile).toString()))
             }
@@ -194,7 +189,7 @@ class Retrieve extends Retrieval {
      */
     void createPackageByFolders() {
         String parameterFolder = project.enforce.foldersToDownload
-        ArrayList<String> arrayFolders = parameterFolder.split(COMMA)
+        ArrayList<String> arrayFolders = parameterFolder.split(Constants.COMMA)
         packageBuilder.createPackageByFolder(arrayFolders)
     }
 
@@ -242,15 +237,15 @@ class Retrieve extends Retrieval {
                 }
             }
             if (!packageTypeMembersFound) {
-                if (memberType.contains(WILDCARD)) {
-                    members = [WILDCARD]
+                if (memberType.contains(Constants.WILDCARD)) {
+                    members = [Constants.WILDCARD]
                 }
             } else {
                 packageTypeMembersFound.members.each { member ->
                     if (members.contains(member)) {
                         members.remove(member)
                     }
-                    if (member == WILDCARD) {
+                    if (member == Constants.WILDCARD) {
                         members = []
                     }
                 }
@@ -275,7 +270,7 @@ class Retrieve extends Retrieval {
             logger.error(Constants.RETRIEVE_MESSAGE_WARNING)
             option = System.console().readLine("${'  '}${Constants.RETRIEVE_QUESTION_TO_CONTINUE}")
         } else {
-            option = YES
+            option = Constants.YES_OPTION
         }
     }
 
@@ -288,11 +283,11 @@ class Retrieve extends Retrieval {
             return
         }
         String parameterValues = files
-        parameterValues = parameterValues.replaceAll(BACKSLASH, SLASH)
+        parameterValues = parameterValues.replaceAll(Constants.BACK_SLASH, Constants.SLASH)
         ArrayList<File> filesToRetrieve = new ArrayList<File>()
         ArrayList<String> folderNames = new ArrayList<String>()
         parameterValues.split(Constants.COMMA).each { String parameter ->
-            if (parameter.contains(SLASH)) {
+            if (parameter.contains(Constants.SLASH)) {
                 filesToRetrieve.push(new File(Paths.get(projectPath,parameter).toString()))
             } else {
                 folderNames.push(parameter)

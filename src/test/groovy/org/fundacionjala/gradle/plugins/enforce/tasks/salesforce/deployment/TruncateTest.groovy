@@ -98,4 +98,8 @@ class TruncateTest extends Specification {
         packageFile.exists()
         packageContent.types.size() == 5
     }
+
+    def cleanup() {
+        new File(Paths.get(BUILD_PATH).toString()).deleteDir()
+    }
 }

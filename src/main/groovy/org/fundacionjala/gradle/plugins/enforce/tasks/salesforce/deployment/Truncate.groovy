@@ -38,6 +38,7 @@ class Truncate extends Deployment {
     void runTask() {
         setup()
         loadParameters(project.properties as Map<String, String>)
+        ArrayList<File> validFiles = getValidFiles()
         copyValidFiles(validFiles)
         writePackage(pathPackage, validFiles)
         truncateComponents()
