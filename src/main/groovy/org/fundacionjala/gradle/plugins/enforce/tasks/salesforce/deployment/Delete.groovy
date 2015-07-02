@@ -8,6 +8,7 @@ package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 import org.fundacionjala.gradle.plugins.enforce.undeploy.SmartFilesValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.filter.Filter
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.QueryBuilder
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
 
@@ -19,6 +20,7 @@ import java.nio.file.Paths
 class Delete extends Deployment {
     public String pathDelete
     public ArrayList<File> filesToDeleted
+    public String files, excludes
 
     /**
      * Sets description and group task
@@ -39,11 +41,9 @@ class Delete extends Deployment {
         componentDeploy.startMessage = Constants.START_DELETE_TASK
         componentDeploy.successMessage = Constants.SUCCESSFULLY_DELETE_TASK
         createDeploymentDirectory(pathDelete)
-        addAllFiles()
-        addFoldersToDeleteFiles()
-        addFilesToDelete()
-        excludeFilesToDelete()
-        validateFilesInOrg()
+
+        loadParameters(project.properties as Map<String, String>)
+        addFiles()
         showFilesToDelete()
 
         if( System.console().readLine("\n"+Constants.QUESTION_CONTINUE_DELETE) == Constants.YES_OPTION ) {
@@ -56,32 +56,27 @@ class Delete extends Deployment {
         }
     }
 
+
+    /**
+     * Gets all task parameters
+     * @param properties the task properties
+     * @return A map of all task parameters
+     */
+    void loadParameters(Map<String, String> properties) {
+        if (Util.isValidProperty(properties, Constants.PARAMETER_FILES)) {
+            files = properties[Constants.PARAMETER_FILES]
+        }
+        if (Util.isValidProperty(properties, Constants.PARAMETER_EXCLUDES)) {
+            excludes = properties[Constants.PARAMETER_EXCLUDES]
+        }
+    }
+
     /**
      * Adds all files into an org
      */
-    def addAllFiles() {
-        filesToDeleted = addAllFilesInAFolder(filesToDeleted)
-    }
-
-    /**
-     * Adds all files that are inside the folders
-     */
-    def addFoldersToDeleteFiles() {
-        filesToDeleted = addFilesFromFolders(filesToDeleted)
-    }
-
-    /**
-     * Adds files to file's list
-     */
-    def addFilesToDelete() {
-        filesToDeleted = addFilesTo(filesToDeleted)
-    }
-
-    /**
-     * Excludes Files from filesExcludes map
-     */
-    def excludeFilesToDelete() {
-        filesToDeleted = excludeFiles(filesToDeleted)
+    def addFiles() {
+        Filter filter = new Filter(project,projectPath)
+        filesToDeleted = filter.getFiles(files, excludes)
     }
 
     /**

@@ -9,6 +9,7 @@ import java.nio.file.Paths
 class Filter {
     private Project project
     private String projectPath
+    private ArrayList<String> excludeFiles = ['package.xml']
 
     Filter(Project project, String projectPath) {
         this.project = project
@@ -46,7 +47,7 @@ class Filter {
     public ArrayList<File> getFiles(String includes, String excludes) {
         ArrayList<String> criteriaToExclude = [Constants.FILE_TRACKER_NAME]
         ArrayList<String> criteriaToInclude = []
-
+        criteriaToExclude.addAll(excludeFiles)
         if(excludes && !excludes.isEmpty()) {
             criteriaToExclude.addAll(getCriteria(excludes))
         }
