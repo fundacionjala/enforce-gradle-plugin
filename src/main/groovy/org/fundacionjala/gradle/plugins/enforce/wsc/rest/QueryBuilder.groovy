@@ -55,6 +55,15 @@ class QueryBuilder {
     }
 
     /**
+     * Gets queries of components from component type
+     * @param typecomponent
+     * @return query
+     */
+    public String createQueryFromBasicComponent(String componentType) {
+        return "${SELECT_NAME} ${componentType}"
+    }
+
+    /**
      * Gets queries of components from list of files
      * @param ArrayList of files to execute query
      * @return array of queries String format
@@ -70,11 +79,11 @@ class QueryBuilder {
             MetadataComponents component = MetadataComponents.getComponentByPath(folderName)
             if (component && isDefaultComponent(component.getTypeName())) {
                 String query = component.getExtension() != 'sbc'?
-                    """${SELECT_NAME} ${component.getTypeName()} ${WHERE_NAME} '${
-                    Util.getFileName(file.getName())}'""" :
-                    """${SELECT_FULL_NAME} ${component.getTypeName()} ${WHERE_FULL_NAME} '${
-                        Util.getDeveloperName(file.getName())
-                    }'"""
+                        """${SELECT_NAME} ${component.getTypeName()} ${WHERE_NAME} '${
+                            Util.getFileName(file.getName())}'""" :
+                        """${SELECT_FULL_NAME} ${component.getTypeName()} ${WHERE_FULL_NAME} '${
+                            Util.getDeveloperName(file.getName())
+                        }'"""
                 queries.add(query)
             } else {
                 invalidFolders.add(folderName)
