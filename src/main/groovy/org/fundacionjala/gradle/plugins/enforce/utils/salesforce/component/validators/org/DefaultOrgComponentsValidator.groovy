@@ -10,7 +10,7 @@ import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 public class DefaultOrgComponentsValidator implements OrgInterfaceValidator{
 
     @Override
-    public Map<String,ArrayList<File>> validateFiles(Credential credential, ArrayList<File> filesToVerify, String folderComponent, String path) {
+    public Map<String,ArrayList<File>> validateFiles(Credential credential, ArrayList<File> filesToVerify, String folderComponent, String projectPath) {
 
         Map<String,ArrayList<File>> mapFiles = [:]
         mapFiles.put(Constants.VALID_FILE, new ArrayList<File>())
