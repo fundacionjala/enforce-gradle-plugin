@@ -10,9 +10,18 @@ import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
 
 import java.nio.file.Paths
 
-
+/**
+ * This class defines how validate a basic  salesforce component
+ */
 public class BasicOrgComponentsValidator implements OrgInterfaceValidator{
 
+    /**
+     * Validates the components defined in  Salesforce organization
+     * @param credential  contains the data needed to connect with the API sales force
+     * @param filesToValidate is a list of files that need to validate
+     * @param folderComponent is a component type that we need validate
+     * @param path orn repository
+     */
     @Override
     public Map<String,ArrayList<File>> validateFiles(Credential credential, ArrayList<File> filesToVerify, String folderComponent, String path) {
 
@@ -24,20 +33,26 @@ public class BasicOrgComponentsValidator implements OrgInterfaceValidator{
         ArrayList<File> orgFiles = getFilesIntoOrg(credential, folderComponent, path)
 
         filesToVerify.findAll{ File file ->
-            !file.getAbsolutePath().endsWith("-meta.xml")
+            !file.getAbsolutePath().endsWith(Constants.META_XML)
         }.each { File file ->
             if(orgFiles.containsAll(file)) {
                 mapFiles[Constants.VALID_FILE].add(file)
-                mapFiles[Constants.VALID_FILE].add(new File(file.getAbsolutePath()+"-meta.xml"))
+                mapFiles[Constants.VALID_FILE].add(new File(file.getAbsolutePath() + Constants.META_XML))
             }
             else {
                 mapFiles[Constants.DOES_NOT_EXIST_FILES].add(file)
-                mapFiles[Constants.DOES_NOT_EXIST_FILES].add(new File(file.getAbsolutePath()+"-meta.xml"))
+                mapFiles[Constants.DOES_NOT_EXIST_FILES].add(new File(file.getAbsolutePath() + +Constants.META_XML))
             }
         }
         return mapFiles
     }
 
+    /**
+     * Return files into Sales Force organization
+     * @param credential  contains the data needed to connect with the API sales force
+     * @param folderComponent is a component type that we need validate
+     * @param path orn repository
+     */
     public ArrayList<File> getFilesIntoOrg(Credential credential, String folderComponent, String path) {
 
         ToolingAPI toolingAPI = new ToolingAPI(credential)
@@ -52,7 +67,7 @@ public class BasicOrgComponentsValidator implements OrgInterfaceValidator{
         def jsonResulSet = jsonSlurper.parseText(resultSet as String)
 
         for(def i = 0; i < jsonResulSet.records.size(); i++) {
-            def nameFile = jsonResulSet.records[i]['Name']+'.'+extensionComponent
+            def nameFile = "${jsonResulSet.records[i]['Name']}.${extensionComponent}"
             orgFiles.add(new File(Paths.get(path,folderComponent, nameFile ).toString()))
         }
         return orgFiles

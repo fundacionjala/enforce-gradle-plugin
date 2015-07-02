@@ -3,7 +3,8 @@ package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.vali
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 
 /**
- * Created by marcelo_oporto on 25-06-15.
+ * Defines the different kind of validate a file
+ * based in Salesforce definitions
  */
 public interface OrgInterfaceValidator {
     Map<String,ArrayList<File>> validateFiles(Credential credential, ArrayList<File> filesToVerify, String folderComponent, String path)

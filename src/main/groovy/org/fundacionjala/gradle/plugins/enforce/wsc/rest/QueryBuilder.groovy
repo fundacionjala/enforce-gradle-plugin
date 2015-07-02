@@ -57,10 +57,10 @@ class QueryBuilder {
     /**
      * Gets queries of components from component type
      * @param typecomponent
-     * @return querie
+     * @return query
      */
-    public String createQueryFromBasicComponent(String typeComponent) {
-        return ("${SELECT_NAME} ${typeComponent}")
+    public String createQueryFromBasicComponent(String componentType) {
+        return "${SELECT_NAME} ${componentType}"
     }
 
     /**

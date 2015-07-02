@@ -9,9 +9,7 @@ import spock.lang.Specification
 
 import java.nio.file.Paths
 
-/**
- * Created by marcelo_oporto on 25-06-15.
- */
+
 class OrgValidatorTest extends Specification {
 
     @Shared
@@ -190,27 +188,3 @@ class OrgValidatorTest extends Specification {
             mapResponse[Constants.FILE_WHITOUT_VALIDATOR].sort() == mapExpected[Constants.FILE_WHITOUT_VALIDATOR].sort()
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

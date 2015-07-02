@@ -10,7 +10,7 @@ import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.valid
 
 
 /**
- * Validates files and folders defined in Salesforce
+ * Validates files into your org SalesForce
  */
 class OrgValidator {
 
@@ -22,6 +22,12 @@ class OrgValidator {
             'resources':new BasicOrgComponentsValidator()
     ]
 
+    /**
+     * Validates names of files
+     * @param credential  contains the data needed to connect with the API sales force
+     * @param filesToValidate ia a list of files that need to validate
+     * @param path orn repository
+     */
     public  Map<String,ArrayList<File>> validateFiles(Credential credential,ArrayList<File> filesToValidate, String path) {
         Map<String, ArrayList<File>> mapFiles = filesToValidate.groupBy {
             Util.getFirstPath(Util.getRelativePath(it,path))
@@ -35,7 +41,7 @@ class OrgValidator {
 
         mapFiles.each { folderComponent, files ->
             OrgInterfaceValidator val = getValidator(folderComponent)
-            mapResponseFolder = (val.validateFiles(credential, files, folderComponent, path))
+            mapResponseFolder = val.validateFiles(credential, files, folderComponent, path)
             mapResponseFolder.each { groupFile, filesValidates ->
                 mapResponse[groupFile].addAll(filesValidates)
             }
@@ -43,12 +49,14 @@ class OrgValidator {
         return mapResponse
     }
 
-    public OrgInterfaceValidator getValidator(String typeComponent) {
-        if(validators.containsKey(typeComponent)) {
-            return (new BasicOrgComponentsValidator())
+    /**
+     * Return the necesary validator
+     * @param componentType is the component that need be validated
+     */
+    public OrgInterfaceValidator getValidator(String componentType) {
+        if(validators.containsKey(componentType)) {
+            return validators.get(componentType)
         }
-        else {
-            return (new DefaultOrgComponentsValidator())
-        }
+        return new DefaultOrgComponentsValidator()
     }
 }
