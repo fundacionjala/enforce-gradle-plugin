@@ -15,6 +15,16 @@ import java.nio.file.Paths
 class FileValidator {
 
     /**
+     * @return a list with de valid files
+     * @param projectPath is a String that contains source path code for a project
+     * @param files is type array list
+     */
+    public static ArrayList<File> getValidFiles(String projectPath, ArrayList<File> files) {
+        Map<String,ArrayList<File>> mapFiles = FileValidator.validateFiles(projectPath, files)
+        return mapFiles[Constants.VALID_FILE]
+    }
+
+    /**
      * Validates names of files
      * @param projectPath is a String that contains source path code for a project
      * @param files is type array list

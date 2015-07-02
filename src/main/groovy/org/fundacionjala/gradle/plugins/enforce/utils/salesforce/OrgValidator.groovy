@@ -28,7 +28,30 @@ class OrgValidator {
      * @param filesToValidate ia a list of files that need to validate
      * @param path orn repository
      */
-    public  Map<String,ArrayList<File>> validateFiles(Credential credential,ArrayList<File> filesToValidate, String path) {
+    public static Map<String,ArrayList<File>> validateFiles(Credential credential,ArrayList<File> filesToValidate, String path) {
+        OrgValidator validator = new OrgValidator()
+        return validator.getValidationMap(credential, filesToValidate, path)
+    }
+
+    /**
+     * @return a list with de valid files
+     * @param credential  contains the data needed to connect with the API sales force
+     * @param filesToValidate ia a list of files that need to validate
+     * @param path orn repository
+     */
+    public static ArrayList<File> getValidFiles(Credential credential,ArrayList<File> filesToValidate, String path) {
+        Map<String,ArrayList<File>> mapFiles = OrgValidator.getValidationMap(credential, filesToValidate, path)
+        return mapFiles[Constants.VALID_FILE]
+    }
+
+
+    /**
+     * @return Map with all files validated and its states
+     * @param credential  contains the data needed to connect with the API sales force
+     * @param filesToValidate ia a list of files that need to validate
+     * @param path orn repository
+     */
+    public  Map<String,ArrayList<File>> getValidationMap(Credential credential,ArrayList<File> filesToValidate, String path) {
         Map<String, ArrayList<File>> mapFiles = filesToValidate.groupBy {
             Util.getFirstPath(Util.getRelativePath(it,path))
         }
