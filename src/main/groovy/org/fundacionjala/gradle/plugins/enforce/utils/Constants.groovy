@@ -91,10 +91,9 @@ public class Constants {
     public static final String SUCCESS_MESSAGE_DELETE = 'The files were successfully deleted'
     public static final String START_MESSAGE_UNDEPLOY = 'Starting undeploy proccess...'
     public static final String FILE_NAME_DESTRUCTIVE = "destructiveChanges.xml"
-    public static final String CUSTOM_FIELD_NAME = 'CustomField'
-    public static final String WORK_FLOW_RULE_NAME = 'WorkflowRule'
     public static final String DIR_UN_DEPLOY = "undeploy"
     public static final String LOOKUP_NAME = 'Lookup'
+    public static final String FILE_NOT_FOUND = "these files can't be deleted from your organization, because these weren't found!"
 
     //Upload task constants
     public static final String UPLOAD_DESCRIPTION = "This task uploads all specific files or folders as user wants"

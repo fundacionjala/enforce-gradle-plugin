@@ -12,6 +12,7 @@ import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.FileValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponent
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.OrgValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.filter.Filter
 
 import java.nio.file.Files
@@ -27,7 +28,6 @@ class Undeploy extends Deployment {
     public String folderUnDeploy
     public String unDeployPackagePath
     public String unDeployDestructivePath
-    public SmartFilesValidator smartFilesValidator
     InterceptorManager componentManager
     List<String> standardComponents
     private Filter filter
@@ -67,7 +67,6 @@ class Undeploy extends Deployment {
         folderUnDeploy = Paths.get(buildFolderPath, Constants.DIR_UN_DEPLOY).toString()
         unDeployPackagePath = Paths.get(folderUnDeploy, PACKAGE_NAME).toString()
         unDeployDestructivePath = Paths.get(folderUnDeploy, Constants.FILE_NAME_DESTRUCTIVE).toString()
-        smartFilesValidator = new SmartFilesValidator(Util.getJsonQueries(projectPackagePath, credential))
         filter = new Filter(project, projectPath)
     }
 
@@ -142,8 +141,31 @@ class Undeploy extends Deployment {
         filesToExclude.add(excludes)
 
         ArrayList<File> filesFiltered = getFilesValidated(includes.join(', '), "${filesToExclude.join(', ')}").get(Constants.VALID_FILE)
-        filesFiltered = smartFilesValidator.filterFilesAccordingOrganization(filesFiltered, projectPath)
-        writePackage(unDeployDestructivePath, filesFiltered as ArrayList<File>)
+        ArrayList<File> filesToWriteAtDestructive = getValidFilesFromOrg(filesFiltered)
+
+        writePackage(unDeployDestructivePath, filesToWriteAtDestructive as ArrayList<File>)
+    }
+
+    /**
+     * Gets valid files from org if there aren't files it show an exception message
+     * @param files is an ArrayList of files
+     * @return an ArrayList with files validates from your org
+     */
+    public ArrayList<File> getValidFilesFromOrg(ArrayList<File> files) {
+        Map <String, ArrayList<File>> filesClassified = OrgValidator.validateFiles(credential, files, projectPath)
+        ArrayList<String> notFoundFiles = []
+
+        ArrayList<File> validFiles = filesClassified.get(Constants.VALID_FILE)
+        validFiles.addAll(filesClassified.get(Constants.FILE_WITHOUT_VALIDATOR))
+
+        filesClassified.get(Constants.DOES_NOT_EXIST_FILES).each { File file ->
+            notFoundFiles.push(file.name)
+        }
+
+        if (!notFoundFiles.isEmpty()) {
+            throw new Exception("${notFoundFiles} ${Constants.FILE_NOT_FOUND}")
+        }
+        return validFiles.sort()
     }
 
     /**
