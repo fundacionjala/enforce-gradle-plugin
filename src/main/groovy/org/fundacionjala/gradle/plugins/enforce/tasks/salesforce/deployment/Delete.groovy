@@ -5,11 +5,11 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 
-import org.fundacionjala.gradle.plugins.enforce.undeploy.SmartFilesValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
-import org.fundacionjala.gradle.plugins.enforce.wsc.rest.QueryBuilder
-import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.FileValidator
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.OrgValidator
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.filter.Filter
 
 import java.nio.file.Paths
 
@@ -19,6 +19,7 @@ import java.nio.file.Paths
 class Delete extends Deployment {
     public String pathDelete
     public ArrayList<File> filesToDeleted
+    public String files, excludes
 
     /**
      * Sets description and group task
@@ -39,10 +40,9 @@ class Delete extends Deployment {
         componentDeploy.startMessage = Constants.START_DELETE_TASK
         componentDeploy.successMessage = Constants.SUCCESSFULLY_DELETE_TASK
         createDeploymentDirectory(pathDelete)
-        addAllFiles()
-        addFoldersToDeleteFiles()
-        addFilesToDelete()
-        excludeFilesToDelete()
+
+        loadParameters()
+        addFiles()
         validateFilesInOrg()
         showFilesToDelete()
 
@@ -56,47 +56,37 @@ class Delete extends Deployment {
         }
     }
 
+
+    /**
+     * Initializes all task parameters
+     * @param properties the task properties
+     * @return A map of all task parameters
+     */
+    def loadParameters() {
+        if (Util.isValidProperty(parameters, Constants.PARAMETER_FILES)) {
+            files = parameters[Constants.PARAMETER_FILES]
+        }
+        if (Util.isValidProperty(parameters, Constants.PARAMETER_EXCLUDES)) {
+            excludes = parameters[Constants.PARAMETER_EXCLUDES]
+        }
+    }
+
     /**
      * Adds all files into an org
      */
-    def addAllFiles() {
-        filesToDeleted = addAllFilesInAFolder(filesToDeleted)
-    }
-
-    /**
-     * Adds all files that are inside the folders
-     */
-    def addFoldersToDeleteFiles() {
-        filesToDeleted = addFilesFromFolders(filesToDeleted)
-    }
-
-    /**
-     * Adds files to file's list
-     */
-    def addFilesToDelete() {
-        filesToDeleted = addFilesTo(filesToDeleted)
-    }
-
-    /**
-     * Excludes Files from filesExcludes map
-     */
-    def excludeFilesToDelete() {
-        filesToDeleted = excludeFiles(filesToDeleted)
+    def addFiles() {
+        Filter filter = new Filter(project,projectPath)
+        filter.excludeFiles.addAll([Constants.PACKAGE_FILE_NAME])
+        filesToDeleted = filter.getFiles(files, excludes)
+        filesToDeleted = FileValidator.getValidFiles(projectPath, filesToDeleted)
     }
 
     /**
      * Filter the files into Org
      */
     def validateFilesInOrg() {
-        ToolingAPI toolingAPI = new ToolingAPI(credential)
-        QueryBuilder queryBuilder = new QueryBuilder()
-        ArrayList<String> jsonQueries = []
         if(!parameters.get(Constants.PARAMETER_VALIDATE_ORG).equals(Constants.FALSE_OPTION)) {
-            queryBuilder.createQueryFromPackage(projectPackagePath).each { query ->
-                jsonQueries.push(toolingAPI.httpAPIClient.executeQuery(query as String))
-            }
-            SmartFilesValidator smartFilesValidator = new SmartFilesValidator(jsonQueries)
-            filesToDeleted = smartFilesValidator.filterFilesAccordingOrganization(filesToDeleted, projectPath)
+            filesToDeleted = OrgValidator.getValidFiles(credential,filesToDeleted,projectPath)
         }
     }
 

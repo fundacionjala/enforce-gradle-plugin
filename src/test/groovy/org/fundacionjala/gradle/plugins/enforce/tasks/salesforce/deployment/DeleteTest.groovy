@@ -11,6 +11,9 @@ import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentSerializer
 import org.fundacionjala.gradle.plugins.enforce.metadata.DeployMetadata
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.FileValidator
+import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
+import org.fundacionjala.gradle.plugins.enforce.wsc.LoginType
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Shared
@@ -18,6 +21,10 @@ import spock.lang.Specification
 import java.nio.file.Paths
 
 class DeleteTest extends Specification {
+
+    @Shared
+    def credential
+
     @Shared
     Project project
 
@@ -37,10 +44,20 @@ class DeleteTest extends Specification {
     ComponentMonitor componentMonitor
 
     def setup() {
+
+        credential = new Credential()
+        credential.id = 'id'
+        credential.username = 'salesforce2014.test@gmail.com'
+        credential.password = '123qwe2014'
+        credential.token = 'UO1Jx5vDQl97xCKkwXBH8tg3T'
+        credential.loginFormat = LoginType.DEV.value()
+        credential.type = 'normal'
+
         project = ProjectBuilder.builder().build()
         project.apply(plugin: EnforcePlugin)
         project.enforce.srcPath = SRC_PATH
         deleteInstance = project.tasks.delete
+        deleteInstance.credential = credential
         deleteInstance.fileManager = new ManagementFile(SRC_PATH)
         deleteInstance.project.enforce.deleteTemporaryFiles = false
         deleteInstance.createDeploymentDirectory(Paths.get(SRC_PATH, 'build').toString())
@@ -132,20 +149,17 @@ class DeleteTest extends Specification {
         when:
             deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
             deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
-            deleteInstance.addAllFiles()
-            deleteInstance.addFoldersToDeleteFiles()
-            deleteInstance.addFilesToDelete()
-            deleteInstance.excludeFilesToDelete()
+            deleteInstance.addFiles()
             deleteInstance.createDestructive()
             deleteInstance.createPackageEmpty()
 
         then:
-            filesExpected.sort().equals(deleteInstance.filesToDeleted.sort())
+             deleteInstance.filesToDeleted.sort() == filesExpected.sort()
     }
 
     def "Integration testing must list files filtered for folders to delete"() {
         given:
-            deleteInstance.parameters.put('folders','classes,triggers')
+            deleteInstance.parameters.put('files','classes,triggers')
 
             ArrayList<File> filesExpected = new ArrayList<File>();
             filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class1.cls').toString()))
@@ -164,15 +178,13 @@ class DeleteTest extends Specification {
         when:
             deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, DIR_DELETE_FOLDER).toString()
             deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
-            deleteInstance.addAllFiles()
-            deleteInstance.addFoldersToDeleteFiles()
-            deleteInstance.addFilesToDelete()
-            deleteInstance.excludeFilesToDelete()
+            deleteInstance.loadParameters()
+            deleteInstance.addFiles()
             deleteInstance.createDestructive()
             deleteInstance.createPackageEmpty()
 
         then:
-            filesExpected.sort().equals(deleteInstance.filesToDeleted.sort())
+            deleteInstance.filesToDeleted.sort() == filesExpected.sort()
     }
 
     def "Integration testing must list files filtered for files to delete"() {
@@ -188,15 +200,13 @@ class DeleteTest extends Specification {
         when:
             deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, DIR_DELETE_FOLDER).toString()
             deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
-            deleteInstance.addAllFiles()
-            deleteInstance.addFoldersToDeleteFiles()
-            deleteInstance.addFilesToDelete()
-            deleteInstance.excludeFilesToDelete()
+            deleteInstance.loadParameters()
+            deleteInstance.addFiles()
             deleteInstance.createDestructive()
             deleteInstance.createPackageEmpty()
 
         then:
-            filesExpected.sort().equals(deleteInstance.filesToDeleted.sort())
+            filesExpected.sort() == deleteInstance.filesToDeleted.sort()
     }
 
     def "Integration testing must list all the files less exclude to delete"() {
@@ -217,15 +227,13 @@ class DeleteTest extends Specification {
         when:
             deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
             deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
-            deleteInstance.addAllFiles()
-            deleteInstance.addFoldersToDeleteFiles()
-            deleteInstance.addFilesToDelete()
-            deleteInstance.excludeFilesToDelete()
+            deleteInstance.loadParameters()
+            deleteInstance.addFiles()
             deleteInstance.createDestructive()
             deleteInstance.createPackageEmpty()
 
         then:
-            filesExpected.sort().equals( deleteInstance.filesToDeleted.sort())
+            filesExpected.sort() == deleteInstance.filesToDeleted.sort()
     }
 
     def "Integration testing must list all the files less exclude all objects and classes"() {
@@ -244,15 +252,13 @@ class DeleteTest extends Specification {
         when:
             deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
             deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
-            deleteInstance.addAllFiles()
-            deleteInstance.addFoldersToDeleteFiles()
-            deleteInstance.addFilesToDelete()
-            deleteInstance.excludeFilesToDelete()
+            deleteInstance.loadParameters()
+            deleteInstance.addFiles()
             deleteInstance.createDestructive()
             deleteInstance.createPackageEmpty()
 
         then:
-            filesExpected.sort().equals( deleteInstance.filesToDeleted.sort())
+            filesExpected.sort() == deleteInstance.filesToDeleted.sort()
     }
 
     def "Integration testing must list all the files less exclude all files that contain the number 1 or 2"() {
@@ -272,15 +278,13 @@ class DeleteTest extends Specification {
         when:
             deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
             deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
-            deleteInstance.addAllFiles()
-            deleteInstance.addFoldersToDeleteFiles()
-            deleteInstance.addFilesToDelete()
-            deleteInstance.excludeFilesToDelete()
+            deleteInstance.loadParameters()
+            deleteInstance.addFiles()
             deleteInstance.createDestructive()
             deleteInstance.createPackageEmpty()
 
         then:
-            filesExpected.sort().equals( deleteInstance.filesToDeleted.sort())
+            filesExpected.sort() == deleteInstance.filesToDeleted.sort()
     }
 
     def "Integration testing must list all the files less exclude all files"() {
@@ -289,10 +293,8 @@ class DeleteTest extends Specification {
         when:
             deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
             deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
-            deleteInstance.addAllFiles()
-            deleteInstance.addFoldersToDeleteFiles()
-            deleteInstance.addFilesToDelete()
-            deleteInstance.excludeFilesToDelete()
+            deleteInstance.loadParameters()
+            deleteInstance.addFiles()
             deleteInstance.createDestructive()
             deleteInstance.createPackageEmpty()
 
