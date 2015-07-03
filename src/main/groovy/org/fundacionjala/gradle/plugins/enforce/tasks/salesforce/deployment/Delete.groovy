@@ -5,12 +5,11 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 
-import org.fundacionjala.gradle.plugins.enforce.undeploy.SmartFilesValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.FileValidator
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.OrgValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.filter.Filter
-import org.fundacionjala.gradle.plugins.enforce.wsc.rest.QueryBuilder
-import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
 
 import java.nio.file.Paths
 
@@ -42,8 +41,9 @@ class Delete extends Deployment {
         componentDeploy.successMessage = Constants.SUCCESSFULLY_DELETE_TASK
         createDeploymentDirectory(pathDelete)
 
-        loadParameters(project.properties as Map<String, String>)
+        loadParameters()
         addFiles()
+        validateFilesInOrg()
         showFilesToDelete()
 
         if( System.console().readLine("\n"+Constants.QUESTION_CONTINUE_DELETE) == Constants.YES_OPTION ) {
@@ -58,16 +58,16 @@ class Delete extends Deployment {
 
 
     /**
-     * Gets all task parameters
+     * Initializes all task parameters
      * @param properties the task properties
      * @return A map of all task parameters
      */
-    void loadParameters(Map<String, String> properties) {
-        if (Util.isValidProperty(properties, Constants.PARAMETER_FILES)) {
-            files = properties[Constants.PARAMETER_FILES]
+    def loadParameters() {
+        if (Util.isValidProperty(parameters, Constants.PARAMETER_FILES)) {
+            files = parameters[Constants.PARAMETER_FILES]
         }
-        if (Util.isValidProperty(properties, Constants.PARAMETER_EXCLUDES)) {
-            excludes = properties[Constants.PARAMETER_EXCLUDES]
+        if (Util.isValidProperty(parameters, Constants.PARAMETER_EXCLUDES)) {
+            excludes = parameters[Constants.PARAMETER_EXCLUDES]
         }
     }
 
@@ -76,22 +76,17 @@ class Delete extends Deployment {
      */
     def addFiles() {
         Filter filter = new Filter(project,projectPath)
+        filter.excludePackageXMl()
         filesToDeleted = filter.getFiles(files, excludes)
+        filesToDeleted = FileValidator.getValidFiles(projectPath, filesToDeleted)
     }
 
     /**
      * Filter the files into Org
      */
     def validateFilesInOrg() {
-        ToolingAPI toolingAPI = new ToolingAPI(credential)
-        QueryBuilder queryBuilder = new QueryBuilder()
-        ArrayList<String> jsonQueries = []
         if(!parameters.get(Constants.PARAMETER_VALIDATE_ORG).equals(Constants.FALSE_OPTION)) {
-            queryBuilder.createQueryFromPackage(projectPackagePath).each { query ->
-                jsonQueries.push(toolingAPI.httpAPIClient.executeQuery(query as String))
-            }
-            SmartFilesValidator smartFilesValidator = new SmartFilesValidator(jsonQueries)
-            filesToDeleted = smartFilesValidator.filterFilesAccordingOrganization(filesToDeleted, projectPath)
+            filesToDeleted = OrgValidator.getValidFiles(credential,filesToDeleted,projectPath)
         }
     }
 
