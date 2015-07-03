@@ -127,8 +127,8 @@ abstract class Deployment extends SalesforceTask {
      * @return files excluded
      */
     public ArrayList<String> getFilesExcludes(String criterion) {
-        ArrayList<String> filesName = new ArrayList<String>()
-        ArrayList<File> sourceFiles = new ArrayList<File>()
+        ArrayList<String> filesName = []
+        ArrayList<File> sourceFiles = []
         ArrayList<String> criterias = getCriterias(criterion)
         FileTree fileTree = project.fileTree(dir: projectPath, includes: criterias)
         sourceFiles = fileTree.getFiles() as ArrayList<File>
@@ -178,70 +178,6 @@ abstract class Deployment extends SalesforceTask {
             criterias.push("${critery}${Constants.META_XML}")
         }
         return criterias
-    }
-
-    /**
-     * Adds all files inside a folder and  subfolders
-     * @param files  list of files to the new files will be added
-     * @return files  list of files with the new files added
-     */
-    def addAllFilesInAFolder(ArrayList<File> files) {
-        if (!Util.isValidProperty(parameters, Constants.PARAMETER_FOLDERS) && !Util.isValidProperty(parameters, Constants.PARAMETER_FILES)) {
-            ArrayList<File> sourceFiles = fileManager.getValidElements(projectPath)
-            sourceFiles.remove(new File(Paths.get(projectPath, Constants.PACKAGE_FILE_NAME).toString()))
-            files.addAll(sourceFiles)
-        }
-        return files
-    }
-
-    /**
-     * Adds files from folders
-     * @param files  list of files to the new files will be added
-     * @return files  list of files with the new files added
-     */
-    def addFilesFromFolders(ArrayList<File> files) {
-        String folders
-        if (Util.isValidProperty(parameters, Constants.PARAMETER_FOLDERS)) {
-            folders = parameters[Constants.PARAMETER_FOLDERS].toString()
-        }
-        if (folders) {
-            ArrayList<String> foldersName = folders.split(Constants.COMMA)
-            validateFolders(foldersName)
-            files = fileManager.getFilesByFolders(projectPath, foldersName as ArrayList<String>)
-        }
-        files.unique()
-        return files
-    }
-
-    /**
-     * Adds files to ArrayList according to the parameters passed
-     * @return files  list of files with the new files added
-     */
-    public addFilesTo(ArrayList<File> files) {
-        String fileNames
-        if (Util.isValidProperty(parameters, Constants.PARAMETER_FILES) && !Util.isEmptyProperty(parameters, Constants.PARAMETER_FILES)) {
-            fileNames = parameters[Constants.PARAMETER_FILES].toString()
-        }
-        ArrayList<String> filesName = new ArrayList<String>()
-        if (fileNames == null) {
-            return files
-        }
-        validateParameter(fileNames)
-        fileNames.split(Constants.COMMA).each {String fileName ->
-            def fileNameChanged = fileName.replaceAll(Constants.BACK_SLASH, Constants.SLASH)
-            if (!fileNameChanged.contains(Constants.SLASH)) {
-                filesName.push("${fileName}${File.separator}${Constants.WILDCARD}${Constants.WILDCARD}")
-                return
-            }
-            filesName.push(fileName)
-            filesName.push("${fileName}${Constants.META_XML}")
-        }
-
-        FileTree fileTree = project.fileTree(dir:projectPath, includes: filesName)
-        fileTree.each {File file ->
-            files.push(file)
-        }
-        return files
     }
 
     /**

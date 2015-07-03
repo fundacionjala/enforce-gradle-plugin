@@ -9,10 +9,12 @@ import java.nio.file.Paths
 class Filter {
     private Project project
     private String projectPath
+    ArrayList<String> excludeFiles
 
     Filter(Project project, String projectPath) {
         this.project = project
         this.projectPath = projectPath
+        this.excludeFiles = []
     }
 
     /**
@@ -46,7 +48,7 @@ class Filter {
     public ArrayList<File> getFiles(String includes, String excludes) {
         ArrayList<String> criteriaToExclude = [Constants.FILE_TRACKER_NAME]
         ArrayList<String> criteriaToInclude = []
-
+        criteriaToExclude.addAll(excludeFiles)
         if(excludes && !excludes.isEmpty()) {
             criteriaToExclude.addAll(getCriteria(excludes))
         }
@@ -57,4 +59,5 @@ class Filter {
         FileTree fileTree = project.fileTree(dir: projectPath, includes: criteriaToInclude, excludes: criteriaToExclude)
         return fileTree.getFiles() as ArrayList<File>
     }
+
 }
