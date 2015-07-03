@@ -268,7 +268,7 @@ class UndeployTest extends Specification {
     }
 
     def cleanupSpec() {
-        //new File(Paths.get(SRC_PATH, 'build').toString()).deleteDir()
+        new File(Paths.get(SRC_PATH, 'build').toString()).deleteDir()
         new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class2.cls' ).toString()).delete()
         new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class2.cls-meta.xml' ).toString()).delete()
         new File(Paths.get(SRC_PATH, 'src', 'triggers', 'trigger2.trigger' ).toString()).delete()
