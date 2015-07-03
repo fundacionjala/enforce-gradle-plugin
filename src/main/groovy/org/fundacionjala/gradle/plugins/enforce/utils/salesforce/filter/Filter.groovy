@@ -9,7 +9,7 @@ import java.nio.file.Paths
 class Filter {
     private Project project
     private String projectPath
-    private ArrayList<String> excludeFiles
+    ArrayList<String> excludeFiles
 
     Filter(Project project, String projectPath) {
         this.project = project
@@ -60,10 +60,4 @@ class Filter {
         return fileTree.getFiles() as ArrayList<File>
     }
 
-    /**
-     * Delete pahckage.xml file in the list files
-     */
-    public void excludePackageXMl() {
-        excludeFiles.add('package.xml')
-    }
 }

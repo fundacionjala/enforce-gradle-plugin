@@ -76,7 +76,7 @@ class Delete extends Deployment {
      */
     def addFiles() {
         Filter filter = new Filter(project,projectPath)
-        filter.excludePackageXMl()
+        filter.excludeFiles.addAll([Constants.PACKAGE_FILE_NAME])
         filesToDeleted = filter.getFiles(files, excludes)
         filesToDeleted = FileValidator.getValidFiles(projectPath, filesToDeleted)
     }
