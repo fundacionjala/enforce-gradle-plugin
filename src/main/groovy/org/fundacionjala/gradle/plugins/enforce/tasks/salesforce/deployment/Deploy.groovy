@@ -10,6 +10,8 @@ import org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor
 import org.fundacionjala.gradle.plugins.enforce.utils.AnsiColor
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.FileValidator
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.filter.Filter
 
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -26,6 +28,8 @@ class Deploy extends Deployment {
     public ArrayList<String> foldersNotDeploy
     public String folderDeploy
     public String folders
+    public String excludes
+    public ArrayList<File> filesToDeploy
 
     /**
      * Sets description task and its group
@@ -44,6 +48,8 @@ class Deploy extends Deployment {
         setupFilesToDeploy()
         logger.debug("${'Creating folder  Deploy at: '}${folderDeploy}")
         createDeploymentDirectory(folderDeploy)
+        loadParameters()
+        addFiles()
         if (Util.isValidProperty(parameters, Constants.FOLDERS_DEPLOY)) {
             deployByFolder()
         } else {
@@ -53,6 +59,15 @@ class Deploy extends Deployment {
             deployAllComponents()
         }
         deployToSalesForce()
+    }
+
+    /**
+     * Adds all files into files to deploy
+     */
+    def addFiles() {
+        Filter filter = new Filter(project,projectPath)
+        filesToDeploy = filter.getFiles(folders,excludes)
+        filesToDeploy = FileValidator.getValidFiles(projectPath, filesToDeploy)
     }
 
     /**
@@ -69,34 +84,11 @@ class Deploy extends Deployment {
      * Deploys by folder
      */
     public void deployByFolder() {
-        folders = parameters[Constants.PARAMETER_FOLDERS].toString()
         if (folders) {
-            ArrayList<String> foldersName = getFoldersName()
-            ArrayList<File> filesByFolders = fileManager.getFilesByFolders(projectPath, foldersName)
-            filesByFolders = excludeFiles(filesByFolders)
-            fileManager.copy(projectPath, filesByFolders, folderDeploy)
-            writePackage(deployPackagePath, filesByFolders)
+            fileManager.copy(projectPath, filesToDeploy, folderDeploy)
+            writePackage(deployPackagePath, filesToDeploy)
             combinePackageToUpdate(deployPackagePath)
         }
-    }
-
-    /**
-     * Gets folders name from folders parameter
-     */
-    private ArrayList<String> getFoldersName() {
-        ArrayList<String> foldersName = folders.split(Constants.COMMA)
-        validateFolders(foldersName)
-        ArrayList<String> invalidFolders = new ArrayList<String>()
-        invalidFolders = Util.getInvalidFolders(foldersName)
-        if (!invalidFolders.empty) {
-            throw new Exception("${Constants.INVALID_FOLDER}: ${invalidFolders}")
-        }
-        ArrayList<String> emptyFolders = new ArrayList<String>()
-        emptyFolders = Util.getEmptyFolders(foldersName, projectPath)
-        if (!emptyFolders.empty) {
-            throw new Exception("${Constants.NOT_FILES}: ${emptyFolders}")
-        }
-        return  foldersName
     }
 
     /**
@@ -104,12 +96,11 @@ class Deploy extends Deployment {
      */
     public void deployTruncateFiles() {
         if (codeTruncateOn) {
-            ArrayList<File> filesToTruncate = excludeFiles(fileManager.getFilesByFolders(projectPath, Constants.FOLDERS_TO_TRUNCATE))
             Files.copy(Paths.get(projectPath, PACKAGE_NAME), Paths.get(deployPackagePath), StandardCopyOption.REPLACE_EXISTING)
             logger.debug('Copying files to deploy')
-            fileManager.copy(projectPath, filesToTruncate, folderDeploy)
+            fileManager.copy(projectPath, filesToDeploy, folderDeploy)
             logger.debug('Generating package')
-            writePackage(deployPackagePath, filesToTruncate)
+            writePackage(deployPackagePath, filesToDeploy)
             combinePackage(deployPackagePath)
             truncateComponents()
             componentDeploy.startMessage = Constants.DEPLOYING_TRUNCATED_CODE
@@ -209,5 +200,21 @@ class Deploy extends Deployment {
         interceptorsToExecute += interceptors
         logger.debug("Truncating components at: $srcPath")
         truncateComponents(srcPath)
+    }
+
+    /**
+     * Initializes all task parameters
+     * @param properties the task properties
+     * @return A map of all task parameters
+     */
+    def loadParameters() {
+        folders = "null"
+        excludes = "null"
+        if (Util.isValidProperty(parameters, Constants.PARAMETER_FOLDERS)) {
+            folders = parameters[Constants.PARAMETER_FOLDERS].toString()
+        }
+        if (Util.isValidProperty(parameters, Constants.PARAMETER_EXCLUDES)) {
+            excludes = parameters[Constants.PARAMETER_EXCLUDES].toString()
+        }
     }
 }
