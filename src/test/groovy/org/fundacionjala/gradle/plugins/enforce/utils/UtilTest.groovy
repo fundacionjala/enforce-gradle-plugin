@@ -15,7 +15,8 @@ class UtilTest extends Specification {
         String RESOURCES_PATH
 
     def setup() {
-        RESOURCES_PATH = Paths.get(System.getProperty("user.dir"), 'src', 'test', 'groovy', 'org', 'fundacionjala', 'gradle', 'plugins','enforce', 'utils', 'resources').toString()
+        RESOURCES_PATH = Paths.get(System.getProperty("user.dir"), 'src', 'test', 'groovy', 'org', 'fundacionjala',
+                'gradle', 'plugins','enforce', 'utils', 'resources').toString()
     }
 
     def "Test should return true if emails are valid"() {
@@ -213,6 +214,26 @@ class UtilTest extends Specification {
             encodingUTF16LE
             encodingUTF8
             encodingUTF16LE1
+    }
+
+    def "Test should get components with wildcard"() {
+        given:
+            def standardComponents = ['Account.object', 'Opportunity.object', 'Contact.object', 'Admin.profile', 'CMC.app']
+        when:
+            def result = Util.getComponentsWithWildcard(standardComponents)
+        then:
+            result == ['**/Account.object', "**/Opportunity.object", "**/Contact.object", "**/Admin.profile", "**/CMC.app"]
+    }
+
+    def 'Should get the custom fields from an standard object file'() {
+        given:
+            def expected = ["Account.MyLookupField1__c", "Account.MyLookupField2__c"]
+            def path = Paths.get(RESOURCES_PATH, "objects", "Account.object").toString()
+        when:
+            def result = Util.getCustomFields(new File(path))
+        then:
+            result.size() == 2
+            expected == result
     }
 
     def cleanupSpec() {

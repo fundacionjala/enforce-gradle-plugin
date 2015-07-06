@@ -109,27 +109,12 @@ class Upload extends Deployment {
      * Copies files at build/upload directory
      */
     public void copyFilesToUpload() {
-        String exceptionMessage = getExceptionMessage(specificFilesToUpload)
+        String exceptionMessage = Util.getExceptionMessage(specificFilesToUpload)
         if (!exceptionMessage.isEmpty()) {
             throw new Exception(exceptionMessage)
         }
         ArrayList<File> validFiles = specificFilesToUpload[Constants.VALID_FILE]
         fileManager.copy(projectPath, validFiles, pathUpload)
-    }
-
-    /**
-     * Gets a exception message with invalid files
-     * @param filesClassified is a map with files classified by valid, invalid and not exist files
-     * @return exception message
-     */
-    private String getExceptionMessage(Map<String, ArrayList<File>> filesClassified) {
-        StringBuilder message = new StringBuilder(Constants.EMPTY)
-        filesClassified.each { String info, ArrayList<File> files ->
-            if (info != Constants.VALID_FILE && !files.isEmpty()) {
-                message.append("${info} : ${files}\n")
-            }
-        }
-        return message.toString()
     }
 
     /**
