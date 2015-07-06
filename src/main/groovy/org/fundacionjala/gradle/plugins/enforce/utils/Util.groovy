@@ -9,13 +9,17 @@ import org.apache.commons.lang.StringUtils
 import groovy.util.logging.Slf4j
 import org.fundacionjala.gradle.plugins.enforce.undeploy.PackageComponent
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files.SalesforceValidator
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files.SalesforceValidatorManager
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.QueryBuilder
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.file.FileTree
 
 import java.nio.charset.Charset
+import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.logging.Logger
 import java.util.regex.Matcher
@@ -347,6 +351,87 @@ class Util {
     }
 
     /**
+     * Validates parameter's values
+     * @param parameterValues are files name that will be excluded
+     */
+    public static void validateParameterContent(String parameterValues, String projectPath) {
+        parameterValues = parameterValues.replaceAll(Constants.BACK_SLASH, Constants.SLASH)
+        ArrayList<String> fileNames = new ArrayList<String>()
+        ArrayList<String> folderNames = new ArrayList<String>()
+        parameterValues.split(Constants.COMMA).each { String parameter ->
+            if (parameter.contains(Constants.WILDCARD)) {
+                return
+            }
+            if (parameter.contains(Constants.SLASH)) {
+                fileNames.push(parameter)
+            } else {
+                folderNames.push(parameter)
+            }
+        }
+        validateFolders(folderNames, projectPath)
+        validateFiles(fileNames, projectPath)
+    }
+
+    /**
+     * Validates folders name
+     * @param foldersName is type array list contents folders name
+     */
+    public static void validateFolders(ArrayList<String> foldersName, String projectPath) {
+        ArrayList<String> invalidFolders = new ArrayList<String>()
+        invalidFolders = getInvalidFolders(foldersName)
+        String errorMessage = ''
+        if (!invalidFolders.empty) {
+            errorMessage = "${Constants.INVALID_FOLDER}: ${invalidFolders}"
+        }
+
+        ArrayList<String> notExistFolders = new ArrayList<String>()
+        notExistFolders = getNotExistFolders(foldersName, projectPath)
+        if (!notExistFolders.empty) {
+            errorMessage += "\n${Constants.DOES_NOT_EXIST_FOLDER} ${notExistFolders}"
+        }
+
+        ArrayList<String> emptyFolders = new ArrayList<String>()
+        emptyFolders = getEmptyFolders(foldersName, projectPath)
+        if (!emptyFolders.empty) {
+            errorMessage += "\n${Constants.EMPTY_FOLDERS} ${emptyFolders}"
+        }
+
+        if (!errorMessage.isEmpty()) {
+            throw new Exception(errorMessage)
+        }
+    }
+
+    /**
+     * Validates files name
+     * @param filesName is type array list contents files name
+     */
+    public static void validateFiles(ArrayList<String> filesName, String projectPath) {
+        ArrayList<String> invalidFiles = new ArrayList<String>()
+        ArrayList<String> notExistFiles = new ArrayList<String>()
+        String errorMessage = ''
+        filesName.each { String fileName ->
+            File file = new File(Paths.get(projectPath, fileName).toString())
+            String parentName = getFirstPath(fileName).toString()
+            SalesforceValidator validator = SalesforceValidatorManager.getValidator(parentName)
+            if (!validator.validateFile(file, parentName)) {
+                invalidFiles.push(fileName)
+            }
+            if (!new File(Paths.get(projectPath, fileName).toString()).exists()) {
+                notExistFiles.push(fileName)
+            }
+        }
+        if (!invalidFiles.isEmpty()) {
+            errorMessage = "${Constants.INVALID_FILE}: ${invalidFiles}"
+        }
+        if (!notExistFiles.isEmpty()) {
+            errorMessage += "\n${Constants.DOES_NOT_EXIST_FILES} ${notExistFiles}"
+        }
+        if (!errorMessage.isEmpty()) {
+            throw new Exception(errorMessage)
+        }
+    }
+
+    /**
      * Gets rules from list of workflow
      * @param workflowList contains workflow files
      * @return an array strings which are rules
@@ -439,7 +524,36 @@ class Util {
         queries.each { query ->
             jsonQueries.push(toolingAPI.httpAPIClient.executeQuery(query as String))
         }
-        println jsonQueries
         return jsonQueries
+    }
+
+    /**
+     * Gets includes value by folder of files updated
+     * @param fileNames is type Array List
+     * @param parameterValue is an String
+     * @param projectPath is base path to get relative path of files
+     * @return includes value as String
+     */
+    public static String getIncludesValueByFolderFromFilesUpdated(ArrayList<File> files, String parameterValue, String projectPath) {
+        ArrayList<String> fileNames = []
+        ArrayList<String> filesToInclude = []
+        files.each {File file ->
+            Path pathAbsolute = Paths.get(file.getAbsolutePath())
+            Path pathBase = Paths.get(projectPath)
+            Path pathRelative = pathBase.relativize(pathAbsolute)
+            fileNames.push(pathRelative.toString())
+        }
+        String includes = fileNames.join(', ')
+
+        if (parameterValue != "") {
+            ArrayList<String> parameterValues = parameterValue.split(',')
+            fileNames.each {String fileName ->
+                if (parameterValues.contains(getFirstPath(fileName))) {
+                    filesToInclude.push(fileName)
+                }
+            }
+            includes = filesToInclude.join(', ')
+        }
+        return includes
     }
 }

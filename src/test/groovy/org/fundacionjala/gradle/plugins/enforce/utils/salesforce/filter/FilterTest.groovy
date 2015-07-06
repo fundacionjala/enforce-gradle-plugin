@@ -472,6 +472,17 @@ class FilterTest extends Specification{
             result.sort() == ["documents${File.separator}**", "classes${File.separator}**", "objects${File.separator}**"].sort()
     }
 
+    def "Test should return a criteria when you send a reports, or documents with their extensions" () {
+        given:
+            Filter myFilter = new Filter(project, Paths.get(SRC_PATH, 'src_temporary').toString())
+            String criterion = "reports${File.separator}MyReports${File.separator}newReport.report"
+        when:
+            ArrayList<String> result = myFilter.getCriteria(criterion)
+        then:
+            result.sort() == ["reports${File.separator}MyReports${File.separator}newReport.report",
+                              "reports${File.separator}MyReports${File.separator}newReport.report-meta.xml"].sort()
+    }
+
     def cleanupSpec() {
         new File(Paths.get(SRC_PATH,'src_temporary').toString()).deleteDir()
     }

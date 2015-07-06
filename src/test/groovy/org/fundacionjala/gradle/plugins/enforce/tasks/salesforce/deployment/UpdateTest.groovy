@@ -256,12 +256,11 @@ class UpdateTest extends Specification {
             def packageExpect = "${"<?xml version='1.0' encoding='UTF-8'?>"}${"<Package xmlns='http://soap.sforce.com/2006/04/metadata'>"}${"<types><members>Class2</members><name>ApexClass</name></types><version>32.0</version></Package>"}"
             def destructiveExpect = "${"<?xml version='1.0' encoding='UTF-8'?>"}${"<Package xmlns='http://soap.sforce.com/2006/04/metadata'>"}${"<version>32.0</version>"}${"</Package>"}"
         when:
-            updateInstance.pathUpdate = Paths.get(updateInstance.buildFolderPath, Constants.DIR_UPDATE_FOLDER).toString()
-            updateInstance.updatePackagePath = Paths.get(updateInstance.pathUpdate, updateInstance.PACKAGE_NAME).toString()
+            updateInstance.setup()
             updateInstance.createDeploymentDirectory(updateInstance.pathUpdate)
             updateInstance.loadFilesChanged()
-            updateInstance.verifyParameter()
-            updateInstance.excludeFilesFromFilesChanged()
+            updateInstance.loadParameters()
+            updateInstance.filterFiles()
             updateInstance.showFilesChanged()
             updateInstance.createDestructive()
             updateInstance.createPackage()
@@ -310,12 +309,11 @@ class UpdateTest extends Specification {
             File updateFileZip = new File(updateFileZipPath)
             File updateFolder = new File(updateFolderPath)
         when:
-            updateInstance.pathUpdate = Paths.get(updateInstance.buildFolderPath, Constants.DIR_UPDATE_FOLDER).toString()
-            updateInstance.updatePackagePath = Paths.get(updateInstance.pathUpdate, updateInstance.PACKAGE_NAME).toString()
+            updateInstance.setup()
             updateInstance.createDeploymentDirectory(updateInstance.pathUpdate)
             updateInstance.loadFilesChanged()
-            updateInstance.verifyParameter()
-            updateInstance.excludeFilesFromFilesChanged()
+            updateInstance.loadParameters()
+            updateInstance.filterFiles()
             updateInstance.showFilesChanged()
             updateInstance.createDestructive()
             updateInstance.createPackage()
@@ -462,12 +460,11 @@ class UpdateTest extends Specification {
                     "\t<version>32.0</version>\n" +
                     "</Package>"
         when:
-            updateInstance.pathUpdate = Paths.get(updateInstance.buildFolderPath, Constants.DIR_UPDATE_FOLDER).toString()
-            updateInstance.updatePackagePath = Paths.get(updateInstance.pathUpdate, updateInstance.PACKAGE_NAME).toString()
+            updateInstance.setup()
             updateInstance.createDeploymentDirectory(updateInstance.pathUpdate)
             updateInstance.loadFilesChanged()
-            updateInstance.verifyParameter()
-            updateInstance.excludeFilesFromFilesChanged()
+            updateInstance.loadParameters()
+            updateInstance.filterFiles()
             updateInstance.showFilesChanged()
             updateInstance.createPackage()
             updateInstance.copyFilesChanged()
@@ -487,7 +484,7 @@ class UpdateTest extends Specification {
     }
 
     def cleanup() {
-        new File(Paths.get(SRC_PATH, 'build').toString()).deleteDir()
+        //new File(Paths.get(SRC_PATH, 'build').toString()).deleteDir()
         new File(Paths.get(SRC_PATH, 'classes', 'Class2.cls').toString()).delete()
         new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class2.cls').toString()).delete()
         new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class2.cls-meta.xml').toString()).delete()

@@ -236,6 +236,39 @@ class UtilTest extends Specification {
             expected == result
     }
 
+    def "Test should get includes value by folder only of files updated" () {
+        given:
+            ArrayList<File> files = [new File(Paths.get(RESOURCES_PATH, 'classes', 'Class1.cls').toString()),
+                                     new File(Paths.get(RESOURCES_PATH, 'classes', 'Class2.cls').toString()),
+                                     new File(Paths.get(RESOURCES_PATH, 'objects', 'Object1__c.object').toString()),
+                                     new File(Paths.get(RESOURCES_PATH, 'objects', 'Object2__c.object').toString()),
+                                     new File(Paths.get(RESOURCES_PATH, 'pages', 'Page1.page').toString()),
+                                     new File(Paths.get(RESOURCES_PATH, 'triggers', 'Trigger1.trigger').toString())]
+            String parameterValue = "classes,objects"
+        when:
+            String result = Util.getIncludesValueByFolderFromFilesUpdated(files, parameterValue,RESOURCES_PATH)
+        then:
+            result == ["${'classes'}${File.separator}${'Class1.cls'}",
+                       "${'classes'}${File.separator}${'Class2.cls'}",
+                       "${'objects'}${File.separator}${'Object1__c.object'}",
+                       "${'objects'}${File.separator}${'Object2__c.object'}"].join(', ')
+    }
+
+    def "Test should get includes value by folder only of files updated when you sent reports or documents" () {
+        given:
+            ArrayList<File> files = [new File(Paths.get(RESOURCES_PATH, 'reports', 'MyFolder', 'MyReport.report').toString()),
+                                     new File(Paths.get(RESOURCES_PATH, 'documents', 'MyDocuments', 'MyDocument.txt').toString()),
+                                     new File(Paths.get(RESOURCES_PATH, 'objects', 'Object2__c.object').toString()),
+                                     new File(Paths.get(RESOURCES_PATH, 'pages', 'Page1.page').toString()),]
+            String parameterValue = "reports,documents"
+            String projectPath = RESOURCES_PATH
+        when:
+            String result = Util.getIncludesValueByFolderFromFilesUpdated(files, parameterValue,projectPath)
+        then:
+            result == ["${'reports'}${File.separator}${'MyFolder'}${File.separator}${'MyReport.report'}",
+                       "${'documents'}${File.separator}${'MyDocuments'}${File.separator}${'MyDocument.txt'}"].join(', ')
+    }
+
     def cleanupSpec() {
         new File(Paths.get(RESOURCES_PATH, 'triggers').toString()).deleteDir()
         new File(Paths.get(RESOURCES_PATH, 'relativeTest').toString()).deleteDir()

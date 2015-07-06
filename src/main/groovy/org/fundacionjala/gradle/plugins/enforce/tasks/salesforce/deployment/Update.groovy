@@ -10,6 +10,7 @@ import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageCombiner
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageGenerator
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.filter.Filter
 
 import java.nio.file.Paths
 
@@ -21,9 +22,10 @@ class Update extends Deployment {
     public String updatePackagePath
     ArrayList<File> filesToCopy
     ArrayList<File> filesToUpdate
-    String folders
+    String folders = ""
     ArrayList<File> filesExcludes
     PackageGenerator packageGenerator
+    Filter filter
 
     /**
      * Sets description and group task
@@ -44,12 +46,11 @@ class Update extends Deployment {
      */
     @Override
     void runTask() {
-        pathUpdate = Paths.get(buildFolderPath, Constants.DIR_UPDATE_FOLDER).toString()
-        updatePackagePath = Paths.get(pathUpdate, PACKAGE_NAME).toString()
+        setup()
         createDeploymentDirectory(pathUpdate)
         loadFilesChanged()
-        verifyParameter()
-        excludeFilesFromFilesChanged()
+        loadParameters()
+        filterFiles()
         showFilesChanged()
         if(isEmptyChangedFiles()) {
             return;
@@ -61,6 +62,12 @@ class Update extends Deployment {
         truncate()
         executeDeploy(pathUpdate)
         packageGenerator.saveFileTrackerMap()
+    }
+
+    def setup() {
+        pathUpdate = Paths.get(buildFolderPath, Constants.DIR_UPDATE_FOLDER).toString()
+        updatePackagePath = Paths.get(pathUpdate, PACKAGE_NAME).toString()
+        filter = new Filter(project, projectPath)
     }
 
     def truncate() {
@@ -96,25 +103,6 @@ class Update extends Deployment {
     def loadFilesChanged() {
         ArrayList<File> validatedFiles = fileManager.getValidElements(projectPath, excludeFilesToMonitor)
         packageGenerator.init(projectPath, validatedFiles, credential)
-    }
-
-    /**
-     * Verifies if there is files changed in folders inserted by user
-     */
-    def verifyParameter() {
-        if (Util.isValidProperty(project, Constants.FOLDERS_DEPLOY)) {
-            folders = project.folders
-        }
-
-        if (folders) {
-            ArrayList<String> foldersName = folders.split(Constants.COMMA)
-            ArrayList<String> invalidFolders = Util.getInvalidFolders(foldersName)
-            validateFolders(foldersName)
-            if (!invalidFolders.empty) {
-                throw new Exception("${Constants.INVALID_FOLDER}: ${invalidFolders}")
-            }
-            packageGenerator.updateFileTrackerMap(foldersName)
-        }
     }
 
     /**
@@ -185,13 +173,22 @@ class Update extends Deployment {
         }
     }
 
-    /**
-     * ExcludeFiles from filesExcludes map
-     */
-    public void excludeFilesFromFilesChanged() {
+    public void filterFiles() {
         ArrayList<File> files = packageGenerator.getFiles(projectPath)
-        ArrayList<File> filesFiltered = excludeFiles(files)
+        String includes = Util.getIncludesValueByFolderFromFilesUpdated(files, folders, projectPath)
+        ArrayList<File> filesFiltered = filter.getFiles(includes, excludes)
         packageGenerator.updateFileTracker(filesFiltered)
         filesExcludes = files - filesFiltered
+    }
+
+    public void loadParameters() {
+        Map <String, String> parameters = getParameterWithTheirsValues([Constants.PARAMETER_EXCLUDES, Constants.PARAMETER_FOLDERS])
+        if (parameters.containsKey(Constants.PARAMETER_EXCLUDES)) {
+            excludes = parameters.get(Constants.PARAMETER_EXCLUDES)
+        }
+
+        if (parameters.containsKey(Constants.PARAMETER_FOLDERS)) {
+            folders = parameters.get(Constants.PARAMETER_FOLDERS)
+        }
     }
 }

@@ -12,8 +12,6 @@ import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageCombiner
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files.SalesforceValidator
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files.SalesforceValidatorManager
 import org.gradle.api.file.FileTree
 
 import java.nio.file.Paths
@@ -195,91 +193,10 @@ abstract class Deployment extends SalesforceTask {
             excludes = parameters[Constants.PARAMETER_EXCLUDES].toString()
         }
         if (excludes) {
-            validateParameter(excludes)
+            Util.validateParameterContent(excludes, projectPath)
             filesFiltered = excludeFilesByCriterion(filesFiltered, excludes)
         }
         return filesFiltered
-    }
-
-    /**
-     * Validates parameter's values
-     * @param parameterValues are files name that will be excluded
-     */
-    public void validateParameter(String parameterValues) {
-        parameterValues = parameterValues.replaceAll(Constants.BACK_SLASH, Constants.SLASH)
-        ArrayList<String> fileNames = new ArrayList<String>()
-        ArrayList<String> folderNames = new ArrayList<String>()
-        parameterValues.split(Constants.COMMA).each { String parameter ->
-            if (parameter.contains(Constants.WILDCARD)) {
-                return
-            }
-            if (parameter.contains(Constants.SLASH)) {
-                fileNames.push(parameter)
-            } else {
-                folderNames.push(parameter)
-            }
-        }
-        validateFolders(folderNames)
-        validateFiles(fileNames)
-    }
-
-    /**
-     * Validates folders name
-     * @param foldersName is type array list contents folders name
-     */
-    public void validateFolders(ArrayList<String> foldersName) {
-        ArrayList<String> invalidFolders = new ArrayList<String>()
-        invalidFolders = Util.getInvalidFolders(foldersName)
-        String errorMessage = ''
-        if (!invalidFolders.empty) {
-            errorMessage = "${Constants.INVALID_FOLDER}: ${invalidFolders}"
-        }
-
-        ArrayList<String> notExistFolders = new ArrayList<String>()
-        notExistFolders = Util.getNotExistFolders(foldersName, projectPath)
-        if (!notExistFolders.empty) {
-            errorMessage += "\n${Constants.DOES_NOT_EXIST_FOLDER} ${notExistFolders}"
-        }
-
-        ArrayList<String> emptyFolders = new ArrayList<String>()
-        emptyFolders = Util.getEmptyFolders(foldersName, projectPath)
-        if (!emptyFolders.empty) {
-            errorMessage += "\n${Constants.EMPTY_FOLDERS} ${emptyFolders}"
-        }
-
-        if (!errorMessage.isEmpty()) {
-            throw new Exception(errorMessage)
-        }
-    }
-
-    /**
-     * Validates files name
-     * @param filesName is type array list contents files name
-     */
-    public void validateFiles(ArrayList<String> filesName) {
-        ArrayList<String> invalidFiles = new ArrayList<String>()
-        ArrayList<String> notExistFiles = new ArrayList<String>()
-        String errorMessage = ''
-        filesName.each { String fileName ->
-            File file = new File(Paths.get(projectPath, fileName).toString())
-            String parentName = Util.getFirstPath(fileName).toString()
-            SalesforceValidator validator = SalesforceValidatorManager.getValidator(parentName)
-            if (!validator.validateFile(file, parentName)) {
-                invalidFiles.push(fileName)
-            }
-            if (!new File(Paths.get(projectPath, fileName).toString()).exists()) {
-                notExistFiles.push(fileName)
-            }
-        }
-        if (!invalidFiles.isEmpty()) {
-            errorMessage = "${Constants.INVALID_FILE}: ${invalidFiles}"
-        }
-        if (!notExistFiles.isEmpty()) {
-            errorMessage += "\n${Constants.DOES_NOT_EXIST_FILES} ${notExistFiles}"
-        }
-        if (!errorMessage.isEmpty()) {
-            throw new Exception(errorMessage)
-        }
     }
 
     /**
