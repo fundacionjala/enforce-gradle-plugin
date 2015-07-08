@@ -51,13 +51,15 @@ class Deploy extends Deployment {
         displayFolderNoDeploy()
         deployTruncateFiles()
         deployAllComponents()
-        deployToSalesForce()
+        deployTruncateDeprecateFiles()
+        executeDeploy(folderDeploy)
+        updateFileTracker()
     }
 
     /**
-     * Sets path of build/deploy directory
-     * Sets path of package from build/deploy directory
-     * Sets path of package from project directory
+     * Creates new instances for task
+     * Sets messages status
+     * Sets paths to files to deployed
      */
     public void setup() {
         folderDeploy = Paths.get(buildFolderPath, Constants.FOLDER_DEPLOY).toString()
@@ -66,8 +68,6 @@ class Deploy extends Deployment {
 
     /**
      * Initializes all task parameters
-     * @param properties the task properties
-     * @return A map of all task parameters
      */
     def loadParameters() {
         String turnOffOptionTruncate = parameters[Constants.TURN_OFF_TRUNCATE].toString()
@@ -101,7 +101,7 @@ class Deploy extends Deployment {
     }
 
     /**
-     * Copy files
+     * Copy all files into src folder into build/deploy folder
      */
     def copyFiles() {
         logger.debug("${'Creating folder  Deploy at: '}${folderDeploy}")
@@ -160,36 +160,28 @@ class Deploy extends Deployment {
     }
 
     /**
-     * Deploys all components from project directory
+     * Deploys the filtered components from project directory
      */
     public void deployAllComponents() {
-        if (folders) {
-            writePackage(deployPackagePath, filesToDeploy)
-            combinePackageToUpdate(deployPackagePath)
-        }
-        else {
-            componentDeploy.startMessage = Constants.DEPLOYING_CODE
-            componentDeploy.successMessage = Constants.DEPLOYING_CODE_SUCCESSFULLY
-            createDeploymentDirectory(folderDeploy)
-            fileManager.copy(projectPath, filesToDeploy, folderDeploy)
-            writePackage(deployPackagePath, filesToDeploy)
-            combinePackage(deployPackagePath)
-        }
+        componentDeploy.startMessage = Constants.DEPLOYING_CODE
+        componentDeploy.successMessage = Constants.DEPLOYING_CODE_SUCCESSFULLY
+        createDeploymentDirectory(folderDeploy)
+        fileManager.copy(projectPath, filesToDeploy, folderDeploy)
+        writePackage(deployPackagePath, filesToDeploy)
+        combinePackage(deployPackagePath)
     }
 
     /**
      * Deploys code to salesForce Organization
      */
-    private void deployToSalesForce() {
+    private void deployTruncateDeprecateFiles() {
         if (deprecateTruncateOn) {
             interceptorsToExecute = [Interceptor.REMOVE_DEPRECATE.id]
             interceptorsToExecute += interceptors
             logger.debug("Truncating components from: $folderDeploy")
             truncateComponents(folderDeploy)
+            logger.debug("Deploying all components from: $folderDeploy")
         }
-        logger.debug("Deploying all components from: $folderDeploy")
-        executeDeploy(folderDeploy)
-        updateFileTracker()
     }
 
     /**
