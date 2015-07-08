@@ -105,7 +105,9 @@ class DeployTest extends Specification {
             instanceDeploy.projectPath = Paths.get(SRC_PATH, 'src').toString()
             instanceDeploy.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
         when:
-            instanceDeploy.setupFilesToDeploy()
+            instanceDeploy.setup()
+            instanceDeploy.loadParameters()
+            instanceDeploy.getClassifiedFiles()
             instanceDeploy.createDeploymentDirectory(folderDeploy)
             instanceDeploy.displayFolderNoDeploy()
             instanceDeploy.deployAllComponents()
@@ -313,18 +315,20 @@ class DeployTest extends Specification {
 
     def "Test should return an exception if folders parameter is not valid" () {
         given:
-            instanceDeploy.folders = 'invalidFolder'
+            instanceDeploy.parameters.put('folders','invalidFolder')
         when:
-            instanceDeploy.deployByFolder()
+            instaceDeploy.loadParameters()
+            instanceDeploy.deployAllComponents()
         then:
             thrown(Exception)
     }
 
     def "Test should return an exception if folders parameter is empty" () {
         given:
-            instanceDeploy.folders = ''
+            instanceDeploy.parameters.put('folders','')
         when:
-            instanceDeploy.deployByFolder()
+            instaceDeploy.loadParameters()
+            instanceDeploy.deployAllComponents()
         then:
             thrown(Exception)
     }
@@ -341,7 +345,7 @@ class DeployTest extends Specification {
             File deployFolder = new File(deployFolderPath)
             String folderDeploy = Paths.get(SRC_PATH, 'build', 'deploy').toString()
         when:
-            instanceDeploy.setupFilesToDeploy()
+            instanceDeploy.setup()
             instanceDeploy.createDeploymentDirectory(folderDeploy)
             instanceDeploy.displayFolderNoDeploy()
             instanceDeploy.deployAllComponents()
