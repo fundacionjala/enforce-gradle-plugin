@@ -10,9 +10,6 @@ import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.FileValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageGenerator
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.filter.Filter
-
-import java.nio.file.Paths
 
 /**
  * Uploads files to an organization using metadata API without truncate values
@@ -20,15 +17,16 @@ import java.nio.file.Paths
 class Upload extends Deployment {
     public Map<String, ArrayList<File>> specificFilesToUpload
     public PackageGenerator packageGenerator
-    public String pathUpload
-    public String uploadPackagePath
     public String option = Constants.YES_OPTION
     public String all = Constants.FALSE
-    public Filter filter
     String files = Constants.EMPTY
 
     Upload() {
         super(Constants.UPLOAD_DESCRIPTION, Constants.DEPLOYMENT)
+        packageGenerator = new PackageGenerator()
+        specificFilesToUpload = [:]
+        interceptorsToExecute = []
+        taskFolderName = Constants.DIR_UPLOAD_FOLDER
     }
 
     /**
@@ -36,41 +34,22 @@ class Upload extends Deployment {
      */
     @Override
     void runTask() {
-        setup()
-        createDeploymentDirectory(pathUpload)
+        createDeploymentDirectory(taskFolderPath)
         loadFilesChangedToUpload()
-        loadParameters()
         showWarningMessage()
         if (option == Constants.YES_OPTION) {
             loadFilesToUpload()
             copyFilesToUpload()
             createPackage()
-            combinePackageToUpdate(uploadPackagePath)
+            combinePackageToUpdate(taskPackagePath)
             addInterceptor()
-            executeDeploy(pathUpload)
+            componentDeploy.startMessage = "Starting upload files process"
+            componentDeploy.successMessage = "The files were successfully uploaded"
+            executeDeploy(taskFolderPath)
             saveMapOfFilesChanged()
         } else {
             logger.error(Constants.UPLOAD_CANCELED)
         }
-    }
-
-    /**
-     * Setups paths of upload directory into of build folder
-     * Sets path of package xml file into build directory
-     * Creates an instance of PackageGenerator class
-     * Creates an instance of Filter class
-     * Initializes specificFilesToUpload map
-     * Initializes interceptorsToExecute arrayList
-     */
-    void setup() {
-        pathUpload = Paths.get(buildFolderPath, Constants.DIR_UPLOAD_FOLDER).toString()
-        uploadPackagePath = Paths.get(pathUpload, PACKAGE_NAME).toString()
-        componentDeploy.startMessage = "Starting upload files process"
-        componentDeploy.successMessage = "The files were successfully uploaded"
-        packageGenerator = new PackageGenerator()
-        filter = new Filter(project, projectPath)
-        specificFilesToUpload = [:]
-        interceptorsToExecute = []
     }
 
     /**
@@ -89,20 +68,10 @@ class Upload extends Deployment {
     }
 
     /**
-     * Gets a Map of files classified by valid, invalid
-     * @return a map with files classified
-     */
-    public Map<String, ArrayList<File>> getFilesValidated() {
-        ArrayList<File> filesFiltered = filter.getFiles(files, excludes)
-        Map<String, ArrayList> fileValidated = FileValidator.validateFiles(projectPath, filesFiltered)
-        return fileValidated
-    }
-
-    /**
      * Loads files classified at specificFilesToUpload map
      */
     public void loadFilesToUpload() {
-        specificFilesToUpload = getFilesValidated()
+        specificFilesToUpload = getClassifiedFiles(files, excludes)
     }
 
     /**
@@ -113,8 +82,7 @@ class Upload extends Deployment {
         if (!exceptionMessage.isEmpty()) {
             throw new Exception(exceptionMessage)
         }
-        ArrayList<File> validFiles = specificFilesToUpload[Constants.VALID_FILE]
-        fileManager.copy(projectPath, validFiles, pathUpload)
+        copyFilesToTaskDirectory(specificFilesToUpload[Constants.VALID_FILE])
     }
 
     /**
@@ -123,7 +91,7 @@ class Upload extends Deployment {
     public void createPackage() {
         ArrayList<File> files = specificFilesToUpload[Constants.VALID_FILE]
         if (files && !files.isEmpty()) {
-            writePackage(uploadPackagePath, files)
+            writePackage(taskPackagePath, files)
         }
     }
 
@@ -180,6 +148,6 @@ class Upload extends Deployment {
      */
     public void addInterceptor() {
         interceptorsToExecute += interceptors
-        truncateComponents(pathUpload)
+        truncateComponents(taskFolderPath)
     }
 }

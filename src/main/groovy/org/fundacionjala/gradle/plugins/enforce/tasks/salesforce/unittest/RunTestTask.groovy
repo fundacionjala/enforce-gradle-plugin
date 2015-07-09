@@ -63,7 +63,8 @@ class RunTestTask extends SalesforceTask {
     /**
      * Prepares directory for reports
      */
-    private void setupDirectory() {
+    @Override
+    void setup() {
         pathClasses = Paths.get(projectPath, Constants.CLASS_DIRECTORY).toString()
         folderReport = Paths.get(buildFolderPath, Constants.NAME_FOLDER_REPORT).toString()
         fileManager.createNewDirectory(folderReport)
@@ -77,6 +78,18 @@ class RunTestTask extends SalesforceTask {
         htmlManager.pathReport = folderReport
         htmlManager.sourceCode = projectPath
         htmlManager.folderPages = folderPages
+
+        toolingAPI = new ToolingAPI(credential)
+        apexAPI = new ApexAPI(credential)
+        jsonByClasses = toolingAPI.httpAPIClient.executeQuery(Constants.QUERY_CLASSES)
+    }
+
+    @Override
+    void loadParameters() {
+        if (Util.isValidProperty(project, Constants.PARAMETER_ASYNC) &&
+                project.properties[Constants.PARAMETER_ASYNC].toString().equals("true")) {
+            async = true
+        }
     }
 
     /**
@@ -84,15 +97,9 @@ class RunTestTask extends SalesforceTask {
      */
     @Override
     void runTask() {
-
         if (Util.isEmptyProperty(project, Constants.CLASS_PARAM)) {
             throw new Exception("Enter valid parameter ${Constants.CLASS_PARAM}")
         }
-
-        setupDirectory()
-        toolingAPI = new ToolingAPI(credential)
-        apexAPI = new ApexAPI(credential)
-        jsonByClasses = toolingAPI.httpAPIClient.executeQuery(Constants.QUERY_CLASSES)
 
         if (!ApexClasses.checkForRecords(jsonByClasses)) {
             throw new Exception("Not found any class in your organization")
@@ -105,16 +112,12 @@ class RunTestTask extends SalesforceTask {
             classes = getClassNames(pathClasses, project.properties[Constants.CLASS_PARAM].toString())
         }
 
-        if (existAsyncParameter() && !Util.isValidProperty(project, Constants.CLASS_PARAM)) {
+        if (async && !Util.isValidProperty(project, Constants.CLASS_PARAM)) {
             classes = getClassNames(pathClasses, Constants.WILDCARD_ALL_TEST)
         }
 
-        if (!existAsyncParameter() && !Util.isValidProperty(project, Constants.CLASS_PARAM)) {
+        if (!async && !Util.isValidProperty(project, Constants.CLASS_PARAM)) {
             classes = new ArrayList<String>()
-        }
-
-        if (existAsyncParameter()) {
-            async = true
         }
 
         if (async) {
@@ -129,15 +132,6 @@ class RunTestTask extends SalesforceTask {
         writeJenkinsPluginJson()
         generateUnitTestReportXml()
         deleteTemporaryFiles()
-    }
-
-    /**
-     * Verifies if exist an async parameter with its value
-     * @return true if exist an async parameter with its value otherwise false
-     */
-    def existAsyncParameter() {
-        return Util.isValidProperty(project, Constants.PARAMETER_ASYNC) &&
-                project.properties[Constants.PARAMETER_ASYNC].toString().equals("true")
     }
 
     /**

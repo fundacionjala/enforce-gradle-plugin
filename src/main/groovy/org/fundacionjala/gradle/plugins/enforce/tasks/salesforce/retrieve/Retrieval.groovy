@@ -22,6 +22,10 @@ abstract class Retrieval extends SalesforceTask {
     public RetrieveMetadata retrieveMetadata
     public PackageBuilder packageBuilder
     public String unPackageFolder
+    public String packageFromSourcePath
+    public String packageFromBuildPath
+    private final String FILES_RETRIEVE = 'files'
+    private final String ALL_PARAMETER = 'all'
 
     /**
      * Sets description and group task
@@ -32,6 +36,31 @@ abstract class Retrieval extends SalesforceTask {
         super(descriptionTask, groupTask)
         packageBuilder = new PackageBuilder()
         unPackageFolder = Paths.get(buildFolderPath, UNPACKAGE_FOLDER).toString()
+    }
+
+    /**
+     * Sets package path from build directory
+     * Sets package path from source directory
+     */
+    @Override
+    void setup() {
+        packageFromSourcePath = Paths.get(projectPath, Constants.PACKAGE_FILE_NAME).toString()
+        packageFromBuildPath = Paths.get(unPackageFolder, Constants.PACKAGE_FILE_NAME).toString()
+    }
+
+    /**
+     * Loads the files and all parameters
+     */
+    @Override
+    void loadParameters() {
+        if (!files) {
+            if (Util.isValidProperty(project, FILES_RETRIEVE)) {
+                files = project.property(FILES_RETRIEVE) as String
+            }
+        }
+        if (Util.isValidProperty(project, ALL_PARAMETER)) {
+            all = project.property(ALL_PARAMETER) as String
+        }
     }
 
     /**

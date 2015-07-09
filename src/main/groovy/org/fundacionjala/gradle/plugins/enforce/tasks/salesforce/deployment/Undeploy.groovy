@@ -7,13 +7,11 @@ package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 
 import org.fundacionjala.gradle.plugins.enforce.interceptor.InterceptorManager
 import org.fundacionjala.gradle.plugins.enforce.undeploy.PackageComponent
-import org.fundacionjala.gradle.plugins.enforce.undeploy.SmartFilesValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.FileValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponent
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.OrgValidator
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.filter.Filter
 
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -25,12 +23,8 @@ import java.nio.file.StandardCopyOption
 class Undeploy extends Deployment {
     public PackageComponent packageComponent
     public ArrayList<File> filesToTruncate
-    public String folderUnDeploy
-    public String unDeployPackagePath
-    public String unDeployDestructivePath
     InterceptorManager componentManager
     List<String> standardComponents
-    private Filter filter
     private final List<String> COMPONENTS_TO_TRUNCATE = ['classes', 'objects', 'triggers', 'pages', 'components', 'workflows', 'tabs']
 
     /**
@@ -45,43 +39,29 @@ class Undeploy extends Deployment {
         componentManager.buildInterceptors()
         interceptorsToExecute = org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.INTERCEPTORS.values().toList()
         standardComponents = MetadataComponent.COMPONENTS.values().toList()
+        taskFolderName = Constants.DIR_UN_DEPLOY
     }
 
     @Override
     void runTask() {
-        setup()
-        loadParameter()
         truncate()
         addNewStandardObjects()
         unDeploy()
     }
 
     /**
-     * Sets folder undeploy path
-     * Sets destructive path at build/undeploy directory
-     * Sets package path at build/undeploy directory
-     * Creates an instance of SmartFilesValidator class
-     * Creates an instance of Filter class
-     */
-    public void setup() {
-        folderUnDeploy = Paths.get(buildFolderPath, Constants.DIR_UN_DEPLOY).toString()
-        unDeployPackagePath = Paths.get(folderUnDeploy, PACKAGE_NAME).toString()
-        unDeployDestructivePath = Paths.get(folderUnDeploy, Constants.FILE_NAME_DESTRUCTIVE).toString()
-        filter = new Filter(project, projectPath)
-    }
-
-    /**
      * Steps to deploy code truncated
      */
     public void truncate() {
-        createDeploymentDirectory(folderUnDeploy)
+        createDeploymentDirectory(taskFolderPath)
         loadFilesToTruncate()
-        copyFilesToTruncate()
+        copyFilesToTaskDirectory(filesToTruncate)
         addInterceptor()
-        writePackage(unDeployPackagePath, filesToTruncate)
-        combinePackage(unDeployPackagePath)
-        setDeployStatusMessages(Constants.START_MESSAGE_TRUNCATE, Constants.SUCCESS_MESSAGE_TRUNCATE, Constants.EMPTY)
-        executeDeploy(folderUnDeploy)
+        writePackage(taskPackagePath, filesToTruncate)
+        combinePackage(taskPackagePath)
+        componentDeploy.startMessage = Constants.START_MESSAGE_TRUNCATE
+        componentDeploy.successMessage = Constants.SUCCESS_MESSAGE_TRUNCATE
+        executeDeploy(taskFolderPath)
     }
 
     /**
@@ -90,7 +70,7 @@ class Undeploy extends Deployment {
      */
     public void loadFilesToTruncate() {
         String includes = COMPONENTS_TO_TRUNCATE.join(', ')
-        Map <String, ArrayList<File>> filesClassified = getFilesValidated(includes, excludes)
+        Map <String, ArrayList<File>> filesClassified = getClassifiedFiles(includes, excludes)
 
         String exceptionMessage = Util.getExceptionMessage(filesClassified)
         if (!exceptionMessage.isEmpty()) {
@@ -100,38 +80,32 @@ class Undeploy extends Deployment {
     }
 
     /**
-     * Copies files to build/undeploy directory
-     */
-    public void copyFilesToTruncate() {
-        fileManager.copy(projectPath, filesToTruncate, folderUnDeploy)
-    }
-
-    /**
      * Adds interceptors
      */
     public void addInterceptor() {
         interceptorsToExecute += interceptors
-        truncateComponents(folderUnDeploy)
+        truncateComponents(taskFolderPath)
     }
 
     /**
      * Steps to delete files from your organization
      */
     public void unDeploy() {
-        createDeploymentDirectory(folderUnDeploy)
+        createDeploymentDirectory(taskFolderPath)
         deployToDeleteComponents()
-        combinePackage(unDeployDestructivePath)
-        setDeployStatusMessages(Constants.START_MESSAGE_UNDEPLOY,Constants.SUCCESS_MESSAGE_DELETE, Constants.EMPTY)
-        executeDeploy(folderUnDeploy)
+        combinePackage(taskDestructivePath)
+        componentDeploy.startMessage = Constants.START_MESSAGE_UNDEPLOY
+        componentDeploy.successMessage = Constants.SUCCESS_MESSAGE_DELETE
+        executeDeploy(taskFolderPath)
     }
 
     /**
      * Deploys to delete all components from package.xml
      */
     public void deployToDeleteComponents() {
-        Files.copy(Paths.get(projectPackagePath), Paths.get(unDeployPackagePath), StandardCopyOption.REPLACE_EXISTING)
-        packageComponent = new PackageComponent(unDeployPackagePath)
-        writePackage(unDeployPackagePath, [])
+        Files.copy(Paths.get(projectPackagePath), Paths.get(taskPackagePath), StandardCopyOption.REPLACE_EXISTING)
+        packageComponent = new PackageComponent(taskPackagePath)
+        writePackage(taskPackagePath, [])
 
         ArrayList<String> includes = packageComponent.components
         ArrayList<String> filesToExclude = Util.getComponentsWithWildcard(standardComponents)
@@ -140,10 +114,10 @@ class Undeploy extends Deployment {
         filesToExclude.addAll(packageComponent.components.grep(~/.*.workflow$/) as ArrayList<String>)
         filesToExclude.add(excludes)
 
-        ArrayList<File> filesFiltered = getFilesValidated(includes.join(', '), "${filesToExclude.join(', ')}").get(Constants.VALID_FILE)
+        ArrayList<File> filesFiltered = getClassifiedFiles(includes.join(', '), "${filesToExclude.join(', ')}").get(Constants.VALID_FILE)
         ArrayList<File> filesToWriteAtDestructive = getValidFilesFromOrg(filesFiltered)
 
-        writePackage(unDeployDestructivePath, filesToWriteAtDestructive as ArrayList<File>)
+        writePackage(taskDestructivePath, filesToWriteAtDestructive as ArrayList<File>)
     }
 
     /**
@@ -176,39 +150,5 @@ class Undeploy extends Deployment {
                 project[Constants.FORCE_EXTENSION].standardObjects) {
             standardComponents += project[Constants.FORCE_EXTENSION].standardObjects
         }
-    }
-
-    /**
-     * Loads parameters of this task
-     */
-    public void loadParameter() {
-        Map <String, String> parameters = getParameterWithTheirsValues([Constants.PARAMETER_EXCLUDES])
-        if (parameters.containsKey(Constants.PARAMETER_EXCLUDES)) {
-            excludes = parameters.get(Constants.PARAMETER_EXCLUDES)
-        }
-    }
-
-    /**
-     * Gets a Map with files classified by valid, invalid and not found
-     * @param includes is a String
-     * @param excludes is a String
-     * @return a Map
-     */
-    private Map<String, ArrayList<File>> getFilesValidated(String includes, String excludes) {
-        ArrayList<File> filesFiltered = filter.getFiles(includes, excludes)
-        Map<String, ArrayList> filesValidated = FileValidator.validateFiles(projectPath, filesFiltered)
-        return filesValidated
-    }
-
-    /**
-     * Sets deploy status messages
-     * @param startMessage is deploy start message
-     * @param successMessage is deploy success message
-     * @param errorMessage is deploy error message
-     */
-    private void setDeployStatusMessages(String startMessage, String successMessage, String errorMessage) {
-        componentDeploy.startMessage = startMessage
-        componentDeploy.successMessage = successMessage
-        componentDeploy.errorMessage = errorMessage
     }
 }

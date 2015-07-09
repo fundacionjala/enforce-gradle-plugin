@@ -10,8 +10,6 @@ import org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor
 import org.fundacionjala.gradle.plugins.enforce.utils.AnsiColor
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.FileValidator
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.filter.Filter
 
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -23,11 +21,8 @@ import java.nio.file.StandardCopyOption
 class Deploy extends Deployment {
     private boolean deprecateTruncateOn
     private boolean codeTruncateOn
-    private String deployPackagePath
     public ArrayList<String> foldersNotDeploy
-    public String folderDeploy
     public String folders
-    public String excludes
     public ArrayList<File> filesToDeploy
 
     /**
@@ -37,6 +32,7 @@ class Deploy extends Deployment {
         super(Constants.DEPLOY_DESCRIPTION, Constants.DEPLOYMENT)
         deprecateTruncateOn = true
         codeTruncateOn = true
+        taskFolderName = Constants.FOLDER_DEPLOY
     }
 
     /**
@@ -44,32 +40,29 @@ class Deploy extends Deployment {
      */
     @Override
     public void runTask() {
-        setup()
-        loadParameters()
-        getClassifiedFiles()
-        copyFiles()
-        displayFolderNoDeploy()
-        deployTruncateFiles()
-        deployAllComponents()
-        deployTruncateDeprecateFiles()
-        executeDeploy(folderDeploy)
+        loadFilesToDeploy()
+        truncate()
+        deploy()
         updateFileTracker()
     }
 
-    /**
-     * Creates new instances for task
-     * Sets messages status
-     * Sets paths to files to deployed
-     */
-    public void setup() {
-        folderDeploy = Paths.get(buildFolderPath, Constants.FOLDER_DEPLOY).toString()
-        deployPackagePath = Paths.get(folderDeploy, PACKAGE_NAME).toString()
+    void truncate() {
+        createDeploymentDirectory(taskFolderPath)
+        copyFilesToTaskDirectory(filesToDeploy)
+        displayFolderNoDeploy()
+        deployTruncateFiles()
+    }
+
+    void deploy() {
+        deployAllComponents()
+        deployTruncateDeprecateFiles()
+        executeDeploy(taskFolderPath)
     }
 
     /**
      * Initializes all task parameters
      */
-    def loadParameters() {
+    void loadParameters() {
         String turnOffOptionTruncate = parameters[Constants.TURN_OFF_TRUNCATE].toString()
         if (Util.isValidProperty(parameters, Constants.PARAMETER_FOLDERS)) {
             folders = parameters[Constants.PARAMETER_FOLDERS].toString()
@@ -83,7 +76,6 @@ class Deploy extends Deployment {
         if (turnOffOptionTruncate.indexOf(Constants.TRUNCATE_DEPRECATE) != Constants.NOT_FOUND) {
             deprecateTruncateOn = false
             logger.quiet(Constants.TRUNCATE_DEPRECATE_TURNED_OFF)
-
         }
         if (turnOffOptionTruncate.indexOf(Constants.TRUNCATE_CODE) != Constants.NOT_FOUND) {
             codeTruncateOn = false
@@ -94,20 +86,8 @@ class Deploy extends Deployment {
     /**
      * Adds all files into files to deploy
      */
-    def getClassifiedFiles() {
-        Filter filter = new Filter(project,projectPath)
-        filesToDeploy = filter.getFiles(folders,excludes)
-        filesToDeploy = FileValidator.getValidFiles(projectPath, filesToDeploy)
-    }
-
-    /**
-     * Copy all files into src folder into build/deploy folder
-     */
-    def copyFiles() {
-        logger.debug("${'Creating folder  Deploy at: '}${folderDeploy}")
-        createDeploymentDirectory(folderDeploy)
-        logger.debug('Copying files to deploy')
-        fileManager.copy(projectPath, filesToDeploy, folderDeploy)
+    def loadFilesToDeploy() {
+        filesToDeploy = getClassifiedFiles(folders,excludes).get(Constants.VALID_FILE)
     }
 
     /**
@@ -117,13 +97,13 @@ class Deploy extends Deployment {
         if (codeTruncateOn) {
             componentDeploy.startMessage = Constants.DEPLOYING_TRUNCATED_CODE
             componentDeploy.successMessage = Constants.DEPLOYING_TRUNCATED_CODE_SUCCESSFULLY
-            Files.copy(Paths.get(projectPath, PACKAGE_NAME), Paths.get(deployPackagePath), StandardCopyOption.REPLACE_EXISTING)
+            Files.copy(Paths.get(projectPath, PACKAGE_NAME), Paths.get(taskPackagePath), StandardCopyOption.REPLACE_EXISTING)
             logger.debug('Generating package')
-            writePackage(deployPackagePath, filesToDeploy)
-            combinePackage(deployPackagePath)
+            writePackage(taskPackagePath, filesToDeploy)
+            combinePackage(taskPackagePath)
             truncateComponents()
-            logger.debug("Deploying to truncate components from: $folderDeploy")
-            executeDeploy(folderDeploy)
+            logger.debug("Deploying to truncate components from: $taskFolderPath")
+            executeDeploy(taskFolderPath)
         }
     }
 
@@ -131,7 +111,7 @@ class Deploy extends Deployment {
      * Displays folders that will not be deployed
      */
     public void displayFolderNoDeploy() {
-        foldersNotDeploy = fileManager.getFoldersNotDeploy(folderDeploy)
+        foldersNotDeploy = fileManager.getFoldersNotDeploy(taskFolderPath)
         def index = 1
         if (foldersNotDeploy.size() > 0) {
             println ''
@@ -165,10 +145,10 @@ class Deploy extends Deployment {
     public void deployAllComponents() {
         componentDeploy.startMessage = Constants.DEPLOYING_CODE
         componentDeploy.successMessage = Constants.DEPLOYING_CODE_SUCCESSFULLY
-        createDeploymentDirectory(folderDeploy)
-        fileManager.copy(projectPath, filesToDeploy, folderDeploy)
-        writePackage(deployPackagePath, filesToDeploy)
-        combinePackage(deployPackagePath)
+        createDeploymentDirectory(taskFolderPath)
+        copyFilesToTaskDirectory(filesToDeploy)
+        writePackage(taskPackagePath, filesToDeploy)
+        combinePackage(taskPackagePath)
     }
 
     /**
@@ -178,9 +158,9 @@ class Deploy extends Deployment {
         if (deprecateTruncateOn) {
             interceptorsToExecute = [Interceptor.REMOVE_DEPRECATE.id]
             interceptorsToExecute += interceptors
-            logger.debug("Truncating components from: $folderDeploy")
-            truncateComponents(folderDeploy)
-            logger.debug("Deploying all components from: $folderDeploy")
+            logger.debug("Truncating components from: $taskFolderPath")
+            truncateComponents(taskFolderPath)
+            logger.debug("Deploying all components from: $taskFolderPath")
         }
     }
 
@@ -188,13 +168,12 @@ class Deploy extends Deployment {
      * Truncates the classes, objects, triggers, pages and workflows
      */
     public void truncateComponents() {
-        String srcPath = Paths.get(buildFolderPath, Constants.FOLDER_DEPLOY).toString()
         interceptorsToExecute = [Interceptor.TRUNCATE_CLASSES.id, Interceptor.TRUNCATE_FIELD_SETS.id, Interceptor.TRUNCATE_ACTION_OVERRIDES.id,
                                  Interceptor.TRUNCATE_FIELD.id, Interceptor.TRUNCATE_FORMULAS.id, Interceptor.TRUNCATE_WEB_LINKS.id,
                                  Interceptor.TRUNCATE_PAGES.id, Interceptor.TRUNCATE_TRIGGERS.id, Interceptor.TRUNCATE_WORKFLOWS.id,
                                  Interceptor.TRUNCATE_COMPONENTS.id]
         interceptorsToExecute += interceptors
-        logger.debug("Truncating components at: $srcPath")
-        truncateComponents(srcPath)
+        logger.debug("Truncating components at: $taskFolderPath")
+        truncateComponents(taskFolderPath)
     }
 }

@@ -10,10 +10,10 @@ import org.fundacionjala.gradle.plugins.enforce.metadata.DeployMetadata
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.SalesforceTask
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.FileValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageCombiner
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files.SalesforceValidator
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files.SalesforceValidatorManager
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.filter.Filter
 import org.gradle.api.file.FileTree
 
 import java.nio.file.Paths
@@ -28,6 +28,12 @@ abstract class Deployment extends SalesforceTask {
     public List<String> interceptors = []
     public String excludes = ""
     public final int FILE_NAME_POSITION = 1
+
+    public Filter filter
+    public String taskFolderPath
+    public String taskFolderName
+    public String taskPackagePath
+    public String taskDestructivePath
 
     /**
      * Sets description and group task
@@ -100,28 +106,6 @@ abstract class Deployment extends SalesforceTask {
     }
 
     /**
-     * Excludes file or files using criterion
-     * @param files to exclude
-     * @param criterion to filter files
-     */
-    public ArrayList<File> excludeFilesByCriterion(ArrayList<File> files, String criterion) {
-        if (criterion == null) {
-            logger.error("${Constants.NULL_PARAM_EXCEPTION} criterion")
-        }
-        ArrayList<File> filesFiltered = new ArrayList<File>()
-        ArrayList<File> sourceFiles = new ArrayList<File>()
-        ArrayList<String> criterias = getCriterias(criterion)
-        FileTree fileTree = project.fileTree(dir: projectPath, excludes: criterias)
-        sourceFiles = fileTree.getFiles() as ArrayList<File>
-        sourceFiles.each { File file ->
-            if (files.contains(file)) {
-                filesFiltered.push(file)
-            }
-        }
-        return filesFiltered
-    }
-
-    /**
      * Returns files that were excluded
      * @param criterion is a exclude criterion
      * @return files excluded
@@ -135,7 +119,7 @@ abstract class Deployment extends SalesforceTask {
         sourceFiles.each { File file ->
             String relativePath = Util.getRelativePath(file, projectPath)
             String extension = Util.getFileExtension(file)
-            if ( isValidRelativePath(relativePath)) {
+            if ( Util.isValidRelativePath(relativePath)) {
                 filesName.push(relativePath)
             }
 
@@ -144,20 +128,6 @@ abstract class Deployment extends SalesforceTask {
             }
         }
         return filesName.unique()
-    }
-
-    /**
-     * Validates relative path
-     * @param relativePath is a relative path of a component
-     * @return true if is valid
-     */
-    public boolean isValidRelativePath(String relativePath) {
-        boolean result = false
-        String folderName = Util.getFirstPath(relativePath)
-        if ( MetadataComponents.validFolder(folderName) && MetadataComponents.getExtensionByFolder(folderName) == ""){
-            result = true
-        }
-        return  result
     }
 
     /**
@@ -178,108 +148,6 @@ abstract class Deployment extends SalesforceTask {
             criterias.push("${critery}${Constants.META_XML}")
         }
         return criterias
-    }
-
-    /**
-     * Excludes files
-     * @param filesToFilter files that will be filter
-     * @return ArrayList with files filter
-     */
-    public excludeFiles(ArrayList<File> filesToFilter) {
-        if (filesToFilter == null) {
-            logger.error("${Constants.NULL_PARAM_EXCEPTION} filesToFilter")
-        }
-
-        ArrayList<File> filesFiltered = filesToFilter.clone() as ArrayList<File>
-        if (Util.isValidProperty(parameters, Constants.PARAMETER_EXCLUDES) && !Util.isEmptyProperty(parameters, Constants.PARAMETER_EXCLUDES)) {
-            excludes = parameters[Constants.PARAMETER_EXCLUDES].toString()
-        }
-        if (excludes) {
-            validateParameter(excludes)
-            filesFiltered = excludeFilesByCriterion(filesFiltered, excludes)
-        }
-        return filesFiltered
-    }
-
-    /**
-     * Validates parameter's values
-     * @param parameterValues are files name that will be excluded
-     */
-    public void validateParameter(String parameterValues) {
-        parameterValues = parameterValues.replaceAll(Constants.BACK_SLASH, Constants.SLASH)
-        ArrayList<String> fileNames = new ArrayList<String>()
-        ArrayList<String> folderNames = new ArrayList<String>()
-        parameterValues.split(Constants.COMMA).each { String parameter ->
-            if (parameter.contains(Constants.WILDCARD)) {
-                return
-            }
-            if (parameter.contains(Constants.SLASH)) {
-                fileNames.push(parameter)
-            } else {
-                folderNames.push(parameter)
-            }
-        }
-        validateFolders(folderNames)
-        validateFiles(fileNames)
-    }
-
-    /**
-     * Validates folders name
-     * @param foldersName is type array list contents folders name
-     */
-    public void validateFolders(ArrayList<String> foldersName) {
-        ArrayList<String> invalidFolders = new ArrayList<String>()
-        invalidFolders = Util.getInvalidFolders(foldersName)
-        String errorMessage = ''
-        if (!invalidFolders.empty) {
-            errorMessage = "${Constants.INVALID_FOLDER}: ${invalidFolders}"
-        }
-
-        ArrayList<String> notExistFolders = new ArrayList<String>()
-        notExistFolders = Util.getNotExistFolders(foldersName, projectPath)
-        if (!notExistFolders.empty) {
-            errorMessage += "\n${Constants.DOES_NOT_EXIST_FOLDER} ${notExistFolders}"
-        }
-
-        ArrayList<String> emptyFolders = new ArrayList<String>()
-        emptyFolders = Util.getEmptyFolders(foldersName, projectPath)
-        if (!emptyFolders.empty) {
-            errorMessage += "\n${Constants.EMPTY_FOLDERS} ${emptyFolders}"
-        }
-
-        if (!errorMessage.isEmpty()) {
-            throw new Exception(errorMessage)
-        }
-    }
-
-    /**
-     * Validates files name
-     * @param filesName is type array list contents files name
-     */
-    public void validateFiles(ArrayList<String> filesName) {
-        ArrayList<String> invalidFiles = new ArrayList<String>()
-        ArrayList<String> notExistFiles = new ArrayList<String>()
-        String errorMessage = ''
-        filesName.each { String fileName ->
-            File file = new File(Paths.get(projectPath, fileName).toString())
-            String parentName = Util.getFirstPath(fileName).toString()
-            SalesforceValidator validator = SalesforceValidatorManager.getValidator(parentName)
-            if (!validator.validateFile(file, parentName)) {
-                invalidFiles.push(fileName)
-            }
-            if (!new File(Paths.get(projectPath, fileName).toString()).exists()) {
-                notExistFiles.push(fileName)
-            }
-        }
-        if (!invalidFiles.isEmpty()) {
-            errorMessage = "${Constants.INVALID_FILE}: ${invalidFiles}"
-        }
-        if (!notExistFiles.isEmpty()) {
-            errorMessage += "\n${Constants.DOES_NOT_EXIST_FILES} ${notExistFiles}"
-        }
-        if (!errorMessage.isEmpty()) {
-            throw new Exception(errorMessage)
-        }
     }
 
     /**
@@ -317,5 +185,49 @@ abstract class Deployment extends SalesforceTask {
             }
         }
         return parameterValues
+    }
+
+    /**
+     * Sets task path as: deploy, undeploy, update, upload, delete, truncate folder names
+     * Sets package path of build directory
+     * Sets destructive path of build directory
+     * Creates an instance of Filter class
+     */
+    @Override
+    void setup() {
+        taskFolderPath = Paths.get(buildFolderPath, taskFolderName).toString()
+        taskPackagePath = Paths.get(taskFolderPath, Constants.PACKAGE_FILE_NAME).toString()
+        taskDestructivePath = Paths.get(taskFolderPath, Constants.FILE_NAME_DESTRUCTIVE).toString()
+        filter = new Filter(project, projectPath)
+    }
+
+    /**
+     * Loads excludes parameter value
+     */
+    @Override
+    void loadParameters() {
+        if (Util.isValidProperty(parameters, Constants.PARAMETER_EXCLUDES) && !Util.isEmptyProperty(parameters, Constants.PARAMETER_EXCLUDES)) {
+            excludes = parameters[Constants.PARAMETER_EXCLUDES].toString()
+        }
+    }
+
+    /**
+     * Gets a map with files classified as valid, invalid and not found files
+     * @param includes is String type
+     * @param excludes is String type
+     * @return a map with files classified
+     */
+    Map<String, ArrayList<File>> getClassifiedFiles(String includes, String excludes) {
+        ArrayList<File> filesFiltered = filter.getFiles(includes, excludes)
+        Map<String, ArrayList> filesValidated = FileValidator.validateFiles(projectPath, filesFiltered)
+        return filesValidated
+    }
+
+    /**
+     * Copies files into temporary folder of task
+     * @param filesToCopy is an arrayList of files to copy
+     */
+    void copyFilesToTaskDirectory(ArrayList<File> filesToCopy) {
+        fileManager.copy(projectPath, filesToCopy, taskFolderPath)
     }
 }
