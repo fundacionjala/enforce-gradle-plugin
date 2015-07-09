@@ -38,7 +38,7 @@ class InstallPackageTask extends Deployment {
     @Override
     void runTask() {
         if (Util.validateRequiredParameters(project, requiredParams)) {
-            setupEnv()
+            setup()
             createPackage()
             executeDeploy(installPkgRootDir)
             logger.quiet("Install package '${packageNamespace}' v${packageVersion} success.")
@@ -50,7 +50,8 @@ class InstallPackageTask extends Deployment {
     /**
      * Setups to start install package task
      */
-    def setupEnv() {
+    @Override
+    void setup() {
         this.installPkgRootDir = Paths.get(buildFolderPath, TASK_DIR).toString()
         this.installedPkgsCompDir = "${this.installPkgRootDir}${File.separator}" +
                 "${MetadataComponents.INSTALLEDPACKAGES.directory}"
@@ -66,7 +67,7 @@ class InstallPackageTask extends Deployment {
     /**
      * Creates a package xml file with a content by default
      */
-    def createPackage() {
+    void createPackage() {
         File pkgFile = this.generatedInstallPackageFile()
         ArrayList<File> filesToDeploy = new ArrayList<File>()
         filesToDeploy.add(pkgFile)

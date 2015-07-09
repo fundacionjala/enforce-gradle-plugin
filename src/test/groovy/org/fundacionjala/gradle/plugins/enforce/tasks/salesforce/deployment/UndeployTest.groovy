@@ -65,6 +65,7 @@ class UndeployTest extends Specification {
         undeployInstance = project.tasks.undeploy
         undeployInstance.fileManager = new ManagementFile(SRC_PATH)
         undeployInstance.project.enforce.deleteTemporaryFiles = false
+        undeployInstance.taskFolderName = Constants.DIR_UN_DEPLOY
 
         credential = new Credential()
         credential.id = 'id'
@@ -127,16 +128,16 @@ class UndeployTest extends Specification {
         given:
             undeployInstance.createDeploymentDirectory(Paths.get(SRC_PATH, 'build').toString())
             def undeployDirectory = Paths.get(SRC_PATH, 'build', 'undeploy').toString()
-            undeployInstance.unDeployPackagePath = Paths.get(undeployDirectory,'package.xml').toString()
+            undeployInstance.taskPackagePath = Paths.get(undeployDirectory,'package.xml').toString()
             undeployInstance.filesToTruncate = [new File(Paths.get(SRC_PATH,'src', 'classes','Class1.cls').toString()),
                                                 new File(Paths.get(SRC_PATH,'src', 'classes','Class1.cls-meta.xml').toString())]
             undeployInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
-            undeployInstance.folderUnDeploy = undeployDirectory
+            undeployInstance.taskFolderPath = undeployDirectory
             undeployInstance.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
             undeployInstance.createDeploymentDirectory(undeployDirectory)
             undeployInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
         when:
-            undeployInstance.writePackage(undeployInstance.unDeployPackagePath, undeployInstance.filesToTruncate)
+            undeployInstance.writePackage(undeployInstance.taskPackagePath, undeployInstance.filesToTruncate)
 
         then:
             new File(Paths.get(SRC_PATH,'build', 'undeploy', 'package.xml').toString()).exists()
@@ -148,21 +149,21 @@ class UndeployTest extends Specification {
             undeployInstance.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
             undeployInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
             undeployInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
-            undeployInstance.unDeployPackagePath = Paths.get(SRC_PATH, 'build', 'undeploy').toString()
+            undeployInstance.taskPackagePath = Paths.get(SRC_PATH, 'build', 'undeploy').toString()
             undeployInstance.packageComponent = Mock(PackageComponent)
             undeployInstance.credential = credential
         when:
             undeployInstance.packageComponent.components >> ["classes/*.cls", "triggers/*.trigger", "objects/*.object"]
             undeployInstance.setup()
-            undeployInstance.loadParameter()
-            undeployInstance.createDeploymentDirectory(undeployInstance.folderUnDeploy)
+            undeployInstance.loadParameters()
+            undeployInstance.createDeploymentDirectory(undeployInstance.taskFolderPath)
             undeployInstance.loadFilesToTruncate()
-            undeployInstance.copyFilesToTruncate()
+            undeployInstance.copyFilesToTaskDirectory(undeployInstance.filesToTruncate)
             undeployInstance.addInterceptor()
-            undeployInstance.writePackage(undeployInstance.unDeployPackagePath, undeployInstance.filesToTruncate)
-            undeployInstance.combinePackage(undeployInstance.unDeployPackagePath)
+            undeployInstance.writePackage(undeployInstance.taskPackagePath, undeployInstance.filesToTruncate)
+            undeployInstance.combinePackage(undeployInstance.taskPackagePath)
             undeployInstance.addNewStandardObjects()
-            undeployInstance.createDeploymentDirectory(undeployInstance.folderUnDeploy)
+            undeployInstance.createDeploymentDirectory(undeployInstance.taskFolderPath)
             undeployInstance.deployToDeleteComponents()
             def destructiveXmlContent =  new File(Paths.get(SRC_PATH, 'build', 'undeploy', 'destructiveChanges.xml').toString()).text
             def packageXmlContent =  new File(Paths.get(SRC_PATH, 'build', 'undeploy', 'package.xml').toString()).text

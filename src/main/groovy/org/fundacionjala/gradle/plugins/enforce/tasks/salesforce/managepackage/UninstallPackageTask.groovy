@@ -45,7 +45,7 @@ class UninstallPackageTask extends Deployment {
     @Override
     void runTask() {
         if (Util.validateRequiredParameters(project, requiredParams)) {
-            setupEnv()
+            setup()
             logger.quiet("Verifying installed package '${packageNamespace}' ...")
             if (verifyPackageInstallation()) {
                 logger.quiet("Installed package '${packageNamespace}' found.")
@@ -63,7 +63,8 @@ class UninstallPackageTask extends Deployment {
     /**
      * Setups to start uninstall package task
      */
-    def setupEnv() {
+    @Override
+    void setup() {
         this.uninstallPkgRootDir = Paths.get(buildFolderPath, TASK_DIR).toString()
         this.installedPkgsCompDir = Paths.get(this.uninstallPkgRootDir,
                 MetadataComponents.INSTALLEDPACKAGES.directory).toString()
@@ -113,7 +114,7 @@ class UninstallPackageTask extends Deployment {
     /**
      * Creates destructive xml file and package xml file
      */
-    def createPackage() {
+    void createPackage() {
         File pkgFile = this.generatedInstallPackageFile(this.installedPkgsCompDir)
         ArrayList<File> filesToUndeploy = new ArrayList<File>()
         filesToUndeploy.add(pkgFile)

@@ -41,7 +41,7 @@ class DeployTest extends Specification {
 
     def "Test should show folders that aren't deployed"() {
         given:
-            instanceDeploy.folderDeploy = Paths.get(SRC_PATH, "build", "deploy").toString()
+            instanceDeploy.taskFolderPath = Paths.get(SRC_PATH, "build", "deploy").toString()
         when:
             def stdOut = System.out
             def os = new ByteArrayOutputStream()
@@ -63,7 +63,7 @@ class DeployTest extends Specification {
 
     def "Test should display nothing"() {
         given:
-            instanceDeploy.folderDeploy = Paths.get(SRC_PATH, "build", "deploy", "folderOne").toString()
+            instanceDeploy.taskFolderPath = Paths.get(SRC_PATH, "build", "deploy", "folderOne").toString()
         when:
             def stdOut = System.out
             def os = new ByteArrayOutputStream()
@@ -100,15 +100,15 @@ class DeployTest extends Specification {
 
     def "Test should setup files into build/deploy directory to deploy"() {
         given:
-            def folderDeploy = Paths.get(SRC_PATH, 'build', 'deploy').toString()
+            def taskFolderPath = Paths.get(SRC_PATH, 'build', 'deploy').toString()
             instanceDeploy.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
             instanceDeploy.projectPath = Paths.get(SRC_PATH, 'src').toString()
             instanceDeploy.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
         when:
             instanceDeploy.setup()
             instanceDeploy.loadParameters()
-            instanceDeploy.getClassifiedFiles()
-            instanceDeploy.createDeploymentDirectory(folderDeploy)
+            instanceDeploy.loadFilesToDeploy()
+            instanceDeploy.createDeploymentDirectory(taskFolderPath)
             instanceDeploy.displayFolderNoDeploy()
             instanceDeploy.deployAllComponents()
             def packageXmlToDeployDirectory =  new File(Paths.get(SRC_PATH, 'build', 'deploy', 'package.xml').toString()).text
@@ -117,207 +117,18 @@ class DeployTest extends Specification {
             def xmlDiff = new Diff(packageXmlToDeployDirectory, packageXmlToSrcDirectory)
         then:
             xmlDiff.similar()
-            new File(Paths.get(folderDeploy, 'classes', 'Class1.cls').toString()).exists()
-            new File(Paths.get(folderDeploy, 'classes', 'Class1.cls-meta.xml').toString()).exists()
-            new File(Paths.get(folderDeploy, 'objects', 'Object1__c.object').toString()).exists()
-            new File(Paths.get(folderDeploy, 'triggers', 'Trigger1.trigger').toString()).exists()
-            new File(Paths.get(folderDeploy, 'triggers', 'Trigger1.trigger-meta.xml').toString()).exists()
-    }
-
-    def "Test should exclude a file by file"() {
-        given:
-            ArrayList<File> files = [new File(Paths.get(SRC_PATH, 'classes', 'class1.cls').toString()),
-                                     new File(Paths.get(SRC_PATH, 'classes', 'class1.cls-meta.xml').toString()),
-                                     new File(Paths.get(SRC_PATH, 'triggers', 'LunesTrigger.trigger').toString()),
-                                     new File(Paths.get(SRC_PATH, 'triggers', 'LunesTrigger.trigger-meta.xml').toString())]
-            String criterion = "classes${File.separator}class1.cls"
-            instanceDeploy.projectPath = SRC_PATH
-        when:
-            def arrayFiltered = instanceDeploy.excludeFilesByCriterion(files, criterion)
-        then:
-            arrayFiltered.sort() == [new File(Paths.get(SRC_PATH, 'triggers', 'LunesTrigger.trigger').toString()),
-                                     new File(Paths.get(SRC_PATH, 'triggers', 'LunesTrigger.trigger-meta.xml').toString())]
-    }
-
-    def "Test should exclude a files by folder"() {
-        given:
-            ArrayList<File> files = [new File(Paths.get(SRC_PATH, 'classes', 'class1.cls').toString()),
-                                     new File(Paths.get(SRC_PATH, 'classes', 'class1.cls-meta.xml').toString()),
-                                     new File(Paths.get(SRC_PATH, 'triggers', 'LunesTrigger.trigger').toString()),
-                                     new File(Paths.get(SRC_PATH, 'triggers', 'LunesTrigger.trigger-meta.xml').toString()),
-                                     new File(Paths.get(SRC_PATH, 'objects', 'Account.object').toString()),
-                                     new File(Paths.get(SRC_PATH, 'objects', 'Object1__c.object').toString()),
-                                     new File(Paths.get(SRC_PATH, 'objects', 'Object2__c.object').toString())]
-            String criterion = "classes"
-            instanceDeploy.projectPath = SRC_PATH
-        when:
-            def arrayFiltered = instanceDeploy.excludeFilesByCriterion(files, criterion)
-        then:
-            arrayFiltered.sort() == [new File(Paths.get(SRC_PATH, 'triggers', 'LunesTrigger.trigger').toString()),
-                                     new File(Paths.get(SRC_PATH, 'triggers', 'LunesTrigger.trigger-meta.xml').toString()),
-                                     new File(Paths.get(SRC_PATH, 'objects', 'Account.object').toString()),
-                                     new File(Paths.get(SRC_PATH, 'objects', 'Object1__c.object').toString()),
-                                     new File(Paths.get(SRC_PATH, 'objects', 'Object2__c.object').toString())].sort()
-    }
-
-    def "Test should exclude a file when you sent as criterion a wilcard"() {
-        given:
-            ArrayList<File> files = [new File(Paths.get(SRC_PATH, 'classes', 'class1.cls').toString()),
-                                     new File(Paths.get(SRC_PATH, 'classes', 'class1.cls-meta.xml').toString()),
-                                     new File(Paths.get(SRC_PATH, 'triggers', 'LunesTrigger.trigger').toString()),
-                                     new File(Paths.get(SRC_PATH, 'triggers', 'LunesTrigger.trigger-meta.xml').toString()),
-                                     new File(Paths.get(SRC_PATH, 'objects', 'Account.object').toString()),
-                                     new File(Paths.get(SRC_PATH, 'objects', 'Object1__c.object').toString()),
-                                     new File(Paths.get(SRC_PATH, 'objects', 'Object2__c.object').toString())]
-            String criterion = "*${File.separator}class1.cls"
-            instanceDeploy.projectPath = SRC_PATH
-        when:
-            def arrayFiltered = instanceDeploy.excludeFilesByCriterion(files, criterion)
-        then:
-            arrayFiltered.sort() == [new File(Paths.get(SRC_PATH, 'triggers', 'LunesTrigger.trigger').toString()),
-                                     new File(Paths.get(SRC_PATH, 'triggers', 'LunesTrigger.trigger-meta.xml').toString()),
-                                     new File(Paths.get(SRC_PATH, 'objects', 'Account.object').toString()),
-                                     new File(Paths.get(SRC_PATH, 'objects', 'Object1__c.object').toString()),
-                                     new File(Paths.get(SRC_PATH, 'objects', 'Object2__c.object').toString())].sort()
-    }
-
-    def "Test should exclude a files when you sent as criterion a wilcard equal to classes/*"() {
-        given:
-            ArrayList<File> files = [new File(Paths.get(SRC_PATH, 'classes', 'class1.cls').toString()),
-                                     new File(Paths.get(SRC_PATH, 'classes', 'class1.cls-meta.xml').toString()),
-                                     new File(Paths.get(SRC_PATH, 'triggers', 'LunesTrigger.trigger').toString()),
-                                     new File(Paths.get(SRC_PATH, 'triggers', 'LunesTrigger.trigger-meta.xml').toString()),
-                                     new File(Paths.get(SRC_PATH, 'objects', 'Account.object').toString()),
-                                     new File(Paths.get(SRC_PATH, 'objects', 'Object1__c.object').toString()),
-                                     new File(Paths.get(SRC_PATH, 'objects', 'Object2__c.object').toString())]
-            String criterion = "objects${File.separator}**"
-            instanceDeploy.projectPath = SRC_PATH
-        when:
-            def arrayFiltered = instanceDeploy.excludeFilesByCriterion(files, criterion)
-        then:
-            arrayFiltered.sort() == [new File(Paths.get(SRC_PATH, 'classes', 'class1.cls').toString()),
-                                     new File(Paths.get(SRC_PATH, 'classes', 'class1.cls-meta.xml').toString()),
-                                     new File(Paths.get(SRC_PATH, 'triggers', 'LunesTrigger.trigger').toString()),
-                                     new File(Paths.get(SRC_PATH, 'triggers', 'LunesTrigger.trigger-meta.xml').toString())].sort()
-    }
-
-    def "Test should exclude a list of files"() {
-        given:
-            ArrayList<File> files = [new File(Paths.get(SRC_PATH, 'classes', 'class1.cls').toString()),
-                                     new File(Paths.get(SRC_PATH, 'classes', 'class1.cls-meta.xml').toString()),
-                                     new File(Paths.get(SRC_PATH, 'triggers', 'LunesTrigger.trigger').toString()),
-                                     new File(Paths.get(SRC_PATH, 'triggers', 'LunesTrigger.trigger-meta.xml').toString()),
-                                     new File(Paths.get(SRC_PATH, 'objects', 'Account.object').toString()),
-                                     new File(Paths.get(SRC_PATH, 'objects', 'Object1__c.object').toString()),
-                                     new File(Paths.get(SRC_PATH, 'objects', 'Object2__c.object').toString())]
-            String criterion = "classes${File.separator}class1.cls,triggers${File.separator}LunesTrigger.trigger"
-            instanceDeploy.projectPath = SRC_PATH
-        when:
-            def arrayFiltered = instanceDeploy.excludeFilesByCriterion(files, criterion)
-        then:
-            arrayFiltered.sort() == [new File(Paths.get(SRC_PATH, 'objects', 'Account.object').toString()),
-                                     new File(Paths.get(SRC_PATH, 'objects', 'Object1__c.object').toString()),
-                                     new File(Paths.get(SRC_PATH, 'objects', 'Object2__c.object').toString())]
-    }
-
-    def "Test should exclude a list of files with it xml file"() {
-        given:
-            ArrayList<File> files = [new File(Paths.get(SRC_PATH, 'classes', 'class1.cls').toString()),
-                                     new File(Paths.get(SRC_PATH, 'classes', 'class1.cls-meta.xml').toString()),
-                                     new File(Paths.get(SRC_PATH, 'triggers', 'LunesTrigger.trigger.trigger').toString()),
-                                     new File(Paths.get(SRC_PATH, 'triggers', 'LunesTrigger.trigger-meta.xml').toString()),
-                                     new File(Paths.get(SRC_PATH, 'objects', 'Account.object').toString()),
-                                     new File(Paths.get(SRC_PATH, 'objects', 'Object1__c.object').toString()),
-                                     new File(Paths.get(SRC_PATH, 'objects', 'Object2__c.object').toString())]
-            String criterion = "classes${File.separator}class1.cls,triggers${File.separator}LunesTrigger.trigger"
-            instanceDeploy.projectPath = SRC_PATH
-        when:
-            def arrayFiltered = instanceDeploy.excludeFilesByCriterion(files, criterion)
-        then:
-            arrayFiltered.sort() == [new File(Paths.get(SRC_PATH, 'objects', 'Account.object').toString()),
-                                     new File(Paths.get(SRC_PATH, 'objects', 'Object1__c.object').toString()),
-                                     new File(Paths.get(SRC_PATH, 'objects', 'Object2__c.object').toString())]
-    }
-
-    def "Test should exclude files by wildcard sent 'classes/**'"() {
-        given:
-            ArrayList<File> files = [new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString()),
-                                     new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls-meta.xml').toString()),
-                                     new File(Paths.get(SRC_PATH, 'src', 'classes', 'class2.cls').toString()),
-                                     new File(Paths.get(SRC_PATH, 'src', 'classes', 'class2.cls-meta.xml').toString()),
-                                     new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger').toString()),
-                                     new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger-meta.xml').toString())]
-            String criterion = "classes${File.separator}**"
-            instanceDeploy.projectPath = Paths.get(SRC_PATH, 'src').toString()
-        when:
-            def arrayFiltered = instanceDeploy.excludeFilesByCriterion(files, criterion)
-        then:
-            arrayFiltered.sort() == [new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger').toString()),
-                                     new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger-meta.xml').toString())].sort()
-    }
-
-    def "Test should exclude files by wildcard sent '**/*.object'"() {
-        given:
-            ArrayList<File> files = [new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString()),
-                                     new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls-meta.xml').toString()),
-                                     new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger').toString()),
-                                     new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger-meta.xml').toString()),
-                                     new File(Paths.get(SRC_PATH, 'src', 'objects', 'Account.object').toString()),
-                                     new File(Paths.get(SRC_PATH, 'src', 'objects', 'Object1__c.object').toString())]
-            String criterion = "**${File.separator}*.object"
-            instanceDeploy.projectPath = Paths.get(SRC_PATH, 'src').toString()
-        when:
-            def arrayFiltered = instanceDeploy.excludeFilesByCriterion(files, criterion)
-        then:
-            arrayFiltered.sort() == [new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger').toString()),
-                                     new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger-meta.xml').toString()),
-                                     new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls-meta.xml').toString()),
-                                     new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString())].sort()
-    }
-
-    def "Test should exclude files by wildcard sent '**/*.cls'"() {
-        given:
-            ArrayList<File> files = [new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString()),
-                                     new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls-meta.xml').toString()),
-                                     new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger').toString()),
-                                     new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger-meta.xml').toString()),
-                                     new File(Paths.get(SRC_PATH, 'src', 'objects', 'Object1__c.object').toString())]
-            String criterion = "**${File.separator}*.cls"
-            instanceDeploy.projectPath = Paths.get(SRC_PATH, 'src').toString()
-        when:
-            def arrayFiltered = instanceDeploy.excludeFilesByCriterion(files, criterion)
-        then:
-            arrayFiltered.sort() == [new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger').toString()),
-                                     new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger-meta.xml').toString()),
-                                     new File(Paths.get(SRC_PATH, 'src', 'objects', 'Object1__c.object').toString())].sort()
-
-    }
-
-    def "Test should exclude files by wildcard sent '**/*Account*/**'"() {
-        given:
-        ArrayList<File> files = [new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString()),
-                                 new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls-meta.xml').toString()),
-                                 new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger').toString()),
-                                 new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger-meta.xml').toString()),
-                                 new File(Paths.get(SRC_PATH, 'src', 'objects', 'Account.object').toString()),
-                                 new File(Paths.get(SRC_PATH, 'src', 'objects', 'Object1__c.object').toString())]
-        String criterion = "**${File.separator}*Account*${File.separator}**"
-        instanceDeploy.projectPath = Paths.get(SRC_PATH, 'src').toString()
-        when:
-        def arrayFiltered = instanceDeploy.excludeFilesByCriterion(files, criterion)
-        then:
-        arrayFiltered.sort() == [new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger').toString()),
-                                 new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger-meta.xml').toString()),
-                                 new File(Paths.get(SRC_PATH, 'src', 'objects', 'Object1__c.object').toString()),
-                                 new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString()),
-                                 new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls-meta.xml').toString())].sort()
+            new File(Paths.get(taskFolderPath, 'classes', 'Class1.cls').toString()).exists()
+            new File(Paths.get(taskFolderPath, 'classes', 'Class1.cls-meta.xml').toString()).exists()
+            new File(Paths.get(taskFolderPath, 'objects', 'Object1__c.object').toString()).exists()
+            new File(Paths.get(taskFolderPath, 'triggers', 'Trigger1.trigger').toString()).exists()
+            new File(Paths.get(taskFolderPath, 'triggers', 'Trigger1.trigger-meta.xml').toString()).exists()
     }
 
     def "Test should return an exception if folders parameter is not valid" () {
         given:
             instanceDeploy.parameters.put('folders','invalidFolder')
         when:
-            instaceDeploy.loadParameters()
+            instanceDeploy.loadParameters()
             instanceDeploy.deployAllComponents()
         then:
             thrown(Exception)
@@ -327,7 +138,7 @@ class DeployTest extends Specification {
         given:
             instanceDeploy.parameters.put('folders','')
         when:
-            instaceDeploy.loadParameters()
+            instanceDeploy.loadParameters()
             instanceDeploy.deployAllComponents()
         then:
             thrown(Exception)

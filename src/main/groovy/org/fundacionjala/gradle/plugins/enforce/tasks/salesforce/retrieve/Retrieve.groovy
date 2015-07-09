@@ -19,9 +19,7 @@ import java.nio.file.Paths
  */
 class Retrieve extends Retrieval {
     private static final String GROUP_OF_TASK = "Retrieve"
-    private final String FILES_RETRIEVE = 'files'
     private final String DESTINATION_FOLDER = 'destination'
-    private final String ALL_PARAMETER = 'all'
     private String option
     public String files
     public String destination
@@ -41,7 +39,6 @@ class Retrieve extends Retrieval {
     void runTask() {
         verifyDestinationFolder()
         ManagementFile.createDirectories(projectPath)
-        loadParameters()
         validateContentParameter()
         if (!hasPackage() && !files) {
            retrieveWithoutPackageXml()
@@ -79,7 +76,7 @@ class Retrieve extends Retrieval {
      * Loads the package structure file from package xml
      */
     private void loadFromPackage(){
-        FileReader packageFileReader = new FileReader(Paths.get(projectPath, Constants.PACKAGE_FILE_NAME).toString())
+        FileReader packageFileReader = new FileReader(packageFromSourcePath)
         packageBuilder.read(packageFileReader)
     }
 
@@ -97,20 +94,6 @@ class Retrieve extends Retrieval {
             String targetPath = project.property(DESTINATION_FOLDER) as String
             projectPath = Paths.get(targetPath).isAbsolute() ? targetPath :
                     Paths.get(project.projectDir.absolutePath, targetPath).toString()
-        }
-    }
-
-    /**
-     * Loads the files and all parameters
-     */
-    private void loadParameters() {
-        if (!files) {
-            if (Util.isValidProperty(project, FILES_RETRIEVE)) {
-                files = project.property(FILES_RETRIEVE) as String
-            }
-        }
-        if (Util.isValidProperty(project, ALL_PARAMETER)) {
-            all = project.property(ALL_PARAMETER) as String
         }
     }
 
@@ -143,7 +126,7 @@ class Retrieve extends Retrieval {
     void retrieveWithPackageXml() {
         runRetrieve()
         copyFilesWithoutPackage()
-        updatePackageXml(Paths.get(unPackageFolder, Constants.PACKAGE_FILE_NAME).toString(), Paths.get(projectPath, Constants.PACKAGE_FILE_NAME).toString())
+        updatePackageXml(packageFromBuildPath, packageFromSourcePath)
         File unpackage = new File(unPackageFolder)
         unpackage.deleteDir()
     }
@@ -153,7 +136,7 @@ class Retrieve extends Retrieval {
      * @return true if exist a package xml file else return false
      */
     def hasPackage() {
-        return new File(Paths.get(projectPath, Constants.PACKAGE_FILE_NAME).toString()).exists()
+        return new File(packageFromSourcePath).exists()
     }
 
     /**
@@ -179,7 +162,7 @@ class Retrieve extends Retrieval {
             }
             packageBuilder.createPackage(filesRetrieve, projectPath)
         } else {
-            FileReader packageFileReader = new FileReader(Paths.get(projectPath, Constants.PACKAGE_FILE_NAME).toString())
+            FileReader packageFileReader = new FileReader(packageFromSourcePath)
             packageBuilder.read(packageFileReader)
         }
     }
@@ -207,7 +190,7 @@ class Retrieve extends Retrieval {
     public void copyFilesWithoutPackage() {
         ArrayList<File> filesToCopy = fileManager.getValidElements(unPackageFolder)
         if (hasPackage()) {
-            filesToCopy.remove(new File(Paths.get(unPackageFolder, Constants.PACKAGE_FILE_NAME).toString()))
+            filesToCopy.remove(new File(packageFromBuildPath))
         }
         fileManager.copy(unPackageFolder, filesToCopy, projectPath)
     }

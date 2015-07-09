@@ -253,6 +253,8 @@ abstract class SalesforceTask extends ForceTask {
         logger.debug('Created directory at: ' + buildFolderPath)
         projectPackagePath = Paths.get(projectPath, PACKAGE_NAME)
         parameters = project.properties.clone()
+        setup()
+        loadParameters()
         runTask()
     }
 
@@ -260,4 +262,16 @@ abstract class SalesforceTask extends ForceTask {
      * Abstract method: When implement a method can select steps for deployment
      */
     abstract void runTask()
+
+
+    /**
+     * Abstract method: When implement a method can setup files for deployment tasks
+     */
+    abstract void setup()
+
+
+    /**
+     * Abstract method: When implement a method can load parameters for deployment tasks
+     */
+    abstract void loadParameters()
 }

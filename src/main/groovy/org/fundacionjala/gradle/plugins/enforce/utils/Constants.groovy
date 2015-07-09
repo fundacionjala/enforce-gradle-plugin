@@ -144,4 +144,12 @@ public class Constants {
             " FROM ApexCodeCoverageAggregate"
     public static final int TIME_RUN_TEST_ASYNC = 1000
     public static final int ZERO_NUMBER = 0
+
+    //Execute task
+    public static final String APEX_CODE = 'input'
+    public static final String APEX_OUTPUT_FILE_PATH = 'output'
+    public static final String DESCRIPTION_EXECUTE_TASK = "This task executes apex code from a file or inline code"
+    public static final String UTILS_GROUP = "Utils"
+    public static final String OUTPUT_RESULT = "Output result:\n"
+    public static final String INVALID_INPUT_PARAMETER = "parameter invalid"
 }

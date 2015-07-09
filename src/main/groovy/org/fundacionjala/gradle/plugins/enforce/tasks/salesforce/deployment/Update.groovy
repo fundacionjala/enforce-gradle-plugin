@@ -8,9 +8,7 @@ package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageCombiner
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageGenerator
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.filter.Filter
 
 import java.nio.file.Paths
 
@@ -18,14 +16,11 @@ import java.nio.file.Paths
  * Updates an org using metadata API
  */
 class Update extends Deployment {
-    public String pathUpdate
-    public String updatePackagePath
     ArrayList<File> filesToCopy
     ArrayList<File> filesToUpdate
     String folders = ""
     ArrayList<File> filesExcludes
     PackageGenerator packageGenerator
-    Filter filter
 
     /**
      * Sets description and group task
@@ -39,6 +34,7 @@ class Update extends Deployment {
         filesExcludes = new ArrayList<File>()
         packageGenerator = new PackageGenerator()
         interceptorsToExecute = [org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.REMOVE_DEPRECATE.id]
+        taskFolderName = Constants.DIR_UPDATE_FOLDER
     }
 
     /**
@@ -46,53 +42,45 @@ class Update extends Deployment {
      */
     @Override
     void runTask() {
-        setup()
-        createDeploymentDirectory(pathUpdate)
+        createDeploymentDirectory(taskFolderPath)
         loadFilesChanged()
-        loadParameters()
         filterFiles()
         showFilesChanged()
         if(isEmptyChangedFiles()) {
-            return;
+            return
         }
         createDestructive()
         createPackage()
         copyFilesChanged()
         showFilesExcludes()
         truncate()
-        executeDeploy(pathUpdate)
+        executeDeploy(taskFolderPath)
         packageGenerator.saveFileTrackerMap()
-    }
-
-    def setup() {
-        pathUpdate = Paths.get(buildFolderPath, Constants.DIR_UPDATE_FOLDER).toString()
-        updatePackagePath = Paths.get(pathUpdate, PACKAGE_NAME).toString()
-        filter = new Filter(project, projectPath)
     }
 
     def truncate() {
         interceptorsToExecute += interceptors
-        truncateComponents(pathUpdate)
+        truncateComponents(taskFolderPath)
     }
 
     /**
      * Creates packages to all files which has been changed
      */
-    def createPackage() {
+    void createPackage() {
         packageGenerator.fileTrackerMap.each { nameFile, resultTracker ->
             if (resultTracker.state != ComponentStates.DELETED) {
                 filesToCopy.add(new File(Paths.get(projectPath, nameFile).toString()))
             }
         }
-        packageGenerator.buildPackage(updatePackagePath)
-        combinePackageToUpdate(updatePackagePath)
+        packageGenerator.buildPackage(taskPackagePath)
+        combinePackageToUpdate(taskPackagePath)
     }
 
     /**
      * Creates package to all files which has been deleted
      */
     def createDestructive() {
-        String destructivePath = Paths.get(pathUpdate, Constants.FILE_NAME_DESTRUCTIVE).toString()
+        String destructivePath = Paths.get(taskFolderPath, Constants.FILE_NAME_DESTRUCTIVE).toString()
         packageGenerator.buildDestructive(destructivePath)
         combinePackageToUpdate(destructivePath)
     }
@@ -120,7 +108,7 @@ class Update extends Deployment {
             }
             filesToUpdate.push(file)
         }
-        fileManager.copy(projectPath, filesToUpdate, pathUpdate)
+        copyFilesToTaskDirectory(filesToUpdate)
     }
 
     /**
@@ -179,6 +167,7 @@ class Update extends Deployment {
         ArrayList<File> filesFiltered = filter.getFiles(includes, excludes)
         packageGenerator.updateFileTracker(filesFiltered)
         filesExcludes = files - filesFiltered
+
     }
 
     public void loadParameters() {

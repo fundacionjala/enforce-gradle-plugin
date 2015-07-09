@@ -60,7 +60,7 @@ class UploadTest extends Specification {
     def "Test shouldn't create a package xml file if specificFilesToUpload Array is empty "() {
         given:
             uploadInstance.createDeploymentDirectory(pathUpload)
-            uploadInstance.uploadPackagePath = Paths.get(SRC_PATH, 'build', 'upload', 'package.xml').toString()
+            uploadInstance.taskPackagePath = Paths.get(SRC_PATH, 'build', 'upload', 'package.xml').toString()
             uploadInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
             uploadInstance.specificFilesToUpload = [:]
             uploadInstance.specificFilesToUpload.put(Constants.VALID_FILE, [])
@@ -73,7 +73,7 @@ class UploadTest extends Specification {
     def "Test should create a package xml file with valid files"() {
          given:
              uploadInstance.createDeploymentDirectory(pathUpload)
-             uploadInstance.uploadPackagePath = Paths.get(SRC_PATH, 'build', 'package.xml').toString()
+             uploadInstance.taskPackagePath = Paths.get(SRC_PATH, 'build', 'package.xml').toString()
              uploadInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
              uploadInstance.specificFilesToUpload = [:]
              File fileOne = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString())
@@ -89,7 +89,7 @@ class UploadTest extends Specification {
         given:
             uploadInstance.createDeploymentDirectory(pathUpload)
             uploadInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
-            uploadInstance.pathUpload = Paths.get(SRC_PATH, 'build', 'upload').toString()
+            uploadInstance.taskFolderPath = Paths.get(SRC_PATH, 'build', 'upload').toString()
             File fileOne = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString())
             File fileTwo = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls-meta.xml').toString())
             File fileThree = new File(Paths.get(SRC_PATH, 'src', 'objects', 'Object1__c.object').toString())
@@ -181,7 +181,7 @@ class UploadTest extends Specification {
             uploadInstance.excludes = ""
             uploadInstance.filter.getFiles(_,_) >> [classFile, classFileXml, objectFile]
             fileValidator.validateFiles(_,_) >> [Constants.VALID_FILE, [classFile, classFileXml, objectFile]]
-            Map<String,ArrayList<File>> result = uploadInstance.getFilesValidated()
+            Map<String,ArrayList<File>> result = uploadInstance.getClassifiedFiles(uploadInstance.files, uploadInstance.excludes)
         then:
             result.get(Constants.VALID_FILE).sort() == [classFile, classFileXml, objectFile].sort()
 
@@ -198,7 +198,7 @@ class UploadTest extends Specification {
             uploadInstance.excludes = ""
             uploadInstance.filter.getFiles(_,_) >> [classFile, classFileXml, objectFile]
             fileValidator.validateFiles(_,_) >> [Constants.VALID_FILE, [classFile, classFileXml, objectFile]]
-            Map<String,ArrayList<File>> result = uploadInstance.getFilesValidated()
+            Map<String,ArrayList<File>> result = uploadInstance.getClassifiedFiles(uploadInstance.files, uploadInstance.excludes)
         then:
             result.get(Constants.VALID_FILE).sort() == [classFile, classFileXml, objectFile].sort()
     }
@@ -215,7 +215,7 @@ class UploadTest extends Specification {
             uploadInstance.excludes = ""
             uploadInstance.filter.getFiles(_,_) >> [classFile, classFileXml, triggerFile, triggerFileXml]
             fileValidator.validateFiles(_,_) >> [Constants.VALID_FILE, [classFile, classFileXml, triggerFile, triggerFileXml]]
-            Map<String,ArrayList<File>> result = uploadInstance.getFilesValidated()
+            Map<String,ArrayList<File>> result = uploadInstance.getClassifiedFiles(uploadInstance.files, uploadInstance.excludes)
         then:
             result.get(Constants.VALID_FILE).sort() == [classFile, classFileXml, triggerFile, triggerFileXml].sort()
     }
@@ -231,7 +231,7 @@ class UploadTest extends Specification {
             uploadInstance.loadFilesToUpload()
             uploadInstance.copyFilesToUpload()
             uploadInstance.createPackage()
-            uploadInstance.combinePackageToUpdate(uploadInstance.uploadPackagePath)
+            uploadInstance.combinePackageToUpdate(uploadInstance.taskPackagePath)
             uploadInstance.addInterceptor()
 
             File packageFromBuildDirectory = new File(Paths.get(pathUpload, Constants.PACKAGE_FILE_NAME).toString())
@@ -267,7 +267,7 @@ class UploadTest extends Specification {
             uploadInstance.loadFilesToUpload()
             uploadInstance.copyFilesToUpload()
             uploadInstance.createPackage()
-            uploadInstance.combinePackageToUpdate(uploadInstance.uploadPackagePath)
+            uploadInstance.combinePackageToUpdate(uploadInstance.taskPackagePath)
             uploadInstance.addInterceptor()
 
             File packageFromBuildDirectory = new File(Paths.get(pathUpload, Constants.PACKAGE_FILE_NAME).toString())
@@ -302,7 +302,7 @@ class UploadTest extends Specification {
             uploadInstance.loadFilesToUpload()
             uploadInstance.copyFilesToUpload()
             uploadInstance.createPackage()
-            uploadInstance.combinePackageToUpdate(uploadInstance.uploadPackagePath)
+            uploadInstance.combinePackageToUpdate(uploadInstance.taskPackagePath)
             uploadInstance.addInterceptor()
 
             File packageFromBuildDirectory = new File(Paths.get(pathUpload, Constants.PACKAGE_FILE_NAME).toString())
@@ -348,7 +348,7 @@ class UploadTest extends Specification {
             uploadInstance.loadFilesToUpload()
             uploadInstance.copyFilesToUpload()
             uploadInstance.createPackage()
-            uploadInstance.combinePackageToUpdate(uploadInstance.uploadPackagePath)
+            uploadInstance.combinePackageToUpdate(uploadInstance.taskPackagePath)
             uploadInstance.addInterceptor()
 
             File packageFromBuildDirectory = new File(Paths.get(pathUpload, Constants.PACKAGE_FILE_NAME).toString())

@@ -137,7 +137,7 @@ class Util {
      */
     public static String getMacAddress() {
         String macAddress = MAC_ADDRESS_BY_DEFAULT
-        ArrayList<String> interfaces = new ArrayList<String>()
+        ArrayList<String> interfaces = []
 
         NetworkInterface.getNetworkInterfaces().each { NetworkInterface element ->
             def elementEncoded = element.hardwareAddress?.encodeHex()
@@ -227,7 +227,7 @@ class Util {
      * @return an Array list with invalid folders
      */
     public static ArrayList<String> getInvalidFolders(ArrayList<String> foldersName) {
-        ArrayList<String> invalidFolders = new ArrayList<String>()
+        ArrayList<String> invalidFolders = []
         foldersName.each { String folderName ->
             if (!MetadataComponents.validFolder(folderName) || folderName.contains('.')) {
                 invalidFolders.push(folderName)
@@ -242,7 +242,7 @@ class Util {
      * @return an Array list with empty folders
      */
     public static ArrayList<String> getEmptyFolders(ArrayList<String> foldersName, String projectPath) {
-        ArrayList<String> emptyFolders = new ArrayList<String>()
+        ArrayList<String> emptyFolders = []
         foldersName.each { String folderName ->
             File file = new File(Paths.get(projectPath, folderName).toString())
             if (file.isDirectory()) {
@@ -261,7 +261,7 @@ class Util {
      * @return an Array of folders name that don't exist
      */
     public static ArrayList<String> getNotExistFolders(ArrayList<String> foldersName, String projectPath) {
-        ArrayList<String> notExistFolders = new ArrayList<String>()
+        ArrayList<String> notExistFolders = []
         foldersName.each { String folderName ->
             File file = new File(Paths.get(projectPath, folderName).toString())
             if (!file.exists()) {
@@ -356,8 +356,8 @@ class Util {
      */
     public static void validateParameterContent(String parameterValues, String projectPath) {
         parameterValues = parameterValues.replaceAll(Constants.BACK_SLASH, Constants.SLASH)
-        ArrayList<String> fileNames = new ArrayList<String>()
-        ArrayList<String> folderNames = new ArrayList<String>()
+        ArrayList<String> fileNames = []
+        ArrayList<String> folderNames = []
         parameterValues.split(Constants.COMMA).each { String parameter ->
             if (parameter.contains(Constants.WILDCARD)) {
                 return
@@ -377,20 +377,20 @@ class Util {
      * @param foldersName is type array list contents folders name
      */
     public static void validateFolders(ArrayList<String> foldersName, String projectPath) {
-        ArrayList<String> invalidFolders = new ArrayList<String>()
+        ArrayList<String> invalidFolders = []
         invalidFolders = getInvalidFolders(foldersName)
         String errorMessage = ''
         if (!invalidFolders.empty) {
             errorMessage = "${Constants.INVALID_FOLDER}: ${invalidFolders}"
         }
 
-        ArrayList<String> notExistFolders = new ArrayList<String>()
+        ArrayList<String> notExistFolders = []
         notExistFolders = getNotExistFolders(foldersName, projectPath)
         if (!notExistFolders.empty) {
             errorMessage += "\n${Constants.DOES_NOT_EXIST_FOLDER} ${notExistFolders}"
         }
 
-        ArrayList<String> emptyFolders = new ArrayList<String>()
+        ArrayList<String> emptyFolders = []
         emptyFolders = getEmptyFolders(foldersName, projectPath)
         if (!emptyFolders.empty) {
             errorMessage += "\n${Constants.EMPTY_FOLDERS} ${emptyFolders}"
@@ -406,8 +406,8 @@ class Util {
      * @param filesName is type array list contents files name
      */
     public static void validateFiles(ArrayList<String> filesName, String projectPath) {
-        ArrayList<String> invalidFiles = new ArrayList<String>()
-        ArrayList<String> notExistFiles = new ArrayList<String>()
+        ArrayList<String> invalidFiles = []
+        ArrayList<String> notExistFiles = []
         String errorMessage = ''
         filesName.each { String fileName ->
             File file = new File(Paths.get(projectPath, fileName).toString())
@@ -538,10 +538,7 @@ class Util {
         ArrayList<String> fileNames = []
         ArrayList<String> filesToInclude = []
         files.each {File file ->
-            Path pathAbsolute = Paths.get(file.getAbsolutePath())
-            Path pathBase = Paths.get(projectPath)
-            Path pathRelative = pathBase.relativize(pathAbsolute)
-            fileNames.push(pathRelative.toString())
+            fileNames.push(getRelativePath(file, projectPath))
         }
         String includes = fileNames.join(', ')
 
@@ -555,5 +552,20 @@ class Util {
             includes = filesToInclude.join(', ')
         }
         return includes
+    }
+
+
+    /**
+     * Validates relative path
+     * @param relativePath is a relative path of a component
+     * @return true if is valid
+     */
+    public static boolean isValidRelativePath(String relativePath) {
+        boolean result = false
+        String folderName = getFirstPath(relativePath)
+        if ( MetadataComponents.validFolder(folderName) && MetadataComponents.getExtensionByFolder(folderName) == ""){
+            result = true
+        }
+        return  result
     }
 }

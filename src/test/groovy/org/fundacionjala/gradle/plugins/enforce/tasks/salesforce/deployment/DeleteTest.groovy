@@ -68,6 +68,7 @@ class DeleteTest extends Specification {
         deleteInstance.componentDeploy = new DeployMetadata()
         deleteInstance.project.enforce.deleteTemporaryFiles = true
         deleteInstance.projectPackagePath = Paths.get(SRC_PATH,'src_delete', 'package.xml').toString()
+        deleteInstance.taskFolderName = Constants.DIR_DELETE_FOLDER
 
         ArrayList<File> files = new ArrayList<File>()
         files.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class1.cls').toString()))
@@ -147,8 +148,9 @@ class DeleteTest extends Specification {
             filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object5__c.object').toString()))
 
         when:
-            deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
-            deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
+            deleteInstance.taskFolderPath = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
+            deleteInstance.setup()
+            deleteInstance.createDeploymentDirectory(deleteInstance.taskFolderPath)
             deleteInstance.addFiles()
             deleteInstance.createDestructive()
             deleteInstance.createPackageEmpty()
@@ -176,8 +178,9 @@ class DeleteTest extends Specification {
             filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger3.trigger-meta.xml').toString()))
 
         when:
-            deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, DIR_DELETE_FOLDER).toString()
-            deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
+            deleteInstance.taskFolderPath = Paths.get(deleteInstance.buildFolderPath, DIR_DELETE_FOLDER).toString()
+            deleteInstance.createDeploymentDirectory(deleteInstance.taskFolderPath)
+            deleteInstance.setup()
             deleteInstance.loadParameters()
             deleteInstance.addFiles()
             deleteInstance.createDestructive()
@@ -198,8 +201,9 @@ class DeleteTest extends Specification {
             filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger1.trigger-meta.xml').toString()))
 
         when:
-            deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, DIR_DELETE_FOLDER).toString()
-            deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
+            deleteInstance.taskFolderPath = Paths.get(deleteInstance.buildFolderPath, DIR_DELETE_FOLDER).toString()
+            deleteInstance.createDeploymentDirectory(deleteInstance.taskFolderPath)
+            deleteInstance.setup()
             deleteInstance.loadParameters()
             deleteInstance.addFiles()
             deleteInstance.createDestructive()
@@ -225,8 +229,9 @@ class DeleteTest extends Specification {
             filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object5__c.object').toString()))
 
         when:
-            deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
-            deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
+            deleteInstance.taskFolderPath = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
+            deleteInstance.createDeploymentDirectory(deleteInstance.taskFolderPath)
+            deleteInstance.setup()
             deleteInstance.loadParameters()
             deleteInstance.addFiles()
             deleteInstance.createDestructive()
@@ -250,8 +255,9 @@ class DeleteTest extends Specification {
             filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger3.trigger-meta.xml').toString()))
 
         when:
-            deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
-            deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
+            deleteInstance.taskFolderPath = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
+            deleteInstance.createDeploymentDirectory(deleteInstance.taskFolderPath)
+            deleteInstance.setup()
             deleteInstance.loadParameters()
             deleteInstance.addFiles()
             deleteInstance.createDestructive()
@@ -276,8 +282,9 @@ class DeleteTest extends Specification {
             filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object5__c.object').toString()))
 
         when:
-            deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
-            deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
+            deleteInstance.taskFolderPath = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
+            deleteInstance.createDeploymentDirectory(deleteInstance.taskFolderPath)
+            deleteInstance.setup()
             deleteInstance.loadParameters()
             deleteInstance.addFiles()
             deleteInstance.createDestructive()
@@ -291,8 +298,9 @@ class DeleteTest extends Specification {
         given:
             deleteInstance.parameters.put('excludes','*/**.*')
         when:
-            deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
-            deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
+            deleteInstance.taskFolderPath = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
+            deleteInstance.createDeploymentDirectory(deleteInstance.taskFolderPath)
+            deleteInstance.setup()
             deleteInstance.loadParameters()
             deleteInstance.addFiles()
             deleteInstance.createDestructive()

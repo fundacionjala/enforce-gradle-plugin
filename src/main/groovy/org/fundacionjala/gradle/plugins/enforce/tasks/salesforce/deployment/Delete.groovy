@@ -7,17 +7,12 @@ package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.FileValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.OrgValidator
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.filter.Filter
-
-import java.nio.file.Paths
 
 /**
  * Deletes files into an org using metadata API
  */
 class Delete extends Deployment {
-    public String pathDelete
     public ArrayList<File> filesToDeleted
     public String files, excludes
 
@@ -29,6 +24,7 @@ class Delete extends Deployment {
     Delete() {
         super(Constants.DESCRIPTION_DELETE_TASK, Constants.DEPLOYMENT)
         filesToDeleted = new ArrayList<File>()
+        taskFolderName = Constants.DIR_DELETE_FOLDER
     }
 
     /**
@@ -36,33 +32,28 @@ class Delete extends Deployment {
      */
     @Override
     void runTask() {
-        pathDelete = Paths.get(buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
-        componentDeploy.startMessage = Constants.START_DELETE_TASK
-        componentDeploy.successMessage = Constants.SUCCESSFULLY_DELETE_TASK
-        createDeploymentDirectory(pathDelete)
-
-        loadParameters()
+        createDeploymentDirectory(taskFolderPath)
         addFiles()
         validateFilesInOrg()
         showFilesToDelete()
-
         if( System.console().readLine("\n"+Constants.QUESTION_CONTINUE_DELETE) == Constants.YES_OPTION ) {
             createDestructive()
             createPackageEmpty()
-            executeDeploy(pathDelete)
+            componentDeploy.startMessage = Constants.START_DELETE_TASK
+            componentDeploy.successMessage = Constants.SUCCESSFULLY_DELETE_TASK
+            executeDeploy(taskFolderPath)
         }
         else {
             logger.quiet(Constants.PROCCES_DELETE_CANCELLED)
         }
     }
 
-
     /**
      * Initializes all task parameters
      * @param properties the task properties
      * @return A map of all task parameters
      */
-    def loadParameters() {
+    void loadParameters() {
         if (Util.isValidProperty(parameters, Constants.PARAMETER_FILES)) {
             files = parameters[Constants.PARAMETER_FILES]
         }
@@ -75,10 +66,8 @@ class Delete extends Deployment {
      * Adds all files into an org
      */
     def addFiles() {
-        Filter filter = new Filter(project,projectPath)
         filter.excludeFiles.addAll([Constants.PACKAGE_FILE_NAME])
-        filesToDeleted = filter.getFiles(files, excludes)
-        filesToDeleted = FileValidator.getValidFiles(projectPath, filesToDeleted)
+        filesToDeleted = getClassifiedFiles(files, excludes).get(Constants.VALID_FILE)
     }
 
     /**
@@ -126,15 +115,14 @@ class Delete extends Deployment {
      * Creates packages to all files which has been deleted
      */
     def createDestructive() {
-        String destructivePath = Paths.get(pathDelete, PACKAGE_NAME_DESTRUCTIVE).toString()
-        writePackage(destructivePath, filesToDeleted)
-        combinePackageToUpdate(destructivePath)
+        writePackage(taskDestructivePath, filesToDeleted)
+        combinePackageToUpdate(taskDestructivePath)
     }
 
     /**
      * Create a package empty
      */
     def createPackageEmpty() {
-        writePackage(Paths.get(pathDelete, PACKAGE_NAME).toString(), [])
+        writePackage(taskPackagePath, [])
     }
 }
