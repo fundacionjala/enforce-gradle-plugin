@@ -12,7 +12,7 @@ import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.FileValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageCombiner
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.PackageCombiner
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.filter.Filter
 import org.gradle.api.file.FileTree
 
@@ -51,9 +51,11 @@ abstract class Deployment extends SalesforceTask {
     /**
      * Executes deploy action
      */
-    def executeDeploy(String sourcePath) {
+    def executeDeploy(String sourcePath, String startMessage, String successMessage) {
         String fileName = new File(sourcePath).getName()
         logger.debug("Creating zip file at: $buildFolderPath$File.separator$fileName")
+        componentDeploy.startMessage = startMessage
+        componentDeploy.successMessage = successMessage
         String pathZipToDeploy = createZip(sourcePath, buildFolderPath, fileName)
         componentDeploy.setPath(pathZipToDeploy)
         logger.debug('Deploying components')

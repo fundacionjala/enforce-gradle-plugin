@@ -56,7 +56,7 @@ class Deploy extends Deployment {
     void deploy() {
         deployAllComponents()
         deployTruncateDeprecateFiles()
-        executeDeploy(taskFolderPath)
+        executeDeploy(taskFolderPath, Constants.DEPLOYING_CODE, Constants.DEPLOYING_CODE_SUCCESSFULLY)
     }
 
     /**
@@ -95,15 +95,13 @@ class Deploy extends Deployment {
      */
     public void deployTruncateFiles() {
         if (codeTruncateOn) {
-            componentDeploy.startMessage = Constants.DEPLOYING_TRUNCATED_CODE
-            componentDeploy.successMessage = Constants.DEPLOYING_TRUNCATED_CODE_SUCCESSFULLY
             Files.copy(Paths.get(projectPath, PACKAGE_NAME), Paths.get(taskPackagePath), StandardCopyOption.REPLACE_EXISTING)
             logger.debug('Generating package')
             writePackage(taskPackagePath, filesToDeploy)
             combinePackage(taskPackagePath)
             truncateComponents()
             logger.debug("Deploying to truncate components from: $taskFolderPath")
-            executeDeploy(taskFolderPath)
+            executeDeploy(taskFolderPath,Constants.DEPLOYING_TRUNCATED_CODE,Constants.DEPLOYING_TRUNCATED_CODE_SUCCESSFULLY)
         }
     }
 
@@ -143,8 +141,6 @@ class Deploy extends Deployment {
      * Deploys the filtered components from project directory
      */
     public void deployAllComponents() {
-        componentDeploy.startMessage = Constants.DEPLOYING_CODE
-        componentDeploy.successMessage = Constants.DEPLOYING_CODE_SUCCESSFULLY
         createDeploymentDirectory(taskFolderPath)
         copyFilesToTaskDirectory(filesToDeploy)
         writePackage(taskPackagePath, filesToDeploy)

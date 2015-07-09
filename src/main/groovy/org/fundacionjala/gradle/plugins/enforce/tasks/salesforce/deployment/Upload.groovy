@@ -8,8 +8,7 @@ package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.FileValidator
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageGenerator
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.PackageGenerator
 
 /**
  * Uploads files to an organization using metadata API without truncate values
@@ -43,9 +42,7 @@ class Upload extends Deployment {
             createPackage()
             combinePackageToUpdate(taskPackagePath)
             addInterceptor()
-            componentDeploy.startMessage = "Starting upload files process"
-            componentDeploy.successMessage = "The files were successfully uploaded"
-            executeDeploy(taskFolderPath)
+            executeDeploy(taskFolderPath, Constants.START_UPLOAD_TASK_MESSAGE, Constants.SUCCESS_UPLOAD_TASK_MESSAGE)
             saveMapOfFilesChanged()
         } else {
             logger.error(Constants.UPLOAD_CANCELED)

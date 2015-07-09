@@ -1,7 +1,8 @@
-package org.fundacionjala.gradle.plugins.enforce.utils.salesforce
+package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager
 
 import org.custommonkey.xmlunit.Diff
 import org.custommonkey.xmlunit.XMLUnit
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.PackageCombiner
 import spock.lang.Shared
 import spock.lang.Specification
 

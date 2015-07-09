@@ -3,7 +3,7 @@
  * Licensed under the MIT license. See LICENSE file in the project root for full license information.
  */
 
-package org.fundacionjala.gradle.plugins.enforce.utils.salesforce
+package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager
 
 import com.sforce.soap.metadata.PackageTypeMembers
 import groovy.xml.StreamingMarkupBuilder
@@ -138,7 +138,7 @@ class PackageBuilderTest extends Specification {
             metaPackage.version = '32.0'
             def packageBuilder = new PackageBuilder(metaPackage: metaPackage)
             def forceXmlExpected = new StreamingMarkupBuilder().bind {
-                mkp.xmlDeclaration(version: Package.VERSION, encoding: Package.ENCODING)
+                mkp.xmlDeclaration(version: Package.ENCODING)
                 Package(xmlns: Package.XMLNS) {
                     version('32.0')
                 }

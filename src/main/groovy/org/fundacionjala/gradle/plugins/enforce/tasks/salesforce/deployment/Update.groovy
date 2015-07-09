@@ -8,7 +8,7 @@ package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageGenerator
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.PackageGenerator
 
 import java.nio.file.Paths
 
@@ -54,7 +54,7 @@ class Update extends Deployment {
         copyFilesChanged()
         showFilesExcludes()
         truncate()
-        executeDeploy(taskFolderPath)
+        executeDeploy(taskFolderPath, Constants.START_UPDATE_TASK_MESSAGE, Constants.SUCCESS_UPDATE_TASK_MESSAGE)
         packageGenerator.saveFileTrackerMap()
     }
 

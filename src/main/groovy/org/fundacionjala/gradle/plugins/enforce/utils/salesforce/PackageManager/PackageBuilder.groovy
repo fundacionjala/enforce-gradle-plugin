@@ -3,7 +3,7 @@
  * Licensed under the MIT license. See LICENSE file in the project root for full license information.
  */
 
-package org.fundacionjala.gradle.plugins.enforce.utils.salesforce
+package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager
 
 import com.sforce.soap.metadata.PackageTypeMembers
 import groovy.util.logging.Log
@@ -14,6 +14,7 @@ import groovy.xml.XmlUtil
 import groovy.xml.dom.DOMCategory
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 import org.fundacionjala.gradle.plugins.enforce.wsc.Connector
 import org.w3c.dom.Document
 import org.w3c.dom.Element

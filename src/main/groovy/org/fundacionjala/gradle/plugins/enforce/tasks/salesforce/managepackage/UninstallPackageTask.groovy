@@ -11,7 +11,7 @@ import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.ZipFileManager
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageBuilder
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.PackageBuilder
 
 import java.nio.file.Paths
 
@@ -50,7 +50,7 @@ class UninstallPackageTask extends Deployment {
             if (verifyPackageInstallation()) {
                 logger.quiet("Installed package '${packageNamespace}' found.")
                 createPackage()
-                executeDeploy(uninstallPkgRootDir)
+                executeDeploy(uninstallPkgRootDir, "", "")
                 logger.quiet("Uninstall package '${packageNamespace}' success.")
             } else {
                 logger.quiet("Installed package '${packageNamespace}' not found.")

@@ -9,7 +9,7 @@ import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment.Depl
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageBuilder
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.PackageBuilder
 
 import java.nio.file.Paths
 
@@ -40,7 +40,7 @@ class InstallPackageTask extends Deployment {
         if (Util.validateRequiredParameters(project, requiredParams)) {
             setup()
             createPackage()
-            executeDeploy(installPkgRootDir)
+            executeDeploy(installPkgRootDir, "", "")
             logger.quiet("Install package '${packageNamespace}' v${packageVersion} success.")
         } else {
             throw new Exception("There are missing required parameters.")

@@ -39,9 +39,7 @@ class Delete extends Deployment {
         if( System.console().readLine("\n"+Constants.QUESTION_CONTINUE_DELETE) == Constants.YES_OPTION ) {
             createDestructive()
             createPackageEmpty()
-            componentDeploy.startMessage = Constants.START_DELETE_TASK
-            componentDeploy.successMessage = Constants.SUCCESSFULLY_DELETE_TASK
-            executeDeploy(taskFolderPath)
+            executeDeploy(taskFolderPath, Constants.START_DELETE_TASK, Constants.SUCCESSFULLY_DELETE_TASK)
         }
         else {
             logger.quiet(Constants.PROCCES_DELETE_CANCELLED)

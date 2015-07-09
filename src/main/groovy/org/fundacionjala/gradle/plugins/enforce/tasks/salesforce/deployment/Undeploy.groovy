@@ -59,9 +59,7 @@ class Undeploy extends Deployment {
         addInterceptor()
         writePackage(taskPackagePath, filesToTruncate)
         combinePackage(taskPackagePath)
-        componentDeploy.startMessage = Constants.START_MESSAGE_TRUNCATE
-        componentDeploy.successMessage = Constants.SUCCESS_MESSAGE_TRUNCATE
-        executeDeploy(taskFolderPath)
+        executeDeploy(taskFolderPath, Constants.START_MESSAGE_TRUNCATE, Constants.SUCCESS_MESSAGE_TRUNCATE)
     }
 
     /**
@@ -94,9 +92,7 @@ class Undeploy extends Deployment {
         createDeploymentDirectory(taskFolderPath)
         deployToDeleteComponents()
         combinePackage(taskDestructivePath)
-        componentDeploy.startMessage = Constants.START_MESSAGE_UNDEPLOY
-        componentDeploy.successMessage = Constants.SUCCESS_MESSAGE_DELETE
-        executeDeploy(taskFolderPath)
+        executeDeploy(taskFolderPath, Constants.START_MESSAGE_UNDEPLOY, Constants.SUCCESS_MESSAGE_DELETE)
     }
 
     /**

@@ -104,11 +104,15 @@ public class Constants {
     public static final String DIR_UPLOAD_FOLDER = "upload"
     public static final String FILES_TO_UPLOAD = "files"
     public static final String ALL_FILES_TO_UPLOAD = "all"
+    public static final String START_UPLOAD_TASK_MESSAGE = "Starting upload files process..."
+    public static final String SUCCESS_UPLOAD_TASK_MESSAGE = "The files were successfully uploaded"
 
     //Update task constants
     public static final String UPDATE_DESCRIPTION = "This task deploys just the files that were changed"
     public static final String DIR_UPDATE_FOLDER = "update"
     public static final String NOT_FILES_CHANGED = "There are not files changed"
+    public static final String START_UPDATE_TASK_MESSAGE = "Starting update proccess..."
+    public static final String SUCCESS_UPDATE_TASK_MESSAGE = "The files were successfully updated!"
 
     //Retrieve task constants
     public static final String RETRIEVE_DESCRIPTION_OF_TASK = 'This task recover specific files from an organization'
@@ -152,4 +156,8 @@ public class Constants {
     public static final String UTILS_GROUP = "Utils"
     public static final String OUTPUT_RESULT = "Output result:\n"
     public static final String INVALID_INPUT_PARAMETER = "parameter invalid"
+
+    //Truncate task
+    public static final String START_TRUNCATE_PROCCESS_MESSAGE = "Starting truncate process"
+    public static final String SUCCESS_TRUNCATE_MESSAGE = "The files were successfully truncated"
 }

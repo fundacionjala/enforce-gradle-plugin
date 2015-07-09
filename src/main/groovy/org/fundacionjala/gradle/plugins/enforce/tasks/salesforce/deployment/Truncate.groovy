@@ -34,9 +34,7 @@ class Truncate extends Deployment {
         writePackage(taskPackagePath, filesToTruncate)
         combinePackageToUpdate(taskPackagePath)
         truncateComponents()
-        componentDeploy.startMessage = "Starting truncate process"
-        componentDeploy.successMessage = "The files were successfully truncated"
-        executeDeploy(taskFolderPath)
+        executeDeploy(taskFolderPath, Constants.START_TRUNCATE_PROCCESS_MESSAGE, Constants.SUCCESS_TRUNCATE_MESSAGE)
     }
 
     /**

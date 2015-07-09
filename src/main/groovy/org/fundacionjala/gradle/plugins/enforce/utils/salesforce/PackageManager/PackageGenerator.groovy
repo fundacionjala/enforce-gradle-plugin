@@ -1,4 +1,4 @@
-package org.fundacionjala.gradle.plugins.enforce.utils.salesforce
+package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager
 
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentMonitor
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
