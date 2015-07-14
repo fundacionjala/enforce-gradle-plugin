@@ -36,7 +36,7 @@ class TruncateTest extends Specification {
         truncateInstance.buildFolderPath = BUILD_PATH
         truncateInstance.projectPath = SRC_PATH
         truncateInstance.projectPackagePath = Paths.get(SRC_PATH, 'package.xml').toString()
-        truncateInstance.taskFolderName = Constants.TRUNCATE_FOLDER_NAME
+        truncateInstance.taskFolderName = "truncate"
         truncateInstance.parameters = [:]
     }
 
@@ -54,10 +54,11 @@ class TruncateTest extends Specification {
             def expectedResult = []
         when:
             truncateInstance.setup()
-            ArrayList<File> files = truncateInstance.getClassifiedFiles(truncateInstance.files, truncateInstance.excludes).get(Constants.VALID_FILE)
+            truncateInstance.loadClassifiedFiles(truncateInstance.files, truncateInstance.excludes)
+            truncateInstance.loadFilesToTruncate()
         then:
-            files.size() == 11
-            files.each { file ->
+            truncateInstance.filesToTruncate.size() == 11
+            truncateInstance.filesToTruncate.each { file ->
                 expectedResult += [file.name]
             }
             expectedResult.sort() == ['Class1.cls', 'Class1.cls-meta.xml', 'Class2.cls', 'Class2.cls-meta.xml',
@@ -73,7 +74,9 @@ class TruncateTest extends Specification {
         when:
             truncateInstance.setup()
             truncateInstance.createDeploymentDirectory(truncateInstance.taskFolderPath)
-            truncateInstance.copyFilesToTaskDirectory(truncateInstance.getClassifiedFiles(truncateInstance.files, truncateInstance.excludes).get(Constants.VALID_FILE))
+            truncateInstance.loadClassifiedFiles(truncateInstance.files, truncateInstance.excludes)
+            truncateInstance.loadFilesToTruncate()
+            truncateInstance.copyFilesToTaskDirectory(truncateInstance.filesToTruncate)
 
         then:
             new File(truncateInstance.taskFolderPath as String).eachDir { directory ->
@@ -88,9 +91,10 @@ class TruncateTest extends Specification {
         when:
             truncateInstance.setup()
             truncateInstance.createDeploymentDirectory(truncateInstance.taskFolderPath)
-            ArrayList<File> files = truncateInstance.getClassifiedFiles(truncateInstance.files, truncateInstance.excludes).get(Constants.VALID_FILE)
-            truncateInstance.copyFilesToTaskDirectory(files)
-            truncateInstance.writePackage(truncateInstance.taskPackagePath, files)
+            truncateInstance.loadClassifiedFiles(truncateInstance.files, truncateInstance.excludes)
+            truncateInstance.loadFilesToTruncate()
+            truncateInstance.copyFilesToTaskDirectory(truncateInstance.filesToTruncate)
+            truncateInstance.writePackage(truncateInstance.taskPackagePath, truncateInstance.filesToTruncate)
             def packageFile = new File(truncateInstance.taskPackagePath as String)
             def packageContent = new XmlSlurper().parseText(packageFile.text)
         then:

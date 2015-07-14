@@ -13,8 +13,16 @@ import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.OrgValidator
  * Deletes files into an org using metadata API
  */
 class Delete extends Deployment {
+    private static final String START_DELETE_TASK = 'Starting delete process...'
+    private static final String SUCCESSFULLY_DELETE_TASK  = 'The files were successfully deleted!'
+    private static final String DESCRIPTION_DELETE_TASK = "This task deploys just the files that were changed"
+    private static final String DIR_DELETE_FOLDER = "delete"
+    private static final String PROCESS_DELETE_CANCELLED = "The delete process was canceled"
+    private static final String NOT_FILES_DELETED = "There are not files to delete"
+    private static final String QUESTION_CONTINUE_DELETE = "Do you want delete this files from your organization? (y/n) :"
+
     public ArrayList<File> filesToDeleted
-    public String files, excludes
+    public String files = ""
 
     /**
      * Sets description and group task
@@ -22,9 +30,9 @@ class Delete extends Deployment {
      * @param group is the group typeName the task
      */
     Delete() {
-        super(Constants.DESCRIPTION_DELETE_TASK, Constants.DEPLOYMENT)
-        filesToDeleted = new ArrayList<File>()
-        taskFolderName = Constants.DIR_DELETE_FOLDER
+        super(DESCRIPTION_DELETE_TASK, Constants.DEPLOYMENT)
+        taskFolderName = DIR_DELETE_FOLDER
+        filesToDeleted = []
     }
 
     /**
@@ -33,18 +41,17 @@ class Delete extends Deployment {
     @Override
     void runTask() {
         createDeploymentDirectory(taskFolderPath)
-        addFiles()
+        loadClassifiedFiles(files, excludes)
+        loadFilesToDelete()
         validateFilesInOrg()
         showFilesToDelete()
-        if( System.console().readLine("\n"+Constants.QUESTION_CONTINUE_DELETE) == Constants.YES_OPTION ) {
+        if( System.console().readLine("\n"+QUESTION_CONTINUE_DELETE) == Constants.YES_OPTION ) {
             createDestructive()
             createPackageEmpty()
-            componentDeploy.startMessage = Constants.START_DELETE_TASK
-            componentDeploy.successMessage = Constants.SUCCESSFULLY_DELETE_TASK
-            executeDeploy(taskFolderPath)
+            executeDeploy(taskFolderPath, START_DELETE_TASK, SUCCESSFULLY_DELETE_TASK)
         }
         else {
-            logger.quiet(Constants.PROCCES_DELETE_CANCELLED)
+            logger.quiet(PROCESS_DELETE_CANCELLED)
         }
     }
 
@@ -65,9 +72,10 @@ class Delete extends Deployment {
     /**
      * Adds all files into an org
      */
-    def addFiles() {
-        filter.excludeFiles.addAll([Constants.PACKAGE_FILE_NAME])
-        filesToDeleted = getClassifiedFiles(files, excludes).get(Constants.VALID_FILE)
+    def loadFilesToDelete() {
+        File packageFile = new File(projectPackagePath)
+        filesToDeleted = classifiedFile.validFiles
+        filesToDeleted.remove(packageFile)
     }
 
     /**
@@ -75,7 +83,9 @@ class Delete extends Deployment {
      */
     def validateFilesInOrg() {
         if(!parameters.get(Constants.PARAMETER_VALIDATE_ORG).equals(Constants.FALSE_OPTION)) {
-            filesToDeleted = OrgValidator.getValidFiles(credential,filesToDeleted,projectPath)
+            Map <String, ArrayList<File>> filesClassified = OrgValidator.validateFiles(credential, filesToDeleted, projectPath)
+            filesToDeleted = filesClassified.get(Constants.VALID_FILE)
+            filesToDeleted.addAll(filesClassified.get(Constants.FILE_WITHOUT_VALIDATOR))
         }
     }
 
@@ -87,21 +97,21 @@ class Delete extends Deployment {
         ArrayList<File> showFiles = filesToDeleted.findAll { File file ->
             !file.getName().endsWith("xml")
         }
-        def numComponentes = showFiles.size()
+        def numberOfComponents = showFiles.size()
 
         logger.quiet("*********************************************")
         logger.quiet("            Components to delete             ")
         logger.quiet("*********************************************")
-        if(numComponentes == 0) {
-            logger.quiet(Constants.NOT_FILES_DELETED)
+        if(numberOfComponents == 0) {
+            logger.quiet(NOT_FILES_DELETED)
         }
-        else if(numComponentes > limit) {
+        else if(numberOfComponents > limit) {
             showFiles.groupBy { File file ->
                 file.getParentFile().getName()
             }.each { group, files ->
                 logger.quiet("[ " + files.size() + " ] " + group)
             }
-            logger.quiet(numComponentes+" components")
+            logger.quiet( "Total: ${numberOfComponents} components")
         }
         else {
             showFiles.each { File file ->

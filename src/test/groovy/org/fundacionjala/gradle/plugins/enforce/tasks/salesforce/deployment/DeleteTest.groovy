@@ -151,7 +151,8 @@ class DeleteTest extends Specification {
             deleteInstance.taskFolderPath = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
             deleteInstance.setup()
             deleteInstance.createDeploymentDirectory(deleteInstance.taskFolderPath)
-            deleteInstance.addFiles()
+            deleteInstance.loadClassifiedFiles(deleteInstance.files, deleteInstance.excludes)
+            deleteInstance.loadFilesToDelete()
             deleteInstance.createDestructive()
             deleteInstance.createPackageEmpty()
 
@@ -182,7 +183,8 @@ class DeleteTest extends Specification {
             deleteInstance.createDeploymentDirectory(deleteInstance.taskFolderPath)
             deleteInstance.setup()
             deleteInstance.loadParameters()
-            deleteInstance.addFiles()
+            deleteInstance.loadClassifiedFiles(deleteInstance.files, deleteInstance.excludes)
+            deleteInstance.loadFilesToDelete()
             deleteInstance.createDestructive()
             deleteInstance.createPackageEmpty()
 
@@ -205,7 +207,8 @@ class DeleteTest extends Specification {
             deleteInstance.createDeploymentDirectory(deleteInstance.taskFolderPath)
             deleteInstance.setup()
             deleteInstance.loadParameters()
-            deleteInstance.addFiles()
+            deleteInstance.loadClassifiedFiles(deleteInstance.files, deleteInstance.excludes)
+            deleteInstance.loadFilesToDelete()
             deleteInstance.createDestructive()
             deleteInstance.createPackageEmpty()
 
@@ -216,6 +219,7 @@ class DeleteTest extends Specification {
     def "Integration testing must list all the files less exclude to delete"() {
         given:
             deleteInstance.parameters.put('excludes','classes/Class1.cls,triggers/*.trigger')
+            deleteInstance.parameters.put('files',"")
 
             ArrayList<File> filesExpected = new ArrayList<File>();
             filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class2.cls').toString()))
@@ -233,7 +237,8 @@ class DeleteTest extends Specification {
             deleteInstance.createDeploymentDirectory(deleteInstance.taskFolderPath)
             deleteInstance.setup()
             deleteInstance.loadParameters()
-            deleteInstance.addFiles()
+            deleteInstance.loadClassifiedFiles(deleteInstance.files, deleteInstance.excludes)
+            deleteInstance.loadFilesToDelete()
             deleteInstance.createDestructive()
             deleteInstance.createPackageEmpty()
 
@@ -259,7 +264,8 @@ class DeleteTest extends Specification {
             deleteInstance.createDeploymentDirectory(deleteInstance.taskFolderPath)
             deleteInstance.setup()
             deleteInstance.loadParameters()
-            deleteInstance.addFiles()
+            deleteInstance.loadClassifiedFiles(deleteInstance.files, deleteInstance.excludes)
+            deleteInstance.loadFilesToDelete()
             deleteInstance.createDestructive()
             deleteInstance.createPackageEmpty()
 
@@ -286,7 +292,8 @@ class DeleteTest extends Specification {
             deleteInstance.createDeploymentDirectory(deleteInstance.taskFolderPath)
             deleteInstance.setup()
             deleteInstance.loadParameters()
-            deleteInstance.addFiles()
+            deleteInstance.loadClassifiedFiles(deleteInstance.files, deleteInstance.excludes)
+            deleteInstance.loadFilesToDelete()
             deleteInstance.createDestructive()
             deleteInstance.createPackageEmpty()
 
@@ -302,7 +309,8 @@ class DeleteTest extends Specification {
             deleteInstance.createDeploymentDirectory(deleteInstance.taskFolderPath)
             deleteInstance.setup()
             deleteInstance.loadParameters()
-            deleteInstance.addFiles()
+            deleteInstance.loadClassifiedFiles(deleteInstance.files, deleteInstance.excludes)
+            deleteInstance.loadFilesToDelete()
             deleteInstance.createDestructive()
             deleteInstance.createPackageEmpty()
 

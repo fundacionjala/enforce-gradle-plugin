@@ -11,8 +11,8 @@ import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.FileValidator
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageBuilder
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageGenerator
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.PackageBuilder
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.PackageGenerator
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.filter.Filter
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -33,7 +33,7 @@ class UploadTest extends Specification {
             "fundacionjala", "gradle", "plugins", "enforce", "tasks", "salesforce", "resources").toString()
 
     @Shared
-        String pathUpload = Paths.get(SRC_PATH, 'build', Constants.DIR_UPLOAD_FOLDER)
+        String pathUpload = Paths.get(SRC_PATH, 'build', "upload")
 
     @Shared
         Map<String, ArrayList<String>> packagedExpected
@@ -57,13 +57,12 @@ class UploadTest extends Specification {
         uploadInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', Constants.PACKAGE_FILE_NAME).toString()
     }
 
-    def "Test shouldn't create a package xml file if specificFilesToUpload Array is empty "() {
+    def "Test shouldn't create a package xml file if filesToUpload Array is empty "() {
         given:
             uploadInstance.createDeploymentDirectory(pathUpload)
             uploadInstance.taskPackagePath = Paths.get(SRC_PATH, 'build', 'upload', 'package.xml').toString()
             uploadInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
-            uploadInstance.specificFilesToUpload = [:]
-            uploadInstance.specificFilesToUpload.put(Constants.VALID_FILE, [])
+            uploadInstance.filesToUpload = []
         when:
             uploadInstance.createPackage()
         then:
@@ -75,10 +74,10 @@ class UploadTest extends Specification {
              uploadInstance.createDeploymentDirectory(pathUpload)
              uploadInstance.taskPackagePath = Paths.get(SRC_PATH, 'build', 'package.xml').toString()
              uploadInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
-             uploadInstance.specificFilesToUpload = [:]
+             uploadInstance.filesToUpload = []
              File fileOne = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString())
              File fileThree = new File(Paths.get(SRC_PATH, 'src', 'objects', 'Object1__c.object').toString())
-            uploadInstance.specificFilesToUpload.put(Constants.VALID_FILE, [fileOne, fileThree])
+            uploadInstance.filesToUpload = [fileOne, fileThree]
          when:
              uploadInstance.createPackage()
          then:
@@ -93,10 +92,10 @@ class UploadTest extends Specification {
             File fileOne = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString())
             File fileTwo = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls-meta.xml').toString())
             File fileThree = new File(Paths.get(SRC_PATH, 'src', 'objects', 'Object1__c.object').toString())
-            uploadInstance.specificFilesToUpload = [:]
-            uploadInstance.specificFilesToUpload.put(Constants.VALID_FILE, [fileOne, fileThree, fileTwo])
+            uploadInstance.filesToUpload = []
+            uploadInstance.filesToUpload = [fileOne, fileThree, fileTwo]
         when:
-            uploadInstance.copyFilesToUpload()
+            uploadInstance.copyFilesToTaskDirectory(uploadInstance.filesToUpload)
         then:
             new File(Paths.get(SRC_PATH, 'build', 'upload', 'classes', 'Class1.cls').toString()).exists()
             new File(Paths.get(SRC_PATH, 'build', 'upload', 'classes', 'Class1.cls-meta.xml').toString()).exists()
@@ -106,10 +105,9 @@ class UploadTest extends Specification {
     def "Test should return a map with changed files"() {
         given:
             def changedFilePath = Paths.get(SRC_PATH, "classes", "class1.cls").toString()
-            uploadInstance.specificFilesToUpload = [:]
-            uploadInstance.specificFilesToUpload.put(Constants.VALID_FILE,[ new File(changedFilePath),
-                                                    new File(Paths.get(SRC_PATH, "classes", "class1.cls-meta.xml").toString()),
-                                                    new File(Paths.get(SRC_PATH, "objects", "object1.object").toString())])
+            uploadInstance.filesToUpload = []
+            uploadInstance.filesToUpload = [ new File(changedFilePath), new File(Paths.get(SRC_PATH, "classes", "class1.cls-meta.xml").toString()),
+                                                    new File(Paths.get(SRC_PATH, "objects", "object1.object").toString())]
             uploadInstance.packageGenerator.fileTrackerMap = [:]
             uploadInstance.packageGenerator.fileTrackerMap.put(changedFilePath, new ResultTracker(ComponentStates.ADDED))
             def filesChangedExpect = [:]
@@ -128,8 +126,8 @@ class UploadTest extends Specification {
             ArrayList<File> validFiles = [new File(Paths.get(SRC_PATH, "classes", "class1.cls").toString()),
                                           new File(Paths.get(SRC_PATH, "classes", "class1.cls-meta.xml").toString()),
                                           new File(Paths.get(SRC_PATH, "objects", "object1.object").toString())]
-            uploadInstance.specificFilesToUpload = [:]
-            uploadInstance.specificFilesToUpload.put(Constants.VALID_FILE, validFiles)
+            uploadInstance.filesToUpload = []
+            uploadInstance.filesToUpload  = validFiles
             uploadInstance.packageGenerator.fileTrackerMap = [:]
             uploadInstance.packageGenerator.fileTrackerMap.put(changedFilePath, "")
         when:
@@ -170,54 +168,54 @@ class UploadTest extends Specification {
             uploadInstance.files == filesParameterValue
     }
 
-    def "Test should return of files by folder send into files parameter"() {
+    def "Test should load all classes and all objects when you send classes,triggers as value of files parameter"() {
         given:
-            uploadInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
-            File classFile = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString())
-            File classFileXml = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls-meta.xml').toString())
-            File objectFile = new File(Paths.get(SRC_PATH, 'src', 'objects', 'Object1__c.object').toString())
-        when:
             uploadInstance.files = "classes,objects"
             uploadInstance.excludes = ""
-            uploadInstance.filter.getFiles(_,_) >> [classFile, classFileXml, objectFile]
-            fileValidator.validateFiles(_,_) >> [Constants.VALID_FILE, [classFile, classFileXml, objectFile]]
-            Map<String,ArrayList<File>> result = uploadInstance.getClassifiedFiles(uploadInstance.files, uploadInstance.excludes)
-        then:
-            result.get(Constants.VALID_FILE).sort() == [classFile, classFileXml, objectFile].sort()
-
-    }
-
-    def "Test should return all classes and Trigger1.trigger"() {
-        given:
-            uploadInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
             File classFile = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString())
             File classFileXml = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls-meta.xml').toString())
             File objectFile = new File(Paths.get(SRC_PATH, 'src', 'objects', 'Object1__c.object').toString())
         when:
-            uploadInstance.files = "classes,triggers${File.separator}Trigger1.trigger"
-            uploadInstance.excludes = ""
-            uploadInstance.filter.getFiles(_,_) >> [classFile, classFileXml, objectFile]
-            fileValidator.validateFiles(_,_) >> [Constants.VALID_FILE, [classFile, classFileXml, objectFile]]
-            Map<String,ArrayList<File>> result = uploadInstance.getClassifiedFiles(uploadInstance.files, uploadInstance.excludes)
+            uploadInstance.setup()
+            uploadInstance.loadParameters()
+            uploadInstance.loadClassifiedFiles(uploadInstance.files, uploadInstance.excludes)
+            uploadInstance.loadFilesToUpload()
         then:
-            result.get(Constants.VALID_FILE).sort() == [classFile, classFileXml, objectFile].sort()
+            uploadInstance.filesToUpload.sort() == [classFile, classFileXml, objectFile].sort()
+
     }
 
-    def "Test should return  files following a wildcard sent '*/class1.cls,objects/Object1__c.object' "() {
+    def "Test should load all classes and Trigger1.trigger in filesToUpload arrayList"() {
         given:
-            uploadInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
+            uploadInstance.files = "classes,triggers${File.separator}Trigger1.trigger"
+            uploadInstance.excludes = ""
             File classFile = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString())
             File classFileXml = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls-meta.xml').toString())
             File triggerFile = new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger').toString())
             File triggerFileXml = new File(Paths.get(SRC_PATH, 'src', 'triggers', 'Trigger1.trigger-meta.xml').toString())
         when:
+            uploadInstance.setup()
+            uploadInstance.loadParameters()
+            uploadInstance.loadClassifiedFiles(uploadInstance.files, uploadInstance.excludes)
+            uploadInstance.loadFilesToUpload()
+        then:
+            uploadInstance.filesToUpload.sort() == [classFile, classFileXml, triggerFile,triggerFileXml].sort()
+    }
+
+    def "Test should return files following a wildcard sent '*/class1.cls,objects/Object1__c.object' "() {
+        given:
             uploadInstance.files = "*${File.separator}Class1.cls,objects${File.separator}Object1__c.object"
             uploadInstance.excludes = ""
-            uploadInstance.filter.getFiles(_,_) >> [classFile, classFileXml, triggerFile, triggerFileXml]
-            fileValidator.validateFiles(_,_) >> [Constants.VALID_FILE, [classFile, classFileXml, triggerFile, triggerFileXml]]
-            Map<String,ArrayList<File>> result = uploadInstance.getClassifiedFiles(uploadInstance.files, uploadInstance.excludes)
+            File classFile = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls').toString())
+            File classFileXml = new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class1.cls-meta.xml').toString())
+            File objectFile = new File(Paths.get(SRC_PATH, 'src', 'objects', 'Object1__c.object').toString())
+        when:
+            uploadInstance.setup()
+            uploadInstance.loadParameters()
+            uploadInstance.loadClassifiedFiles(uploadInstance.files, uploadInstance.excludes)
+            uploadInstance.loadFilesToUpload()
         then:
-            result.get(Constants.VALID_FILE).sort() == [classFile, classFileXml, triggerFile, triggerFileXml].sort()
+            uploadInstance.filesToUpload.sort() == [classFile, classFileXml, objectFile].sort()
     }
 
     def "Test should load files into build folder before to execute deploy to 'gradle upload -Pall=true' command"() {
@@ -228,8 +226,9 @@ class UploadTest extends Specification {
             uploadInstance.createDeploymentDirectory(pathUpload)
             uploadInstance.loadFilesChangedToUpload()
             uploadInstance.loadParameters()
+            uploadInstance.loadClassifiedFiles(uploadInstance.files, uploadInstance.excludes)
             uploadInstance.loadFilesToUpload()
-            uploadInstance.copyFilesToUpload()
+            uploadInstance.copyFilesToTaskDirectory(uploadInstance.filesToUpload)
             uploadInstance.createPackage()
             uploadInstance.combinePackageToUpdate(uploadInstance.taskPackagePath)
             uploadInstance.addInterceptor()
@@ -264,8 +263,9 @@ class UploadTest extends Specification {
             uploadInstance.createDeploymentDirectory(pathUpload)
             uploadInstance.loadFilesChangedToUpload()
             uploadInstance.loadParameters()
+            uploadInstance.loadClassifiedFiles(uploadInstance.files, uploadInstance.excludes)
             uploadInstance.loadFilesToUpload()
-            uploadInstance.copyFilesToUpload()
+            uploadInstance.copyFilesToTaskDirectory(uploadInstance.filesToUpload)
             uploadInstance.createPackage()
             uploadInstance.combinePackageToUpdate(uploadInstance.taskPackagePath)
             uploadInstance.addInterceptor()
@@ -299,8 +299,9 @@ class UploadTest extends Specification {
             uploadInstance.createDeploymentDirectory(pathUpload)
             uploadInstance.loadFilesChangedToUpload()
             uploadInstance.loadParameters()
+            uploadInstance.loadClassifiedFiles(uploadInstance.files, uploadInstance.excludes)
             uploadInstance.loadFilesToUpload()
-            uploadInstance.copyFilesToUpload()
+            uploadInstance.copyFilesToTaskDirectory(uploadInstance.filesToUpload)
             uploadInstance.createPackage()
             uploadInstance.combinePackageToUpdate(uploadInstance.taskPackagePath)
             uploadInstance.addInterceptor()
@@ -345,8 +346,9 @@ class UploadTest extends Specification {
             uploadInstance.createDeploymentDirectory(pathUpload)
             uploadInstance.loadFilesChangedToUpload()
             uploadInstance.loadParameters()
+            uploadInstance.loadClassifiedFiles(uploadInstance.files, uploadInstance.excludes)
             uploadInstance.loadFilesToUpload()
-            uploadInstance.copyFilesToUpload()
+            uploadInstance.copyFilesToTaskDirectory(uploadInstance.filesToUpload)
             uploadInstance.createPackage()
             uploadInstance.combinePackageToUpdate(uploadInstance.taskPackagePath)
             uploadInstance.addInterceptor()

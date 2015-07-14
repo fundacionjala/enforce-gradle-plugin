@@ -21,6 +21,14 @@ import java.nio.file.StandardCopyOption
 * Undeploys an org using metadata API
 */
 class Undeploy extends Deployment {
+    private static final String UN_DEPLOY_DESCRIPTION = 'This task removes all components in your organization according to local repository'
+    private static final String START_MESSAGE_TRUNCATE = 'Starting truncate process...'
+    private static final String SUCCESS_MESSAGE_TRUNCATE = 'All components truncated were successfully uploaded!'
+    private static final String SUCCESS_MESSAGE_DELETE = 'The files were successfully deleted!'
+    private static final String START_MESSAGE_UNDEPLOY = 'Starting undeploy process...'
+    private static final String DIR_UN_DEPLOY = "undeploy"
+    private static final String FILE_NOT_FOUND = "these files can't be deleted from your organization, because these weren't found!"
+
     public PackageComponent packageComponent
     public ArrayList<File> filesToTruncate
     InterceptorManager componentManager
@@ -33,13 +41,13 @@ class Undeploy extends Deployment {
      * @param group is the group typeName the task
      */
     Undeploy() {
-        super(Constants.UN_DEPLOY_DESCRIPTION, Constants.DEPLOYMENT)
+        super(UN_DEPLOY_DESCRIPTION, Constants.DEPLOYMENT)
         filesToTruncate = new ArrayList<File>()
         componentManager = new InterceptorManager()
         componentManager.buildInterceptors()
         interceptorsToExecute = org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.INTERCEPTORS.values().toList()
         standardComponents = MetadataComponent.COMPONENTS.values().toList()
-        taskFolderName = Constants.DIR_UN_DEPLOY
+        taskFolderName = DIR_UN_DEPLOY
     }
 
     @Override
@@ -54,14 +62,13 @@ class Undeploy extends Deployment {
      */
     public void truncate() {
         createDeploymentDirectory(taskFolderPath)
+        loadClassifiedFiles(COMPONENTS_TO_TRUNCATE.join(','), excludes)
         loadFilesToTruncate()
         copyFilesToTaskDirectory(filesToTruncate)
         addInterceptor()
         writePackage(taskPackagePath, filesToTruncate)
         combinePackage(taskPackagePath)
-        componentDeploy.startMessage = Constants.START_MESSAGE_TRUNCATE
-        componentDeploy.successMessage = Constants.SUCCESS_MESSAGE_TRUNCATE
-        executeDeploy(taskFolderPath)
+        executeDeploy(taskFolderPath, START_MESSAGE_TRUNCATE, SUCCESS_MESSAGE_TRUNCATE)
     }
 
     /**
@@ -69,14 +76,7 @@ class Undeploy extends Deployment {
      * Components to truncate : 'classes', 'objects', 'triggers', 'pages', 'components', 'workflows', 'tabs'
      */
     public void loadFilesToTruncate() {
-        String includes = COMPONENTS_TO_TRUNCATE.join(', ')
-        Map <String, ArrayList<File>> filesClassified = getClassifiedFiles(includes, excludes)
-
-        String exceptionMessage = Util.getExceptionMessage(filesClassified)
-        if (!exceptionMessage.isEmpty()) {
-            throw new Exception(exceptionMessage)
-        }
-        filesToTruncate = filesClassified.get(Constants.VALID_FILE)
+        filesToTruncate = classifiedFile.validFiles
     }
 
     /**
@@ -94,9 +94,7 @@ class Undeploy extends Deployment {
         createDeploymentDirectory(taskFolderPath)
         deployToDeleteComponents()
         combinePackage(taskDestructivePath)
-        componentDeploy.startMessage = Constants.START_MESSAGE_UNDEPLOY
-        componentDeploy.successMessage = Constants.SUCCESS_MESSAGE_DELETE
-        executeDeploy(taskFolderPath)
+        executeDeploy(taskFolderPath, START_MESSAGE_UNDEPLOY, SUCCESS_MESSAGE_DELETE)
     }
 
     /**
@@ -114,8 +112,8 @@ class Undeploy extends Deployment {
         filesToExclude.addAll(packageComponent.components.grep(~/.*.workflow$/) as ArrayList<String>)
         filesToExclude.add(excludes)
 
-        ArrayList<File> filesFiltered = getClassifiedFiles(includes.join(', '), "${filesToExclude.join(', ')}").get(Constants.VALID_FILE)
-        ArrayList<File> filesToWriteAtDestructive = getValidFilesFromOrg(filesFiltered)
+        loadClassifiedFiles(includes.join(', '), "${filesToExclude.join(', ')}")
+        ArrayList<File> filesToWriteAtDestructive = getValidFilesFromOrg(classifiedFile.validFiles)
 
         writePackage(taskDestructivePath, filesToWriteAtDestructive as ArrayList<File>)
     }
@@ -137,7 +135,7 @@ class Undeploy extends Deployment {
         }
 
         if (!notFoundFiles.isEmpty()) {
-            throw new Exception("${notFoundFiles} ${Constants.FILE_NOT_FOUND}")
+            throw new Exception("${notFoundFiles} ${FILE_NOT_FOUND}")
         }
         return validFiles.sort()
     }
@@ -150,5 +148,14 @@ class Undeploy extends Deployment {
                 project[Constants.FORCE_EXTENSION].standardObjects) {
             standardComponents += project[Constants.FORCE_EXTENSION].standardObjects
         }
+    }
+
+    /**
+     * Loads files classified at ClassifiedFile class
+     */
+    public void loadClassifiedFiles(String includes, String excludes) {
+        ArrayList<File> filesFiltered = filter.getFiles(includes, excludes)
+        classifiedFile = FileValidator.validateFiles(projectPath, filesFiltered)
+        Util.showExceptionOfInvalidFiles(classifiedFile)
     }
 }

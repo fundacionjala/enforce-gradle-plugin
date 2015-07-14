@@ -10,11 +10,10 @@ import org.fundacionjala.gradle.plugins.enforce.metadata.DeployMetadata
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.SalesforceTask
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.ClassifiedFile
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.FileValidator
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageCombiner
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.PackageCombiner
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.filter.Filter
-import org.gradle.api.file.FileTree
 
 import java.nio.file.Paths
 
@@ -27,13 +26,13 @@ abstract class Deployment extends SalesforceTask {
     public List<String> interceptorsToExecute = []
     public List<String> interceptors = []
     public String excludes = ""
-    public final int FILE_NAME_POSITION = 1
 
     public Filter filter
     public String taskFolderPath
     public String taskFolderName
     public String taskPackagePath
     public String taskDestructivePath
+    ClassifiedFile classifiedFile
 
     /**
      * Sets description and group task
@@ -51,9 +50,11 @@ abstract class Deployment extends SalesforceTask {
     /**
      * Executes deploy action
      */
-    def executeDeploy(String sourcePath) {
+    def executeDeploy(String sourcePath, String startMessage, String successMessage) {
         String fileName = new File(sourcePath).getName()
         logger.debug("Creating zip file at: $buildFolderPath$File.separator$fileName")
+        componentDeploy.startMessage = startMessage
+        componentDeploy.successMessage = successMessage
         String pathZipToDeploy = createZip(sourcePath, buildFolderPath, fileName)
         componentDeploy.setPath(pathZipToDeploy)
         logger.debug('Deploying components')
@@ -106,58 +107,13 @@ abstract class Deployment extends SalesforceTask {
     }
 
     /**
-     * Returns files that were excluded
-     * @param criterion is a exclude criterion
-     * @return files excluded
-     */
-    public ArrayList<String> getFilesExcludes(String criterion) {
-        ArrayList<String> filesName = []
-        ArrayList<File> sourceFiles = []
-        ArrayList<String> criterias = getCriterias(criterion)
-        FileTree fileTree = project.fileTree(dir: projectPath, includes: criterias)
-        sourceFiles = fileTree.getFiles() as ArrayList<File>
-        sourceFiles.each { File file ->
-            String relativePath = Util.getRelativePath(file, projectPath)
-            String extension = Util.getFileExtension(file)
-            if ( Util.isValidRelativePath(relativePath)) {
-                filesName.push(relativePath)
-            }
-
-            if (MetadataComponents.validExtension(extension)) {
-                filesName.push(relativePath)
-            }
-        }
-        return filesName.unique()
-    }
-
-    /**
-     * Gets a criterias to exclde files
-     * @param criterion is an String with criterias
-     * @return an ArrayList of criterias
-     */
-    public ArrayList<String> getCriterias(String criterion) {
-        ArrayList<String> criterias = new ArrayList<String>()
-        criterion.split(Constants.COMMA).each { String critery ->
-            critery = critery.replaceAll(Constants.BACK_SLASH, Constants.SLASH)
-            def criteriaSplitted = critery.split(Constants.SLASH)
-            if (criteriaSplitted.size() == FILE_NAME_POSITION) {
-                criterias.push("${critery}${File.separator}${Constants.WILDCARD}${Constants.WILDCARD}")
-                return
-            }
-            criterias.push(critery)
-            criterias.push("${critery}${Constants.META_XML}")
-        }
-        return criterias
-    }
-
-    /**
      * Combines package that was updated from build folder and package from source directory
      * @param buildPackagePath is path of package that is into build directory
      */
     public void combinePackage(String buildPackagePath) {
         PackageCombiner.packageCombine(projectPackagePath, buildPackagePath)
         if (excludes) {
-            PackageCombiner.removeMembersFromPackage(buildPackagePath, getFilesExcludes(excludes))
+            removeFilesExcluded(buildPackagePath)
         }
     }
 
@@ -168,23 +124,17 @@ abstract class Deployment extends SalesforceTask {
     public void combinePackageToUpdate(String buildPackagePath) {
         PackageCombiner.packageCombineToUpdate(projectPackagePath, buildPackagePath)
         if (excludes) {
-            PackageCombiner.removeMembersFromPackage(buildPackagePath, getFilesExcludes(excludes))
+            removeFilesExcluded(buildPackagePath)
         }
     }
 
-    /**
-     * Gets a map with parameters as key and their contents as values
-     * @param parameterNames is an ArrayList with parameters name
-     * @return a Map with parameters and their values
-     */
-    public Map<String, String> getParameterWithTheirsValues(ArrayList<String> parameterNames) {
-        Map<String, String> parameterValues = [:]
-        parameterNames.each { String parameterName ->
-            if (Util.isValidProperty(parameters, parameterName) && !Util.isEmptyProperty(parameters, parameterName)) {
-                parameterValues.put(parameterName, parameters[parameterName].toString())
-            }
+    private void removeFilesExcluded(String buildPackagePath) {
+        ArrayList<String> filesName = []
+        filter.getFiles(excludes, Constants.EMPTY).each { File file ->
+            String relativePath = Util.getRelativePath(file, projectPath)
+            filesName.push(relativePath)
         }
-        return parameterValues
+        PackageCombiner.removeMembersFromPackage(buildPackagePath, filesName.unique())
     }
 
     /**
@@ -199,6 +149,7 @@ abstract class Deployment extends SalesforceTask {
         taskPackagePath = Paths.get(taskFolderPath, Constants.PACKAGE_FILE_NAME).toString()
         taskDestructivePath = Paths.get(taskFolderPath, Constants.FILE_NAME_DESTRUCTIVE).toString()
         filter = new Filter(project, projectPath)
+        classifiedFile = new ClassifiedFile()
     }
 
     /**
@@ -217,10 +168,11 @@ abstract class Deployment extends SalesforceTask {
      * @param excludes is String type
      * @return a map with files classified
      */
-    Map<String, ArrayList<File>> getClassifiedFiles(String includes, String excludes) {
+    void loadClassifiedFiles(String includes, String excludes) {
+        Util.validateParameterContent("${includes},${excludes}", projectPath)
         ArrayList<File> filesFiltered = filter.getFiles(includes, excludes)
-        Map<String, ArrayList> filesValidated = FileValidator.validateFiles(projectPath, filesFiltered)
-        return filesValidated
+        classifiedFile = FileValidator.validateFiles(projectPath, filesFiltered)
+        Util.showExceptionOfInvalidFiles(classifiedFile)
     }
 
     /**

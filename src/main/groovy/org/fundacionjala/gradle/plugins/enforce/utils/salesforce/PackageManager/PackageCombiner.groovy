@@ -1,8 +1,9 @@
-package org.fundacionjala.gradle.plugins.enforce.utils.salesforce
+package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager
 
 import com.sforce.soap.metadata.PackageTypeMembers
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 
 class PackageCombiner {
     private static final ArrayList<String> SUB_COMPONENTS = ['CustomField', 'FieldSet', 'ValidationRule',

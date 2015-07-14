@@ -305,7 +305,7 @@ class UpdateTest extends Specification {
             writerClass.close()
             writerXml.close()
             def updateFileZipPath = Paths.get(SRC_PATH,'build','update.zip').toString()
-            def updateFolderPath = Paths.get(updateInstance.buildFolderPath, Constants.DIR_UPDATE_FOLDER).toString()
+            def updateFolderPath = Paths.get(updateInstance.buildFolderPath, "update").toString()
             File updateFileZip = new File(updateFileZipPath)
             File updateFolder = new File(updateFolderPath)
         when:

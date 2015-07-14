@@ -145,40 +145,17 @@ class FileValidatorTest extends Specification {
         crateFolderWithXml('dashboards', 'DashboardFolder2', 1, 5, 'dashboard', true , true)
     }
 
-    def showMaps(boolean show ,Map<String, ArrayList<File>> mapExpected,Map<String, ArrayList<File>> mapResult) {
-        if (show) {
-            println "======================================================== << EXPECTED >>"
-            mapExpected.sort().each {key, ArrayList<File> listFiles->
-                println key + "[ " + listFiles.size() +" ]"
-                listFiles.sort().each { File file->
-                    println "   " +  Util.getRelativePath(file,SRC_PATH)+"  "
-                }
-            }
-            println "======================================================== << RESULT >>"
-            mapResult.sort().each {key, ArrayList<File> listFiles->
-                println key + "[ " + listFiles.size() +" ]"
-                listFiles.sort().each { File file->
-                    println "   " +  Util.getRelativePath(file,SRC_PATH)+"  "
-                }
-            }
-            println "===================================================================="
-        }
-
-    }
-
     def "Test should returns a map that contains [ VALID_FILES: 5 class files ]" () {
         given:
             createFolderWithXml('classes', 1, 5, 'cls', true , true)
             addFolderExpected(Constants.VALID_FILE,'classes', 1, 5, 'cls', true , true)
-
         when:
-            Map<String, ArrayList<File>> result = FileValidator.validateFiles(SRC_PATH, allFiles)
-            showMaps(true, mapExpected, result)
+            ClassifiedFile classifiedFile = FileValidator.validateFiles(SRC_PATH, allFiles)
         then:
-            result[Constants.INVALID_FILE_BY_FOLDER].sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
-            result[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
-            result[Constants.FILE_WITHOUT_XML].sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
-            result[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
+            classifiedFile.invalidFiles.sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
+            classifiedFile.notFoundFiles.sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
+            classifiedFile.filesWithoutXml.sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
+            classifiedFile.validFiles.sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 
     def "Test should returns a map that contains [ INVALID_FILE_BY_FOLDER: 5, VALID_FILE: 5 class files ]" () {
@@ -187,15 +164,13 @@ class FileValidatorTest extends Specification {
             createFolderWithXml('classes', 1, 3, 'trigger', true , true)
             addFolderExpected(Constants.VALID_FILE,'classes', 1, 3, 'cls', true , true)
             addFolderExpected(Constants.INVALID_FILE_BY_FOLDER,'classes', 1, 3, 'trigger', true , true)
-
         when:
-            Map<String, ArrayList<File>> result = FileValidator.validateFiles(SRC_PATH, allFiles)
-            showMaps(true, mapExpected, result)
+            ClassifiedFile classifiedFile = FileValidator.validateFiles(SRC_PATH, allFiles)
         then:
-            result[Constants.INVALID_FILE_BY_FOLDER].sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
-            result[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
-            result[Constants.FILE_WITHOUT_XML].sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
-            result[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
+            classifiedFile.invalidFiles.sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
+            classifiedFile.notFoundFiles.sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
+            classifiedFile.filesWithoutXml.sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
+            classifiedFile.validFiles.sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 
     def "Test should returns a map that contains [ INVALID_FILE_BY_FOLDER: 5, VALID_FILE: 5 triggers files ]" () {
@@ -204,15 +179,13 @@ class FileValidatorTest extends Specification {
             createFolderWithXml('triggers', 1, 2, 'trigger', true , true)
             addFolderExpected(Constants.VALID_FILE,'triggers', 1, 2, 'trigger', true , true)
             addFolderExpected(Constants.INVALID_FILE_BY_FOLDER,'triggers', 1, 2, 'cls', true , true)
-
         when:
-            Map<String, ArrayList<File>> result = FileValidator.validateFiles(SRC_PATH, allFiles)
-             
+            ClassifiedFile classifiedFile = FileValidator.validateFiles(SRC_PATH, allFiles)
         then:
-            result[Constants.INVALID_FILE_BY_FOLDER].sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
-            result[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
-            result[Constants.FILE_WITHOUT_XML].sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
-            result[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
+            classifiedFile.invalidFiles.sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
+            classifiedFile.notFoundFiles.sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
+            classifiedFile.filesWithoutXml.sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
+            classifiedFile.validFiles.sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 
     def "Test should returns a map that contains [ DOES_NOT_EXIST_FILES: 5 class files ]" () {
@@ -220,45 +193,39 @@ class FileValidatorTest extends Specification {
             createFolderWithXml('classes', 1, 5, 'cls', true , true)
             allFiles.each {it.delete()}
             addFolderExpected(Constants.DOES_NOT_EXIST_FILES,'classes', 1, 5, 'cls', true , true)
-
         when:
-            Map<String, ArrayList<File>> result = FileValidator.validateFiles(SRC_PATH, allFiles)
-            showMaps(true, mapExpected, result)
+            ClassifiedFile classifiedFile = FileValidator.validateFiles(SRC_PATH, allFiles)
         then:
-            result[Constants.INVALID_FILE_BY_FOLDER].sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
-            result[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
-            result[Constants.FILE_WITHOUT_XML].sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
-            result[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
+            classifiedFile.invalidFiles.sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
+            classifiedFile.notFoundFiles.sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
+            classifiedFile.filesWithoutXml.sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
+            classifiedFile.validFiles.sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 
     def "Test should returns a map that contains [ FILE_WHITOUT_XML: 5 class files ]" () {
         given:
             createFolderWithXml('classes', 1, 5, 'cls', true , false)
             addFolderExpected(Constants.FILE_WITHOUT_XML,'classes', 1, 5, 'cls', true , false)
-
         when:
-            Map<String, ArrayList<File>> result = FileValidator.validateFiles(SRC_PATH, allFiles)
-            showMaps(true, mapExpected, result)
+            ClassifiedFile classifiedFile = FileValidator.validateFiles(SRC_PATH, allFiles)
         then:
-            result[Constants.INVALID_FILE_BY_FOLDER].sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
-            result[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
-            result[Constants.FILE_WITHOUT_XML].sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
-            result[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
+            classifiedFile.invalidFiles.sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
+            classifiedFile.notFoundFiles.sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
+            classifiedFile.filesWithoutXml.sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
+            classifiedFile.validFiles.sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 
     def "Test should returns a map that contains [ XML_WHITOUT_FILE: 5 tiggers files ]" () {
         given:
             createFolderWithXml('triggers', 1, 3, 'trigger', true , true)
             addFolderExpected(Constants.VALID_FILE,'triggers', 1, 3, 'trigger', true , true)
-
         when:
-            Map<String, ArrayList<File>> result = FileValidator.validateFiles(SRC_PATH, allFiles)
-            showMaps(true, mapExpected, result)
+            ClassifiedFile classifiedFile = FileValidator.validateFiles(SRC_PATH, allFiles)
         then:
-            result[Constants.INVALID_FILE_BY_FOLDER].sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
-            result[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
-            result[Constants.FILE_WITHOUT_XML].sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
-            result[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
+            classifiedFile.invalidFiles.sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
+            classifiedFile.notFoundFiles.sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
+            classifiedFile.filesWithoutXml.sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
+            classifiedFile.validFiles.sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 
     def "Test should returns a map that contains [ XML_WHITOUT_FiLE: 5 tiggers files ]2" () {
@@ -267,48 +234,43 @@ class FileValidatorTest extends Specification {
             crateFolderWithXml('documents','DocumentsFolder1', 3, 4, 'txt', true , false)
             addFolderExpected(Constants.VALID_FILE,'documents','DocumentsFolder1', 1, 2, 'txt', true , true)
             addFolderExpected(Constants.FILE_WITHOUT_XML,'documents','DocumentsFolder1', 3, 4, 'txt', true , false)
-
         when:
-            Map<String, ArrayList<File>> result = FileValidator.validateFiles(SRC_PATH, allFiles)
-            showMaps(true, mapExpected, result)
+            ClassifiedFile classifiedFile = FileValidator.validateFiles(SRC_PATH, allFiles)
         then:
-            result[Constants.INVALID_FILE_BY_FOLDER].sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
-            result[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
-            result[Constants.FILE_WITHOUT_XML].sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
-            result[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
+            classifiedFile.invalidFiles.sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
+            classifiedFile.notFoundFiles.sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
+            classifiedFile.filesWithoutXml.sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
+            classifiedFile.validFiles.sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 
     def "Test should returns invalid folders in the project source root" () {
         given:
-        createFolderWithXml('webs', 1, 3, 'trigger', true , true)
-        addFolderExpected(Constants.INVALID_FILE_BY_FOLDER,'webs', 1, 3, 'trigger', true , true)
-
+            createFolderWithXml('webs', 1, 3, 'trigger', true , true)
+            addFolderExpected(Constants.INVALID_FILE_BY_FOLDER,'webs', 1, 3, 'trigger', true , true)
         when:
-        Map<String, ArrayList<File>> result = FileValidator.validateFiles(SRC_PATH, allFiles)
-        showMaps(true, mapExpected, result)
+            ClassifiedFile classifiedFile = FileValidator.validateFiles(SRC_PATH, allFiles)
         then:
-        result[Constants.INVALID_FILE_BY_FOLDER].sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
-        result[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
-        result[Constants.FILE_WITHOUT_XML].sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
-        result[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
+            classifiedFile.invalidFiles.sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
+            classifiedFile.notFoundFiles.sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
+            classifiedFile.filesWithoutXml.sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
+            classifiedFile.validFiles.sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 
     def "Test should returns a package.xml valid file" () {
         given:
-        createFolderWithXml('webs', 1, 3, 'trigger', true , true)
-        addFolderExpected(Constants.INVALID_FILE_BY_FOLDER,'webs', 1, 3, 'trigger', true , true)
-        File packageFile = new File(Paths.get(SRC_PATH, 'package.xml').toString())
-        packageFile.createNewFile()
-        allFiles.add(packageFile)
-        mapExpected[Constants.VALID_FILE].add(packageFile)
+            createFolderWithXml('webs', 1, 3, 'trigger', true , true)
+            addFolderExpected(Constants.INVALID_FILE_BY_FOLDER,'webs', 1, 3, 'trigger', true , true)
+            File packageFile = new File(Paths.get(SRC_PATH, 'package.xml').toString())
+            packageFile.createNewFile()
+            allFiles.add(packageFile)
+            mapExpected[Constants.VALID_FILE].add(packageFile)
         when:
-        Map<String, ArrayList<File>> result = FileValidator.validateFiles(SRC_PATH, allFiles)
-        showMaps(true, mapExpected, result)
+            ClassifiedFile classifiedFile = FileValidator.validateFiles(SRC_PATH, allFiles)
         then:
-        result[Constants.INVALID_FILE_BY_FOLDER].sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
-        result[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
-        result[Constants.FILE_WITHOUT_XML].sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
-        result[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
+            classifiedFile.invalidFiles.sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
+            classifiedFile.notFoundFiles.sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
+            classifiedFile.filesWithoutXml.sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
+            classifiedFile.validFiles.sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 
     def cleanup() {

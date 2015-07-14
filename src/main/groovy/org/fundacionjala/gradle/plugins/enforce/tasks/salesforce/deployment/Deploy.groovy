@@ -19,20 +19,35 @@ import java.nio.file.StandardCopyOption
  * Deploys all project source
  */
 class Deploy extends Deployment {
+    private static final String DEPLOYING_TRUNCATED_CODE = 'Deploying truncated code'
+    private static final String DEPLOYING_TRUNCATED_CODE_SUCCESSFULLY = 'Truncated code were successfully deployed'
+    private static final String DEPLOYING_CODE = 'Starting deploy'
+    private static final String DEPLOYING_CODE_SUCCESSFULLY = 'Code were successfully deployed'
+    private static final String TRUNCATE_DEPRECATE_TURNED_OFF = 'truncate deprecate statement has been deactivated'
+    private static final String TRUNCATE_CODE_TURNED_OFF = 'Truncate code has been deactivated'
+    private static final String DEPLOY_DESCRIPTION = 'This task deploys all the project'
+    private static final String FOLDER_DEPLOY = 'deploy'
+    private static final String TURN_OFF_TRUNCATE = 'turnOffTruncate'
+    private static final String TRUNCATE_DEPRECATE = 'deprecate'
+    private static final String TRUNCATE_CODE = 'sourceCode'
+
+    private static final Integer NOT_FOUND = -1
+    private static final boolean CONTAINS_XML_FILE = true;
+
     private boolean deprecateTruncateOn
     private boolean codeTruncateOn
     public ArrayList<String> foldersNotDeploy
-    public String folders
+    public String folders = ""
     public ArrayList<File> filesToDeploy
 
     /**
      * Sets description task and its group
      */
     Deploy() {
-        super(Constants.DEPLOY_DESCRIPTION, Constants.DEPLOYMENT)
+        super(DEPLOY_DESCRIPTION, Constants.DEPLOYMENT)
         deprecateTruncateOn = true
         codeTruncateOn = true
-        taskFolderName = Constants.FOLDER_DEPLOY
+        taskFolderName = FOLDER_DEPLOY
     }
 
     /**
@@ -40,12 +55,16 @@ class Deploy extends Deployment {
      */
     @Override
     public void runTask() {
+        loadClassifiedFiles(folders, excludes)
         loadFilesToDeploy()
         truncate()
         deploy()
         updateFileTracker()
     }
 
+    /**
+     * Steps to truncate files
+     */
     void truncate() {
         createDeploymentDirectory(taskFolderPath)
         copyFilesToTaskDirectory(filesToDeploy)
@@ -53,33 +72,36 @@ class Deploy extends Deployment {
         deployTruncateFiles()
     }
 
+    /**
+     * Steps to deploy files to org
+     */
     void deploy() {
         deployAllComponents()
         deployTruncateDeprecateFiles()
-        executeDeploy(taskFolderPath)
+        executeDeploy(taskFolderPath, DEPLOYING_CODE, DEPLOYING_CODE_SUCCESSFULLY)
     }
 
     /**
      * Initializes all task parameters
      */
     void loadParameters() {
-        String turnOffOptionTruncate = parameters[Constants.TURN_OFF_TRUNCATE].toString()
+        String turnOffOptionTruncate = parameters[TURN_OFF_TRUNCATE].toString()
         if (Util.isValidProperty(parameters, Constants.PARAMETER_FOLDERS)) {
             folders = parameters[Constants.PARAMETER_FOLDERS].toString()
         }
         if (Util.isValidProperty(parameters, Constants.PARAMETER_EXCLUDES)) {
             excludes = parameters[Constants.PARAMETER_EXCLUDES].toString()
         }
-        if (!Util.isValidProperty(parameters, Constants.TURN_OFF_TRUNCATE)) {
+        if (!Util.isValidProperty(parameters, TURN_OFF_TRUNCATE)) {
             return
         }
-        if (turnOffOptionTruncate.indexOf(Constants.TRUNCATE_DEPRECATE) != Constants.NOT_FOUND) {
+        if (turnOffOptionTruncate.indexOf(TRUNCATE_DEPRECATE) != NOT_FOUND) {
             deprecateTruncateOn = false
-            logger.quiet(Constants.TRUNCATE_DEPRECATE_TURNED_OFF)
+            logger.quiet(TRUNCATE_DEPRECATE_TURNED_OFF)
         }
-        if (turnOffOptionTruncate.indexOf(Constants.TRUNCATE_CODE) != Constants.NOT_FOUND) {
+        if (turnOffOptionTruncate.indexOf(TRUNCATE_CODE) != NOT_FOUND) {
             codeTruncateOn = false
-            logger.quiet(Constants.TRUNCATE_CODE_TURNED_OFF)
+            logger.quiet(TRUNCATE_CODE_TURNED_OFF)
         }
     }
 
@@ -87,7 +109,7 @@ class Deploy extends Deployment {
      * Adds all files into files to deploy
      */
     def loadFilesToDeploy() {
-        filesToDeploy = getClassifiedFiles(folders,excludes).get(Constants.VALID_FILE)
+        filesToDeploy = classifiedFile.validFiles
     }
 
     /**
@@ -95,15 +117,13 @@ class Deploy extends Deployment {
      */
     public void deployTruncateFiles() {
         if (codeTruncateOn) {
-            componentDeploy.startMessage = Constants.DEPLOYING_TRUNCATED_CODE
-            componentDeploy.successMessage = Constants.DEPLOYING_TRUNCATED_CODE_SUCCESSFULLY
             Files.copy(Paths.get(projectPath, PACKAGE_NAME), Paths.get(taskPackagePath), StandardCopyOption.REPLACE_EXISTING)
             logger.debug('Generating package')
             writePackage(taskPackagePath, filesToDeploy)
-            combinePackage(taskPackagePath)
+            combinePackageToUpdate(taskPackagePath)
             truncateComponents()
             logger.debug("Deploying to truncate components from: $taskFolderPath")
-            executeDeploy(taskFolderPath)
+            executeDeploy(taskFolderPath, DEPLOYING_TRUNCATED_CODE, DEPLOYING_TRUNCATED_CODE_SUCCESSFULLY)
         }
     }
 
@@ -143,12 +163,10 @@ class Deploy extends Deployment {
      * Deploys the filtered components from project directory
      */
     public void deployAllComponents() {
-        componentDeploy.startMessage = Constants.DEPLOYING_CODE
-        componentDeploy.successMessage = Constants.DEPLOYING_CODE_SUCCESSFULLY
         createDeploymentDirectory(taskFolderPath)
         copyFilesToTaskDirectory(filesToDeploy)
         writePackage(taskPackagePath, filesToDeploy)
-        combinePackage(taskPackagePath)
+        combinePackageToUpdate(taskPackagePath)
     }
 
     /**

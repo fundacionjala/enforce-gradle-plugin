@@ -11,8 +11,8 @@ import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.ZipFileManager
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.FileValidator
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.Package
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageBuilder
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.Package
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.PackageBuilder
 
 import java.nio.file.Paths
 

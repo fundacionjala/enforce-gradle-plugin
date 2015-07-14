@@ -5,8 +5,12 @@ import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 
 class Truncate extends Deployment {
-    Map<String, String> parameters
     private final List<String> COMPONENTS_TO_TRUNCATE = ['classes', 'objects', 'triggers', 'pages', 'components', 'workflows', 'tabs']
+    private static final String START_TRUNCATE_PROCCESS_MESSAGE = "Starting truncate process"
+    private static final String SUCCESS_TRUNCATE_MESSAGE = "The files were successfully truncated"
+    private static final String TRUNCATE_DESCRIPTION = 'This task truncates classes, objects, triggers, pages, components, workflows and tabs from your code'
+    private static final String TRUNCATE_FOLDER_NAME = 'truncate'
+
     List<String> componentsToTruncate
     String files = COMPONENTS_TO_TRUNCATE.join(', ')
     public ArrayList<File> filesToTruncate
@@ -17,9 +21,9 @@ class Truncate extends Deployment {
      * @param groupTask is the group typeName the task
      */
     Truncate() {
-        super(Constants.TRUNCATE_DESCRIPTION, Constants.DEPLOYMENT)
+        super(TRUNCATE_DESCRIPTION, Constants.DEPLOYMENT)
         componentsToTruncate = COMPONENTS_TO_TRUNCATE
-        taskFolderName = Constants.TRUNCATE_FOLDER_NAME
+        taskFolderName = TRUNCATE_FOLDER_NAME
         files = ''
     }
 
@@ -29,21 +33,20 @@ class Truncate extends Deployment {
     @Override
     void runTask() {
         createDeploymentDirectory(taskFolderPath)
+        loadClassifiedFiles(files, excludes)
         loadFilesToTruncate()
         copyFilesToTaskDirectory(filesToTruncate)
         writePackage(taskPackagePath, filesToTruncate)
         combinePackageToUpdate(taskPackagePath)
         truncateComponents()
-        componentDeploy.startMessage = "Starting truncate process"
-        componentDeploy.successMessage = "The files were successfully truncated"
-        executeDeploy(taskFolderPath)
+        executeDeploy(taskFolderPath, START_TRUNCATE_PROCCESS_MESSAGE, SUCCESS_TRUNCATE_MESSAGE)
     }
 
     /**
      * Loads files that will be truncated
      */
     void loadFilesToTruncate() {
-        filesToTruncate = getClassifiedFiles(files, excludes).get(Constants.VALID_FILE)
+        filesToTruncate = classifiedFile.validFiles
     }
 
     /**
@@ -57,16 +60,14 @@ class Truncate extends Deployment {
     }
 
     /**
-     * Gets all task parameters
-     * @param properties the task properties
-     * @return A map of all task parameters
+     * Loads truncate task parameters
      */
     void loadParameters() {
-        if (Util.isValidProperty(project, Constants.PARAMETER_FILES)) {
-            files = project.properties[Constants.PARAMETER_FILES].toString()
+        if (Util.isValidProperty(parameters, Constants.PARAMETER_FILES)) {
+            files = parameters[Constants.PARAMETER_FILES].toString()
         }
-        if (Util.isValidProperty(project, Constants.PARAMETER_EXCLUDES)) {
-            excludes = project.properties[Constants.PARAMETER_EXCLUDES].toString()
+        if (Util.isValidProperty(parameters, Constants.PARAMETER_EXCLUDES)) {
+            excludes = parameters[Constants.PARAMETER_EXCLUDES].toString()
         }
     }
 }

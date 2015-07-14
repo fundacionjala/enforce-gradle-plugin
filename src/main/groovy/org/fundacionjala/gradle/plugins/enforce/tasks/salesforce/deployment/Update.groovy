@@ -8,7 +8,7 @@ package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageGenerator
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.PackageGenerator
 
 import java.nio.file.Paths
 
@@ -16,6 +16,11 @@ import java.nio.file.Paths
  * Updates an org using metadata API
  */
 class Update extends Deployment {
+    private static final String UPDATE_DESCRIPTION = "This task deploys just the files that were changed"
+    private static final String DIR_UPDATE_FOLDER = "update"
+    private static final String NOT_FILES_CHANGED = "There are not files changed"
+    private static final String START_UPDATE_TASK_MESSAGE = "Starting update proccess..."
+    private static final String SUCCESS_UPDATE_TASK_MESSAGE = "The files were successfully updated!"
     ArrayList<File> filesToCopy
     ArrayList<File> filesToUpdate
     String folders = ""
@@ -28,13 +33,13 @@ class Update extends Deployment {
      * @param group is the group typeName the task
      */
     Update() {
-        super(Constants.UPDATE_DESCRIPTION, Constants.DEPLOYMENT)
+        super(UPDATE_DESCRIPTION, Constants.DEPLOYMENT)
         filesToCopy = new ArrayList<File>()
         filesToUpdate = new ArrayList<File>()
         filesExcludes = new ArrayList<File>()
         packageGenerator = new PackageGenerator()
         interceptorsToExecute = [org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.REMOVE_DEPRECATE.id]
-        taskFolderName = Constants.DIR_UPDATE_FOLDER
+        taskFolderName = DIR_UPDATE_FOLDER
     }
 
     /**
@@ -54,7 +59,7 @@ class Update extends Deployment {
         copyFilesChanged()
         showFilesExcludes()
         truncate()
-        executeDeploy(taskFolderPath)
+        executeDeploy(taskFolderPath, START_UPDATE_TASK_MESSAGE, SUCCESS_UPDATE_TASK_MESSAGE)
         packageGenerator.saveFileTrackerMap()
     }
 
@@ -116,7 +121,7 @@ class Update extends Deployment {
      */
     public void showFilesChanged() {
         if (isEmptyChangedFiles()) {
-            logger.quiet(Constants.NOT_FILES_CHANGED)
+            logger.quiet(NOT_FILES_CHANGED)
         }
         if (packageGenerator.fileTrackerMap.size() > 0) {
             logger.quiet("*********************************************")
@@ -171,13 +176,12 @@ class Update extends Deployment {
     }
 
     public void loadParameters() {
-        Map <String, String> parameters = getParameterWithTheirsValues([Constants.PARAMETER_EXCLUDES, Constants.PARAMETER_FOLDERS])
-        if (parameters.containsKey(Constants.PARAMETER_EXCLUDES)) {
-            excludes = parameters.get(Constants.PARAMETER_EXCLUDES)
+        if (Util.isValidProperty(parameters, Constants.PARAMETER_FOLDERS) && !Util.isEmptyProperty(parameters, Constants.PARAMETER_FOLDERS)) {
+            folders = parameters.get(Constants.PARAMETER_FOLDERS)
         }
 
-        if (parameters.containsKey(Constants.PARAMETER_FOLDERS)) {
-            folders = parameters.get(Constants.PARAMETER_FOLDERS)
+        if (Util.isValidProperty(parameters, Constants.PARAMETER_EXCLUDES) && !Util.isEmptyProperty(parameters, Constants.PARAMETER_EXCLUDES)) {
+            excludes = parameters.get(Constants.PARAMETER_EXCLUDES)
         }
     }
 }
