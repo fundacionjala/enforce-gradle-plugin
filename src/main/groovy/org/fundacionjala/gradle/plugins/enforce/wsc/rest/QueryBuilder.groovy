@@ -5,7 +5,6 @@
 
 package org.fundacionjala.gradle.plugins.enforce.wsc.rest
 
-import aQute.bnd.osgi.Clazz
 import com.sforce.soap.metadata.PackageTypeMembers
 import groovy.util.logging.Log
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
@@ -150,6 +149,7 @@ class QueryBuilder {
     }
 
     /**
+     * Selected the validation group that belongs a component
      * @param component is type String
      * @return the group of component name
      */
