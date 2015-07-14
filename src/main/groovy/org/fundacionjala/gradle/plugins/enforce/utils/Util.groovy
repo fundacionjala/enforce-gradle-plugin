@@ -8,6 +8,7 @@ package org.fundacionjala.gradle.plugins.enforce.utils
 import org.apache.commons.lang.StringUtils
 import groovy.util.logging.Slf4j
 import org.fundacionjala.gradle.plugins.enforce.undeploy.PackageComponent
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.ClassifiedFile
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files.SalesforceValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files.SalesforceValidatorManager
@@ -336,21 +337,6 @@ class Util {
     }
 
     /**
-     * Gets a exception message with invalid files
-     * @param filesClassified is a map with files classified by valid, invalid and not exist files
-     * @return exception message
-     */
-    public static String getExceptionMessage(Map<String, ArrayList<File>> filesClassified) {
-        StringBuilder message = new StringBuilder(Constants.EMPTY)
-        filesClassified.each { String info, ArrayList<File> files ->
-            if (info != Constants.VALID_FILE && !files.isEmpty()) {
-                message.append("${info} : ${files}\n")
-            }
-        }
-        return message.toString()
-    }
-
-    /**
      * Validates parameter's values
      * @param parameterValues are files name that will be excluded
      */
@@ -359,7 +345,7 @@ class Util {
         ArrayList<String> fileNames = []
         ArrayList<String> folderNames = []
         parameterValues.split(Constants.COMMA).each { String parameter ->
-            if (parameter.contains(Constants.WILDCARD)) {
+            if (parameter.contains(Constants.WILDCARD) || parameter == Constants.EMPTY) {
                 return
             }
             if (parameter.contains(Constants.SLASH)) {
@@ -377,21 +363,18 @@ class Util {
      * @param foldersName is type array list contents folders name
      */
     public static void validateFolders(ArrayList<String> foldersName, String projectPath) {
-        ArrayList<String> invalidFolders = []
-        invalidFolders = getInvalidFolders(foldersName)
         String errorMessage = ''
+        ArrayList<String> invalidFolders = getInvalidFolders(foldersName)
         if (!invalidFolders.empty) {
             errorMessage = "${Constants.INVALID_FOLDER}: ${invalidFolders}"
         }
 
-        ArrayList<String> notExistFolders = []
-        notExistFolders = getNotExistFolders(foldersName, projectPath)
+        ArrayList<String> notExistFolders = getNotExistFolders(foldersName, projectPath)
         if (!notExistFolders.empty) {
             errorMessage += "\n${Constants.DOES_NOT_EXIST_FOLDER} ${notExistFolders}"
         }
 
-        ArrayList<String> emptyFolders = []
-        emptyFolders = getEmptyFolders(foldersName, projectPath)
+        ArrayList<String> emptyFolders = getEmptyFolders(foldersName, projectPath)
         if (!emptyFolders.empty) {
             errorMessage += "\n${Constants.EMPTY_FOLDERS} ${emptyFolders}"
         }
@@ -554,18 +537,15 @@ class Util {
         return includes
     }
 
-
-    /**
-     * Validates relative path
-     * @param relativePath is a relative path of a component
-     * @return true if is valid
-     */
-    public static boolean isValidRelativePath(String relativePath) {
-        boolean result = false
-        String folderName = getFirstPath(relativePath)
-        if ( MetadataComponents.validFolder(folderName) && MetadataComponents.getExtensionByFolder(folderName) == ""){
-            result = true
+    public static void showExceptionOfInvalidFiles(ClassifiedFile classifiedFile) {
+        if (!classifiedFile.invalidFiles.isEmpty()) {
+            throw new Exception("${classifiedFile.invalidFiles} those files are invalid")
         }
-        return  result
+        if (!classifiedFile.notFoundFiles.isEmpty()) {
+            throw new Exception("${classifiedFile.notFoundFiles} those files weren't found")
+        }
+        if (!classifiedFile.filesWithoutXml.isEmpty()) {
+            throw new Exception("${classifiedFile.filesWithoutXml} those files don't have their xml file")
+        }
     }
 }

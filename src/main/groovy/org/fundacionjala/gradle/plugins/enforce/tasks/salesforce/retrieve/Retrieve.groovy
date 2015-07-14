@@ -18,6 +18,10 @@ import java.nio.file.Paths
  * Retrieves elements from organization according parameters inserted by user
  */
 class Retrieve extends Retrieval {
+    private static final String RETRIEVE_DESCRIPTION_OF_TASK = 'This task recover specific files from an organization'
+    private static final String RETRIEVE_MESSAGE_WARNING = 'Warning: All files will be downloaded according to the package'
+    private static final String RETRIEVE_MESSAGE_CANCELED = 'Retrieve task was canceled!!'
+    private static final String RETRIEVE_QUESTION_TO_CONTINUE = 'Do you want to continue? (y/n) : '
     private static final String GROUP_OF_TASK = "Retrieve"
     private final String DESTINATION_FOLDER = 'destination'
     private String option
@@ -32,7 +36,7 @@ class Retrieve extends Retrieval {
      * @param group is the group typeName the task
      */
     Retrieve() {
-        super(Constants.RETRIEVE_DESCRIPTION_OF_TASK, GROUP_OF_TASK)
+        super(RETRIEVE_DESCRIPTION_OF_TASK, GROUP_OF_TASK)
     }
 
     @Override
@@ -51,7 +55,7 @@ class Retrieve extends Retrieval {
                 if (option == Constants.YES_OPTION) {
                     loadFromPackage()
                 } else {
-                    logger.warn(Constants.RETRIEVE_MESSAGE_CANCELED)
+                    logger.warn(RETRIEVE_MESSAGE_CANCELED)
                     System.exit(CODE_TO_EXIT)
                 }
             }
@@ -250,8 +254,8 @@ class Retrieve extends Retrieval {
     void showWarningMessage() {
         File[] arrayFiles = getFiles(new File(projectPath))
         if (arrayFiles.size() > 0 && all == Constants.FALSE) {
-            logger.error(Constants.RETRIEVE_MESSAGE_WARNING)
-            option = System.console().readLine("${'  '}${Constants.RETRIEVE_QUESTION_TO_CONTINUE}")
+            logger.error(RETRIEVE_MESSAGE_WARNING)
+            option = System.console().readLine("${'  '}${RETRIEVE_QUESTION_TO_CONTINUE}")
         } else {
             option = Constants.YES_OPTION
         }

@@ -44,9 +44,6 @@ class UndeployTest extends Specification {
     Credential credential
 
     @Shared
-    SmartFilesValidator smartFilesValidator
-
-    @Shared
     String destructiveExpect
 
     @Shared
@@ -65,7 +62,7 @@ class UndeployTest extends Specification {
         undeployInstance = project.tasks.undeploy
         undeployInstance.fileManager = new ManagementFile(SRC_PATH)
         undeployInstance.project.enforce.deleteTemporaryFiles = false
-        undeployInstance.taskFolderName = Constants.DIR_UN_DEPLOY
+        undeployInstance.taskFolderName = "undeploy"
 
         credential = new Credential()
         credential.id = 'id'
@@ -152,10 +149,12 @@ class UndeployTest extends Specification {
             undeployInstance.taskPackagePath = Paths.get(SRC_PATH, 'build', 'undeploy').toString()
             undeployInstance.packageComponent = Mock(PackageComponent)
             undeployInstance.credential = credential
+            String componentsToTruncate = ['classes', 'objects', 'triggers', 'pages', 'components', 'workflows', 'tabs'].join(',')
         when:
             undeployInstance.packageComponent.components >> ["classes/*.cls", "triggers/*.trigger", "objects/*.object"]
             undeployInstance.setup()
             undeployInstance.loadParameters()
+            undeployInstance.loadClassifiedFiles(componentsToTruncate, undeployInstance.excludes)
             undeployInstance.createDeploymentDirectory(undeployInstance.taskFolderPath)
             undeployInstance.loadFilesToTruncate()
             undeployInstance.copyFilesToTaskDirectory(undeployInstance.filesToTruncate)
@@ -221,9 +220,12 @@ class UndeployTest extends Specification {
                                                     <version>32.0</version>
                                                 </Package>
                                             '''
+            String componentsToTruncate = ['classes', 'objects', 'triggers', 'pages', 'components', 'workflows', 'tabs'].join(',')
         when:
             undeployInstance.packageComponent.components >> ["classes/*.cls", "triggers/*.trigger", "objects/*.object"]
             undeployInstance.setup()
+            undeployInstance.loadParameters()
+            undeployInstance.loadClassifiedFiles(componentsToTruncate, undeployInstance.excludes)
             undeployInstance.createDeploymentDirectory(undeployDirectory)
             undeployInstance.deployToDeleteComponents()
             def destructiveXmlContent =  new File(Paths.get(undeployDirectory, 'destructiveChanges.xml').toString()).text
@@ -250,22 +252,6 @@ class UndeployTest extends Specification {
             ArrayList<File> result = undeployInstance.getValidFilesFromOrg(files)
         then:
             result.sort() == files.sort()
-    }
-
-    def "Test should return a Map with parameter and their values" () {
-        given:
-            ArrayList<String> parameters = [Constants.PARAMETER_EXCLUDES, Constants.PARAMETER_FILES]
-            undeployInstance.parameters = [:]
-            undeployInstance.parameters.put(Constants.PARAMETER_EXCLUDES, "classes${File.separator}Class1.cls")
-            undeployInstance.parameters.put(Constants.PARAMETER_FILES, "classes,objects")
-        when:
-            Map<String, String> result = undeployInstance.getParameterWithTheirsValues(parameters)
-        then:
-            result.containsKey(Constants.PARAMETER_FILES)
-            result.get(Constants.PARAMETER_FILES) == "classes,objects"
-            result.containsKey(Constants.PARAMETER_EXCLUDES)
-            result.get(Constants.PARAMETER_EXCLUDES) == "classes${File.separator}Class1.cls"
-            result.size() == 2
     }
 
     def cleanupSpec() {

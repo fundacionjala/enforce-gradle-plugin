@@ -139,11 +139,6 @@ class FilterTest extends Specification{
         }
     }
 
-    def "Test should be instance of Filter class"() {
-        expect:
-        filter instanceof Filter
-    }
-
     def "Test should return all classes from project path"() {
         given:
             String includes =  'classes'

@@ -6,7 +6,6 @@
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.execute
 
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.SalesforceTask
-import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.wsc.soap.ApexAPI
 
@@ -14,6 +13,12 @@ import org.fundacionjala.gradle.plugins.enforce.wsc.soap.ApexAPI
  * This class executes apex code from a file
  */
 class ApexExecutor extends SalesforceTask {
+    private static final String APEX_CODE = 'input'
+    private static final String APEX_OUTPUT_FILE_PATH = 'output'
+    private static final String DESCRIPTION_EXECUTE_TASK = "This task executes apex code from a file or inline code"
+    private static final String UTILS_GROUP = "Utils"
+    private static final String OUTPUT_RESULT = "Output result:\n"
+    private static final String INVALID_INPUT_PARAMETER = "parameter invalid"
     private ApexAPI apexAPI
     public String input
     public String output
@@ -22,7 +27,7 @@ class ApexExecutor extends SalesforceTask {
      * Sets description and group task
      */
     ApexExecutor() {
-        super(Constants.DESCRIPTION_EXECUTE_TASK, Constants.UTILS_GROUP)
+        super(DESCRIPTION_EXECUTE_TASK, UTILS_GROUP)
     }
 
     /**
@@ -43,7 +48,7 @@ class ApexExecutor extends SalesforceTask {
             fileWriter.close()
             return
         }
-        logger.quiet("${Constants.OUTPUT_RESULT}${resultExecute}")
+        logger.quiet("${OUTPUT_RESULT}${resultExecute}")
     }
 
     /**
@@ -59,13 +64,13 @@ class ApexExecutor extends SalesforceTask {
      */
     @Override
     void loadParameters() {
-        if (!Util.isValidProperty(parameters, Constants.APEX_CODE)) {
-            throw new Exception("${Constants.APEX_CODE} ${Constants.INVALID_INPUT_PARAMETER}")
+        if (!Util.isValidProperty(parameters, APEX_CODE)) {
+            throw new Exception("${APEX_CODE} ${INVALID_INPUT_PARAMETER}")
         }
-        input = parameters[Constants.APEX_CODE].toString()
+        input = parameters[APEX_CODE].toString()
 
-        if (Util.isValidProperty(parameters, Constants.APEX_OUTPUT_FILE_PATH)) {
-            output = parameters[Constants.APEX_OUTPUT_FILE_PATH].toString()
+        if (Util.isValidProperty(parameters, APEX_OUTPUT_FILE_PATH)) {
+            output = parameters[APEX_OUTPUT_FILE_PATH].toString()
         }
     }
 }
