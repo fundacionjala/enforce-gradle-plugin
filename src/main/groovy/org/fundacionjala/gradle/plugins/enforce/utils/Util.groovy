@@ -51,7 +51,12 @@ class Util {
      * @return developerName of custom field
      */
     public static String getDeveloperName(String fullName) {
-        return fullName.substring(fullName.indexOf('.') + 1, fullName.length() - 7)
+        int point1 = fullName.indexOf('.') + 1
+        int point2 = fullName.indexOf("__c",point1)
+        if(point2 < 0) {
+            point2 = fullName.lastIndexOf('.')
+        }
+        return fullName.substring(point1, point2)
     }
 
     /**
