@@ -9,7 +9,7 @@ import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment.Depl
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageBuilder
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.PackageBuilder
 
 import java.nio.file.Paths
 
@@ -38,9 +38,9 @@ class InstallPackageTask extends Deployment {
     @Override
     void runTask() {
         if (Util.validateRequiredParameters(project, requiredParams)) {
-            setupEnv()
+            setup()
             createPackage()
-            executeDeploy(installPkgRootDir)
+            executeDeploy(installPkgRootDir, "", "")
             logger.quiet("Install package '${packageNamespace}' v${packageVersion} success.")
         } else {
             throw new Exception("There are missing required parameters.")
@@ -50,7 +50,8 @@ class InstallPackageTask extends Deployment {
     /**
      * Setups to start install package task
      */
-    def setupEnv() {
+    @Override
+    void setup() {
         this.installPkgRootDir = Paths.get(buildFolderPath, TASK_DIR).toString()
         this.installedPkgsCompDir = "${this.installPkgRootDir}${File.separator}" +
                 "${MetadataComponents.INSTALLEDPACKAGES.directory}"
@@ -66,7 +67,7 @@ class InstallPackageTask extends Deployment {
     /**
      * Creates a package xml file with a content by default
      */
-    def createPackage() {
+    void createPackage() {
         File pkgFile = this.generatedInstallPackageFile()
         ArrayList<File> filesToDeploy = new ArrayList<File>()
         filesToDeploy.add(pkgFile)

@@ -11,8 +11,9 @@ import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentSerializer
 import org.fundacionjala.gradle.plugins.enforce.metadata.DeployMetadata
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
-import org.fundacionjala.gradle.plugins.enforce.utils.Util
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.FileValidator
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
+import org.fundacionjala.gradle.plugins.enforce.wsc.LoginType
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Shared
@@ -20,6 +21,10 @@ import spock.lang.Specification
 import java.nio.file.Paths
 
 class DeleteTest extends Specification {
+
+    @Shared
+    def credential
+
     @Shared
     Project project
 
@@ -33,19 +38,26 @@ class DeleteTest extends Specification {
     def DIR_DELETE_FOLDER = 'delete'
 
     @Shared
-    Credential credential
-
-    @Shared
     ComponentSerializer componentSerializer
 
     @Shared
     ComponentMonitor componentMonitor
 
     def setup() {
+
+        credential = new Credential()
+        credential.id = 'id'
+        credential.username = 'salesforce2014.test@gmail.com'
+        credential.password = '123qwe2014'
+        credential.token = 'UO1Jx5vDQl97xCKkwXBH8tg3T'
+        credential.loginFormat = LoginType.DEV.value()
+        credential.type = 'normal'
+
         project = ProjectBuilder.builder().build()
         project.apply(plugin: EnforcePlugin)
         project.enforce.srcPath = SRC_PATH
         deleteInstance = project.tasks.delete
+        deleteInstance.credential = credential
         deleteInstance.fileManager = new ManagementFile(SRC_PATH)
         deleteInstance.project.enforce.deleteTemporaryFiles = false
         deleteInstance.createDeploymentDirectory(Paths.get(SRC_PATH, 'build').toString())
@@ -56,6 +68,7 @@ class DeleteTest extends Specification {
         deleteInstance.componentDeploy = new DeployMetadata()
         deleteInstance.project.enforce.deleteTemporaryFiles = true
         deleteInstance.projectPackagePath = Paths.get(SRC_PATH,'src_delete', 'package.xml').toString()
+        deleteInstance.taskFolderName = Constants.DIR_DELETE_FOLDER
 
         ArrayList<File> files = new ArrayList<File>()
         files.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class1.cls').toString()))
@@ -135,22 +148,21 @@ class DeleteTest extends Specification {
             filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object5__c.object').toString()))
 
         when:
-            deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
-            deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
-            deleteInstance.addAllFiles()
-            deleteInstance.addFoldersToDeleteFiles()
-            deleteInstance.addFilesToDelete()
-            deleteInstance.excludeFilesToDelete()
+            deleteInstance.taskFolderPath = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
+            deleteInstance.setup()
+            deleteInstance.createDeploymentDirectory(deleteInstance.taskFolderPath)
+            deleteInstance.loadClassifiedFiles(deleteInstance.files, deleteInstance.excludes)
+            deleteInstance.loadFilesToDelete()
             deleteInstance.createDestructive()
             deleteInstance.createPackageEmpty()
 
         then:
-            filesExpected.sort().equals(deleteInstance.filesToDeleted.sort())
+             deleteInstance.filesToDeleted.sort() == filesExpected.sort()
     }
 
     def "Integration testing must list files filtered for folders to delete"() {
         given:
-            deleteInstance.parameters.put('folders','classes,triggers')
+            deleteInstance.parameters.put('files','classes,triggers')
 
             ArrayList<File> filesExpected = new ArrayList<File>();
             filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class1.cls').toString()))
@@ -167,17 +179,17 @@ class DeleteTest extends Specification {
             filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger3.trigger-meta.xml').toString()))
 
         when:
-            deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, DIR_DELETE_FOLDER).toString()
-            deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
-            deleteInstance.addAllFiles()
-            deleteInstance.addFoldersToDeleteFiles()
-            deleteInstance.addFilesToDelete()
-            deleteInstance.excludeFilesToDelete()
+            deleteInstance.taskFolderPath = Paths.get(deleteInstance.buildFolderPath, DIR_DELETE_FOLDER).toString()
+            deleteInstance.createDeploymentDirectory(deleteInstance.taskFolderPath)
+            deleteInstance.setup()
+            deleteInstance.loadParameters()
+            deleteInstance.loadClassifiedFiles(deleteInstance.files, deleteInstance.excludes)
+            deleteInstance.loadFilesToDelete()
             deleteInstance.createDestructive()
             deleteInstance.createPackageEmpty()
 
         then:
-            filesExpected.sort().equals(deleteInstance.filesToDeleted.sort())
+            deleteInstance.filesToDeleted.sort() == filesExpected.sort()
     }
 
     def "Integration testing must list files filtered for files to delete"() {
@@ -191,22 +203,23 @@ class DeleteTest extends Specification {
             filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger1.trigger-meta.xml').toString()))
 
         when:
-            deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, DIR_DELETE_FOLDER).toString()
-            deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
-            deleteInstance.addAllFiles()
-            deleteInstance.addFoldersToDeleteFiles()
-            deleteInstance.addFilesToDelete()
-            deleteInstance.excludeFilesToDelete()
+            deleteInstance.taskFolderPath = Paths.get(deleteInstance.buildFolderPath, DIR_DELETE_FOLDER).toString()
+            deleteInstance.createDeploymentDirectory(deleteInstance.taskFolderPath)
+            deleteInstance.setup()
+            deleteInstance.loadParameters()
+            deleteInstance.loadClassifiedFiles(deleteInstance.files, deleteInstance.excludes)
+            deleteInstance.loadFilesToDelete()
             deleteInstance.createDestructive()
             deleteInstance.createPackageEmpty()
 
         then:
-            filesExpected.sort().equals(deleteInstance.filesToDeleted.sort())
+            filesExpected.sort() == deleteInstance.filesToDeleted.sort()
     }
 
     def "Integration testing must list all the files less exclude to delete"() {
         given:
             deleteInstance.parameters.put('excludes','classes/Class1.cls,triggers/*.trigger')
+            deleteInstance.parameters.put('files',"")
 
             ArrayList<File> filesExpected = new ArrayList<File>();
             filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class2.cls').toString()))
@@ -220,17 +233,17 @@ class DeleteTest extends Specification {
             filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object5__c.object').toString()))
 
         when:
-            deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
-            deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
-            deleteInstance.addAllFiles()
-            deleteInstance.addFoldersToDeleteFiles()
-            deleteInstance.addFilesToDelete()
-            deleteInstance.excludeFilesToDelete()
+            deleteInstance.taskFolderPath = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
+            deleteInstance.createDeploymentDirectory(deleteInstance.taskFolderPath)
+            deleteInstance.setup()
+            deleteInstance.loadParameters()
+            deleteInstance.loadClassifiedFiles(deleteInstance.files, deleteInstance.excludes)
+            deleteInstance.loadFilesToDelete()
             deleteInstance.createDestructive()
             deleteInstance.createPackageEmpty()
 
         then:
-            filesExpected.sort().equals( deleteInstance.filesToDeleted.sort())
+            filesExpected.sort() == deleteInstance.filesToDeleted.sort()
     }
 
     def "Integration testing must list all the files less exclude all objects and classes"() {
@@ -247,17 +260,17 @@ class DeleteTest extends Specification {
             filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger3.trigger-meta.xml').toString()))
 
         when:
-            deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
-            deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
-            deleteInstance.addAllFiles()
-            deleteInstance.addFoldersToDeleteFiles()
-            deleteInstance.addFilesToDelete()
-            deleteInstance.excludeFilesToDelete()
+            deleteInstance.taskFolderPath = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
+            deleteInstance.createDeploymentDirectory(deleteInstance.taskFolderPath)
+            deleteInstance.setup()
+            deleteInstance.loadParameters()
+            deleteInstance.loadClassifiedFiles(deleteInstance.files, deleteInstance.excludes)
+            deleteInstance.loadFilesToDelete()
             deleteInstance.createDestructive()
             deleteInstance.createPackageEmpty()
 
         then:
-            filesExpected.sort().equals( deleteInstance.filesToDeleted.sort())
+            filesExpected.sort() == deleteInstance.filesToDeleted.sort()
     }
 
     def "Integration testing must list all the files less exclude all files that contain the number 1 or 2"() {
@@ -275,29 +288,29 @@ class DeleteTest extends Specification {
             filesExpected.add(new File(Paths.get(SRC_PATH,'src_delete','objects','Object5__c.object').toString()))
 
         when:
-            deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
-            deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
-            deleteInstance.addAllFiles()
-            deleteInstance.addFoldersToDeleteFiles()
-            deleteInstance.addFilesToDelete()
-            deleteInstance.excludeFilesToDelete()
+            deleteInstance.taskFolderPath = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
+            deleteInstance.createDeploymentDirectory(deleteInstance.taskFolderPath)
+            deleteInstance.setup()
+            deleteInstance.loadParameters()
+            deleteInstance.loadClassifiedFiles(deleteInstance.files, deleteInstance.excludes)
+            deleteInstance.loadFilesToDelete()
             deleteInstance.createDestructive()
             deleteInstance.createPackageEmpty()
 
         then:
-            filesExpected.sort().equals( deleteInstance.filesToDeleted.sort())
+            filesExpected.sort() == deleteInstance.filesToDeleted.sort()
     }
 
     def "Integration testing must list all the files less exclude all files"() {
         given:
             deleteInstance.parameters.put('excludes','*/**.*')
         when:
-            deleteInstance.pathDelete = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
-            deleteInstance.createDeploymentDirectory(deleteInstance.pathDelete)
-            deleteInstance.addAllFiles()
-            deleteInstance.addFoldersToDeleteFiles()
-            deleteInstance.addFilesToDelete()
-            deleteInstance.excludeFilesToDelete()
+            deleteInstance.taskFolderPath = Paths.get(deleteInstance.buildFolderPath, Constants.DIR_DELETE_FOLDER).toString()
+            deleteInstance.createDeploymentDirectory(deleteInstance.taskFolderPath)
+            deleteInstance.setup()
+            deleteInstance.loadParameters()
+            deleteInstance.loadClassifiedFiles(deleteInstance.files, deleteInstance.excludes)
+            deleteInstance.loadFilesToDelete()
             deleteInstance.createDestructive()
             deleteInstance.createPackageEmpty()
 

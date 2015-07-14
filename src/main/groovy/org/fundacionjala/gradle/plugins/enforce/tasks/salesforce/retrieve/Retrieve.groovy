@@ -10,7 +10,7 @@ import org.fundacionjala.gradle.plugins.enforce.utils.AnsiColor
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageBuilder
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.PackageBuilder
 
 import java.nio.file.Paths
 
@@ -18,18 +18,15 @@ import java.nio.file.Paths
  * Retrieves elements from organization according parameters inserted by user
  */
 class Retrieve extends Retrieval {
+    private static final String RETRIEVE_DESCRIPTION_OF_TASK = 'This task recover specific files from an organization'
+    private static final String RETRIEVE_MESSAGE_WARNING = 'Warning: All files will be downloaded according to the package'
+    private static final String RETRIEVE_MESSAGE_CANCELED = 'Retrieve task was canceled!!'
+    private static final String RETRIEVE_QUESTION_TO_CONTINUE = 'Do you want to continue? (y/n) : '
     private static final String GROUP_OF_TASK = "Retrieve"
-    private final String FILES_RETRIEVE = 'files'
     private final String DESTINATION_FOLDER = 'destination'
-    private final String ALL_PARAMETER = 'all'
-    private final String COMMA = ','
-    private final String YES = 'y'
     private String option
-    public static final String WILDCARD = '*'
     public String files
     public String destination
-    public final String SLASH = '/'
-    public final String BACKSLASH = '\\\\'
     public String all = Constants.FALSE
     public final int CODE_TO_EXIT = 0
 
@@ -39,14 +36,13 @@ class Retrieve extends Retrieval {
      * @param group is the group typeName the task
      */
     Retrieve() {
-        super(Constants.RETRIEVE_DESCRIPTION_OF_TASK, GROUP_OF_TASK)
+        super(RETRIEVE_DESCRIPTION_OF_TASK, GROUP_OF_TASK)
     }
 
     @Override
     void runTask() {
         verifyDestinationFolder()
         ManagementFile.createDirectories(projectPath)
-        loadParameters()
         validateContentParameter()
         if (!hasPackage() && !files) {
            retrieveWithoutPackageXml()
@@ -56,10 +52,10 @@ class Retrieve extends Retrieval {
                 createPackageFromFiles()
             }else{
                 showWarningMessage()
-                if (option == YES) {
+                if (option == Constants.YES_OPTION) {
                     loadFromPackage()
                 } else {
-                    logger.warn(Constants.RETRIEVE_MESSAGE_CANCELED)
+                    logger.warn(RETRIEVE_MESSAGE_CANCELED)
                     System.exit(CODE_TO_EXIT)
                 }
             }
@@ -73,7 +69,7 @@ class Retrieve extends Retrieval {
      */
     private void createPackageFromFiles(){
         ArrayList<File> filesRetrieve = new ArrayList<File>()
-        ArrayList<String> arrayNameArchives = files.split(COMMA)
+        ArrayList<String> arrayNameArchives = files.split(Constants.COMMA)
         arrayNameArchives.each { nameFile ->
             filesRetrieve.push(new File(Paths.get(projectPath, nameFile).toString()))
         }
@@ -84,7 +80,7 @@ class Retrieve extends Retrieval {
      * Loads the package structure file from package xml
      */
     private void loadFromPackage(){
-        FileReader packageFileReader = new FileReader(Paths.get(projectPath, Constants.PACKAGE_FILE_NAME).toString())
+        FileReader packageFileReader = new FileReader(packageFromSourcePath)
         packageBuilder.read(packageFileReader)
     }
 
@@ -102,20 +98,6 @@ class Retrieve extends Retrieval {
             String targetPath = project.property(DESTINATION_FOLDER) as String
             projectPath = Paths.get(targetPath).isAbsolute() ? targetPath :
                     Paths.get(project.projectDir.absolutePath, targetPath).toString()
-        }
-    }
-
-    /**
-     * Loads the files and all parameters
-     */
-    private void loadParameters() {
-        if (!files) {
-            if (Util.isValidProperty(project, FILES_RETRIEVE)) {
-                files = project.property(FILES_RETRIEVE) as String
-            }
-        }
-        if (Util.isValidProperty(project, ALL_PARAMETER)) {
-            all = project.property(ALL_PARAMETER) as String
         }
     }
 
@@ -148,7 +130,7 @@ class Retrieve extends Retrieval {
     void retrieveWithPackageXml() {
         runRetrieve()
         copyFilesWithoutPackage()
-        updatePackageXml(Paths.get(unPackageFolder, Constants.PACKAGE_FILE_NAME).toString(), Paths.get(projectPath, Constants.PACKAGE_FILE_NAME).toString())
+        updatePackageXml(packageFromBuildPath, packageFromSourcePath)
         File unpackage = new File(unPackageFolder)
         unpackage.deleteDir()
     }
@@ -158,7 +140,7 @@ class Retrieve extends Retrieval {
      * @return true if exist a package xml file else return false
      */
     def hasPackage() {
-        return new File(Paths.get(projectPath, Constants.PACKAGE_FILE_NAME).toString()).exists()
+        return new File(packageFromSourcePath).exists()
     }
 
     /**
@@ -178,13 +160,13 @@ class Retrieve extends Retrieval {
     void createPackage() {
         if (files) {
             ArrayList<File> filesRetrieve = new ArrayList<File>()
-            ArrayList<String> arrayNameArchives = files.split(COMMA)
+            ArrayList<String> arrayNameArchives = files.split(Constants.COMMA)
             arrayNameArchives.each { nameFile ->
                 filesRetrieve.push(new File(Paths.get(projectPath, nameFile).toString()))
             }
             packageBuilder.createPackage(filesRetrieve, projectPath)
         } else {
-            FileReader packageFileReader = new FileReader(Paths.get(projectPath, Constants.PACKAGE_FILE_NAME).toString())
+            FileReader packageFileReader = new FileReader(packageFromSourcePath)
             packageBuilder.read(packageFileReader)
         }
     }
@@ -194,7 +176,7 @@ class Retrieve extends Retrieval {
      */
     void createPackageByFolders() {
         String parameterFolder = project.enforce.foldersToDownload
-        ArrayList<String> arrayFolders = parameterFolder.split(COMMA)
+        ArrayList<String> arrayFolders = parameterFolder.split(Constants.COMMA)
         packageBuilder.createPackageByFolder(arrayFolders)
     }
 
@@ -212,7 +194,7 @@ class Retrieve extends Retrieval {
     public void copyFilesWithoutPackage() {
         ArrayList<File> filesToCopy = fileManager.getValidElements(unPackageFolder)
         if (hasPackage()) {
-            filesToCopy.remove(new File(Paths.get(unPackageFolder, Constants.PACKAGE_FILE_NAME).toString()))
+            filesToCopy.remove(new File(packageFromBuildPath))
         }
         fileManager.copy(unPackageFolder, filesToCopy, projectPath)
     }
@@ -242,15 +224,15 @@ class Retrieve extends Retrieval {
                 }
             }
             if (!packageTypeMembersFound) {
-                if (memberType.contains(WILDCARD)) {
-                    members = [WILDCARD]
+                if (memberType.contains(Constants.WILDCARD)) {
+                    members = [Constants.WILDCARD]
                 }
             } else {
                 packageTypeMembersFound.members.each { member ->
                     if (members.contains(member)) {
                         members.remove(member)
                     }
-                    if (member == WILDCARD) {
+                    if (member == Constants.WILDCARD) {
                         members = []
                     }
                 }
@@ -272,10 +254,10 @@ class Retrieve extends Retrieval {
     void showWarningMessage() {
         File[] arrayFiles = getFiles(new File(projectPath))
         if (arrayFiles.size() > 0 && all == Constants.FALSE) {
-            logger.error(Constants.RETRIEVE_MESSAGE_WARNING)
-            option = System.console().readLine("${'  '}${Constants.RETRIEVE_QUESTION_TO_CONTINUE}")
+            logger.error(RETRIEVE_MESSAGE_WARNING)
+            option = System.console().readLine("${'  '}${RETRIEVE_QUESTION_TO_CONTINUE}")
         } else {
-            option = YES
+            option = Constants.YES_OPTION
         }
     }
 
@@ -288,11 +270,11 @@ class Retrieve extends Retrieval {
             return
         }
         String parameterValues = files
-        parameterValues = parameterValues.replaceAll(BACKSLASH, SLASH)
+        parameterValues = parameterValues.replaceAll(Constants.BACK_SLASH, Constants.SLASH)
         ArrayList<File> filesToRetrieve = new ArrayList<File>()
         ArrayList<String> folderNames = new ArrayList<String>()
         parameterValues.split(Constants.COMMA).each { String parameter ->
-            if (parameter.contains(SLASH)) {
+            if (parameter.contains(Constants.SLASH)) {
                 filesToRetrieve.push(new File(Paths.get(projectPath,parameter).toString()))
             } else {
                 folderNames.push(parameter)

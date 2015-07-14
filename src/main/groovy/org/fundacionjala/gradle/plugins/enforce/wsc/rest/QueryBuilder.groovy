@@ -11,7 +11,7 @@ import groovy.util.logging.Log
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageBuilder
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.PackageBuilder
 
 /**
  * Builds queries from package xml file
@@ -66,6 +66,15 @@ class QueryBuilder {
     }
 
     /**
+     * Gets queries of components from component type
+     * @param typecomponent
+     * @return query
+     */
+    public String createQueryFromBasicComponent(String componentType) {
+        return "${SELECT_NAME} ${componentType}"
+    }
+
+    /**
      * Gets queries of components from list of files
      * @param ArrayList of files to execute query
      * @return array of queries String format
@@ -91,6 +100,7 @@ class QueryBuilder {
                 else if(getGroupComponent(component.getTypeName()).equals("validationRule")) {
                     query = """${SELECT_FULL_NAME} ${component.getTypeName()} ${WHERE_VALIDATION_NAME} '${Util.getDeveloperName(file.getName())}'"""
                 }
+
                 queries.add(query)
             } else {
                 invalidFolders.add(folderName)

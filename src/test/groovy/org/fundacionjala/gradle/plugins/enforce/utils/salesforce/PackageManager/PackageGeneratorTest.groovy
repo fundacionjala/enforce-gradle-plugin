@@ -1,15 +1,13 @@
-package org.fundacionjala.gradle.plugins.enforce.utils.salesforce
+package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager
 
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentMonitor
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ObjectResultTracker
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
 import org.fundacionjala.gradle.plugins.enforce.undeploy.SmartFilesValidator
-import org.gradle.api.artifacts.result.ComponentResult
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.PackageGenerator
 import spock.lang.Shared
 import spock.lang.Specification
-
-import java.nio.file.Paths
 
 class PackageGeneratorTest extends Specification {
     @Shared

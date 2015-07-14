@@ -111,6 +111,7 @@ class RetrieveTest extends spock.lang.Specification {
             retrieve.projectPath = Paths.get(path, 'retrieve', 'resources', 'src').toString()
             retrieve.unPackageFolder = unPackagedPath
         when:
+            retrieve.setup()
             retrieve.copyFilesWithoutPackage()
         then:
             new File(Paths.get(retrieve.projectPath, 'objects', 'Account.object').toString()).exists()
