@@ -132,8 +132,10 @@ class SmartFilesValidator {
      * Fills all folder supported to create queries
      */
     private void fillFoldersSupported() {
-        QueryBuilder.defaultComponents.each { typeFile ->
-            foldersSupported.push(MetadataComponents.getDirectoryByName(typeFile))
+        QueryBuilder.mapComponents.each {  group, components ->
+            components.each { typeFile ->
+                foldersSupported.push(MetadataComponents.getDirectoryByName(typeFile))
+            }
         }
     }
 
