@@ -5,6 +5,7 @@
 
 package org.fundacionjala.gradle.plugins.enforce.wsc.rest
 
+import aQute.bnd.osgi.Clazz
 import com.sforce.soap.metadata.PackageTypeMembers
 import groovy.util.logging.Log
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
@@ -21,12 +22,22 @@ class QueryBuilder {
     private final String SELECT_NAME = 'SELECT Name FROM'
     private final String SELECT_FULL_NAME = 'SELECT FullName FROM'
     private final String WHERE_NAME = 'WHERE Name ='
-    private final String WHERE_FULL_NAME = 'WHERE DeveloperName ='
+    private final String WHERE_DEVELOPER_NAME = 'WHERE DeveloperName ='
+    private final String WHERE_VALIDATION_NAME = 'WHERE ValidationName ='
     private final String THERE_IS_NOT_PACKAGE = "There isn't a package xml file in this path: "
     public static final ArrayList<String> defaultComponents = ['ApexClass', 'ApexComponent', 'ApexPage', 'ApexTrigger',
                                                                'StaticResource', 'Profile', 'EmailTemplate']
 
-    public static final ArrayList<String> defaultSubComponents = ['CompactLayout']
+    public static final ArrayList<String> componentCompactLayout = ['CompactLayout']
+    public static final ArrayList<String> defaultSubComponents = ['CustomField', 'CompactLayout', 'RecordType','ValidationRule']
+    public static final ArrayList<String> validationRule = ['ValidationRule']
+
+    public static final Map<String,ArrayList<String>> mapComponents =
+            [
+                    'defaultComponent' : defaultComponents,
+                    'defaultSubComponent' : defaultSubComponents,
+                    'validationRule' : validationRule
+            ]
     /**
      * Gets queries of components from package xml file
      * @param packagePath is type String
@@ -38,10 +49,10 @@ class QueryBuilder {
         }
         ArrayList<String> queries = new ArrayList<String>()
         getComponents(new FileReader(packagePath)).each { typeMembers ->
-            if(defaultSubComponents.contains(typeMembers.name)) {
+            if(componentCompactLayout.contains(typeMembers.name)) {
                 typeMembers.members.each { member ->
                     if (member != '*') {
-                        queries.add("""${SELECT_FULL_NAME} ${typeMembers.name} ${WHERE_FULL_NAME} '${
+                        queries.add("""${SELECT_FULL_NAME} ${typeMembers.name} ${WHERE_DEVELOPER_NAME} '${
                             Util.getDeveloperNameByMember(member, typeMembers.name as String)
                         }'""")
                     }
@@ -69,12 +80,17 @@ class QueryBuilder {
             String folderName = file.getParentFile().getName()
             MetadataComponents component = MetadataComponents.getComponentByPath(folderName)
             if (component && isDefaultComponent(component.getTypeName())) {
-                String query = component.getExtension() != 'sbc'?
-                    """${SELECT_NAME} ${component.getTypeName()} ${WHERE_NAME} '${
-                    Util.getFileName(file.getName())}'""" :
-                    """${SELECT_FULL_NAME} ${component.getTypeName()} ${WHERE_FULL_NAME} '${
-                        Util.getDeveloperName(file.getName())
-                    }'"""
+                String query = ""
+
+                if(getGroupComponent(component.getTypeName()).equals("defaultComponent")) {
+                    query = """${SELECT_NAME} ${component.getTypeName()} ${WHERE_NAME} '${Util.getFileName(file.getName())}'"""
+                }
+                else if(getGroupComponent(component.getTypeName()).equals("defaultSubComponent")) {
+                    query = """${SELECT_FULL_NAME} ${component.getTypeName()} ${WHERE_DEVELOPER_NAME} '${Util.getDeveloperName(file.getName())}'"""
+                }
+                else if(getGroupComponent(component.getTypeName()).equals("validationRule")) {
+                    query = """${SELECT_FULL_NAME} ${component.getTypeName()} ${WHERE_VALIDATION_NAME} '${Util.getDeveloperName(file.getName())}'"""
+                }
                 queries.add(query)
             } else {
                 invalidFolders.add(folderName)
@@ -108,16 +124,30 @@ class QueryBuilder {
     }
 
     /**
-     * Verifies if a component is into default components
+     * Verifies if a component is into components map
      * @param component is type String
      * @return true if there is a component else false
      */
+
     public boolean isDefaultComponent(String component) {
         boolean result = false
-        for (String componentObtained in defaultComponents) {
-            if (componentObtained == component) {
+        mapComponents.each { group, components ->
+            if(components.contains(component)) {
                 result = true
-                break
+            }
+        }
+        return result
+    }
+
+    /**
+     * @param component is type String
+     * @return the group of component name
+     */
+    public String getGroupComponent(String component) {
+        String result = "default"
+        mapComponents.each { group, components ->
+            if(components.contains(component)) {
+                result = group
             }
         }
         return result
