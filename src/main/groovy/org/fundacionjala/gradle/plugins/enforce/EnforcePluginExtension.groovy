@@ -28,6 +28,11 @@ class EnforcePluginExtension {
 
     Boolean deleteTemporaryFiles = true
 
+    /**
+     * A list with wildcards that customize that subComponents can be deleted
+     */
+    ArrayList<String> deleteSubComponents = ['*']
+
     ArrayList<String> standardObjects = []
 
     String tool = ""
