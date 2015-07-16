@@ -63,13 +63,13 @@ class FilterSubcomponents {
             enabledComponents.addAll(getAllComponents())
         }
         listOfComponentsToAdd.each { String typeComponent ->
-            def component = MetadataComponents.getComponentByName(typeComponent)
+            def component = MetadataComponents.getComponentByFolder(typeComponent)
             if(component) {
                 enabledComponents.add(component)
             }
         }
         listOfComponentsToRemove.each { String typeComponent ->
-            def component = MetadataComponents.getComponentByName(typeComponent)
+            def component = MetadataComponents.getComponentByFolder(typeComponent)
             if(component) {
                 enabledComponents.remove(component)
             }

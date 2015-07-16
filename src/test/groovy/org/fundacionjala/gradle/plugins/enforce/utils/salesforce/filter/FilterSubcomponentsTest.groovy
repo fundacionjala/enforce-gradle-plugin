@@ -45,21 +45,21 @@ class FilterSubcomponentsTest extends Specification{
             resultComponents.sort() == expectedComponents.sort()
     }
 
-    def "Test should return subComponents['CustomField','ValidationRule']"() {
+    def "Test should return subComponents['fields','validationRules']"() {
         given:
-            ArrayList<String> wildCard = ['CustomField','ValidationRule']
+            ArrayList<String> wildCard = ['fields','validationRules']
             ArrayList<Object> expectedComponents =  []
-            expectedComponents.add(MetadataComponents.getComponentByName("CustomField"))
-            expectedComponents.add(MetadataComponents.getComponentByName("ValidationRule"))
+            expectedComponents.add(MetadataComponents.getComponentByFolder("fields"))
+            expectedComponents.add(MetadataComponents.getComponentByFolder("validationRules"))
         when:
             ArrayList<Object> resultComponents = filter.listEnabledComponents(wildCard)
         then:
             resultComponents.sort() == expectedComponents.sort()
     }
 
-    def "Test should return all components subComponents['CustomField','ValidationRule']"() {
+    def "Test should return all components subComponents['fields','validationRules']"() {
         given:
-            ArrayList<String> wildCard = ['*','CustomField','ValidationRule']
+            ArrayList<String> wildCard = ['*','fields','validationRules']
             ArrayList<Object> expectedComponents =  MetadataComponents.COMPONENT.values()
         when:
             ArrayList<Object> resultComponents = filter.listEnabledComponents(wildCard)
@@ -67,25 +67,25 @@ class FilterSubcomponentsTest extends Specification{
             resultComponents.sort() == expectedComponents.sort()
     }
 
-    def "Test should return all except ['CustomField','CompactLayout', 'RecordType']"() {
+    def "Test should return all except ['fields','compactLayouts', 'recordTypes']"() {
         given:
-            ArrayList<String> wildCard = ['*','!CustomField','!CompactLayout', '!RecordType']
+            ArrayList<String> wildCard = ['*','!fields','!compactLayouts', '!recordTypes']
             ArrayList<Object> expectedComponents =  MetadataComponents.COMPONENT.values()
-            expectedComponents.remove(MetadataComponents.getComponentByName("CustomField"))
-            expectedComponents.remove(MetadataComponents.getComponentByName("CompactLayout"))
-            expectedComponents.remove(MetadataComponents.getComponentByName("RecordType"))
+            expectedComponents.remove(MetadataComponents.getComponentByFolder("fields"))
+            expectedComponents.remove(MetadataComponents.getComponentByFolder("compactLayouts"))
+            expectedComponents.remove(MetadataComponents.getComponentByFolder("recordTypes"))
         when:
             ArrayList<Object> resultComponents = filter.listEnabledComponents(wildCard)
         then:
             resultComponents.sort() == expectedComponents.sort()
     }
 
-    def "Test should return all except ['CompactLayout', 'RecordType']"() {
+    def "Test should return all except ['compactLayouts', 'recordTypes']"() {
         given:
-            ArrayList<String> wildCard = ['!CompactLayout', '!RecordType']
+            ArrayList<String> wildCard = ['!compactLayouts', '!recordTypes']
             ArrayList<Object> expectedComponents =  MetadataComponents.COMPONENT.values()
-            expectedComponents.remove(MetadataComponents.getComponentByName("CompactLayout"))
-            expectedComponents.remove(MetadataComponents.getComponentByName("RecordType"))
+            expectedComponents.remove(MetadataComponents.getComponentByFolder("compactLayouts"))
+            expectedComponents.remove(MetadataComponents.getComponentByFolder("recordTypes"))
         when:
             ArrayList<Object> resultComponents = filter.listEnabledComponents(wildCard)
         then:
@@ -113,9 +113,9 @@ class FilterSubcomponentsTest extends Specification{
             result == true
     }
 
-    def "Test should return true if exist a valid file with the wildcard [CustomField] "() {
+    def "Test should return true if exist a valid file with the wildcard [fields] "() {
         given:
-            ArrayList<String> wildCard = ['CustomField']
+            ArrayList<String> wildCard = ['fields']
             File file = new File(Paths.get(SRC_PATH,'src', 'fields', "field_1.sbc").toString())
         when:
             FilterSubcomponents.filter([], wildCard)
@@ -124,9 +124,9 @@ class FilterSubcomponentsTest extends Specification{
             result == true
     }
 
-    def "Test should return false if exist a valid file with the wildcard ['*','!ValidationRule'] "() {
+    def "Test should return false if exist a valid file with the wildcard ['*','!validationRules'] "() {
         given:
-            ArrayList<String> wildCard = ['*','!ValidationRule']
+            ArrayList<String> wildCard = ['*','!validationRules']
             File file = new File(Paths.get(SRC_PATH,'src', 'validationRules', "validation_1.sbc").toString())
         when:
             FilterSubcomponents.filter([], wildCard)
@@ -135,9 +135,9 @@ class FilterSubcomponentsTest extends Specification{
             result == false
     }
 
-    def "Test should return true if exist a valid file with the wildcard ['*','!CustomField','!CompactLayout', '!RecordType'] "() {
+    def "Test should return true if exist a valid file with the wildcard ['*','!fields','!compactLayouts', '!recordTypess'] "() {
         given:
-            ArrayList<String> wildCard = ['*','!CustomField','!CompactLayout', '!RecordType']
+            ArrayList<String> wildCard = ['*','!fields','!compactLayouts', '!recordTypess']
             File file = new File(Paths.get(SRC_PATH,'src', 'validationRules', "validation_1.sbc").toString())
         when:
             FilterSubcomponents.filter([], wildCard)
@@ -170,12 +170,12 @@ class FilterSubcomponentsTest extends Specification{
             resultFiles.sort()  == expectedFiles.sort()
     }
 
-    def "Test should return all files with the wildcard ['CustomField'] "() {
+    def "Test should return all files with the wildcard ['fields'] "() {
         given:
             ArrayList<File> filesToTest   = createVirtualSubcomponents('fields',5)
             ArrayList<File> expectedFiles = createVirtualSubcomponents('fields',5)
 
-            project.enforce.deleteSubComponents = ['CustomField']
+            project.enforce.deleteSubComponents = ['fields']
             ArrayList<String> wildCard = project.enforce.deleteSubComponents
         when:
             ArrayList<File> resultFiles = FilterSubcomponents.filter(filesToTest, wildCard)
@@ -183,12 +183,12 @@ class FilterSubcomponentsTest extends Specification{
             resultFiles.sort()  == expectedFiles.sort()
     }
 
-    def "Test should not return any files with the wildcard ['CustomField'] "() {
+    def "Test should not return any files with the wildcard ['fields'] "() {
         given:
             ArrayList<File> filesToTest   = createVirtualSubcomponents('validationRules',5)
             ArrayList<File> expectedFiles = []
 
-            project.enforce.deleteSubComponents = ['CustomField']
+            project.enforce.deleteSubComponents = ['fields']
             ArrayList<String> wildCard = project.enforce.deleteSubComponents
         when:
             ArrayList<File> resultFiles = FilterSubcomponents.filter(filesToTest, wildCard)
@@ -196,7 +196,7 @@ class FilterSubcomponentsTest extends Specification{
             resultFiles.sort()  == expectedFiles.sort()
     }
 
-    def "Test should return all CustomField files with the wildcard ['CustomField'] "() {
+    def "Test should return all fields files with the wildcard ['fields'] "() {
         given:
             ArrayList<File> filesToTest   = []
             filesToTest.addAll(createVirtualSubcomponents('fields',5))
@@ -204,7 +204,7 @@ class FilterSubcomponentsTest extends Specification{
             ArrayList<File> expectedFiles = []
             expectedFiles.addAll(createVirtualSubcomponents('fields',5))
 
-            project.enforce.deleteSubComponents = ['CustomField']
+            project.enforce.deleteSubComponents = ['fields']
             ArrayList<String> wildCard = project.enforce.deleteSubComponents
         when:
             ArrayList<File> resultFiles = FilterSubcomponents.filter(filesToTest, wildCard)
@@ -212,7 +212,7 @@ class FilterSubcomponentsTest extends Specification{
             resultFiles.sort()  == expectedFiles.sort()
     }
 
-    def "Test should return all ValidationRules files with the wildcard ['*','!CustomField','!CompactLayout', '!RecordType'] "() {
+    def "Test should return all validationRules files with the wildcard ['*','!fields','!compactLayouts', '!recordTypess'] "() {
         given:
             ArrayList<File> filesToTest   = []
             filesToTest.addAll(createVirtualSubcomponents('fields',5))
@@ -221,7 +221,7 @@ class FilterSubcomponentsTest extends Specification{
             ArrayList<File> expectedFiles = []
             expectedFiles.addAll(createVirtualSubcomponents('validationRules',5))
 
-            project.enforce.deleteSubComponents = ['*','!CustomField','!CompactLayout', '!RecordType']
+            project.enforce.deleteSubComponents = ['*','!fields','!compactLayouts', '!recordTypess']
             ArrayList<String> wildCard = project.enforce.deleteSubComponents
         when:
             ArrayList<File> resultFiles = FilterSubcomponents.filter(filesToTest, wildCard)
