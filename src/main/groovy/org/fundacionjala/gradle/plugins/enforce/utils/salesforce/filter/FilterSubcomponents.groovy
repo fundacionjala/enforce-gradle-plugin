@@ -1,5 +1,6 @@
 package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.filter
 
+import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 
 /**
@@ -7,7 +8,7 @@ import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataCompone
  */
 class FilterSubcomponents {
 
-    public static FilterSubcomponents filter
+    public static FilterSubcomponents filter = new FilterSubcomponents()
     private ArrayList<Objects> components
 
     /**
@@ -15,9 +16,6 @@ class FilterSubcomponents {
      * @return an unique Object FilterSubcomponents
      */
     public static FilterSubcomponents getFilter() {
-        if(filter == null) {
-            filter = new FilterSubcomponents()
-        }
         return filter
     }
 
@@ -27,12 +25,12 @@ class FilterSubcomponents {
      * @param delete SubComponents is a list with wildcards and  options to customize the filtered
      * @return an ArrayList with the filtered files
      */
-    public static ArrayList<File> filter(ArrayList<File> files, ArrayList<String>  deleteSubComponents) {
+    public static ArrayList<File> filter(ArrayList<File> filetToFilter, ArrayList<String>  deleteSubComponents) {
         FilterSubcomponents filter = FilterSubcomponents.getFilter()
         filter.components = filter.listEnabledComponents(deleteSubComponents)
         ArrayList<File> filteredFiles = []
 
-        files.each { File file ->
+        filetToFilter.each { File file ->
             if(filter.isValid(file)) {
                 filteredFiles.add(file)
             }
@@ -49,13 +47,12 @@ class FilterSubcomponents {
         ArrayList<Object> enabledComponents= []
         ArrayList<String> listOfComponentsToAdd = []
         ArrayList<String> listOfComponentsToRemove = []
-
         deleteSubComponents.each { String wildcard ->
-            if(wildcard.startsWith("!") && wildcard.length() > 0) {
+            if(wildcard.startsWith("!") && wildcard.length() > Constants.ZERO) {
 
                 listOfComponentsToRemove.add(wildcard.substring(1))
             }
-            else if(wildcard.length() > 0) {
+            else if(wildcard.length() > Constants.ZERO) {
                 listOfComponentsToAdd.add(wildcard)
             }
         }
