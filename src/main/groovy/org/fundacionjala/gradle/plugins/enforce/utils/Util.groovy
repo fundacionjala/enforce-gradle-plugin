@@ -7,6 +7,7 @@ package org.fundacionjala.gradle.plugins.enforce.utils
 
 import org.apache.commons.lang.StringUtils
 import groovy.util.logging.Slf4j
+import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentHash
 import org.fundacionjala.gradle.plugins.enforce.undeploy.PackageComponent
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.ClassifiedFile
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
@@ -552,5 +553,23 @@ class Util {
         if (!classifiedFile.filesWithoutXml.isEmpty()) {
             throw new Exception("${classifiedFile.filesWithoutXml} those files don't have their xml file")
         }
+    }
+
+    public static Map<String, ComponentHash> getFilesWithTheirRelativePaths(Map<String, ComponentHash> recoveryFileHashCode, String projectPath) {
+        Map<String, ComponentHash> result = [:]
+        recoveryFileHashCode.any {String fileName, ComponentHash componentHash ->
+            if(!Paths.get(fileName).isAbsolute()) {
+                result = recoveryFileHashCode
+                return
+            }
+            String relativeFileName
+            ComponentHash newComponentHash = new ComponentHash()
+
+            relativeFileName = getRelativePath(new File(fileName), projectPath)
+            newComponentHash.fileName = relativeFileName
+            newComponentHash.hash = componentHash.hash
+            result.put(relativeFileName, newComponentHash)
+        }
+        return result
     }
 }
