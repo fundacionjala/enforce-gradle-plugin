@@ -14,13 +14,13 @@ import org.gradle.api.Project
 import java.nio.file.Paths
 
 class PackageGenerator {
-    PackageBuilder packageBuilder
-    ComponentMonitor componentMonitor
-    Map<String, ResultTracker> fileTrackerMap
-    SmartFilesValidator smartFilesValidator
-    Credential credential
-    String projectPath
-    Project project
+    public PackageBuilder packageBuilder
+    public ComponentMonitor componentMonitor
+    public Map<String, ResultTracker> fileTrackerMap
+    public SmartFilesValidator smartFilesValidator
+    public Credential credential
+    public String projectPath
+    public Project project
 
     public PackageGenerator() {
         packageBuilder = new PackageBuilder()
@@ -119,24 +119,6 @@ class PackageGenerator {
         files = smartFilesValidator.filterFilesAccordingOrganization(files, projectPath)
         packageBuilder.createPackage(files, projectPath)
         packageBuilder.write(writer)
-    }
-
-    public void updateFileTrackerMap(ArrayList<String> folders) {
-        fileTrackerMap = componentMonitor.getFoldersFiltered(folders, fileTrackerMap)
-    }
-
-    public void listFileToDelete(ArrayList<String> folders,ArrayList<File> files) {
-        Map foldersFiltered = [:]
-
-        files.each { file ->
-            String parentFile = file.getParentFile().getName()
-            folders.each { nameFolder ->
-                if (parentFile == nameFolder) {
-                    foldersFiltered.put(Paths.get(parentFile,file.getName().toString()).toString(), new ResultTracker(ComponentStates.DELETED))
-                }
-            }
-        }
-        fileTrackerMap = foldersFiltered;
     }
 
     /**
