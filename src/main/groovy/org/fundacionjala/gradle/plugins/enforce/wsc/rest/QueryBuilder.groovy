@@ -74,6 +74,16 @@ class QueryBuilder {
     }
 
     /**
+     * Gets queries that selected a subcomponent
+     * @param typecomponent of our subcomponent
+     * @param file that needs validate.
+     * @return query
+     */
+    public String createQueryGetSubomponent(String typecomponent, File file) {
+        return """${SELECT_FULL_NAME} ${typecomponent} ${WHERE_DEVELOPER_NAME} '${Util.getDeveloperName(file.getName())}'"""
+    }
+
+    /**
      * Gets queries of components from list of files
      * @param ArrayList of files to execute query
      * @return array of queries String format
@@ -99,7 +109,7 @@ class QueryBuilder {
                 else if(getGroupComponent(component.getTypeName()).equals("validationRule")) {
                     query = """${SELECT_FULL_NAME} ${component.getTypeName()} ${WHERE_VALIDATION_NAME} '${Util.getDeveloperName(file.getName())}'"""
                 }
-
+                println "QUERY : "+query
                 queries.add(query)
             } else {
                 invalidFolders.add(folderName)
