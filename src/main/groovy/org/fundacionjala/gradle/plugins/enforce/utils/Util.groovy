@@ -562,14 +562,24 @@ class Util {
                 result = recoveryFileHashCode
                 return
             }
-            String relativeFileName
             ComponentHash newComponentHash = new ComponentHash()
-
-            relativeFileName = getRelativePath(new File(fileName), projectPath)
-            newComponentHash.fileName = relativeFileName
+            newComponentHash.fileName = getRelativePath(new File(fileName), projectPath)
             newComponentHash.hash = componentHash.hash
-            result.put(relativeFileName, newComponentHash)
+            result.put(newComponentHash.fileName, newComponentHash)
         }
         return result
+    }
+
+    /**
+     * Gets a files array from a directory
+     * @param directory the directory to get its files
+     * @return a files array
+     */
+    public static File[] getFiles(File directory) {
+        File[] arrayFiles = []
+        if (directory && directory.isDirectory()) {
+            arrayFiles = directory.listFiles()
+        }
+        return arrayFiles
     }
 }
