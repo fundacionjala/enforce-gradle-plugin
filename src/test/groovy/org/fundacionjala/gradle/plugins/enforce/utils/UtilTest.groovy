@@ -5,6 +5,7 @@
 
 package org.fundacionjala.gradle.plugins.enforce.utils
 
+import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentHash
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -267,6 +268,70 @@ class UtilTest extends Specification {
         then:
             result == ["${'reports'}${File.separator}${'MyFolder'}${File.separator}${'MyReport.report'}",
                        "${'documents'}${File.separator}${'MyDocuments'}${File.separator}${'MyDocument.txt'}"].join(', ')
+    }
+
+    def "Test should return a map with their relative paths as key" () {
+        given:
+            Map<String, ComponentHash> recoveryFileHashCode = [:]
+            String objectPath = Paths.get(RESOURCES_PATH, 'objects', 'Object2__c.object')
+            String documentPath = Paths.get(RESOURCES_PATH, 'documents', 'MyDocuments', 'MyDocument.txt')
+
+            ComponentHash componentHash = new ComponentHash()
+            componentHash.fileName = objectPath
+            componentHash.hash = "objectHash123qweads"
+
+            ComponentHash componentHashDocument = new ComponentHash()
+            componentHashDocument.fileName = documentPath
+            componentHashDocument.hash = "documentHash123qweads"
+
+            recoveryFileHashCode.put(objectPath, componentHash)
+            recoveryFileHashCode.put(documentPath, componentHashDocument)
+
+            String projectPath = RESOURCES_PATH
+            String fileNameExpect = Paths.get('objects', 'Object2__c.object').toString()
+            String documentNameExpect = Paths.get('documents', 'MyDocuments', 'MyDocument.txt').toString()
+        when:
+            Map<String, ComponentHash> result = Util.getFilesWithTheirRelativePaths(recoveryFileHashCode, projectPath)
+        then:
+            result.containsKey(fileNameExpect)
+            result.get(Paths.get(fileNameExpect).toString()).fileName == fileNameExpect
+            result.get(Paths.get(fileNameExpect).toString()).hash == componentHash.hash
+
+            result.containsKey(documentNameExpect)
+            result.get(Paths.get(documentNameExpect).toString()).fileName == documentNameExpect
+            result.get(Paths.get(documentNameExpect).toString()).hash == componentHashDocument.hash
+    }
+
+    def "Test should return a map with their relative paths as key when map sent has relative path as key" () {
+        given:
+            Map<String, ComponentHash> recoveryFileHashCode = [:]
+            String objectPath = Paths.get('objects', 'Object2__c.object')
+            String documentPath = Paths.get('documents', 'MyDocuments', 'MyDocument.txt')
+
+            ComponentHash componentHash = new ComponentHash()
+            componentHash.fileName = objectPath
+            componentHash.hash = "objectHash123qweads"
+
+            ComponentHash componentHashDocument = new ComponentHash()
+            componentHashDocument.fileName = documentPath
+            componentHashDocument.hash = "documentHash123qweads"
+
+            recoveryFileHashCode.put(objectPath, componentHash)
+            recoveryFileHashCode.put(documentPath, componentHashDocument)
+
+            String projectPath = RESOURCES_PATH
+            String fileNameExpect = Paths.get('objects', 'Object2__c.object').toString()
+            String documentNameExpect = Paths.get('documents', 'MyDocuments', 'MyDocument.txt').toString()
+        when:
+            Map<String, ComponentHash> result = Util.getFilesWithTheirRelativePaths(recoveryFileHashCode, projectPath)
+        then:
+            result.containsKey(fileNameExpect)
+            result.get(Paths.get(fileNameExpect).toString()).fileName == fileNameExpect
+            result.get(Paths.get(fileNameExpect).toString()).hash == componentHash.hash
+
+            result.containsKey(documentNameExpect)
+            result.get(Paths.get(documentNameExpect).toString()).fileName == documentNameExpect
+            result.get(Paths.get(documentNameExpect).toString()).hash == componentHashDocument.hash
     }
 
     def cleanupSpec() {
