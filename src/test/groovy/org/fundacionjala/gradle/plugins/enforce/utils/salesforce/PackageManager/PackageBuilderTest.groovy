@@ -423,4 +423,192 @@ class PackageBuilderTest extends Specification {
         then:
             result.sort() ==  ['reports', 'objects', 'classes'].sort()
     }
+
+    def "Test should not update package xml from project directory if exist name label with member as '*' " () {
+        given:
+            def unPackagedPath = Paths.get(RESOURCE_PATH, 'retrieve', 'resources', 'unpackaged').toString()
+            new File(unPackagedPath).mkdirs()
+            def unpackagePackageFile = new File(Paths.get(unPackagedPath, 'package.xml').toString())
+            unpackagePackageFile.write('''<?xml version="1.0" encoding="UTF-8"?>
+                                           <Package xmlns="http://soap.sforce.com/2006/04/metadata">
+                                                <types>
+                                                    <members>Account</members>
+                                                    <name>CustomObject</name>
+                                                </types>
+                                                <version>32.0</version>
+                                           </Package>''')
+
+            def packageXmlPath = Paths.get(RESOURCE_PATH, 'retrieve', 'resources', 'packageDirectory').toString()
+            new File(packageXmlPath).mkdirs()
+            def packageFile = new File(Paths.get(packageXmlPath, 'package.xml').toString())
+            packageFile.write('''<?xml version="1.0" encoding="UTF-8"?>
+                                    <Package xmlns="http://soap.sforce.com/2006/04/metadata">
+                                        <types>
+                                            <members>*</members>
+                                            <name>CustomObject</name>
+                                        </types>
+                                        <types>
+                                            <members>*</members>
+                                            <name>ApexComponent</name>
+                                        </types>
+                                        <version>32.0</version>
+                                    </Package>''')
+            def packageExpect = '''<?xml version='1.0' encoding='UTF-8'?>
+                                        <Package xmlns='http://soap.sforce.com/2006/04/metadata'>
+                                            <types>
+                                                <members>*</members>
+                                                <name>CustomObject</name>
+                                            </types>
+                                            <types>
+                                                <members>*</members>
+                                                <name>ApexComponent</name>
+                                            </types>
+                                            <version>32.0</version>
+                                            </Package>'''
+        when:
+            PackageBuilder.updatePackageXml(Paths.get(unPackagedPath, 'package.xml').toString(),
+                                            Paths.get(packageXmlPath, 'package.xml').toString())
+            XMLUnit.ignoreWhitespace = true
+            def xmlDiff = new Diff(packageExpect, new File(Paths.get(packageXmlPath, 'package.xml').toString()).text)
+        then:
+            xmlDiff.similar()
+    }
+
+    def "Test should Add name label as 'CustomObject' and member label as '*" () {
+        given:
+            def unPackagedPath = Paths.get(RESOURCE_PATH, 'retrieve', 'resources', 'unpackaged').toString()
+            new File(unPackagedPath).mkdirs()
+            def unpackagePackageFile = new File(Paths.get(unPackagedPath, 'package.xml').toString())
+            unpackagePackageFile.write('''<?xml version="1.0" encoding="UTF-8"?>
+                                            <Package xmlns="http://soap.sforce.com/2006/04/metadata">
+                                                <types>
+                                                    <members>Account</members>
+                                                    <name>CustomObject</name>
+                                                </types>
+                                                <version>32.0</version>
+                                            </Package>''')
+            def packageXmlPath = Paths.get(RESOURCE_PATH, 'retrieve', 'resources', 'packageDirectory').toString()
+            new File(packageXmlPath).mkdirs()
+            def packageFile = new File(Paths.get(packageXmlPath, 'package.xml').toString())
+            packageFile.write('''<?xml version="1.0" encoding="UTF-8"?>
+                                    <Package xmlns="http://soap.sforce.com/2006/04/metadata">
+                                        <types>
+                                            <members>*</members>
+                                            <name>ApexClass</name>
+                                        </types>
+                                        <version>32.0</version>
+                                    </Package>''')
+
+            def packageExpect = '''<?xml version="1.0" encoding="UTF-8"?>
+                                    <Package xmlns="http://soap.sforce.com/2006/04/metadata">
+                                        <types>
+                                            <members>*</members>
+                                            <name>ApexClass</name>
+                                        </types>
+                                        <types>
+                                            <members>*</members>
+                                            <name>CustomObject</name>
+                                        </types>
+                                        <version>32.0</version>
+                                    </Package>'''
+        when:
+            PackageBuilder.updatePackageXml(Paths.get(unPackagedPath, 'package.xml').toString(),
+                                            Paths.get(packageXmlPath, 'package.xml').toString())
+            XMLUnit.ignoreWhitespace = true
+            def xmlDiff = new Diff(packageExpect, new File(Paths.get(packageXmlPath, 'package.xml').toString()).text)
+        then:
+            xmlDiff.similar()
+    }
+
+    def "Test should Add into type with name label as 'CustomObject' and member label as Account" () {
+        given:
+            def unPackagedPath = Paths.get(RESOURCE_PATH, 'retrieve', 'resources', 'unpackaged').toString()
+            new File(unPackagedPath).mkdirs()
+            def unpackagePackageFile = new File(Paths.get(unPackagedPath, 'package.xml').toString())
+            unpackagePackageFile.write('''<?xml version="1.0" encoding="UTF-8"?>
+                                            <Package xmlns="http://soap.sforce.com/2006/04/metadata">
+                                                <types>
+                                                    <members>Account</members>
+                                                    <members>Object1__c</members>
+                                                    <name>CustomObject</name>
+                                                </types>
+                                            <version>32.0</version>
+                                            </Package>''')
+            def packageXmlPath = Paths.get(RESOURCE_PATH, 'retrieve', 'resources', 'packageDirectory').toString()
+            new File(packageXmlPath).mkdirs()
+            def packageFile = new File(Paths.get(packageXmlPath, 'package.xml').toString())
+            packageFile.write('''<?xml version="1.0" encoding="UTF-8"?>
+                                    <Package xmlns="http://soap.sforce.com/2006/04/metadata">
+                                        <types>
+                                            <members>Account</members>
+                                            <name>CustomObject</name>
+                                        </types>
+                                    <version>32.0</version>
+                                    </Package>''')
+            def packageExpect = '''<?xml version="1.0" encoding="UTF-8"?>
+                                        <Package xmlns="http://soap.sforce.com/2006/04/metadata">
+                                            <types>
+                                                <members>Account</members>
+                                                <members>Object1__c</members>
+                                                <name>CustomObject</name>
+                                            </types>
+                                        <version>32.0</version>
+                                        </Package>'''
+        when:
+            PackageBuilder.updatePackageXml(Paths.get(unPackagedPath, 'package.xml').toString(),
+                                            Paths.get(packageXmlPath, 'package.xml').toString())
+            XMLUnit.ignoreWhitespace = true
+            def xmlDiff = new Diff(packageExpect, new File(Paths.get(packageXmlPath, 'package.xml').toString()).text)
+        then:
+            xmlDiff.similar()
+    }
+
+    def "Test should Add name label as 'CustomObject' and member label as Account into package without '*' " () {
+        given:
+            def unPackagedPath = Paths.get(RESOURCE_PATH, 'retrieve', 'resources', 'unpackaged').toString()
+            new File(unPackagedPath).mkdirs()
+            def unpackagePackageFile = new File(Paths.get(unPackagedPath, 'package.xml').toString())
+            unpackagePackageFile.write('''<?xml version="1.0" encoding="UTF-8"?>
+                                            <Package xmlns="http://soap.sforce.com/2006/04/metadata">
+                                                <types>
+                                                    <members>Account</members>
+                                                    <name>CustomObject</name>
+                                                </types>
+                                            <version>32.0</version>
+                                            </Package>''')
+            def packageXmlPath = Paths.get(RESOURCE_PATH, 'retrieve', 'resources', 'packageDirectory').toString()
+            new File(packageXmlPath).mkdirs()
+            def packageFile = new File(Paths.get(packageXmlPath, 'package.xml').toString())
+            packageFile.write('''<?xml version="1.0" encoding="UTF-8"?>
+                                    <Package xmlns="http://soap.sforce.com/2006/04/metadata">
+                                        <types>
+                                            <members>Class1</members>
+                                            <name>ApexClass</name>
+                                        </types>
+                                    <version>32.0</version>
+                                    </Package>''')
+            def packageExpect = '''<?xml version="1.0" encoding="UTF-8"?>
+                                        <Package xmlns="http://soap.sforce.com/2006/04/metadata">
+                                            <types>
+                                                <members>Class1</members>
+                                                <name>ApexClass</name>
+                                            </types>
+                                            <types>
+                                                <members>Account</members>
+                                                <name>CustomObject</name>
+                                                </types>
+                                        <version>32.0</version>
+                                        </Package>'''
+        when:
+            PackageBuilder.updatePackageXml(Paths.get(unPackagedPath, 'package.xml').toString(),
+                                            Paths.get(packageXmlPath, 'package.xml').toString())
+            XMLUnit.ignoreWhitespace = true
+            def xmlDiff = new Diff(packageExpect, new File(Paths.get(packageXmlPath, 'package.xml').toString()).text)
+        then:
+            xmlDiff.similar()
+    }
+
+    def cleanupSpec() {
+        new File(Paths.get(RESOURCE_PATH, 'retrieve').toString()).deleteDir()
+    }
 }

@@ -10,7 +10,6 @@ import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.SalesforceTask
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.ZipFileManager
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.FileValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.Package
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.PackageBuilder
 
@@ -26,6 +25,8 @@ abstract class Retrieval extends SalesforceTask {
     public String packageFromBuildPath
     private final String FILES_RETRIEVE = 'files'
     private final String ALL_PARAMETER = 'all'
+    public String files
+    public String all = Constants.FALSE
 
     /**
      * Sets description and group task
@@ -90,29 +91,6 @@ abstract class Retrieval extends SalesforceTask {
         }
         retrieveMetadata.getWarningsMessages().each { message ->
             logger.warn(message)
-        }
-    }
-
-    /**
-     * Validates names of folders
-     * @param foldersName is type array list contents names of folders
-     */
-    public void validateFolders(ArrayList<String> foldersName) {
-        ArrayList<String> invalidFolders = new ArrayList<String>()
-        invalidFolders = Util.getInvalidFolders(foldersName)
-        if (!invalidFolders.empty) {
-            throw new Exception("${Constants.INVALID_FOLDER}: ${invalidFolders}")
-        }
-    }
-
-    /**
-     * Validates names of files
-     * @param filesName is type array list contents names of files
-     */
-    public void validateFiles(ArrayList<File> files) {
-        Map<String, ArrayList<String>> validatedMapFiles = FileValidator.validateFiles(projectPath, files)
-        if (!validatedMapFiles[Constants.INVALID_FILE].isEmpty()) {
-            throw new Exception("${Constants.INVALID_FILE}: ${validatedMapFiles[Constants.INVALID_FILE]}")
         }
     }
 }
