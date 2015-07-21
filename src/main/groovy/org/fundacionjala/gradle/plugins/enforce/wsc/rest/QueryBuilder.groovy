@@ -80,7 +80,21 @@ class QueryBuilder {
      * @return query
      */
     public String createQueryGetSubomponent(String typecomponent, File file) {
-        return """${SELECT_FULL_NAME} ${typecomponent} ${WHERE_DEVELOPER_NAME} '${Util.getDeveloperName(file.getName())}'"""
+        String query
+        if(typecomponent == 'CustomField') {
+            query = """${SELECT_FULL_NAME} ${typecomponent} ${WHERE_DEVELOPER_NAME} '${Util.getDeveloperName(file.getName())}'"""
+        }
+        else if(typecomponent == 'CompactLayout') {
+            query = """${SELECT_FULL_NAME} ${typecomponent} ${WHERE_DEVELOPER_NAME} '${Util.getDeveloperName(file.getName())}'"""
+        }
+        else if(typecomponent == 'ValidationRule') {
+            query = """${SELECT_FULL_NAME} ${typecomponent} ${WHERE_VALIDATION_NAME} '${Util.getDeveloperName(file.getName())}'"""
+        }
+        else if(typecomponent == 'RecordType') {
+            query = """${SELECT_FULL_NAME} ${typecomponent} ${WHERE_NAME} '${Util.getDeveloperName(file.getName())}'"""
+        }
+        return query
+
     }
 
     /**
