@@ -4,8 +4,8 @@ import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentMonitor
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ObjectResultTracker
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
-import org.fundacionjala.gradle.plugins.enforce.undeploy.SmartFilesValidator
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.PackageGenerator
+import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
+import org.fundacionjala.gradle.plugins.enforce.wsc.LoginType
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -15,6 +15,19 @@ class PackageGeneratorTest extends Specification {
 
     @Shared
     String RESOURCE_PATH = "${ROOT_PATH}/src/test/groovy/org/fundacionjala/gradle/plugins/enforce/utils/resources"
+
+    @Shared
+    Credential credential
+
+    def setup() {
+        credential = new Credential()
+        credential.id = 'id'
+        credential.username = 'salesforce2014.test@gmail.com'
+        credential.password = '123qwe2014'
+        credential.token = 'UO1Jx5vDQl97xCKkwXBH8tg3T'
+        credential.loginFormat = LoginType.DEV.value()
+        credential.type = 'normal'
+    }
 
     def "Test should build a package from new and changed files"() {
         given:
@@ -130,58 +143,74 @@ class PackageGeneratorTest extends Specification {
     def "Test should build a package from deleted files"() {
         given:
             PackageGenerator packageGenerator = new PackageGenerator()
-            SmartFilesValidator smartFilesValidator = Mock(SmartFilesValidator)
 
             Map<String, ComponentStates> subComponentResult = [:]
             subComponentResult.put("fields/fieldOne",ComponentStates.DELETED)
             subComponentResult.put("fields/fieldTwo",ComponentStates.DELETED)
 
-
             ObjectResultTracker objectResultTracker = new ObjectResultTracker(ComponentStates.CHANGED);
             objectResultTracker.subComponentsResult = subComponentResult;
 
-            def newFilePath = "classes/File.cls"
-            def newObjectPathChanged  = "objects/ObjectFileChanged.object"
-            def newObjectPathDeleted = "objects/ObjectFileDeleted.object"
+            def newClassPath1 = "classes/Class1.cls"
+            def newClassPath2 = "classes/Class2.cls"
+            def newClassPath3 = "classes/Class3.cls"
+            def newClassPath4 = "classes/Class4.cls"
+            def newFieldPath1 = "fields/Object1__c.Field1__c.sbc"
+            def newFieldPath2 = "fields/Object1__c.Field2__c.sbc"
+            def newFieldPath3 = "fields/Object1__c.Field4__c.sbc"
+            def newFieldPath4 = "fields/Object1__c.Field5__c.sbc"
+            def newObjectPath1 = "objects/Object1__c"
+            def newObjectPath2 = "objects/Object2__c"
+            def newObjectPath3 = "objects/Object3__c"
+
             Map<String, ResultTracker> fileTrackerMap = [:]
-            fileTrackerMap.put(newFilePath, new ResultTracker(ComponentStates.DELETED))
-            fileTrackerMap.put(newObjectPathDeleted, new ResultTracker(ComponentStates.DELETED))
-            fileTrackerMap.put(newObjectPathChanged, objectResultTracker)
+            fileTrackerMap.put(newClassPath1, new ResultTracker(ComponentStates.DELETED))
+            fileTrackerMap.put(newClassPath2, new ResultTracker(ComponentStates.DELETED))
+            fileTrackerMap.put(newClassPath3, new ResultTracker(ComponentStates.DELETED))
+            fileTrackerMap.put(newClassPath4, new ResultTracker(ComponentStates.DELETED))
+            fileTrackerMap.put(newFieldPath1, new ResultTracker(ComponentStates.DELETED))
+            fileTrackerMap.put(newFieldPath2, new ResultTracker(ComponentStates.DELETED))
+            fileTrackerMap.put(newFieldPath3, new ResultTracker(ComponentStates.DELETED))
+            fileTrackerMap.put(newFieldPath4, new ResultTracker(ComponentStates.DELETED))
+            fileTrackerMap.put(newObjectPath1, new ResultTracker(ComponentStates.DELETED))
+            fileTrackerMap.put(newObjectPath2, new ResultTracker(ComponentStates.DELETED))
+            fileTrackerMap.put(newObjectPath3, new ResultTracker(ComponentStates.DELETED))
+
             packageGenerator.projectPath = RESOURCE_PATH
             packageGenerator.fileTrackerMap = fileTrackerMap
-            smartFilesValidator.filterFilesAccordingOrganization(_,_) >> packageGenerator.getFiles(ComponentStates.DELETED) + packageGenerator.getSubComponents(ComponentStates.DELETED)
-            def stringWriter = new StringWriter()
+            packageGenerator.credential = credential
 
         when:
-            packageGenerator.buildDestructive(stringWriter, smartFilesValidator)
+            packageGenerator.buildDestructive(new StringWriter())
 
         then:
-            packageGenerator.packageBuilder.metaPackage.types[0].members[0] == "File"
+            packageGenerator.packageBuilder.metaPackage.types[0].members[0] == "Class1"
+            packageGenerator.packageBuilder.metaPackage.types[0].members[2] == "Class2"
             packageGenerator.packageBuilder.metaPackage.types[0].name == "ApexClass"
-            packageGenerator.packageBuilder.metaPackage.types[1].members[0] == "ObjectFileDeleted"
-            packageGenerator.packageBuilder.metaPackage.types[1].name == "CustomObject"
 
-            packageGenerator.packageBuilder.metaPackage.types[2].members[0] == "ObjectFileChanged.fieldOne"
-            packageGenerator.packageBuilder.metaPackage.types[2].members[1] == "ObjectFileChanged.fieldTwo"
-            packageGenerator.packageBuilder.metaPackage.types[2].name == "CustomField"
+            packageGenerator.packageBuilder.metaPackage.types[1].members[0] == "Object1__c.Field1__c"
+            packageGenerator.packageBuilder.metaPackage.types[1].members[1] == "Object1__c.Field2__c"
+            packageGenerator.packageBuilder.metaPackage.types[1].name == "CustomField"
 
+            packageGenerator.packageBuilder.metaPackage.types[2].members[0] == "Object1__c"
+            packageGenerator.packageBuilder.metaPackage.types[2].members[1] == "Object2__c"
+            packageGenerator.packageBuilder.metaPackage.types[2].members[2] == "Object3__c"
+            packageGenerator.packageBuilder.metaPackage.types[2].name == "CustomObject"
     }
 
     def "Test should build a package from deleted report files"() {
         given:
             PackageGenerator packageGenerator = new PackageGenerator()
-            SmartFilesValidator smartFilesValidator = Mock(SmartFilesValidator)
 
             def newObjectPathDeleted = "reports/ReportFolder/reportTest.report"
             Map<String, ResultTracker> fileTrackerMap = [:]
             fileTrackerMap.put(newObjectPathDeleted, new ResultTracker(ComponentStates.DELETED))
             packageGenerator.projectPath = RESOURCE_PATH
             packageGenerator.fileTrackerMap = fileTrackerMap
-            smartFilesValidator.filterFilesAccordingOrganization(_,_) >> packageGenerator.getFiles(ComponentStates.DELETED)
-            def stringWriter = new StringWriter()
 
         when:
-            packageGenerator.buildDestructive(stringWriter, smartFilesValidator)
+            packageGenerator.buildDestructive(new StringWriter())
+
         then:
             packageGenerator.packageBuilder.metaPackage.types[0].members[0] == "ReportFolder/reportTest"
             packageGenerator.packageBuilder.metaPackage.types[0].name == "Report"

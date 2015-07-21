@@ -4,9 +4,9 @@ import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentMonitor
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ObjectResultTracker
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
-import org.fundacionjala.gradle.plugins.enforce.undeploy.SmartFilesValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.OrgValidator
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 
 import java.nio.file.Paths
@@ -15,7 +15,6 @@ class PackageGenerator {
     PackageBuilder packageBuilder
     ComponentMonitor componentMonitor
     Map<String, ResultTracker> fileTrackerMap
-    SmartFilesValidator smartFilesValidator
     Credential credential
     String projectPath
 
@@ -23,13 +22,6 @@ class PackageGenerator {
         packageBuilder = new PackageBuilder()
         componentMonitor = new ComponentMonitor()
     }
-
-    public void init(String projectPath, Credential credential) {
-        this.projectPath = projectPath
-        this.credential = credential
-        componentMonitor = new ComponentMonitor(projectPath)
-    }
-
 
     public void init(String projectPath, ArrayList<File> files, Credential credential) {
         this.projectPath = projectPath
@@ -101,33 +93,9 @@ class PackageGenerator {
 
     public void buildDestructive(Writer writer) {
         ArrayList<File> files = getFiles(ComponentStates.DELETED) + getSubComponents(ComponentStates.DELETED)
-        smartFilesValidator = new SmartFilesValidator(SmartFilesValidator.getJsonQueries(files, credential))
-        buildDestructive(writer, smartFilesValidator)
-    }
-
-    public void buildDestructive(Writer writer, SmartFilesValidator smartFilesValidator) {
-        ArrayList<File> files = getFiles(ComponentStates.DELETED) + getSubComponents(ComponentStates.DELETED)
-        files = smartFilesValidator.filterFilesAccordingOrganization(files, projectPath)
+        files = OrgValidator.getValidFiles(credential, files, projectPath)
         packageBuilder.createPackage(files, projectPath)
         packageBuilder.write(writer)
-    }
-
-    public void updateFileTrackerMap(ArrayList<String> folders) {
-        fileTrackerMap = componentMonitor.getFoldersFiltered(folders, fileTrackerMap)
-    }
-
-    public void listFileToDelete(ArrayList<String> folders,ArrayList<File> files) {
-        Map foldersFiltered = [:]
-
-        files.each { file ->
-            String parentFile = file.getParentFile().getName()
-            folders.each { nameFolder ->
-                if (parentFile == nameFolder) {
-                    foldersFiltered.put(Paths.get(parentFile,file.getName().toString()).toString(), new ResultTracker(ComponentStates.DELETED))
-                }
-            }
-        }
-        fileTrackerMap = foldersFiltered;
     }
 
     /**

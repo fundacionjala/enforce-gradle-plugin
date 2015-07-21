@@ -109,7 +109,6 @@ class QueryBuilder {
                 else if(getGroupComponent(component.getTypeName()).equals("validationRule")) {
                     query = """${SELECT_FULL_NAME} ${component.getTypeName()} ${WHERE_VALIDATION_NAME} '${Util.getDeveloperName(file.getName())}'"""
                 }
-                println "QUERY : "+query
                 queries.add(query)
             } else {
                 invalidFolders.add(folderName)

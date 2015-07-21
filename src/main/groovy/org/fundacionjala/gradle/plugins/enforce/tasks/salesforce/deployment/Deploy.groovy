@@ -32,7 +32,6 @@ class Deploy extends Deployment {
     private static final String TRUNCATE_CODE = 'sourceCode'
 
     private static final Integer NOT_FOUND = -1
-    private static final boolean CONTAINS_XML_FILE = true;
 
     private boolean deprecateTruncateOn
     private boolean codeTruncateOn
