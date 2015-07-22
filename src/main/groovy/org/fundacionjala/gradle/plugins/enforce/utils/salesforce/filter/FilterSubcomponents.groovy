@@ -6,31 +6,22 @@ import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataCompone
 /**
  * Filter the subcomponents for delete, according with the configuration in the deleteSubComponents parameters
  */
+@Singleton
 class FilterSubcomponents {
-
-    public static FilterSubcomponents filter = new FilterSubcomponents()
     private ArrayList<Objects> components
 
     /**
-     * Gets a FilterSubcomponents instance of type singleTon
-     * @return an unique Object FilterSubcomponents
-     */
-    public static FilterSubcomponents getFilter() {
-        return filter
-    }
-
-    /**
      * Gets a list with the filtered files
-     * @param files is a list with the files to filter
+     * @param filesToFilter is a list with the files to filter
      * @param delete SubComponents is a list with wildcards and  options to customize the filtered
      * @return an ArrayList with the filtered files
      */
-    public static ArrayList<File> filter(ArrayList<File> filetToFilter, ArrayList<String>  deleteSubComponents) {
-        FilterSubcomponents filter = FilterSubcomponents.getFilter()
+    public static ArrayList<File> filter(ArrayList<File> filesToFilter, ArrayList<String>  deleteSubComponents) {
+        FilterSubcomponents filter = FilterSubcomponents.instance
         filter.components = filter.listEnabledComponents(deleteSubComponents)
         ArrayList<File> filteredFiles = []
 
-        filetToFilter.each { File file ->
+        filesToFilter.each { File file ->
             if(filter.isValid(file)) {
                 filteredFiles.add(file)
             }

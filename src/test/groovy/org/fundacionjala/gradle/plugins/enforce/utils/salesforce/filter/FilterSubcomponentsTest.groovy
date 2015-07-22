@@ -23,7 +23,7 @@ class FilterSubcomponentsTest extends Specification{
     def setup() {
         project = ProjectBuilder.builder().build()
         project.apply(plugin: EnforcePlugin)
-        filter = FilterSubcomponents.getFilter()
+        filter = FilterSubcomponents.instance
     }
 
     def ArrayList<File> createVirtualSubcomponents(String type, int quantity) {
@@ -110,7 +110,7 @@ class FilterSubcomponentsTest extends Specification{
             FilterSubcomponents.filter([], wildCard)
             boolean result = filter.isValid(file)
         then:
-            result == true
+            result
     }
 
     def "Test should return true if exist a valid file with the wildcard [fields] "() {
@@ -121,7 +121,7 @@ class FilterSubcomponentsTest extends Specification{
             FilterSubcomponents.filter([], wildCard)
             boolean result = filter.isValid(file)
         then:
-            result == true
+            result
     }
 
     def "Test should return false if exist a valid file with the wildcard ['*','!validationRules'] "() {
@@ -132,7 +132,7 @@ class FilterSubcomponentsTest extends Specification{
             FilterSubcomponents.filter([], wildCard)
             boolean result = filter.isValid(file)
         then:
-            result == false
+            !result
     }
 
     def "Test should return true if exist a valid file with the wildcard ['*','!fields','!compactLayouts', '!recordTypess'] "() {
@@ -143,7 +143,7 @@ class FilterSubcomponentsTest extends Specification{
             FilterSubcomponents.filter([], wildCard)
             boolean result = filter.isValid(file)
         then:
-            result == true
+            result
     }
 
     def "Test should return true if exist a valid file with the wildcard [] "() {
@@ -154,7 +154,7 @@ class FilterSubcomponentsTest extends Specification{
             FilterSubcomponents.filter([], wildCard)
             boolean result = filter.isValid(file)
         then:
-            result == false
+            !result
     }
 
     def "Test should return all files with the wildcard ['*'] "() {
