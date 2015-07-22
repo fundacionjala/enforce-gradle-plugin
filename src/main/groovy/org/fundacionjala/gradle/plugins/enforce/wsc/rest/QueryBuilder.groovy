@@ -112,15 +112,15 @@ class QueryBuilder {
             String folderName = file.getParentFile().getName()
             MetadataComponents component = MetadataComponents.getComponentByPath(folderName)
             if (component && isDefaultComponent(component.getTypeName())) {
+                String componentGroup = getGroupComponent(component.getTypeName())
                 String query = ""
-
-                if(getGroupComponent(component.getTypeName()).equals("defaultComponent")) {
+                if(componentGroup.equals("defaultComponent")) {
                     query = """${SELECT_NAME} ${component.getTypeName()} ${WHERE_NAME} '${Util.getFileName(file.getName())}'"""
                 }
-                else if(getGroupComponent(component.getTypeName()).equals("defaultSubComponent")) {
+                else if(componentGroup.equals("defaultSubComponent")) {
                     query = """${SELECT_FULL_NAME} ${component.getTypeName()} ${WHERE_DEVELOPER_NAME} '${Util.getDeveloperName(file.getName())}'"""
                 }
-                else if(getGroupComponent(component.getTypeName()).equals("validationRule")) {
+                else if(componentGroup.equals("validationRule")) {
                     query = """${SELECT_FULL_NAME} ${component.getTypeName()} ${WHERE_VALIDATION_NAME} '${Util.getDeveloperName(file.getName())}'"""
                 }
                 queries.add(query)
@@ -131,7 +131,6 @@ class QueryBuilder {
         if (!invalidFolders.isEmpty()) {
             Util.logList(log, Constants.UNSUPPORTED_FOLDERS, invalidFolders)
         }
-
         return queries
     }
 

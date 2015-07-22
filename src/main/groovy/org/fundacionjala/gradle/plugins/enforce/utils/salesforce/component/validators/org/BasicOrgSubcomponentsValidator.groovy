@@ -15,7 +15,7 @@ public class BasicOrgSubcomponentsValidator implements OrgInterfaceValidator{
     public QueryBuilder queryBuilder
     public JsonSlurper jsonSlurper
 
-    def BasicOrgSubcomponentsValidator(){
+    BasicOrgSubcomponentsValidator(){
         queryBuilder = new QueryBuilder()
         jsonSlurper = new JsonSlurper()
     }
