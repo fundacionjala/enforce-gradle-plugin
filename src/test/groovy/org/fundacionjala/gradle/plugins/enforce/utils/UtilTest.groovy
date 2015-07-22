@@ -334,6 +334,24 @@ class UtilTest extends Specification {
             result.get(Paths.get(documentNameExpect).toString()).hash == componentHashDocument.hash
     }
 
+    def "Test should return an exception if there is a invalid file"() {
+        given:
+            String filesParameter = ["classes${File.separator}Class1.txy", "triggers${File.separator}TriggerOne.trigger"]
+        when:
+            Util.validateContentParameter(RESOURCES_PATH, filesParameter)
+        then:
+            thrown(Exception)
+    }
+
+    def "Test should return an exception if there is a invalid folder"() {
+        given:
+            String filesParameter = ['classes', 'invalid']
+        when:
+            Util.validateContentParameter(RESOURCES_PATH, filesParameter)
+        then:
+            thrown(Exception)
+    }
+
     def cleanupSpec() {
         new File(Paths.get(RESOURCES_PATH, 'triggers').toString()).deleteDir()
         new File(Paths.get(RESOURCES_PATH, 'relativeTest').toString()).deleteDir()

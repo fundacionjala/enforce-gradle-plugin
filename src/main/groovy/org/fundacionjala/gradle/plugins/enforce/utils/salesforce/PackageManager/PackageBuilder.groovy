@@ -224,7 +224,6 @@ class PackageBuilder {
      * @param folders contains the name of folders to create the package
      */
     public void createPackageByFolder(ArrayList<String> folders) {
-
         ArrayList<PackageTypeMembers> packageData = []
         PackageTypeMembers packageTypeMembers
         ArrayList<String> invalidFolders = []
@@ -260,7 +259,6 @@ class PackageBuilder {
                 folders.push(folderName)
             }
         }
-
         return folders
     }
 
@@ -298,6 +296,48 @@ class PackageBuilder {
             if (packagePassword) {
                 mkp.yieldUnescaped "\n\t<password>" + packagePassword + "</password>"
             }
+        }
+    }
+
+    /**
+     * Updates package xml from source package xml with retrieved files
+     * @param retrievedPackagePath is type String
+     * @param packageSrcPath is type String
+     */
+    public static void updatePackageXml(String retrievedPackagePath, String packageSrcPath) {
+        PackageBuilder source = new PackageBuilder()
+        PackageBuilder retrieved = new PackageBuilder()
+        retrieved.read(new FileReader(retrievedPackagePath))
+        source.read(new FileReader(packageSrcPath))
+        def packageFile = new File(packageSrcPath)
+        retrieved.metaPackage.types.each { type ->
+            String name = type.name
+            ArrayList<String> members = type.members
+            ArrayList<PackageTypeMembers> packageTypeMembers = source.metaPackage.types.toList()
+            PackageTypeMembers packageTypeMembersFound = null
+            ArrayList<String> memberType
+            packageTypeMembers.find { packageTypeMembersIt ->
+                memberType = packageTypeMembersIt.members
+                if (packageTypeMembersIt.name == name) {
+                    packageTypeMembersFound = packageTypeMembersIt
+                    return
+                }
+            }
+            if (!packageTypeMembersFound) {
+                if (memberType.contains(Constants.WILDCARD)) {
+                    members = [Constants.WILDCARD]
+                }
+            } else {
+                packageTypeMembersFound.members.each { member ->
+                    if (members.contains(member)) {
+                        members.remove(member)
+                    }
+                    if (member == Constants.WILDCARD) {
+                        members = []
+                    }
+                }
+            }
+            source.update(name, members, packageFile)
         }
     }
 }

@@ -136,24 +136,6 @@ class UploadTest extends Specification {
             filesChangedToUpload == [:]
     }
 
-    def "Test should return an exception if there is a invalid folder"() {
-        given:
-            def foldersName = ['classes', 'invalid']
-        when:
-            uploadInstance.validateFolders(foldersName)
-        then:
-            thrown(Exception)
-    }
-
-    def "Test should return an exception if there is a invalid file"() {
-        given:
-            def filesName = ["classes${File.separator}Class1.txy", "triggers${File.separator}TriggerOne.trigger"]
-        when:
-            uploadInstance.validateFiles(filesName)
-        then:
-            thrown(Exception)
-    }
-
     def "Test should load files and excludes parameter"() {
         given:
             String filesParameterValue = "classes,objects${File.separator}Object1__c.object"
