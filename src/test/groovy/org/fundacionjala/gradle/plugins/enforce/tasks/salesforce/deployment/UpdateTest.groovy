@@ -167,6 +167,7 @@ class UpdateTest extends Specification {
             updateInstance.taskPackagePath = Paths.get(SRC_PATH, 'build', 'update', 'destructiveChanges.xml').toString()
             updateInstance.credential = credential
             updateInstance.packageGenerator.credential = credential
+            updateInstance.packageGenerator.project = project
         when:
             updateInstance.createDestructive()
         then:

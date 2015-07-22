@@ -95,7 +95,7 @@ class Update extends Deployment {
      */
     def loadFilesChanged() {
         ArrayList<File> validatedFiles = fileManager.getValidElements(projectPath, excludeFilesToMonitor)
-        packageGenerator.init(projectPath, validatedFiles, credential)
+        packageGenerator.init(projectPath, validatedFiles, credential, project)
     }
 
     /**
