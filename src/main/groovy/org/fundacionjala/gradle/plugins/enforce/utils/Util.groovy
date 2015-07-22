@@ -10,6 +10,7 @@ import groovy.util.logging.Slf4j
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentHash
 import org.fundacionjala.gradle.plugins.enforce.undeploy.PackageComponent
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.ClassifiedFile
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.FileValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files.SalesforceValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files.SalesforceValidatorManager
@@ -581,5 +582,36 @@ class Util {
             arrayFiles = directory.listFiles()
         }
         return arrayFiles
+    }
+
+    /**
+     * Validates parameter's values
+     * @param parameterValues are files name that will be excluded
+     */
+    public static void validateContentParameter(String projectPath, String filesParameter) {
+        if (filesParameter == null) {
+            return
+        }
+        String parameterValues = filesParameter
+        parameterValues = parameterValues.replaceAll(Constants.BACK_SLASH, Constants.SLASH)
+        ArrayList<File> filesToRetrieve = []
+        ArrayList<String> folderNames = []
+        parameterValues.split(Constants.COMMA).each { String parameter ->
+            if (parameter.contains(Constants.SLASH)) {
+                filesToRetrieve.push(new File(Paths.get(projectPath, parameter).toString()))
+            } else {
+                folderNames.push(parameter)
+            }
+        }
+        //Validates folders
+        ArrayList<String> invalidFolders = getInvalidFolders(folderNames)
+        if (!invalidFolders.empty) {
+            throw new Exception("${Constants.INVALID_FOLDER}: ${invalidFolders}")
+        }
+        //validates files
+        ClassifiedFile classifiedFile = FileValidator.validateFiles(projectPath, filesToRetrieve)
+        if (!classifiedFile.invalidFiles.isEmpty()) {
+            throw new Exception("${Constants.INVALID_FILE}: ${classifiedFile.invalidFiles}")
+        }
     }
 }
