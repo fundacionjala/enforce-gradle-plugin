@@ -594,8 +594,8 @@ class Util {
         }
         String parameterValues = filesParameter
         parameterValues = parameterValues.replaceAll(Constants.BACK_SLASH, Constants.SLASH)
-        ArrayList<File> filesToRetrieve = new ArrayList<File>()
-        ArrayList<String> folderNames = new ArrayList<String>()
+        ArrayList<File> filesToRetrieve = []
+        ArrayList<String> folderNames = []
         parameterValues.split(Constants.COMMA).each { String parameter ->
             if (parameter.contains(Constants.SLASH)) {
                 filesToRetrieve.push(new File(Paths.get(projectPath, parameter).toString()))

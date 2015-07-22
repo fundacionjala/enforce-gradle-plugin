@@ -17,7 +17,8 @@ import java.nio.file.Paths
  */
 class Retrieve extends Retrieval {
     private static final String RETRIEVE_DESCRIPTION_OF_TASK = 'This task recover specific files from an organization'
-    private static final String RETRIEVE_MESSAGE_WARNING = 'Warning: All files will be downloaded according to the package'
+    private static
+    final String RETRIEVE_MESSAGE_WARNING = 'Warning: All files will be downloaded according to the package'
     private static final String RETRIEVE_MESSAGE_CANCELED = 'Retrieve task was canceled!!'
     private static final String RETRIEVE_QUESTION_TO_CONTINUE = 'Do you want to continue? (y/n) : '
     private static final String GROUP_OF_TASK = "Retrieve"
@@ -44,7 +45,7 @@ class Retrieve extends Retrieval {
         verifyDestinationFolder()
         ManagementFile.createDirectories(projectPath)
         Util.validateContentParameter(projectPath, files)
-        !hasPackage() && !files ? retrieveWithoutPackageXml(): retrieveWithPackageXml()
+        !hasPackage() && !files ? retrieveWithoutPackageXml() : retrieveWithPackageXml()
         deleteTemporaryFiles()
     }
 
@@ -63,10 +64,10 @@ class Retrieve extends Retrieval {
      * Creates the package xml file from files parameter
      */
     private void createPackageFromFiles() {
-        if(files){
+        if (files) {
             showInfoMessage()
             packageBuilder.createPackage(filesToRetrieve, projectPath)
-        }else{
+        } else {
             showWarningMessage()
             if (option == Constants.YES_OPTION) {
                 loadFromPackage()
@@ -80,7 +81,7 @@ class Retrieve extends Retrieval {
     /**
      * Loads the package structure file from package xml
      */
-    private void loadFromPackage(){
+    private void loadFromPackage() {
         FileReader packageFileReader = new FileReader(packageFromSourcePath)
         packageBuilder.read(packageFileReader)
     }
@@ -191,7 +192,7 @@ class Retrieve extends Retrieval {
             return
         }
         ArrayList<String> replacedElements = new ArrayList<String>()
-        filesToRetrieve.each {File file ->
+        filesToRetrieve.each { File file ->
             if (!file.exists() || (file.isDirectory() && file.size() == Constants.ZERO)) {
                 return
             }
