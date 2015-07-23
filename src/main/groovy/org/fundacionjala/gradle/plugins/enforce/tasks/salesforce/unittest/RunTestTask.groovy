@@ -10,6 +10,8 @@ import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import org.apache.commons.lang.StringUtils
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.SalesforceTask
+import org.fundacionjala.gradle.plugins.enforce.testselector.ITestSelector
+import org.fundacionjala.gradle.plugins.enforce.testselector.TestSelectorModerator
 import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexClass
 import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexClasses
 import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexRunTestResult
@@ -53,6 +55,7 @@ class RunTestTask extends SalesforceTask {
     private static final int ZERO_NUMBER = 0
     private String pathClasses
     private HtmlManager htmlManager
+    private ITestSelector testSelector
     public static final String TEST_MESSAGE = "Unit Test Results"
     Boolean async
     String jsonByClasses
@@ -112,33 +115,26 @@ class RunTestTask extends SalesforceTask {
     }
 
     /**
+     * Injects a ITestSelector instance for test purposes
+     * @param testSelector the instance to be injected
+     */
+    protected void setTestSelector(ITestSelector testSelector) {
+        this.testSelector = testSelector;
+    }
+
+    /**
      * Generates the unit test and coverage files
      */
     @Override
     void runTask() {
-        if (Util.isEmptyProperty(project, CLASS_PARAM)) {
-            throw new Exception("Enter valid parameter ${CLASS_PARAM}")
-        }
-
         if (!ApexClasses.checkForRecords(jsonByClasses)) {
             throw new Exception("Not found any class in your organization")
         }
 
         jsonByTriggers = toolingAPI.httpAPIClient.executeQuery(QUERY_TRIGGERS)
-        ArrayList<String> classes = new ArrayList<String>()
 
-        if (Util.isValidProperty(project, CLASS_PARAM)) {
-            classes = getClassNames(pathClasses, project.properties[CLASS_PARAM].toString())
-        }
-
-        if (async && !Util.isValidProperty(project, CLASS_PARAM)) {
-            classes = getClassNames(pathClasses, WILDCARD_ALL_TEST)
-        }
-
-        if (!async && !Util.isValidProperty(project, CLASS_PARAM)) {
-            classes = new ArrayList<String>()
-        }
-
+        testSelector = TestSelectorModerator.instance.getTestSelector(project, toolingAPI, pathClasses)
+        ArrayList<String> classes = getClassNames()
         if (async) {
             if (classes.empty) {
                 logger.error(NOT_HAVE_UNIT_TEST_MESSAGE)
@@ -389,19 +385,9 @@ class RunTestTask extends SalesforceTask {
     }
 
     /**
-     * Gets all class names that match with the wildcard
-     * @param wildCard is the property sets from user
+     * Gets all test class names to be executed
      */
-    public ArrayList<String> getClassNames(String path, String wildCard) {
-        FileTree tree = project.fileTree(dir: path)
-        tree.include wildCard
-        ArrayList<String> classNames = new ArrayList<String>()
-        tree.each { File file ->
-            if (file.path.endsWith(".${MetadataComponents.CLASSES.getExtension()}") &&
-                    StringUtils.containsIgnoreCase(file.text, IS_TEST)) {
-                classNames.add(Util.getFileName(file.name))
-            }
-        }
-        return classNames
+    public ArrayList<String> getClassNames() {
+        return testSelector.getTestClassNames();
     }
 }

@@ -6,6 +6,8 @@
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.unittest
 
 import org.fundacionjala.gradle.plugins.enforce.EnforcePlugin
+import org.fundacionjala.gradle.plugins.enforce.testselector.TestSelectorModerator
+import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.testfixtures.ProjectBuilder
@@ -71,7 +73,28 @@ class RunTestTaskTest extends Specification {
         when:
             RunTestTask runTestTask = project.tasks.findByName(RUN_TEST_TASK_NAME) as RunTestTask
             def path = Paths.get(SRC_PATH, "test").toString()
-            classNames = runTestTask.getClassNames(path, "*Test*")
+            this.project.ext[Constants.CLASS_PARAM] = "*Test*"
+            runTestTask.setTestSelector(TestSelectorModerator.instance.getTestSelector(this.project, null, path))
+            classNames = runTestTask.getClassNames()
+        then:
+            classNames.sort() == ["FGW_Console_CTRLTest", "FGW_APIFactoryTest"].sort()
+    }
+
+    def "Should get the class names no param"() {
+        given:
+            project.enforce {
+                srcPath = SRC_PATH
+                standardObjects = ["Q2w_Test__c.object"]
+                tool = "metadata"
+                poll = 200
+                waitTime = 10
+            }
+            def classNames = []
+        when:
+            RunTestTask runTestTask = project.tasks.findByName(RUN_TEST_TASK_NAME) as RunTestTask
+            def path = Paths.get(SRC_PATH, "test").toString()
+            runTestTask.setTestSelector(TestSelectorModerator.instance.getTestSelector(this.project, null, path))
+            classNames = runTestTask.getClassNames()
         then:
             classNames.sort() == ["FGW_Console_CTRLTest", "FGW_APIFactoryTest"].sort()
     }
