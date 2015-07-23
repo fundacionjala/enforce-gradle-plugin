@@ -30,7 +30,16 @@ class FilterSubcomponentsTest extends Specification{
         ArrayList<File> files = []
         for(int i = 0; i < quantity; i++) {
             def nameFile = "cmp_" + type + ( i + 1 ) + ".sbc"
-            files.add(new File(Paths.get(SRC_PATH,'src', type, nameFile).toString()))
+            files.add(new File(Paths.get(SRC_PATH, type, nameFile).toString()))
+        }
+        return files
+    }
+
+    def ArrayList<File> createVirtualComponents(String type, int quantity, String extension) {
+        ArrayList<File> files = []
+        for(int i = 0; i < quantity; i++) {
+            def nameFile = "" + type + ( i + 1 ) + "." + extension
+            files.add(new File(Paths.get(SRC_PATH, type, nameFile).toString()))
         }
         return files
     }
@@ -105,9 +114,9 @@ class FilterSubcomponentsTest extends Specification{
     def "Test should return true if exist a valid file with the wildcard [*] "() {
         given:
             ArrayList<String> wildCard = ['*']
-            File file = new File(Paths.get(SRC_PATH,'src', 'fields', "field_1.sbc").toString())
+            File file = new File(Paths.get(SRC_PATH, 'fields', "field_1.sbc").toString())
         when:
-            FilterSubcomponents.filter([], wildCard)
+            FilterSubcomponents.filter([], wildCard, SRC_PATH)
             boolean result = filter.isValid(file)
         then:
             result
@@ -116,9 +125,9 @@ class FilterSubcomponentsTest extends Specification{
     def "Test should return true if exist a valid file with the wildcard [fields] "() {
         given:
             ArrayList<String> wildCard = ['fields']
-            File file = new File(Paths.get(SRC_PATH,'src', 'fields', "field_1.sbc").toString())
+            File file = new File(Paths.get(SRC_PATH, 'fields', "field_1.sbc").toString())
         when:
-            FilterSubcomponents.filter([], wildCard)
+            FilterSubcomponents.filter([], wildCard, SRC_PATH)
             boolean result = filter.isValid(file)
         then:
             result
@@ -127,9 +136,9 @@ class FilterSubcomponentsTest extends Specification{
     def "Test should return false if exist a valid file with the wildcard ['*','!validationRules'] "() {
         given:
             ArrayList<String> wildCard = ['*','!validationRules']
-            File file = new File(Paths.get(SRC_PATH,'src', 'validationRules', "validation_1.sbc").toString())
+            File file = new File(Paths.get(SRC_PATH, 'validationRules', "validation_1.sbc").toString())
         when:
-            FilterSubcomponents.filter([], wildCard)
+            FilterSubcomponents.filter([], wildCard, SRC_PATH)
             boolean result = filter.isValid(file)
         then:
             !result
@@ -138,9 +147,9 @@ class FilterSubcomponentsTest extends Specification{
     def "Test should return true if exist a valid file with the wildcard ['*','!fields','!compactLayouts', '!recordTypess'] "() {
         given:
             ArrayList<String> wildCard = ['*','!fields','!compactLayouts', '!recordTypess']
-            File file = new File(Paths.get(SRC_PATH,'src', 'validationRules', "validation_1.sbc").toString())
+            File file = new File(Paths.get(SRC_PATH, 'validationRules', "validation_1.sbc").toString())
         when:
-            FilterSubcomponents.filter([], wildCard)
+            FilterSubcomponents.filter([], wildCard, SRC_PATH)
             boolean result = filter.isValid(file)
         then:
             result
@@ -149,9 +158,9 @@ class FilterSubcomponentsTest extends Specification{
     def "Test should return true if exist a valid file with the wildcard [] "() {
         given:
             ArrayList<String> wildCard = []
-            File file = new File(Paths.get(SRC_PATH,'src', 'validationRules', "validation_1.sbc").toString())
+            File file = new File(Paths.get(SRC_PATH, 'validationRules', "validation_1.sbc").toString())
         when:
-            FilterSubcomponents.filter([], wildCard)
+            FilterSubcomponents.filter([], wildCard, SRC_PATH)
             boolean result = filter.isValid(file)
         then:
             !result
@@ -165,7 +174,7 @@ class FilterSubcomponentsTest extends Specification{
             project.enforce.deleteSubComponents = ['*']
             ArrayList<String> wildCard = project.enforce.deleteSubComponents
         when:
-            ArrayList<File> resultFiles = FilterSubcomponents.filter(filesToTest, wildCard)
+            ArrayList<File> resultFiles = FilterSubcomponents.filter(filesToTest, wildCard, SRC_PATH)
         then:
             resultFiles.sort()  == expectedFiles.sort()
     }
@@ -178,7 +187,7 @@ class FilterSubcomponentsTest extends Specification{
             project.enforce.deleteSubComponents = ['fields']
             ArrayList<String> wildCard = project.enforce.deleteSubComponents
         when:
-            ArrayList<File> resultFiles = FilterSubcomponents.filter(filesToTest, wildCard)
+            ArrayList<File> resultFiles = FilterSubcomponents.filter(filesToTest, wildCard, SRC_PATH)
         then:
             resultFiles.sort()  == expectedFiles.sort()
     }
@@ -191,7 +200,7 @@ class FilterSubcomponentsTest extends Specification{
             project.enforce.deleteSubComponents = ['fields']
             ArrayList<String> wildCard = project.enforce.deleteSubComponents
         when:
-            ArrayList<File> resultFiles = FilterSubcomponents.filter(filesToTest, wildCard)
+            ArrayList<File> resultFiles = FilterSubcomponents.filter(filesToTest, wildCard, SRC_PATH)
         then:
             resultFiles.sort()  == expectedFiles.sort()
     }
@@ -207,7 +216,7 @@ class FilterSubcomponentsTest extends Specification{
             project.enforce.deleteSubComponents = ['fields']
             ArrayList<String> wildCard = project.enforce.deleteSubComponents
         when:
-            ArrayList<File> resultFiles = FilterSubcomponents.filter(filesToTest, wildCard)
+            ArrayList<File> resultFiles = FilterSubcomponents.filter(filesToTest, wildCard, SRC_PATH)
         then:
             resultFiles.sort()  == expectedFiles.sort()
     }
@@ -224,7 +233,7 @@ class FilterSubcomponentsTest extends Specification{
             project.enforce.deleteSubComponents = ['*','!fields','!compactLayouts', '!recordTypess']
             ArrayList<String> wildCard = project.enforce.deleteSubComponents
         when:
-            ArrayList<File> resultFiles = FilterSubcomponents.filter(filesToTest, wildCard)
+            ArrayList<File> resultFiles = FilterSubcomponents.filter(filesToTest, wildCard, SRC_PATH)
         then:
             resultFiles.sort()  == expectedFiles.sort()
     }
@@ -235,12 +244,115 @@ class FilterSubcomponentsTest extends Specification{
             filesToTest.addAll(createVirtualSubcomponents('fields',5))
             filesToTest.addAll(createVirtualSubcomponents('validationRules',5))
             filesToTest.addAll(createVirtualSubcomponents('compactLayouts',5))
+
             ArrayList<File> expectedFiles = []
 
             project.enforce.deleteSubComponents = []
             ArrayList<String> wildCard = project.enforce.deleteSubComponents
         when:
-            ArrayList<File> resultFiles = FilterSubcomponents.filter(filesToTest, wildCard)
+            ArrayList<File> resultFiles = FilterSubcomponents.filter(filesToTest, wildCard, SRC_PATH)
+        then:
+            resultFiles.sort()  == expectedFiles.sort()
+    }
+
+    def "Test should not return any files with de wildcard ['fields'] "() {
+        given:
+            ArrayList<File> filesToTest   = []
+            filesToTest.addAll(createVirtualSubcomponents('fields',5))
+            filesToTest.addAll(createVirtualSubcomponents('validationRules',5))
+            filesToTest.addAll(createVirtualSubcomponents('compactLayouts',5))
+            filesToTest.addAll(createVirtualComponents('classes',5,'cls'))
+            filesToTest.addAll(createVirtualComponents('triggers',5,'trigger'))
+
+            ArrayList<File> expectedFiles = []
+            expectedFiles.addAll(createVirtualSubcomponents('fields',5))
+            expectedFiles.addAll(createVirtualComponents('classes',5,'cls'))
+            expectedFiles.addAll(createVirtualComponents('triggers',5,'trigger'))
+
+            project.enforce.deleteSubComponents = ['fields']
+            ArrayList<String> wildCard = project.enforce.deleteSubComponents
+        when:
+            ArrayList<File> resultFiles = FilterSubcomponents.filter(filesToTest, wildCard, SRC_PATH)
+        then:
+            resultFiles.sort()  == expectedFiles.sort()
+    }
+
+    def "Test should return all subcomponents,classes and triggers wildcard ['*'] "() {
+        given:
+            ArrayList<File> filesToTest   = []
+            filesToTest.addAll(createVirtualSubcomponents('fields',5))
+            filesToTest.addAll(createVirtualSubcomponents('validationRules',5))
+            filesToTest.addAll(createVirtualSubcomponents('compactLayouts',5))
+            filesToTest.addAll(createVirtualComponents('classes',5,'cls'))
+            filesToTest.addAll(createVirtualComponents('triggers',5,'trigger'))
+
+            ArrayList<File> expectedFiles = filesToTest.clone()
+
+            project.enforce.deleteSubComponents = ['*']
+            ArrayList<String> wildCard = project.enforce.deleteSubComponents
+        when:
+            ArrayList<File> resultFiles = FilterSubcomponents.filter(filesToTest, wildCard, SRC_PATH)
+        then:
+            resultFiles.sort()  == expectedFiles.sort()
+    }
+
+    def "Test should  return all subcomponents and object wildcard ['fields','validationRules'] "() {
+        given:
+            ArrayList<File> filesToTest   = []
+            filesToTest.addAll(createVirtualSubcomponents('fields',5))
+            filesToTest.addAll(createVirtualSubcomponents('validationRules',5))
+            filesToTest.addAll(createVirtualSubcomponents('compactLayouts',5))
+            filesToTest.addAll(createVirtualComponents('objects',5,'object'))
+
+            ArrayList<File> expectedFiles = []
+            expectedFiles.addAll(createVirtualSubcomponents('fields',5))
+            expectedFiles.addAll(createVirtualSubcomponents('validationRules',5))
+            expectedFiles.addAll(createVirtualComponents('objects',5,'object'))
+
+            project.enforce.deleteSubComponents = ['fields','validationRules']
+            ArrayList<String> wildCard = project.enforce.deleteSubComponents
+        when:
+            ArrayList<File> resultFiles = FilterSubcomponents.filter(filesToTest, wildCard, SRC_PATH)
+        then:
+            resultFiles.sort()  == expectedFiles.sort()
+    }
+
+    def "Test should  return all subcomponents and reports wildcard ['!fields'] "() {
+        given:
+            ArrayList<File> filesToTest   = []
+            filesToTest.addAll(createVirtualSubcomponents('fields',5))
+            filesToTest.addAll(createVirtualSubcomponents('validationRules',5))
+            filesToTest.addAll(createVirtualSubcomponents('compactLayouts',5))
+            filesToTest.addAll(createVirtualComponents('reports',5,'report'))
+
+            ArrayList<File> expectedFiles = []
+            expectedFiles.addAll(createVirtualSubcomponents('validationRules',5))
+            expectedFiles.addAll(createVirtualSubcomponents('compactLayouts',5))
+            expectedFiles.addAll(createVirtualComponents('reports',5,'report'))
+
+            project.enforce.deleteSubComponents = ['!fields']
+            ArrayList<String> wildCard = project.enforce.deleteSubComponents
+        when:
+            ArrayList<File> resultFiles = FilterSubcomponents.filter(filesToTest, wildCard, SRC_PATH)
+        then:
+            resultFiles.sort()  == expectedFiles.sort()
+    }
+
+    def "Test should  return all subcomponents and documents wildcard [] "() {
+        given:
+            ArrayList<File> filesToTest   = []
+            filesToTest.addAll(createVirtualSubcomponents('fields',5))
+            filesToTest.addAll(createVirtualSubcomponents('validationRules',5))
+            filesToTest.addAll(createVirtualSubcomponents('compactLayouts',5))
+            filesToTest.addAll(createVirtualComponents('documents',5,'txt'))
+
+            ArrayList<File> expectedFiles = []
+            expectedFiles.addAll(createVirtualComponents('documents',5,'txt'))
+
+            project.enforce.deleteSubComponents = []
+            ArrayList<String> wildCard = project.enforce.deleteSubComponents
+        when:
+            ArrayList<File> resultFiles = FilterSubcomponents.filter(filesToTest, wildCard, SRC_PATH)
         then:
             resultFiles.sort()  == expectedFiles.sort()
     }

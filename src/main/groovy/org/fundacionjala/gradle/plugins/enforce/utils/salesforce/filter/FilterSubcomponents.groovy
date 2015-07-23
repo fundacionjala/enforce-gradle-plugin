@@ -1,6 +1,7 @@
 package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.filter
 
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
+import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 
 /**
@@ -9,6 +10,9 @@ import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataCompone
 @Singleton
 class FilterSubcomponents {
     private ArrayList<Objects> components
+    private ArrayList<String> supportedSubcomponents = ['fields', 'compactLayouts', 'recordTypes', 'validationRules']
+    private String projectPath
+
 
     /**
      * Gets a list with the filtered files
@@ -16,8 +20,9 @@ class FilterSubcomponents {
      * @param delete SubComponents is a list with wildcards and  options to customize the filtered
      * @return an ArrayList with the filtered files
      */
-    public static ArrayList<File> filter(ArrayList<File> filesToFilter, ArrayList<String>  deleteSubComponents) {
+    public static ArrayList<File> filter(ArrayList<File> filesToFilter, ArrayList<String>  deleteSubComponents, String projectPath) {
         FilterSubcomponents filter = FilterSubcomponents.instance
+        filter.projectPath = projectPath
         filter.components = filter.listEnabledComponents(deleteSubComponents)
         ArrayList<File> filteredFiles = []
 
@@ -65,7 +70,6 @@ class FilterSubcomponents {
         if(deleteSubComponents.isEmpty()) {
             enabledComponents.clear()
         }
-
         return enabledComponents.unique()
     }
 
@@ -86,9 +90,10 @@ class FilterSubcomponents {
      * @return a boolean that indicates if a file can be deleted
      */
     public boolean isValid(File file) {
-        def parentName = file.getParentFile().getName()
-        def component = MetadataComponents.getComponentByFolder(parentName)
-        if(components.contains(component)) {
+        def relativePath = Util.getRelativePath(file, projectPath)
+        def folderPath  = Util.getFirstPath(relativePath)
+        def component = MetadataComponents.getComponentByFolder(folderPath)
+        if(components.contains(component) || !supportedSubcomponents.contains(component.getDirectory())) {
             return true
         }
         return false

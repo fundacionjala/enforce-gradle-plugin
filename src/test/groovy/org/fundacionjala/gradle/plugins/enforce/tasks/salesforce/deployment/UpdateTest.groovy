@@ -13,7 +13,6 @@ import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentSerializer
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
 import org.fundacionjala.gradle.plugins.enforce.metadata.DeployMetadata
-import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.LoginType
@@ -485,7 +484,6 @@ class UpdateTest extends Specification {
     }
 
     def cleanup() {
-        //new File(Paths.get(SRC_PATH, 'build').toString()).deleteDir()
         new File(Paths.get(SRC_PATH, 'classes', 'Class2.cls').toString()).delete()
         new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class2.cls').toString()).delete()
         new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class2.cls-meta.xml').toString()).delete()

@@ -5,6 +5,7 @@ import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files.BasicOrgComponentsValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files.DefaultOrgComponentsValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files.SalesforceValidator
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.org.BasicOrgSubcomponentsValidator
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.org.OrgInterfaceValidator
 
@@ -14,12 +15,9 @@ import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.valid
  */
 class OrgValidator {
 
-    public static Map<String, SalesforceValidator> validators = [
-            'classes':new BasicOrgComponentsValidator(),
-            'components':new BasicOrgComponentsValidator(),
-            'pages':new BasicOrgComponentsValidator(),
-            'triggers':new BasicOrgComponentsValidator(),
-            'resources':new BasicOrgComponentsValidator()
+    public static Map<ArrayList<String>, SalesforceValidator> validators = [
+        ['classes','components','pages','triggers','resources']: BasicOrgComponentsValidator.class,
+        ['fields','compactLayouts']: BasicOrgSubcomponentsValidator.class,
     ]
 
     /**
@@ -30,7 +28,7 @@ class OrgValidator {
      */
     public static ArrayList<File> getValidFiles(Credential credential,ArrayList<File> filesToValidate, String projectPath) {
         Map<String,ArrayList<File>> mapFiles = validateFiles(credential, filesToValidate, projectPath)
-        return mapFiles[Constants.VALID_FILE]
+        return mapFiles[Constants.VALID_FILE] + mapFiles[Constants.FILE_WITHOUT_VALIDATOR]
     }
 
 
@@ -62,13 +60,16 @@ class OrgValidator {
     }
 
     /**
-     * Return the necesary validator
+     * Return the necessary validator
      * @param componentType is the component that need be validated
      */
     public static OrgInterfaceValidator getValidator(String componentType) {
-        if(validators.containsKey(componentType)) {
-            return validators.get(componentType)
+        def orgValidator = new DefaultOrgComponentsValidator()
+        validators.each { key, validator ->
+            if(key.contains(componentType)){
+                orgValidator = validator.newInstance()
+            }
         }
-        return new DefaultOrgComponentsValidator()
+        return orgValidator
     }
 }
