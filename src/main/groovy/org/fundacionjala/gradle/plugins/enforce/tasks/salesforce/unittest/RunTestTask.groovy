@@ -385,6 +385,23 @@ class RunTestTask extends SalesforceTask {
     }
 
     /**
+     * Gets all class names that match with the wildcard
+     * @param wildCard is the property sets from user
+     */
+    public ArrayList<String> getClassNames(String path, String wildCard) {
+        FileTree tree = project.fileTree(dir: path)
+        tree.include wildCard
+        ArrayList<String> classNames = new ArrayList<String>()
+        tree.each { File file ->
+            if (file.path.endsWith(".${MetadataComponents.CLASSES.getExtension()}") &&
+                    StringUtils.containsIgnoreCase(file.text, IS_TEST)) {
+                classNames.add(Util.getFileName(file.name))
+            }
+        }
+        return classNames
+    }
+
+    /**
      * Gets all test class names to be executed
      */
     public ArrayList<String> getClassNames() {
