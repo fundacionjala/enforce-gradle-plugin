@@ -1,25 +1,36 @@
 package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager
 
+import org.fundacionjala.gradle.plugins.enforce.EnforcePlugin
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentMonitor
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ObjectResultTracker
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.LoginType
+import org.gradle.api.Project
+import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Shared
 import spock.lang.Specification
 
+import java.nio.file.Paths
+
 class PackageGeneratorTest extends Specification {
-    @Shared
-    String ROOT_PATH = System.properties['user.dir']
 
     @Shared
-    String RESOURCE_PATH = "${ROOT_PATH}/src/test/groovy/org/fundacionjala/gradle/plugins/enforce/utils/resources"
+    Project project
+
+    @Shared
+    def SRC_PATH = Paths.get(System.getProperty("user.dir"), "src", "test", "groovy", "org",
+            "fundacionjala", "gradle", "plugins","enforce","tasks", "salesforce", "resources").toString()
 
     @Shared
     Credential credential
 
     def setup() {
+        project = ProjectBuilder.builder().build()
+        project.apply(plugin: EnforcePlugin)
+        project.enforce.srcPath = SRC_PATH
+
         credential = new Credential()
         credential.id = 'id'
         credential.username = 'salesforce2014.test@gmail.com'
@@ -41,7 +52,7 @@ class PackageGeneratorTest extends Specification {
             fileTrackerMap.put(newFilePath2, new ResultTracker(ComponentStates.CHANGED))
             fileTrackerMap.put(newFilePath3, new ObjectResultTracker(ComponentStates.ADDED))
             fileTrackerMap.put(newFilePath4, new ObjectResultTracker(ComponentStates.CHANGED))
-            packageGenerator.projectPath = RESOURCE_PATH
+            packageGenerator.projectPath = SRC_PATH
             packageGenerator.fileTrackerMap = fileTrackerMap
             def stringWriter = new StringWriter()
         when:
@@ -81,7 +92,7 @@ class PackageGeneratorTest extends Specification {
             Map<String, ResultTracker> fileTrackerMap = [:]
             fileTrackerMap.put(newFilePathObject1,objectResultTracker1)
             fileTrackerMap.put(newFilePathObject2,objectResultTracker2)
-            packageGenerator.projectPath = RESOURCE_PATH
+            packageGenerator.projectPath = SRC_PATH
             packageGenerator.fileTrackerMap = fileTrackerMap
 
         when:
@@ -117,7 +128,7 @@ class PackageGeneratorTest extends Specification {
             objectResultTrackerChanged.subComponentsResult = subComponentResult
             fileTrackerMap.put(newObjectPathChanged, objectResultTrackerChanged)
             fileTrackerMap.put(newObjectPathAdded  , new ObjectResultTracker(ComponentStates.ADDED))
-            packageGenerator.projectPath = RESOURCE_PATH
+            packageGenerator.projectPath = SRC_PATH
             packageGenerator.fileTrackerMap = fileTrackerMap
             def stringWriter = new StringWriter()
 
@@ -151,7 +162,6 @@ class PackageGeneratorTest extends Specification {
             ObjectResultTracker objectResultTracker = new ObjectResultTracker(ComponentStates.CHANGED);
             objectResultTracker.subComponentsResult = subComponentResult;
 
-            def newClassPath1 = "classes/Class1.cls"
             def newClassPath2 = "classes/Class2.cls"
             def newClassPath3 = "classes/Class3.cls"
             def newClassPath4 = "classes/Class4.cls"
@@ -164,7 +174,6 @@ class PackageGeneratorTest extends Specification {
             def newObjectPath3 = "objects/Object3__c"
 
             Map<String, ResultTracker> fileTrackerMap = [:]
-            fileTrackerMap.put(newClassPath1, new ResultTracker(ComponentStates.DELETED))
             fileTrackerMap.put(newClassPath2, new ResultTracker(ComponentStates.DELETED))
             fileTrackerMap.put(newClassPath3, new ResultTracker(ComponentStates.DELETED))
             fileTrackerMap.put(newClassPath4, new ResultTracker(ComponentStates.DELETED))
@@ -176,20 +185,19 @@ class PackageGeneratorTest extends Specification {
             fileTrackerMap.put(newObjectPath2, new ResultTracker(ComponentStates.DELETED))
             fileTrackerMap.put(newObjectPath3, new ResultTracker(ComponentStates.DELETED))
 
-            packageGenerator.projectPath = RESOURCE_PATH
-            packageGenerator.fileTrackerMap = fileTrackerMap
+            packageGenerator.projectPath = SRC_PATH
             packageGenerator.credential = credential
 
         when:
+            packageGenerator.init(SRC_PATH, [], credential, project)
+            packageGenerator.fileTrackerMap = fileTrackerMap
             packageGenerator.buildDestructive(new StringWriter())
 
         then:
-            packageGenerator.packageBuilder.metaPackage.types[0].members[0] == "Class1"
-            packageGenerator.packageBuilder.metaPackage.types[0].members[2] == "Class2"
+            packageGenerator.packageBuilder.metaPackage.types[0].members[0] == "Class2"
             packageGenerator.packageBuilder.metaPackage.types[0].name == "ApexClass"
 
             packageGenerator.packageBuilder.metaPackage.types[1].members[0] == "Object1__c.Field1__c"
-            packageGenerator.packageBuilder.metaPackage.types[1].members[1] == "Object1__c.Field2__c"
             packageGenerator.packageBuilder.metaPackage.types[1].name == "CustomField"
 
             packageGenerator.packageBuilder.metaPackage.types[2].members[0] == "Object1__c"
@@ -202,19 +210,20 @@ class PackageGeneratorTest extends Specification {
         given:
             PackageGenerator packageGenerator = new PackageGenerator()
 
-            def newObjectPathDeleted = "reports/ReportFolder/reportTest.report"
+            def newObjectPathDeleted = "reports/MyReportFolder/Report1.report"
             Map<String, ResultTracker> fileTrackerMap = [:]
             fileTrackerMap.put(newObjectPathDeleted, new ResultTracker(ComponentStates.DELETED))
-            packageGenerator.projectPath = RESOURCE_PATH
-            packageGenerator.fileTrackerMap = fileTrackerMap
+            packageGenerator.projectPath = SRC_PATH
+            packageGenerator.credential = credential
 
         when:
+            packageGenerator.init(SRC_PATH, [], credential, project)
+            packageGenerator.fileTrackerMap = fileTrackerMap
             packageGenerator.buildDestructive(new StringWriter())
 
         then:
-            packageGenerator.packageBuilder.metaPackage.types[0].members[0] == "ReportFolder/reportTest"
+            packageGenerator.packageBuilder.metaPackage.types[0].members[0] == "MyReportFolder/Report1"
             packageGenerator.packageBuilder.metaPackage.types[0].name == "Report"
-
     }
 
     def "Test should exclude a file called Class1.cls from fileTrackerMap"() {
