@@ -1,4 +1,11 @@
 
+## 1.0.6 - 2015-07-15
+
+### Bugs fixed
+
+*  400 Bad Request error is displayed when trying to delete validation rules, once update task is exceuted.
+
+
 ## 1.0.5 - 2015-06-22
 
 ### Bugs fixed
