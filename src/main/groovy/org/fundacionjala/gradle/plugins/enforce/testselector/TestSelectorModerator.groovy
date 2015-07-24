@@ -1,7 +1,12 @@
+/*
+ * Copyright (c) Fundacion Jala. All rights reserved.
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
+
 package org.fundacionjala.gradle.plugins.enforce.testselector
 
 import org.apache.commons.lang.StringUtils
-import org.fundacionjala.gradle.plugins.enforce.utils.Constants
+import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.unittest.RunTestTaskConstants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
@@ -27,15 +32,15 @@ class TestSelectorModerator {
         ITestSelector instance
         this.project = project
         testClassNameList = getAllTestClassNames(pathClasses)
-        if (project.properties.containsKey(Constants.CLASS_PARAM)) {
-            wildCard = project.properties[Constants.CLASS_PARAM].toString()
+        if (project.properties.containsKey(RunTestTaskConstants.CLASS_PARAM)) {
+            wildCard = project.properties[RunTestTaskConstants.CLASS_PARAM].toString()
             if (wildCard) {
                 instance = new TestSelectorByDefault(testClassNameList, wildCard)
             } else {
-                throw new Exception("Enter valid parameter ${Constants.CLASS_PARAM}")
+                throw new Exception("Enter valid parameter ${RunTestTaskConstants.CLASS_PARAM}")
             }
 //        } else if () { //look for more params
-//            throw new Exception("Enter valid parameter ${Constants.CLASS_PARAM}")
+//            throw new Exception("Enter valid parameter ${RunTestTaskConstants.CLASS_PARAM}")
         } else { //run all tests
             instance = new TestSelectorByDefault(testClassNameList, null)
         }
@@ -52,7 +57,7 @@ class TestSelectorModerator {
         ArrayList<String> classNames = new ArrayList<String>()
         tree.each { File file ->
             if (file.path.endsWith(".${MetadataComponents.CLASSES.getExtension()}") &&
-                    StringUtils.containsIgnoreCase(file.text, Constants.IS_TEST)) {
+                    StringUtils.containsIgnoreCase(file.text, RunTestTaskConstants.IS_TEST)) {
                 classNames.add(Util.getFileName(file.name))
             }
         }

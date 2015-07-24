@@ -64,7 +64,4 @@ public class Constants {
     //I/O constants
     public static final String IO_MESSAGE_TEMP_DIR = 'Could not create temp directory'
 
-    //Unit test task
-    public static final String CLASS_PARAM = 'cls'
-    public static final String IS_TEST = "@isTest"
 }

@@ -97,20 +97,8 @@ class RunTestTask extends SalesforceTask {
                 project.properties[RunTestTaskConstants.PARAMETER_ASYNC].toString().equals(RunTestTaskConstants.TRUE_VALUE)) {
             async = true
         }
-        if (Util.isEmptyProperty(project, RunTestTaskConstants.CLASS_PARAM)) {
-            throw new Exception("${RunTestTaskConstants.ENTER_VALID_PARAMETER} ${RunTestTaskConstants.CLASS_PARAM}")
-        }
         if (!ApexClasses.checkForRecords(jsonByClasses)) {
             throw new Exception(RunTestTaskConstants.NOT_FOUND_ANY_CLASS)
-        }
-        if (Util.isValidProperty(project, RunTestTaskConstants.CLASS_PARAM)) {
-            classesToExecute = getClassNames(pathClasses, project.properties[RunTestTaskConstants.CLASS_PARAM].toString())
-        }
-        if (async && !Util.isValidProperty(project, RunTestTaskConstants.CLASS_PARAM)) {
-            classesToExecute = getClassNames(pathClasses, RunTestTaskConstants.WILDCARD_ALL_TEST)
-        }
-        if (!async && !Util.isValidProperty(project, RunTestTaskConstants.CLASS_PARAM)) {
-            classesToExecute = []
         }
         testSelector = TestSelectorModerator.instance.getTestSelector(project, toolingAPI, pathClasses)
         classesToExecute = getClassNames()
