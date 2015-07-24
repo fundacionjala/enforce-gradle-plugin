@@ -5,6 +5,7 @@
 
 package org.fundacionjala.gradle.plugins.enforce.utils
 
+import groovy.json.JsonSlurper
 import org.apache.commons.lang.StringUtils
 import groovy.util.logging.Slf4j
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentHash
@@ -381,11 +382,6 @@ class Util {
             errorMessage += "\n${Constants.DOES_NOT_EXIST_FOLDER} ${notExistFolders}"
         }
 
-        ArrayList<String> emptyFolders = getEmptyFolders(foldersName, projectPath)
-        if (!emptyFolders.empty) {
-            errorMessage += "\n${Constants.EMPTY_FOLDERS} ${emptyFolders}"
-        }
-
         if (!errorMessage.isEmpty()) {
             throw new Exception(errorMessage)
         }
@@ -613,5 +609,23 @@ class Util {
         if (!classifiedFile.invalidFiles.isEmpty()) {
             throw new Exception("${Constants.INVALID_FILE}: ${classifiedFile.invalidFiles}")
         }
+    }
+
+    /**
+     * Seeks an Id in the object Json
+     * @param Id is a identifier of class or trigger
+     * @param json is the result of a query to salesforce
+     * @return a name class or trigger
+     */
+    public static String getApexNameByJson(String Id, String json) {
+        String nameApex = ""
+        JsonSlurper jsonSlurper = new JsonSlurper()
+        for (elementSalesforce in jsonSlurper.parseText(json).records) {
+            if (elementSalesforce.Id == Id) {
+                nameApex = elementSalesforce.Name
+                break
+            }
+        }
+        return nameApex
     }
 }
