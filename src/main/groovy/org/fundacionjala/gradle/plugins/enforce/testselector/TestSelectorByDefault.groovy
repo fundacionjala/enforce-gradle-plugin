@@ -1,14 +1,13 @@
 package org.fundacionjala.gradle.plugins.enforce.testselector
 
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
-import org.gradle.api.Project
 
 class TestSelectorByDefault extends TestSelector {
 
     private String wildCards
 
-    public TestSelectorByDefault(String pathClasses, Project project, String wildCard) {
-        super(pathClasses, project)
+    public TestSelectorByDefault(ArrayList<String> testClassNameList, String wildCard) {
+        super(testClassNameList)
         this.wildCards = wildCard ? wildCard.replace("*", "").replace(".${MetadataComponents.CLASSES.getExtension()}", "") : null
     }
 

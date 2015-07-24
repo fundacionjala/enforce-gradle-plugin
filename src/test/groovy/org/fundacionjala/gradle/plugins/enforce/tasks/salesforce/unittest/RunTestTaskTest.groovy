@@ -119,8 +119,10 @@ class RunTestTaskTest extends Specification {
 
             RunTestTask runTestTask = project.tasks.findByName(RUN_TEST_TASK_NAME) as RunTestTask
             String path = Paths.get(SRC_PATH, "test")
+            this.project.ext[Constants.CLASS_PARAM] = "*Test*"
+            runTestTask.setTestSelector(TestSelectorModerator.instance.getTestSelector(this.project, null, path))
         when:
-            ArrayList<String> classNames = runTestTask.getClassNames(path, "*Test*")
+            ArrayList<String> classNames = runTestTask.getClassNames()
         then:
             classNames.sort() == ["FGW_Console_CTRLTest", "FGW_APIFactoryTest", "Class1Test", "Class2Test",
                                   "Class3Test"].sort()

@@ -8,7 +8,6 @@ package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.unittest
 import com.sforce.soap.apex.*
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
-import org.apache.commons.lang.StringUtils
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.SalesforceTask
 import org.fundacionjala.gradle.plugins.enforce.testselector.ITestSelector
 import org.fundacionjala.gradle.plugins.enforce.testselector.TestSelectorModerator
@@ -23,7 +22,6 @@ import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
 import org.fundacionjala.gradle.plugins.enforce.wsc.soap.ApexAPI
-import org.gradle.api.file.FileTree
 import org.gradle.api.logging.LogLevel
 import org.gradle.logging.ProgressLoggerFactory
 
@@ -382,23 +380,6 @@ class RunTestTask extends SalesforceTask {
                 NAME_FILE_COVERAGE_REPORT_XML).toString())
         testResultReport.generateCoverageReportXML(coverageReportXML)
         coverageReportXML.close()
-    }
-
-    /**
-     * Gets all class names that match with the wildcard
-     * @param wildCard is the property sets from user
-     */
-    public ArrayList<String> getClassNames(String path, String wildCard) {
-        FileTree tree = project.fileTree(dir: path)
-        tree.include wildCard
-        ArrayList<String> classNames = new ArrayList<String>()
-        tree.each { File file ->
-            if (file.path.endsWith(".${MetadataComponents.CLASSES.getExtension()}") &&
-                    StringUtils.containsIgnoreCase(file.text, IS_TEST)) {
-                classNames.add(Util.getFileName(file.name))
-            }
-        }
-        return classNames
     }
 
     /**
