@@ -8,8 +8,9 @@ package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.unittest
 import com.sforce.soap.apex.*
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
-import org.apache.commons.lang.StringUtils
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.SalesforceTask
+import org.fundacionjala.gradle.plugins.enforce.testselector.ITestSelector
+import org.fundacionjala.gradle.plugins.enforce.testselector.TestSelectorModerator
 import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexClass
 import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexClasses
 import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexRunTestResult
@@ -21,7 +22,6 @@ import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
 import org.fundacionjala.gradle.plugins.enforce.wsc.soap.ApexAPI
-import org.gradle.api.file.FileTree
 import org.gradle.api.logging.LogLevel
 import org.gradle.logging.ProgressLoggerFactory
 
@@ -34,6 +34,7 @@ import java.nio.file.Paths
 class RunTestTask extends SalesforceTask {
     private String pathClasses
     private HtmlManager htmlManager
+    private ITestSelector testSelector
     public static final String TEST_MESSAGE = RunTestTaskConstants.UNIT_TEST_RESULT
     Boolean async
     String jsonByClasses
@@ -111,6 +112,16 @@ class RunTestTask extends SalesforceTask {
         if (!async && !Util.isValidProperty(project, RunTestTaskConstants.CLASS_PARAM)) {
             classesToExecute = []
         }
+        testSelector = TestSelectorModerator.instance.getTestSelector(project, toolingAPI, pathClasses)
+        classesToExecute = getClassNames()
+    }
+
+    /**
+     * Injects a ITestSelector instance for test purposes
+     * @param testSelector the instance to be injected
+     */
+    protected void setTestSelector(ITestSelector testSelector) {
+        this.testSelector = testSelector;
     }
 
     /**
@@ -352,19 +363,9 @@ class RunTestTask extends SalesforceTask {
     }
 
     /**
-     * Gets all class names that match with the wildcard
-     * @param wildCard is the property sets from user
+     * Gets all test class names to be executed
      */
-    public ArrayList<String> getClassNames(String path, String wildCard) {
-        FileTree tree = project.fileTree(dir: path)
-        tree.include wildCard
-        ArrayList<String> classNames = new ArrayList<String>()
-        tree.each { File file ->
-            if (file.path.endsWith(".${MetadataComponents.CLASSES.getExtension()}") &&
-                    StringUtils.containsIgnoreCase(file.text, RunTestTaskConstants.IS_TEST)) {
-                classNames.add(Util.getFileName(file.name))
-            }
-        }
-        return classNames
+    public ArrayList<String> getClassNames() {
+        return testSelector.getTestClassNames();
     }
 }
