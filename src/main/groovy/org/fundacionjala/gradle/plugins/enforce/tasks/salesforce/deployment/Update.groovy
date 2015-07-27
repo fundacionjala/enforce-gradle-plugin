@@ -34,9 +34,9 @@ class Update extends Deployment {
      */
     Update() {
         super(UPDATE_DESCRIPTION, Constants.DEPLOYMENT)
-        filesToCopy = new ArrayList<File>()
-        filesToUpdate = new ArrayList<File>()
-        filesExcludes = new ArrayList<File>()
+        filesToCopy = []
+        filesToUpdate = []
+        filesExcludes = []
         packageGenerator = new PackageGenerator()
         interceptorsToExecute = [org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.REMOVE_DEPRECATE.id]
         taskFolderName = DIR_UPDATE_FOLDER
@@ -167,12 +167,21 @@ class Update extends Deployment {
     }
 
     public void filterFiles() {
-        ArrayList<File> files = packageGenerator.getFiles(projectPath)
-        String includes = Util.getIncludesValueByFolderFromFilesUpdated(files, folders, projectPath)
-        ArrayList<File> filesFiltered = filter.getFiles(includes, excludes)
-        packageGenerator.updateFileTracker(filesFiltered)
-        filesExcludes = files - filesFiltered
+        ArrayList<File> trackedFiles = packageGenerator.getFiles(projectPath)
+        ArrayList<File> deletedFiles = packageGenerator.getFiles(ComponentStates.DELETED)
 
+        String includes = Util.getIncludesValueByFolderFromFilesUpdated(trackedFiles, folders, projectPath)
+
+        deletedFiles.each { File deletedFile ->
+            deletedFile.createNewFile()
+        }
+        ArrayList<File> filesFiltered = filter.getFiles(includes, excludes)
+        deletedFiles.each { File deletedFile ->
+            deletedFile.delete()
+        }
+
+        packageGenerator.updateFileTracker(filesFiltered)
+        filesExcludes = trackedFiles - filesFiltered
     }
 
     public void loadParameters() {
