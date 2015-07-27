@@ -5,12 +5,10 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.retrieve
 
-import com.sforce.soap.metadata.PackageTypeMembers
-import org.fundacionjala.gradle.plugins.enforce.utils.AnsiColor
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageBuilder
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.PackageBuilder
 
 import java.nio.file.Paths
 
@@ -18,20 +16,18 @@ import java.nio.file.Paths
  * Retrieves elements from organization according parameters inserted by user
  */
 class Retrieve extends Retrieval {
+    private static final String RETRIEVE_DESCRIPTION_OF_TASK = 'This task recover specific files from an organization'
+    private static
+    final String RETRIEVE_MESSAGE_WARNING = 'Warning: All files will be downloaded according to the package'
+    private static final String RETRIEVE_MESSAGE_CANCELED = 'Retrieve task was canceled!!'
+    private static final String RETRIEVE_QUESTION_TO_CONTINUE = 'Do you want to continue? (y/n) : '
     private static final String GROUP_OF_TASK = "Retrieve"
-    private final String FILES_RETRIEVE = 'files'
     private final String DESTINATION_FOLDER = 'destination'
-    private final String ALL_PARAMETER = 'all'
-    private final String COMMA = ','
-    private final String YES = 'y'
     private String option
-    public static final String WILDCARD = '*'
-    public String files
     public String destination
-    public final String SLASH = '/'
-    public final String BACKSLASH = '\\\\'
-    public String all = Constants.FALSE
     public final int CODE_TO_EXIT = 0
+
+    ArrayList<File> filesToRetrieve
 
     /**
      * Sets description and group task
@@ -39,52 +35,54 @@ class Retrieve extends Retrieval {
      * @param group is the group typeName the task
      */
     Retrieve() {
-        super(Constants.RETRIEVE_DESCRIPTION_OF_TASK, GROUP_OF_TASK)
+        super(RETRIEVE_DESCRIPTION_OF_TASK, GROUP_OF_TASK)
+        filesToRetrieve = []
     }
 
     @Override
     void runTask() {
+        loadFilesToRetrieve()
         verifyDestinationFolder()
         ManagementFile.createDirectories(projectPath)
-        loadParameters()
-        validateContentParameter()
-        if (!hasPackage() && !files) {
-           retrieveWithoutPackageXml()
-        } else {
-            if(files){
-                showInfoMessage()
-                createPackageFromFiles()
-            }else{
-                showWarningMessage()
-                if (option == YES) {
-                    loadFromPackage()
-                } else {
-                    logger.warn(Constants.RETRIEVE_MESSAGE_CANCELED)
-                    System.exit(CODE_TO_EXIT)
-                }
-            }
-            retrieveWithPackageXml()
-        }
+        Util.validateContentParameter(projectPath, files)
+        !hasPackage() && !files ? retrieveWithoutPackageXml() : retrieveWithPackageXml()
         deleteTemporaryFiles()
+    }
+
+    /**
+     *
+     */
+    public void loadFilesToRetrieve() {
+        if (files) {
+            files.split(Constants.COMMA).each { nameFile ->
+                filesToRetrieve.push(new File(Paths.get(projectPath, nameFile).toString()))
+            }
+        }
     }
 
     /**
      * Creates the package xml file from files parameter
      */
-    private void createPackageFromFiles(){
-        ArrayList<File> filesRetrieve = new ArrayList<File>()
-        ArrayList<String> arrayNameArchives = files.split(COMMA)
-        arrayNameArchives.each { nameFile ->
-            filesRetrieve.push(new File(Paths.get(projectPath, nameFile).toString()))
+    private void createPackageFromFiles() {
+        if (files) {
+            showInfoMessage()
+            packageBuilder.createPackage(filesToRetrieve, projectPath)
+        } else {
+            showWarningMessage()
+            if (option == Constants.YES_OPTION) {
+                loadFromPackage()
+            } else {
+                logger.warn(RETRIEVE_MESSAGE_CANCELED)
+                System.exit(CODE_TO_EXIT)
+            }
         }
-        packageBuilder.createPackage(filesRetrieve, projectPath)
     }
 
     /**
      * Loads the package structure file from package xml
      */
-    private void loadFromPackage(){
-        FileReader packageFileReader = new FileReader(Paths.get(projectPath, Constants.PACKAGE_FILE_NAME).toString())
+    private void loadFromPackage() {
+        FileReader packageFileReader = new FileReader(packageFromSourcePath)
         packageBuilder.read(packageFileReader)
     }
 
@@ -106,33 +104,6 @@ class Retrieve extends Retrieval {
     }
 
     /**
-     * Loads the files and all parameters
-     */
-    private void loadParameters() {
-        if (!files) {
-            if (Util.isValidProperty(project, FILES_RETRIEVE)) {
-                files = project.property(FILES_RETRIEVE) as String
-            }
-        }
-        if (Util.isValidProperty(project, ALL_PARAMETER)) {
-            all = project.property(ALL_PARAMETER) as String
-        }
-    }
-
-    /**
-     * Gets a files array from a directory
-     * @param directory the directory to get its files
-     * @return a files array
-     */
-    File[] getFiles(File directory) {
-        File[] arrayFiles = []
-        if (directory && directory.isDirectory()) {
-            arrayFiles = directory.listFiles()
-        }
-        return arrayFiles
-    }
-
-    /**
      * Executes the logic to retrieve without update the package.xml file
      */
     void retrieveWithoutPackageXml() {
@@ -146,19 +117,12 @@ class Retrieve extends Retrieval {
      * Executes the logic to retrieve updating the package.xml file
      */
     void retrieveWithPackageXml() {
+        createPackageFromFiles()
         runRetrieve()
         copyFilesWithoutPackage()
-        updatePackageXml(Paths.get(unPackageFolder, Constants.PACKAGE_FILE_NAME).toString(), Paths.get(projectPath, Constants.PACKAGE_FILE_NAME).toString())
+        PackageBuilder.updatePackageXml(packageFromBuildPath, packageFromSourcePath)
         File unpackage = new File(unPackageFolder)
         unpackage.deleteDir()
-    }
-
-    /**
-     * Verifies if exist package xml into project path
-     * @return true if exist a package xml file else return false
-     */
-    def hasPackage() {
-        return new File(Paths.get(projectPath, Constants.PACKAGE_FILE_NAME).toString()).exists()
     }
 
     /**
@@ -173,28 +137,11 @@ class Retrieve extends Retrieval {
     }
 
     /**
-     * Creates a Xml file which contains important data to be retrieved
-     */
-    void createPackage() {
-        if (files) {
-            ArrayList<File> filesRetrieve = new ArrayList<File>()
-            ArrayList<String> arrayNameArchives = files.split(COMMA)
-            arrayNameArchives.each { nameFile ->
-                filesRetrieve.push(new File(Paths.get(projectPath, nameFile).toString()))
-            }
-            packageBuilder.createPackage(filesRetrieve, projectPath)
-        } else {
-            FileReader packageFileReader = new FileReader(Paths.get(projectPath, Constants.PACKAGE_FILE_NAME).toString())
-            packageBuilder.read(packageFileReader)
-        }
-    }
-
-    /**
      * Creates a package xml based in a list called 'foldersToDownload'
      */
     void createPackageByFolders() {
         String parameterFolder = project.enforce.foldersToDownload
-        ArrayList<String> arrayFolders = parameterFolder.split(COMMA)
+        ArrayList<String> arrayFolders = parameterFolder.split(Constants.COMMA)
         packageBuilder.createPackageByFolder(arrayFolders)
     }
 
@@ -212,51 +159,9 @@ class Retrieve extends Retrieval {
     public void copyFilesWithoutPackage() {
         ArrayList<File> filesToCopy = fileManager.getValidElements(unPackageFolder)
         if (hasPackage()) {
-            filesToCopy.remove(new File(Paths.get(unPackageFolder, Constants.PACKAGE_FILE_NAME).toString()))
+            filesToCopy.remove(new File(packageFromBuildPath))
         }
         fileManager.copy(unPackageFolder, filesToCopy, projectPath)
-    }
-
-    /**
-     * Updates package xml from source package xml with retrieved files
-     * @param retrievedPackagePath is type String
-     * @param packageSrcPath is type String
-     */
-    public void updatePackageXml(String retrievedPackagePath, String packageSrcPath) {
-        PackageBuilder source = new PackageBuilder()
-        PackageBuilder retrieved = new PackageBuilder()
-        retrieved.read(new FileReader(retrievedPackagePath))
-        source.read(new FileReader(packageSrcPath))
-        def packageFile = new File(packageSrcPath)
-        retrieved.metaPackage.types.each { type ->
-            String name = type.name
-            ArrayList<String> members = type.members
-            ArrayList<PackageTypeMembers> packageTypeMembers = source.metaPackage.types.toList()
-            PackageTypeMembers packageTypeMembersFound = null
-            ArrayList<String> memberType
-            packageTypeMembers.find { packageTypeMembersIt ->
-                memberType = packageTypeMembersIt.members
-                if (packageTypeMembersIt.name == name) {
-                    packageTypeMembersFound = packageTypeMembersIt
-                    return
-                }
-            }
-            if (!packageTypeMembersFound) {
-                if (memberType.contains(WILDCARD)) {
-                    members = [WILDCARD]
-                }
-            } else {
-                packageTypeMembersFound.members.each { member ->
-                    if (members.contains(member)) {
-                        members.remove(member)
-                    }
-                    if (member == WILDCARD) {
-                        members = []
-                    }
-                }
-            }
-            source.update(name, members, packageFile)
-        }
     }
 
     /**
@@ -270,36 +175,13 @@ class Retrieve extends Retrieval {
      * Shows a warning message to replace files from source directory.
      */
     void showWarningMessage() {
-        File[] arrayFiles = getFiles(new File(projectPath))
-        if (arrayFiles.size() > 0 && all == Constants.FALSE) {
-            logger.error(Constants.RETRIEVE_MESSAGE_WARNING)
-            option = System.console().readLine("${'  '}${Constants.RETRIEVE_QUESTION_TO_CONTINUE}")
+        File[] arrayFiles = Util.getFiles(new File(projectPath))
+        if (arrayFiles.size() > Constants.ZERO && all == Constants.FALSE) {
+            logger.error(RETRIEVE_MESSAGE_WARNING)
+            option = System.console().readLine("  ${RETRIEVE_QUESTION_TO_CONTINUE}")
         } else {
-            option = YES
+            option = Constants.YES_OPTION
         }
-    }
-
-    /**
-     * Validates parameter's values
-     * @param parameterValues are files name that will be excluded
-     */
-    public void validateContentParameter() {
-        if (files == null) {
-            return
-        }
-        String parameterValues = files
-        parameterValues = parameterValues.replaceAll(BACKSLASH, SLASH)
-        ArrayList<File> filesToRetrieve = new ArrayList<File>()
-        ArrayList<String> folderNames = new ArrayList<String>()
-        parameterValues.split(Constants.COMMA).each { String parameter ->
-            if (parameter.contains(SLASH)) {
-                filesToRetrieve.push(new File(Paths.get(projectPath,parameter).toString()))
-            } else {
-                folderNames.push(parameter)
-            }
-        }
-        validateFolders(folderNames)
-        validateFiles(filesToRetrieve)
     }
 
     /**
@@ -309,21 +191,23 @@ class Retrieve extends Retrieval {
         if (files == null) {
             return
         }
-        ArrayList<String> elements = files.split(Constants.COMMA) as ArrayList<String>
         ArrayList<String> replacedElements = new ArrayList<String>()
-        elements.each { String elementName ->
-            def element = new File(Paths.get(projectPath, elementName).toString())
-            if (!element.exists() || (element.isDirectory() && element.size() == 0)) {
+        filesToRetrieve.each { File file ->
+            if (!file.exists() || (file.isDirectory() && file.size() == Constants.ZERO)) {
                 return
             }
-            replacedElements.push(elementName)
+            replacedElements.push(file.name)
         }
         if (!replacedElements.isEmpty()) {
-            print AnsiColor.ANSI_CYAN.value()
-            print "Info:"
-            print AnsiColor.ANSI_RESET.value()
-            println " ${replacedElements} will be replaced"
+            logger.info("Info: ${replacedElements} will be replaced")
         }
     }
-}
 
+    /**
+     * Verifies if exist package xml into project path
+     * @return true if exist a package xml file else return false
+     */
+    def hasPackage() {
+        return new File(packageFromSourcePath).exists()
+    }
+}

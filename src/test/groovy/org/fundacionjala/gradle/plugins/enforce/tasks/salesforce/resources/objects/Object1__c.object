@@ -5,6 +5,10 @@
         <type>Default</type>
     </actionOverrides>
     <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
         <actionName>Clone</actionName>
         <type>Default</type>
     </actionOverrides>
@@ -17,11 +21,19 @@
         <type>Default</type>
     </actionOverrides>
     <actionOverrides>
+        <actionName>Follow</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
         <actionName>List</actionName>
         <type>Default</type>
     </actionOverrides>
     <actionOverrides>
         <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
         <type>Default</type>
     </actionOverrides>
     <actionOverrides>
@@ -32,18 +44,58 @@
         <actionName>View</actionName>
         <type>Default</type>
     </actionOverrides>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <compactLayouts>
+        <fullName>compactLayout1</fullName>
+        <fields>Field1__c</fields>
+        <label>compactLayout1</label>
+    </compactLayouts>
+    <compactLayouts>
+        <fullName>compactLayout2</fullName>
+        <fields>Field1__c</fields>
+        <label>compactLayout2</label>
+    </compactLayouts>
+    <compactLayouts>
+        <fullName>compactLayout3</fullName>
+        <fields>Field1__c</fields>
+        <label>compactLayout3</label>
+    </compactLayouts>
     <deploymentStatus>Deployed</deploymentStatus>
     <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
     <enableEnhancedLookup>false</enableEnhancedLookup>
     <enableFeeds>false</enableFeeds>
     <enableHistory>false</enableHistory>
     <enableReports>false</enableReports>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
     <fields>
         <fullName>Field1__c</fullName>
         <externalId>false</externalId>
         <label>Field1</label>
         <length>10</length>
         <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Field2__c</fullName>
+        <externalId>false</externalId>
+        <label>Field2</label>
+        <length>10</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Field3__c</fullName>
+        <externalId>false</externalId>
+        <label>Field3</label>
+        <length>10</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
         <type>Text</type>
         <unique>false</unique>
     </fields>
@@ -53,6 +105,74 @@
         <type>Text</type>
     </nameField>
     <pluralLabel>Object1</pluralLabel>
+        <recordTypes>
+        <fullName>recordType1</fullName>
+        <active>true</active>
+        <label>recordType1</label>
+    </recordTypes>
+    <recordTypes>
+        <fullName>recordType2</fullName>
+        <active>true</active>
+        <label>recordType2</label>
+    </recordTypes>
+    <recordTypes>
+        <fullName>recordType3</fullName>
+        <active>true</active>
+        <label>recordType3</label>
+    </recordTypes>
     <searchLayouts/>
     <sharingModel>ReadWrite</sharingModel>
+    <validationRules>
+        <fullName>Validation1</fullName>
+        <active>true</active>
+        <errorConditionFormula>Field1__c  = &quot;something&quot;</errorConditionFormula>
+        <errorMessage>Error validation 1</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Validation2</fullName>
+        <active>true</active>
+        <errorConditionFormula>Field2__c  = &quot;something&quot;</errorConditionFormula>
+        <errorMessage>Error validation 2</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Validation3</fullName>
+        <active>true</active>
+        <errorConditionFormula>Field3__c  = &quot;something&quot;</errorConditionFormula>
+        <errorMessage>Error validation 3</errorMessage>
+    </validationRules>
+    <webLinks>
+        <fullName>LinkTestName</fullName>
+        <availability>online</availability>
+        <displayType>link</displayType>
+        <linkType>javascript</linkType>
+        <masterLabel>LinkTest</masterLabel>
+        <openType>onClickJavaScript</openType>
+        <protected>false</protected>
+        <url>var quoteNewUrl = &quot;&quot;
+if(true)
+{
+    quoteNewUrl += &amp;apos;&amp;amp;
+}
+window.location.href = quoteNewUrl;</url>
+    </webLinks>
+    <webLinks>
+        <fullName>googleButton</fullName>
+        <availability>online</availability>
+        <displayType>link</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <hasMenubar>false</hasMenubar>
+        <hasScrollbars>true</hasScrollbars>
+        <hasToolbar>false</hasToolbar>
+        <height>600</height>
+        <isResizable>true</isResizable>
+        <linkType>url</linkType>
+        <masterLabel>google</masterLabel>
+        <openType>newWindow</openType>
+        <position>none</position>
+        <protected>false</protected>
+        <showsLocation>false</showsLocation>
+        <showsStatus>false</showsStatus>
+        <url>alert(&apos;&apos;)</url>
+        <width>600</width>
+    </webLinks>
 </CustomObject>

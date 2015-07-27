@@ -9,7 +9,7 @@ import com.sforce.soap.metadata.RetrieveMessage
 import com.sforce.soap.metadata.RetrieveResult
 import com.sforce.soap.metadata.RetrieveStatus
 import org.fundacionjala.gradle.plugins.enforce.EnforcePlugin
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.Package
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.Package
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Shared

@@ -10,6 +10,7 @@ import org.fundacionjala.gradle.plugins.enforce.tasks.credentialmanager.Credenti
 import org.fundacionjala.gradle.plugins.enforce.tasks.filemonitor.FilesStatus
 import org.fundacionjala.gradle.plugins.enforce.tasks.filemonitor.Reset
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment.Deploy
+import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment.Truncate
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment.Undeploy
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment.Update
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment.Upload
@@ -51,6 +52,7 @@ class EnforcePlugin implements Plugin<Project> {
         project.task('update', type: Update)
         project.task('upload', type: Upload)
         project.task('delete', type: Delete)
+        project.task('truncate', type: Truncate)
 
         project.task("addCredential", type: CredentialAdder)
         project.task("updateCredential", type: CredentialUpdater)

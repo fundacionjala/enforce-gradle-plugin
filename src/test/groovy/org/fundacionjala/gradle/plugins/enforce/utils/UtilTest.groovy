@@ -5,6 +5,7 @@
 
 package org.fundacionjala.gradle.plugins.enforce.utils
 
+import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentHash
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -15,7 +16,8 @@ class UtilTest extends Specification {
         String RESOURCES_PATH
 
     def setup() {
-        RESOURCES_PATH = Paths.get(System.getProperty("user.dir"), 'src', 'test', 'groovy', 'org', 'fundacionjala', 'gradle', 'plugins','enforce', 'utils', 'resources').toString()
+        RESOURCES_PATH = Paths.get(System.getProperty("user.dir"), 'src', 'test', 'groovy', 'org', 'fundacionjala',
+                'gradle', 'plugins','enforce', 'utils', 'resources').toString()
     }
 
     def "Test should return true if emails are valid"() {
@@ -213,6 +215,141 @@ class UtilTest extends Specification {
             encodingUTF16LE
             encodingUTF8
             encodingUTF16LE1
+    }
+
+    def "Test should get components with wildcard"() {
+        given:
+            def standardComponents = ['Account.object', 'Opportunity.object', 'Contact.object', 'Admin.profile', 'CMC.app']
+        when:
+            def result = Util.getComponentsWithWildcard(standardComponents)
+        then:
+            result == ['**/Account.object', "**/Opportunity.object", "**/Contact.object", "**/Admin.profile", "**/CMC.app"]
+    }
+
+    def 'Should get the custom fields from an standard object file'() {
+        given:
+            def expected = ["Account.MyLookupField1__c", "Account.MyLookupField2__c"]
+            def path = Paths.get(RESOURCES_PATH, "objects", "Account.object").toString()
+        when:
+            def result = Util.getCustomFields(new File(path))
+        then:
+            result.size() == 2
+            expected == result
+    }
+
+    def "Test should get includes value by folder only of files updated" () {
+        given:
+            ArrayList<File> files = [new File(Paths.get(RESOURCES_PATH, 'classes', 'Class1.cls').toString()),
+                                     new File(Paths.get(RESOURCES_PATH, 'classes', 'Class2.cls').toString()),
+                                     new File(Paths.get(RESOURCES_PATH, 'objects', 'Object1__c.object').toString()),
+                                     new File(Paths.get(RESOURCES_PATH, 'objects', 'Object2__c.object').toString()),
+                                     new File(Paths.get(RESOURCES_PATH, 'pages', 'Page1.page').toString()),
+                                     new File(Paths.get(RESOURCES_PATH, 'triggers', 'Trigger1.trigger').toString())]
+            String parameterValue = "classes,objects"
+        when:
+            String result = Util.getIncludesValueByFolderFromFilesUpdated(files, parameterValue,RESOURCES_PATH)
+        then:
+            result == ["${'classes'}${File.separator}${'Class1.cls'}",
+                       "${'classes'}${File.separator}${'Class2.cls'}",
+                       "${'objects'}${File.separator}${'Object1__c.object'}",
+                       "${'objects'}${File.separator}${'Object2__c.object'}"].join(', ')
+    }
+
+    def "Test should get includes value by folder only of files updated when you sent reports or documents" () {
+        given:
+            ArrayList<File> files = [new File(Paths.get(RESOURCES_PATH, 'reports', 'MyFolder', 'MyReport.report').toString()),
+                                     new File(Paths.get(RESOURCES_PATH, 'documents', 'MyDocuments', 'MyDocument.txt').toString()),
+                                     new File(Paths.get(RESOURCES_PATH, 'objects', 'Object2__c.object').toString()),
+                                     new File(Paths.get(RESOURCES_PATH, 'pages', 'Page1.page').toString()),]
+            String parameterValue = "reports,documents"
+            String projectPath = RESOURCES_PATH
+        when:
+            String result = Util.getIncludesValueByFolderFromFilesUpdated(files, parameterValue,projectPath)
+        then:
+            result == ["${'reports'}${File.separator}${'MyFolder'}${File.separator}${'MyReport.report'}",
+                       "${'documents'}${File.separator}${'MyDocuments'}${File.separator}${'MyDocument.txt'}"].join(', ')
+    }
+
+    def "Test should return a map with their relative paths as key" () {
+        given:
+            Map<String, ComponentHash> recoveryFileHashCode = [:]
+            String objectPath = Paths.get(RESOURCES_PATH, 'objects', 'Object2__c.object')
+            String documentPath = Paths.get(RESOURCES_PATH, 'documents', 'MyDocuments', 'MyDocument.txt')
+
+            ComponentHash componentHash = new ComponentHash()
+            componentHash.fileName = objectPath
+            componentHash.hash = "objectHash123qweads"
+
+            ComponentHash componentHashDocument = new ComponentHash()
+            componentHashDocument.fileName = documentPath
+            componentHashDocument.hash = "documentHash123qweads"
+
+            recoveryFileHashCode.put(objectPath, componentHash)
+            recoveryFileHashCode.put(documentPath, componentHashDocument)
+
+            String projectPath = RESOURCES_PATH
+            String fileNameExpect = Paths.get('objects', 'Object2__c.object').toString()
+            String documentNameExpect = Paths.get('documents', 'MyDocuments', 'MyDocument.txt').toString()
+        when:
+            Map<String, ComponentHash> result = Util.getFilesWithTheirRelativePaths(recoveryFileHashCode, projectPath)
+        then:
+            result.containsKey(fileNameExpect)
+            result.get(Paths.get(fileNameExpect).toString()).fileName == fileNameExpect
+            result.get(Paths.get(fileNameExpect).toString()).hash == componentHash.hash
+
+            result.containsKey(documentNameExpect)
+            result.get(Paths.get(documentNameExpect).toString()).fileName == documentNameExpect
+            result.get(Paths.get(documentNameExpect).toString()).hash == componentHashDocument.hash
+    }
+
+    def "Test should return a map with their relative paths as key when map sent has relative path as key" () {
+        given:
+            Map<String, ComponentHash> recoveryFileHashCode = [:]
+            String objectPath = Paths.get('objects', 'Object2__c.object')
+            String documentPath = Paths.get('documents', 'MyDocuments', 'MyDocument.txt')
+
+            ComponentHash componentHash = new ComponentHash()
+            componentHash.fileName = objectPath
+            componentHash.hash = "objectHash123qweads"
+
+            ComponentHash componentHashDocument = new ComponentHash()
+            componentHashDocument.fileName = documentPath
+            componentHashDocument.hash = "documentHash123qweads"
+
+            recoveryFileHashCode.put(objectPath, componentHash)
+            recoveryFileHashCode.put(documentPath, componentHashDocument)
+
+            String projectPath = RESOURCES_PATH
+            String fileNameExpect = Paths.get('objects', 'Object2__c.object').toString()
+            String documentNameExpect = Paths.get('documents', 'MyDocuments', 'MyDocument.txt').toString()
+        when:
+            Map<String, ComponentHash> result = Util.getFilesWithTheirRelativePaths(recoveryFileHashCode, projectPath)
+        then:
+            result.containsKey(fileNameExpect)
+            result.get(Paths.get(fileNameExpect).toString()).fileName == fileNameExpect
+            result.get(Paths.get(fileNameExpect).toString()).hash == componentHash.hash
+
+            result.containsKey(documentNameExpect)
+            result.get(Paths.get(documentNameExpect).toString()).fileName == documentNameExpect
+            result.get(Paths.get(documentNameExpect).toString()).hash == componentHashDocument.hash
+    }
+
+    def "Test should return an exception if there is a invalid file"() {
+        given:
+            String filesParameter = ["classes${File.separator}Class1.txy", "triggers${File.separator}TriggerOne.trigger"]
+        when:
+            Util.validateContentParameter(RESOURCES_PATH, filesParameter)
+        then:
+            thrown(Exception)
+    }
+
+    def "Test should return an exception if there is a invalid folder"() {
+        given:
+            String filesParameter = ['classes', 'invalid']
+        when:
+            Util.validateContentParameter(RESOURCES_PATH, filesParameter)
+        then:
+            thrown(Exception)
     }
 
     def cleanupSpec() {
