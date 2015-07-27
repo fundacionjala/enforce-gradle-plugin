@@ -76,6 +76,7 @@ def patch = "$System.env.VERSION_NUMBER_PATCH"
 def newVersion = "$major.$minor.$patch"
 version = newVersion
 
+
 uploadArchives {
     repositories {
         mavenDeployer {
