@@ -74,54 +74,14 @@ def major = "$System.env.VERSION_NUMBER_MAJOR"
 def minor = "$System.env.VERSION_NUMBER_MINOR"
 def patch = "$System.env.VERSION_NUMBER_PATCH"
 def newVersion = "$major.$minor.$patch"
-version = newVersion
+version = '1.0.7.b9'
 
 uploadArchives {
     repositories {
         mavenDeployer {
-            repository url: "file://${System.properties['user.home']}/.m2/repository"
-        }
-    }
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-artifacts {
-    archives sourcesJar
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            if (plugins.hasPlugin('war')) {
-                from components.web
-            } else {
-                from components.java
+            repository(url: "http://10.31.2.240:8081/artifactory/salesforce") {
+                authentication(userName: "mcadima", password: "mcadima")
             }
-            artifact sourcesJar
         }
-    }
-}
-
-bintray {
-    user = "$System.env.BINTRAY_USER_NAME"
-    key = "$System.env.BINTRAY_API_KEY"
-
-    publications = ['mavenJava']
-    dryRun = false
-    publish = true
-    pkg {
-        repo = bintray_repo
-        userOrg = bintray_user_org
-        name = bintray_package
-        websiteUrl = 'https://github.com/fundacionjala/enforce-gradle-plugin'
-        issueTrackerUrl = 'https://github.com/fundacionjala/enforce-gradle-plugin/issues'
-        vcsUrl = 'https://github.com/fundacionjala/enforce-gradle-plugin.git'
-        licenses = ['MIT']
-        labels = ['sfdc', 'integration ', 'continuous', 'jenkins', 'gradle']
-        publicDownloadNumbers = true
     }
 }
