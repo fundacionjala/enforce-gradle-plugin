@@ -83,9 +83,7 @@ class Delete extends Deployment {
      */
     def validateFilesInOrg() {
         if(!parameters.get(Constants.PARAMETER_VALIDATE_ORG).equals(Constants.FALSE_OPTION)) {
-            Map <String, ArrayList<File>> filesClassified = OrgValidator.validateFiles(credential, filesToDeleted, projectPath)
-            filesToDeleted = filesClassified.get(Constants.VALID_FILE)
-            filesToDeleted.addAll(filesClassified.get(Constants.FILE_WITHOUT_VALIDATOR))
+            filesToDeleted = OrgValidator.getValidFiles(credential, filesToDeleted, projectPath)
         }
     }
 
