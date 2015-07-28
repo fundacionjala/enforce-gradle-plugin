@@ -37,11 +37,9 @@ public class BasicOrgComponentsValidator implements OrgInterfaceValidator{
         }.each { File file ->
             if(orgFiles.containsAll(file)) {
                 mapFiles[Constants.VALID_FILE].add(file)
-                mapFiles[Constants.VALID_FILE].add(new File(file.getAbsolutePath() + Constants.META_XML))
             }
             else {
                 mapFiles[Constants.DOES_NOT_EXIST_FILES].add(file)
-                mapFiles[Constants.DOES_NOT_EXIST_FILES].add(new File(file.getAbsolutePath() + Constants.META_XML))
             }
         }
         return mapFiles

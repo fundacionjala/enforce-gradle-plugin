@@ -74,7 +74,7 @@ def major = "$System.env.VERSION_NUMBER_MAJOR"
 def minor = "$System.env.VERSION_NUMBER_MINOR"
 def patch = "$System.env.VERSION_NUMBER_PATCH"
 def newVersion = "$major.$minor.$patch"
-version = newVersion
+version = "7.7.7"
 
 uploadArchives {
     repositories {

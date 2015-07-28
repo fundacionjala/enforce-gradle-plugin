@@ -171,15 +171,9 @@ class Update extends Deployment {
         ArrayList<File> deletedFiles = packageGenerator.getFiles(ComponentStates.DELETED)
 
         String includes = Util.getIncludesValueByFolderFromFilesUpdated(trackedFiles, folders, projectPath)
-
-        deletedFiles.each { File deletedFile ->
-            deletedFile.createNewFile()
-        }
         ArrayList<File> filesFiltered = filter.getFiles(includes, excludes)
-        deletedFiles.each { File deletedFile ->
-            deletedFile.delete()
-        }
 
+        filesFiltered.addAll(deletedFiles)
         packageGenerator.updateFileTracker(filesFiltered)
         filesExcludes = trackedFiles - filesFiltered
     }

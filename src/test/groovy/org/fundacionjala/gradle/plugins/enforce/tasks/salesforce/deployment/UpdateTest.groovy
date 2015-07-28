@@ -524,19 +524,15 @@ class UpdateTest extends Specification {
             ArrayList<File> expectedFiles = []
             expectedFiles.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class1.cls').toString()))
             expectedFiles.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class2.cls').toString()))
-            expectedFiles.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class3.cls').toString()))
-            expectedFiles.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class4.cls').toString()))
-            expectedFiles.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class5.cls').toString()))
-            expectedFiles.add(new File(Paths.get(SRC_PATH,'src_delete','classes','Class6.cls').toString()))
 
             Map<String, ResultTracker> trackerMap = [:]
-            trackerMap.put('classes/Class1.cls',new ResultTracker(ComponentStates.DELETED))
-            trackerMap.put('classes/Class2.cls',new ResultTracker(ComponentStates.DELETED))
+            trackerMap.put('classes/Class1.cls',new ResultTracker(ComponentStates.ADDED))
+            trackerMap.put('classes/Class2.cls',new ResultTracker(ComponentStates.ADDED))
             trackerMap.put('classes/Class3.cls',new ResultTracker(ComponentStates.DELETED))
             trackerMap.put('classes/Class4.cls',new ResultTracker(ComponentStates.DELETED))
             trackerMap.put('classes/Class5.cls',new ResultTracker(ComponentStates.DELETED))
             trackerMap.put('classes/Class6.cls',new ResultTracker(ComponentStates.DELETED))
-            trackerMap.put('triggers/Trigger1.trigger',new ResultTracker(ComponentStates.DELETED))
+            trackerMap.put('triggers/Trigger1.trigger',new ResultTracker(ComponentStates.ADDED))
             trackerMap.put('triggers/Trigger2.trigger',new ResultTracker(ComponentStates.DELETED))
             trackerMap.put('triggers/Trigger3.trigger',new ResultTracker(ComponentStates.DELETED))
             trackerMap.put('triggers/Trigger4.trigger',new ResultTracker(ComponentStates.DELETED))
@@ -567,8 +563,6 @@ class UpdateTest extends Specification {
         given:
             ArrayList<File> expectedFiles = []
             expectedFiles.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger1.trigger').toString()))
-            expectedFiles.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger5.trigger').toString()))
-            expectedFiles.add(new File(Paths.get(SRC_PATH,'src_delete','triggers','Trigger6.trigger').toString()))
 
             Map<String, ResultTracker> trackerMap = [:]
             trackerMap.put('classes/Class1.cls',new ResultTracker(ComponentStates.DELETED))
