@@ -31,7 +31,7 @@ public enum MetadataComponents {
     DASHBOARDS("Dashboard", "dashboard", "dashboards"),
     OBJECTS("CustomObject", "object", "objects"),
     GROUPS("Group", "group", "groups"),
-    STATICRESOURCES("StaticResource", "resource", "staticresources"),
+    STATICRESOURCES("StaticResource", "resource", "staticresources", Constants.CONTAINS_XML_FILE),
     ESCALATIONRULES("EscalationRules", "escalationRules", "escalationRules"),
     REPORTS("Report", "report", "reports"),
     HOMEPAGECOMPONENTS("HomePageComponent", "homePageComponent", "homePageComponents"),

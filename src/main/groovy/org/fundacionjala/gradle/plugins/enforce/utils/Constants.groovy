@@ -49,7 +49,9 @@ public class Constants {
     public static final String EMPTY = ""
 
     public static final String OBJECT_EXTENSION = 'object'
+    public static final String OBJECTS_FOLDER = 'objects'
     public static final String FILE_TRACKER_NAME = ".fileTracker.data"
+    public static final String CUSTOM_FIELD = "CustomField"
 
     public static final boolean CONTAINS_XML_FILE = true
 

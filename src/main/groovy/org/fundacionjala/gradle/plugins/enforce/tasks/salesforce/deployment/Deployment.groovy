@@ -169,10 +169,8 @@ abstract class Deployment extends SalesforceTask {
      * @return a map with files classified
      */
     void loadClassifiedFiles(String includes, String excludes) {
-        Util.validateParameterContent("${includes},${excludes}", projectPath)
         ArrayList<File> filesFiltered = filter.getFiles(includes, excludes)
         classifiedFile = FileValidator.validateFiles(projectPath, filesFiltered)
-        Util.showExceptionOfInvalidFiles(classifiedFile)
     }
 
     /**

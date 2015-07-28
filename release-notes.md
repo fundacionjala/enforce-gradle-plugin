@@ -1,4 +1,27 @@
 
+## 1.0.7 - 2015-07-28
+
+### Features
+
+* New option was added to disable subcomponents deletion once Update command is executed.
+
+### Bugs fixed
+
+* When the enforce version is changed and it is executed the task status shows all files as deleted and added.
+
+### Known issues
+
+* Once that files are deleted and update task is executed those files are not deleted from Salesforce organization.
+* Deployment tasks are not deploying salesforce components when these are in sub folders into project directory.
+
+
+## 1.0.6 - 2015-07-15
+
+### Bugs fixed
+
+*  400 Bad Request error is displayed when trying to delete validation rules, once update task is exceuted.
+
+
 ## 1.0.5 - 2015-06-22
 
 ### Bugs fixed
