@@ -43,7 +43,7 @@ class ComponentMonitor {
      * @return a map of components with their status changed, added or deleted
      */
     public Map<String, ResultTracker> getComponentChanged(ArrayList<File> arrayFiles) throws Exception {
-        recoveryFileHashCode = componentSerializer.read()
+        recoveryFileHashCode = Util.getFilesWithTheirRelativePaths(componentSerializer.read(), srcProject)
         currentFileHashCode = getComponentsSignature(arrayFiles)
 
         return getFilesChanged(recoveryFileHashCode, currentFileHashCode)

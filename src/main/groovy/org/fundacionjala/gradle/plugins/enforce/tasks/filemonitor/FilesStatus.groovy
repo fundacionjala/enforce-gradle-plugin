@@ -4,9 +4,8 @@
  */
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.filemonitor
-import org.fundacionjala.gradle.plugins.enforce.utils.Constants
+
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageGenerator
 
 import java.nio.file.Paths
 
