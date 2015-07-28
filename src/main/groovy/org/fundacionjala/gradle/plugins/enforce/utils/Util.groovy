@@ -544,18 +544,6 @@ class Util {
         return includes
     }
 
-    public static void showExceptionOfInvalidFiles(ClassifiedFile classifiedFile) {
-        if (!classifiedFile.invalidFiles.isEmpty()) {
-            throw new Exception("${classifiedFile.invalidFiles} those files are invalid")
-        }
-        if (!classifiedFile.notFoundFiles.isEmpty()) {
-            throw new Exception("${classifiedFile.notFoundFiles} those files weren't found")
-        }
-        if (!classifiedFile.filesWithoutXml.isEmpty()) {
-            throw new Exception("${classifiedFile.filesWithoutXml} those files don't have their xml file")
-        }
-    }
-
     public static Map<String, ComponentHash> getFilesWithTheirRelativePaths(Map<String, ComponentHash> recoveryFileHashCode, String projectPath) {
         Map<String, ComponentHash> result = [:]
         recoveryFileHashCode.any {String fileName, ComponentHash componentHash ->

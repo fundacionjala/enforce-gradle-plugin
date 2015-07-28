@@ -31,23 +31,17 @@ class FileValidator {
      */
     public static ClassifiedFile validateFiles(String projectPath, ArrayList<File> files) {
         ClassifiedFile classifiedFile = new ClassifiedFile()
-        /*Map<String,ArrayList<File>> filesState = [:]
-        filesState.put(Constants.INVALID_FILE_BY_FOLDER, new ArrayList<File>())
-        filesState.put(Constants.VALID_FILE, new ArrayList<File>())
-        filesState.put(Constants.DOES_NOT_EXIST_FILES, new ArrayList<File>())
-        filesState.put(Constants.FILE_WITHOUT_XML, new ArrayList<File>())*/
+
         files.each { File file ->
             Path path = Paths.get(file.getPath())
             String relativePath = Util.getRelativePath(file, projectPath)
             String parentFileName = Util.getFirstPath(relativePath)
             if (file.getName() == Constants.PACKAGE_FILE_NAME) {
                 classifiedFile.validFiles.add(file)
-                //filesState[Constants.VALID_FILE].add(file)
                 return
             }
             if (!isValidFolder(parentFileName)) {
                 classifiedFile.invalidFiles.add(file)
-                //filesState[Constants.INVALID_FILE_BY_FOLDER].add(file)
                 return
             }
 
@@ -55,22 +49,18 @@ class FileValidator {
             boolean isValid = true
             if (!Files.exists(path)) {
                 classifiedFile.notFoundFiles.add(file)
-                //filesState[Constants.DOES_NOT_EXIST_FILES].add(file)
                 isValid = false
             }
             if (!validator.validateFile(file, parentFileName)) {
                 classifiedFile.invalidFiles.add(file)
-                //filesState[Constants.INVALID_FILE_BY_FOLDER].add(file)
                 isValid = false
             }
             if (!validator.validateFileContainsXML(file, parentFileName)) {
                 classifiedFile.filesWithoutXml.add(file)
-                //filesState[Constants.FILE_WITHOUT_XML].add(file)
                 isValid = false
             }
             if(isValid){
                 classifiedFile.validFiles.add(file)
-                //filesState[Constants.VALID_FILE].add(file)
             }
         }
         return classifiedFile
