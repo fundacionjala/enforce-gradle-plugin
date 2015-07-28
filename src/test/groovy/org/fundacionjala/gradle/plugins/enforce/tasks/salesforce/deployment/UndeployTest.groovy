@@ -244,9 +244,7 @@ class UndeployTest extends Specification {
             undeployInstance.projectPath = projectPath
             undeployInstance.credential = credential
             ArrayList<File> files = [new File(Paths.get(projectPath, 'classes', 'Class1.cls').toString()),
-                                     new File(Paths.get(projectPath, 'classes', 'Class1.cls-meta.xml').toString()),
                                      new File(Paths.get(projectPath, 'triggers', 'Trigger1.trigger').toString()),
-                                     new File(Paths.get(projectPath, 'triggers', 'Trigger1.trigger-meta.xml').toString()),
                                      new File(Paths.get(projectPath, 'objects', 'Object1__c.object').toString())]
         when:
             ArrayList<File> result = undeployInstance.getValidFilesFromOrg(files)

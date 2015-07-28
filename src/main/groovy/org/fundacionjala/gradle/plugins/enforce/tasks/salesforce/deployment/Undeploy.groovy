@@ -116,6 +116,22 @@ class Undeploy extends Deployment {
         ArrayList<File> filesToWriteAtDestructive = getValidFilesFromOrg(classifiedFile.validFiles)
 
         writePackage(taskDestructivePath, filesToWriteAtDestructive as ArrayList<File>)
+        updatePackage(Constants.CUSTOM_FIELD, getCustomFieldsFromStandardObject(), taskDestructivePath)
+    }
+
+    /**
+     * Gets custom fields from standard objects
+     * @return an arrayList with custom field names
+     */
+    private ArrayList<String> getCustomFieldsFromStandardObject() {
+        ArrayList<File> standardObjects = []
+        standardComponents.grep(~/.*.object$/).each { String objectName ->
+            File standardObject = new File(Paths.get(projectPath, Constants.OBJECTS_FOLDER, objectName).toString())
+            if (standardObject.exists()) {
+                standardObjects.push(standardObject)
+            }
+        }
+        return Util.getFields(standardObjects)
     }
 
     /**
@@ -156,6 +172,5 @@ class Undeploy extends Deployment {
     public void loadClassifiedFiles(String includes, String excludes) {
         ArrayList<File> filesFiltered = filter.getFiles(includes, excludes)
         classifiedFile = FileValidator.validateFiles(projectPath, filesFiltered)
-        Util.showExceptionOfInvalidFiles(classifiedFile)
     }
 }
