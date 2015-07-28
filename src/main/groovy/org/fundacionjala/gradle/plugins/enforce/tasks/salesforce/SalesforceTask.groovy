@@ -13,7 +13,7 @@ import org.fundacionjala.gradle.plugins.enforce.tasks.credentialmanager.Credenti
 import org.fundacionjala.gradle.plugins.enforce.utils.AnsiColor
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageBuilder
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.PackageBuilder
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.bundling.Zip
@@ -253,6 +253,8 @@ abstract class SalesforceTask extends ForceTask {
         logger.debug('Created directory at: ' + buildFolderPath)
         projectPackagePath = Paths.get(projectPath, PACKAGE_NAME)
         parameters = project.properties.clone()
+        setup()
+        loadParameters()
         runTask()
     }
 
@@ -260,4 +262,16 @@ abstract class SalesforceTask extends ForceTask {
      * Abstract method: When implement a method can select steps for deployment
      */
     abstract void runTask()
+
+
+    /**
+     * Abstract method: When implement a method can setup files for deployment tasks
+     */
+    abstract void setup()
+
+
+    /**
+     * Abstract method: When implement a method can load parameters for deployment tasks
+     */
+    abstract void loadParameters()
 }

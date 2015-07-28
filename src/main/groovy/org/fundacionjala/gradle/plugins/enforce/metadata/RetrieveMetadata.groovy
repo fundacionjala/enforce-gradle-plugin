@@ -17,7 +17,7 @@ import org.fundacionjala.gradle.plugins.enforce.wsc.soap.MetadataAPI
  */
 public class RetrieveMetadata {
 
-    private org.fundacionjala.gradle.plugins.enforce.utils.salesforce.Package metaPackage
+    private org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.Package metaPackage
     private byte[] zipFileRetrieved
     private ArrayList<String> warningMessages
     private String RETRIEVE_RESULT_NULL = "Retrieve result instance is NULL"
@@ -26,7 +26,7 @@ public class RetrieveMetadata {
      * Constructor of RetrieveMetadata
      * @param filePath contains the file xml
      */
-    RetrieveMetadata(org.fundacionjala.gradle.plugins.enforce.utils.salesforce.Package metaPackage) {
+    RetrieveMetadata(org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.Package metaPackage) {
         this.metaPackage = metaPackage
         warningMessages = new ArrayList<String>()
     }

@@ -10,9 +10,8 @@ import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.SalesforceTask
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.ZipFileManager
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.FileValidator
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.Package
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageBuilder
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.Package
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.PackageBuilder
 
 import java.nio.file.Paths
 
@@ -22,6 +21,12 @@ abstract class Retrieval extends SalesforceTask {
     public RetrieveMetadata retrieveMetadata
     public PackageBuilder packageBuilder
     public String unPackageFolder
+    public String packageFromSourcePath
+    public String packageFromBuildPath
+    private final String FILES_RETRIEVE = 'files'
+    private final String ALL_PARAMETER = 'all'
+    public String files
+    public String all = Constants.FALSE
 
     /**
      * Sets description and group task
@@ -32,6 +37,31 @@ abstract class Retrieval extends SalesforceTask {
         super(descriptionTask, groupTask)
         packageBuilder = new PackageBuilder()
         unPackageFolder = Paths.get(buildFolderPath, UNPACKAGE_FOLDER).toString()
+    }
+
+    /**
+     * Sets package path from build directory
+     * Sets package path from source directory
+     */
+    @Override
+    void setup() {
+        packageFromSourcePath = Paths.get(projectPath, Constants.PACKAGE_FILE_NAME).toString()
+        packageFromBuildPath = Paths.get(unPackageFolder, Constants.PACKAGE_FILE_NAME).toString()
+    }
+
+    /**
+     * Loads the files and all parameters
+     */
+    @Override
+    void loadParameters() {
+        if (!files) {
+            if (Util.isValidProperty(project, FILES_RETRIEVE)) {
+                files = project.property(FILES_RETRIEVE) as String
+            }
+        }
+        if (Util.isValidProperty(project, ALL_PARAMETER)) {
+            all = project.property(ALL_PARAMETER) as String
+        }
     }
 
     /**
@@ -61,29 +91,6 @@ abstract class Retrieval extends SalesforceTask {
         }
         retrieveMetadata.getWarningsMessages().each { message ->
             logger.warn(message)
-        }
-    }
-
-    /**
-     * Validates names of folders
-     * @param foldersName is type array list contents names of folders
-     */
-    public void validateFolders(ArrayList<String> foldersName) {
-        ArrayList<String> invalidFolders = new ArrayList<String>()
-        invalidFolders = Util.getInvalidFolders(foldersName)
-        if (!invalidFolders.empty) {
-            throw new Exception("${Constants.INVALID_FOLDER}: ${invalidFolders}")
-        }
-    }
-
-    /**
-     * Validates names of files
-     * @param filesName is type array list contents names of files
-     */
-    public void validateFiles(ArrayList<File> files) {
-        Map<String, ArrayList<String>> validatedMapFiles = FileValidator.validateFiles(projectPath, files)
-        if (!validatedMapFiles[Constants.INVALID_FILE].isEmpty()) {
-            throw new Exception("${Constants.INVALID_FILE}: ${validatedMapFiles[Constants.INVALID_FILE]}")
         }
     }
 }

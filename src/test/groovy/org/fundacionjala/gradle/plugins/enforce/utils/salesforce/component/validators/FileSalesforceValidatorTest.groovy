@@ -1,4 +1,4 @@
-package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators
+package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files
 
 import spock.lang.Shared
 import spock.lang.Specification
@@ -20,7 +20,7 @@ class FileSalesforceValidatorTest extends Specification {
             def file = new File('class1.cls')
             def folder = 'classes'
         when:
-            def result = validator.validateFileByFolder(folder, file)
+            def result = validator.validateFile(file, folder)
         then:
             result
     }
@@ -31,7 +31,7 @@ class FileSalesforceValidatorTest extends Specification {
             def file = new File('class1.data')
             def folder = 'classes'
         when:
-            def result = validator.validateFileByFolder(folder, file)
+            def result = validator.validateFile(file, folder)
         then:
             !result
     }
@@ -41,7 +41,7 @@ class FileSalesforceValidatorTest extends Specification {
             def file = new File('package.xml')
             def folder = 'classes'
         when:
-            def result = validator.validateFileByFolder(folder, file)
+            def result = validator.validateFile(file, folder)
         then:
             !result
     }
@@ -51,7 +51,7 @@ class FileSalesforceValidatorTest extends Specification {
             def file = new File(Paths.get('testFolder/account.report').toString())
             def folder = 'reports'
         when:
-            def result = validator.validateFileByFolder(folder, file)
+            def result = validator.validateFile(file, folder)
         then:
             result
     }
@@ -61,7 +61,7 @@ class FileSalesforceValidatorTest extends Specification {
             def file = new File(Paths.get('testFolder/account.notreport').toString())
             def folder = 'reports'
         when:
-            def result = validator.validateFileByFolder(folder, file)
+            def result = validator.validateFile(file, folder)
         then:
             !result
     }

@@ -13,7 +13,6 @@ import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentSerializer
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
 import org.fundacionjala.gradle.plugins.enforce.metadata.DeployMetadata
-import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.LoginType
@@ -120,10 +119,10 @@ class UpdateTest extends Specification {
         given:
             updateInstance.packageGenerator.fileTrackerMap = ['classes/Class1.cls':new ResultTracker(ComponentStates.ADDED)]
             updateInstance.packageGenerator.projectPath = Paths.get(SRC_PATH, 'src').toString()
-            updateInstance.pathUpdate = Paths.get(SRC_PATH, 'build', 'update').toString()
+            updateInstance.taskFolderPath = Paths.get(SRC_PATH, 'build', 'update').toString()
             updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
             updateInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
-            updateInstance.updatePackagePath = Paths.get(SRC_PATH, 'build', 'update', 'package.xml').toString()
+            updateInstance.taskPackagePath = Paths.get(SRC_PATH, 'build', 'update', 'package.xml').toString()
         when:
             updateInstance.createPackage()
         then:
@@ -134,10 +133,10 @@ class UpdateTest extends Specification {
         given:
             updateInstance.packageGenerator.fileTrackerMap = ['classes/Class1.cls':new ResultTracker(ComponentStates.ADDED)]
             updateInstance.packageGenerator.projectPath = Paths.get(SRC_PATH, 'src').toString()
-            updateInstance.pathUpdate = Paths.get(SRC_PATH, 'build', 'update').toString()
+            updateInstance.taskFolderPath = Paths.get(SRC_PATH, 'build', 'update').toString()
             updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
             updateInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
-            updateInstance.updatePackagePath = Paths.get(SRC_PATH, 'build', 'update', 'package.xml').toString()
+            updateInstance.taskPackagePath = Paths.get(SRC_PATH, 'build', 'update', 'package.xml').toString()
         when:
             updateInstance.createPackage()
         then:
@@ -147,10 +146,10 @@ class UpdateTest extends Specification {
     def "Test should create a package empty" () {
         given:
             updateInstance.packageGenerator.fileTrackerMap = [:]
-            updateInstance.pathUpdate = Paths.get(SRC_PATH, 'build', 'update').toString()
+            updateInstance.taskFolderPath = Paths.get(SRC_PATH, 'build', 'update').toString()
             updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
             updateInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
-            updateInstance.updatePackagePath = Paths.get(SRC_PATH, 'build', 'update', 'package.xml').toString()
+            updateInstance.taskPackagePath = Paths.get(SRC_PATH, 'build', 'update', 'package.xml').toString()
         when:
             updateInstance.createPackage()
         then:
@@ -162,11 +161,12 @@ class UpdateTest extends Specification {
             updateInstance.packageGenerator.fileTrackerMap = ['classes/Class1.cls':new ResultTracker(ComponentStates.DELETED)]
             updateInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
             updateInstance.packageGenerator.projectPath = Paths.get(SRC_PATH, 'src').toString()
-            updateInstance.pathUpdate = Paths.get(SRC_PATH, 'build', 'update').toString()
+            updateInstance.taskFolderPath = Paths.get(SRC_PATH, 'build', 'update').toString()
             updateInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()
-            updateInstance.updatePackagePath = Paths.get(SRC_PATH, 'build', 'update', 'destructiveChanges.xml').toString()
+            updateInstance.taskPackagePath = Paths.get(SRC_PATH, 'build', 'update', 'destructiveChanges.xml').toString()
             updateInstance.credential = credential
             updateInstance.packageGenerator.credential = credential
+            updateInstance.packageGenerator.project = project
         when:
             updateInstance.createDestructive()
         then:
@@ -195,7 +195,7 @@ class UpdateTest extends Specification {
         given:
             updateInstance.filesToCopy = [new File(Paths.get(SRC_PATH, 'classes', 'class1.cls').toString()),
                                           new File(Paths.get(SRC_PATH, 'classes', 'class1.cls-meta.xml').toString())]
-            updateInstance.pathUpdate = Paths.get(SRC_PATH, 'build').toString()
+            updateInstance.taskFolderPath = Paths.get(SRC_PATH, 'build').toString()
         when:
             updateInstance.copyFilesChanged()
         then:
@@ -256,12 +256,11 @@ class UpdateTest extends Specification {
             def packageExpect = "${"<?xml version='1.0' encoding='UTF-8'?>"}${"<Package xmlns='http://soap.sforce.com/2006/04/metadata'>"}${"<types><members>Class2</members><name>ApexClass</name></types><version>32.0</version></Package>"}"
             def destructiveExpect = "${"<?xml version='1.0' encoding='UTF-8'?>"}${"<Package xmlns='http://soap.sforce.com/2006/04/metadata'>"}${"<version>32.0</version>"}${"</Package>"}"
         when:
-            updateInstance.pathUpdate = Paths.get(updateInstance.buildFolderPath, Constants.DIR_UPDATE_FOLDER).toString()
-            updateInstance.updatePackagePath = Paths.get(updateInstance.pathUpdate, updateInstance.PACKAGE_NAME).toString()
-            updateInstance.createDeploymentDirectory(updateInstance.pathUpdate)
+            updateInstance.setup()
+            updateInstance.createDeploymentDirectory(updateInstance.taskFolderPath)
             updateInstance.loadFilesChanged()
-            updateInstance.verifyParameter()
-            updateInstance.excludeFilesFromFilesChanged()
+            updateInstance.loadParameters()
+            updateInstance.filterFiles()
             updateInstance.showFilesChanged()
             updateInstance.createDestructive()
             updateInstance.createPackage()
@@ -306,16 +305,15 @@ class UpdateTest extends Specification {
             writerClass.close()
             writerXml.close()
             def updateFileZipPath = Paths.get(SRC_PATH,'build','update.zip').toString()
-            def updateFolderPath = Paths.get(updateInstance.buildFolderPath, Constants.DIR_UPDATE_FOLDER).toString()
+            def updateFolderPath = Paths.get(updateInstance.buildFolderPath, "update").toString()
             File updateFileZip = new File(updateFileZipPath)
             File updateFolder = new File(updateFolderPath)
         when:
-            updateInstance.pathUpdate = Paths.get(updateInstance.buildFolderPath, Constants.DIR_UPDATE_FOLDER).toString()
-            updateInstance.updatePackagePath = Paths.get(updateInstance.pathUpdate, updateInstance.PACKAGE_NAME).toString()
-            updateInstance.createDeploymentDirectory(updateInstance.pathUpdate)
+            updateInstance.setup()
+            updateInstance.createDeploymentDirectory(updateInstance.taskFolderPath)
             updateInstance.loadFilesChanged()
-            updateInstance.verifyParameter()
-            updateInstance.excludeFilesFromFilesChanged()
+            updateInstance.loadParameters()
+            updateInstance.filterFiles()
             updateInstance.showFilesChanged()
             updateInstance.createDestructive()
             updateInstance.createPackage()
@@ -462,12 +460,11 @@ class UpdateTest extends Specification {
                     "\t<version>32.0</version>\n" +
                     "</Package>"
         when:
-            updateInstance.pathUpdate = Paths.get(updateInstance.buildFolderPath, Constants.DIR_UPDATE_FOLDER).toString()
-            updateInstance.updatePackagePath = Paths.get(updateInstance.pathUpdate, updateInstance.PACKAGE_NAME).toString()
-            updateInstance.createDeploymentDirectory(updateInstance.pathUpdate)
+            updateInstance.setup()
+            updateInstance.createDeploymentDirectory(updateInstance.taskFolderPath)
             updateInstance.loadFilesChanged()
-            updateInstance.verifyParameter()
-            updateInstance.excludeFilesFromFilesChanged()
+            updateInstance.loadParameters()
+            updateInstance.filterFiles()
             updateInstance.showFilesChanged()
             updateInstance.createPackage()
             updateInstance.copyFilesChanged()
@@ -487,7 +484,6 @@ class UpdateTest extends Specification {
     }
 
     def cleanup() {
-        new File(Paths.get(SRC_PATH, 'build').toString()).deleteDir()
         new File(Paths.get(SRC_PATH, 'classes', 'Class2.cls').toString()).delete()
         new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class2.cls').toString()).delete()
         new File(Paths.get(SRC_PATH, 'src', 'classes', 'Class2.cls-meta.xml').toString()).delete()

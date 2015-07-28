@@ -5,13 +5,12 @@
 
 package org.fundacionjala.gradle.plugins.enforce.wsc.rest
 
-import aQute.bnd.osgi.Clazz
 import com.sforce.soap.metadata.PackageTypeMembers
 import groovy.util.logging.Log
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageBuilder
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.PackageBuilder
 
 /**
  * Builds queries from package xml file
@@ -66,6 +65,39 @@ class QueryBuilder {
     }
 
     /**
+     * Gets queries of components from component type
+     * @param typecomponent
+     * @return query
+     */
+    public String createQueryFromBasicComponent(String componentType) {
+        return "${SELECT_NAME} ${componentType}"
+    }
+
+    /**
+     * Gets queries that selected a subcomponent
+     * @param typecomponent of our subcomponent
+     * @param file that needs validate.
+     * @return query
+     */
+    public String createQueryGetSubomponent(String typecomponent, File file) {
+        String query
+        if(typecomponent == 'CustomField') {
+            query = """${SELECT_FULL_NAME} ${typecomponent} ${WHERE_DEVELOPER_NAME} '${Util.getDeveloperName(file.getName())}'"""
+        }
+        else if(typecomponent == 'CompactLayout') {
+            query = """${SELECT_FULL_NAME} ${typecomponent} ${WHERE_DEVELOPER_NAME} '${Util.getDeveloperName(file.getName())}'"""
+        }
+        else if(typecomponent == 'ValidationRule') {
+            query = """${SELECT_FULL_NAME} ${typecomponent} ${WHERE_VALIDATION_NAME} '${Util.getDeveloperName(file.getName())}'"""
+        }
+        else if(typecomponent == 'RecordType') {
+            query = """${SELECT_FULL_NAME} ${typecomponent} ${WHERE_NAME} '${Util.getDeveloperName(file.getName())}'"""
+        }
+        return query
+
+    }
+
+    /**
      * Gets queries of components from list of files
      * @param ArrayList of files to execute query
      * @return array of queries String format
@@ -80,15 +112,15 @@ class QueryBuilder {
             String folderName = file.getParentFile().getName()
             MetadataComponents component = MetadataComponents.getComponentByPath(folderName)
             if (component && isDefaultComponent(component.getTypeName())) {
+                String componentGroup = getGroupComponent(component.getTypeName())
                 String query = ""
-
-                if(getGroupComponent(component.getTypeName()).equals("defaultComponent")) {
+                if(componentGroup.equals("defaultComponent")) {
                     query = """${SELECT_NAME} ${component.getTypeName()} ${WHERE_NAME} '${Util.getFileName(file.getName())}'"""
                 }
-                else if(getGroupComponent(component.getTypeName()).equals("defaultSubComponent")) {
+                else if(componentGroup.equals("defaultSubComponent")) {
                     query = """${SELECT_FULL_NAME} ${component.getTypeName()} ${WHERE_DEVELOPER_NAME} '${Util.getDeveloperName(file.getName())}'"""
                 }
-                else if(getGroupComponent(component.getTypeName()).equals("validationRule")) {
+                else if(componentGroup.equals("validationRule")) {
                     query = """${SELECT_FULL_NAME} ${component.getTypeName()} ${WHERE_VALIDATION_NAME} '${Util.getDeveloperName(file.getName())}'"""
                 }
                 queries.add(query)
@@ -99,7 +131,6 @@ class QueryBuilder {
         if (!invalidFolders.isEmpty()) {
             Util.logList(log, Constants.UNSUPPORTED_FOLDERS, invalidFolders)
         }
-
         return queries
     }
 
@@ -140,6 +171,7 @@ class QueryBuilder {
     }
 
     /**
+     * Selected the validation group that belongs a component
      * @param component is type String
      * @return the group of component name
      */

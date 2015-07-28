@@ -32,6 +32,25 @@ import java.nio.file.Paths
  * GP is a gradle properties
  */
 class RunTestTask extends SalesforceTask {
+    private static final String CLASS_PARAM = 'cls'
+    private static final String CLASS_DIRECTORY = 'classes'
+    private static final String WILDCARD_ALL_TEST = '*'
+    private static final String NAME_FOLDER_REPORT = 'report'
+    private static final String NAME_FOLDER_PAGES = 'pages'
+    private static final String NAME_FILE = 'index.html'
+    private static final String NAME_FILE_UNIT_TEXT_XML = 'unitTest.xml'
+    private static final String NAME_FILE_COVERAGE_REPORT_XML = 'coverage.xml'
+    private static final String PARAMETER_ASYNC = 'async'
+    private static final String QUERY_CLASSES = "SELECT Id, Name FROM ApexClass"
+    private static final String QUERY_TRIGGERS = "SELECT Id, Name FROM ApexTrigger"
+    private static final String NOT_HAVE_UNIT_TEST_MESSAGE = "You don't have any test class to execute in your local repository"
+    private static final String IS_TEST = "@isTest"
+    private static final String UNIT_TEST_SUCCESS = 'Success'
+    private static final String UNIT_TEST_FAIL = 'Fail'
+    private static final String QUERY_COVERAGE = "SELECT NumLinesCovered, NumLinesUncovered, ApexClassorTriggerId, Coverage" +
+            " FROM ApexCodeCoverageAggregate"
+    private static final int TIME_RUN_TEST_ASYNC = 1000
+    private static final int ZERO_NUMBER = 0
     private String pathClasses
     private HtmlManager htmlManager
     public static final String TEST_MESSAGE = "Unit Test Results"
@@ -63,13 +82,14 @@ class RunTestTask extends SalesforceTask {
     /**
      * Prepares directory for reports
      */
-    private void setupDirectory() {
-        pathClasses = Paths.get(projectPath, Constants.CLASS_DIRECTORY).toString()
-        folderReport = Paths.get(buildFolderPath, Constants.NAME_FOLDER_REPORT).toString()
+    @Override
+    void setup() {
+        pathClasses = Paths.get(projectPath, CLASS_DIRECTORY).toString()
+        folderReport = Paths.get(buildFolderPath, NAME_FOLDER_REPORT).toString()
         fileManager.createNewDirectory(folderReport)
-        String folderPages = Paths.get(folderReport, Constants.NAME_FOLDER_PAGES).toString()
+        String folderPages = Paths.get(folderReport, NAME_FOLDER_PAGES).toString()
         fileManager.createNewDirectory(folderPages)
-        fileWriterReport = new FileWriter(Paths.get(folderReport, Constants.NAME_FILE).toString())
+        fileWriterReport = new FileWriter(Paths.get(folderReport, NAME_FILE).toString())
         testResultReport = new TestResultReport(folderReport)
         apexTestResultArrayList = new ArrayList<ApexRunTestResult>()
 
@@ -77,6 +97,18 @@ class RunTestTask extends SalesforceTask {
         htmlManager.pathReport = folderReport
         htmlManager.sourceCode = projectPath
         htmlManager.folderPages = folderPages
+
+        toolingAPI = new ToolingAPI(credential)
+        apexAPI = new ApexAPI(credential)
+        jsonByClasses = toolingAPI.httpAPIClient.executeQuery(QUERY_CLASSES)
+    }
+
+    @Override
+    void loadParameters() {
+        if (Util.isValidProperty(project, PARAMETER_ASYNC) &&
+                project.properties[PARAMETER_ASYNC].toString().equals("true")) {
+            async = true
+        }
     }
 
     /**
@@ -84,42 +116,32 @@ class RunTestTask extends SalesforceTask {
      */
     @Override
     void runTask() {
-
-        if (Util.isEmptyProperty(project, Constants.CLASS_PARAM)) {
-            throw new Exception("Enter valid parameter ${Constants.CLASS_PARAM}")
+        if (Util.isEmptyProperty(project, CLASS_PARAM)) {
+            throw new Exception("Enter valid parameter ${CLASS_PARAM}")
         }
-
-        setupDirectory()
-        toolingAPI = new ToolingAPI(credential)
-        apexAPI = new ApexAPI(credential)
-        jsonByClasses = toolingAPI.httpAPIClient.executeQuery(Constants.QUERY_CLASSES)
 
         if (!ApexClasses.checkForRecords(jsonByClasses)) {
             throw new Exception("Not found any class in your organization")
         }
 
-        jsonByTriggers = toolingAPI.httpAPIClient.executeQuery(Constants.QUERY_TRIGGERS)
+        jsonByTriggers = toolingAPI.httpAPIClient.executeQuery(QUERY_TRIGGERS)
         ArrayList<String> classes = new ArrayList<String>()
 
-        if (Util.isValidProperty(project, Constants.CLASS_PARAM)) {
-            classes = getClassNames(pathClasses, project.properties[Constants.CLASS_PARAM].toString())
+        if (Util.isValidProperty(project, CLASS_PARAM)) {
+            classes = getClassNames(pathClasses, project.properties[CLASS_PARAM].toString())
         }
 
-        if (existAsyncParameter() && !Util.isValidProperty(project, Constants.CLASS_PARAM)) {
-            classes = getClassNames(pathClasses, Constants.WILDCARD_ALL_TEST)
+        if (async && !Util.isValidProperty(project, CLASS_PARAM)) {
+            classes = getClassNames(pathClasses, WILDCARD_ALL_TEST)
         }
 
-        if (!existAsyncParameter() && !Util.isValidProperty(project, Constants.CLASS_PARAM)) {
+        if (!async && !Util.isValidProperty(project, CLASS_PARAM)) {
             classes = new ArrayList<String>()
-        }
-
-        if (existAsyncParameter()) {
-            async = true
         }
 
         if (async) {
             if (classes.empty) {
-                logger.error(Constants.NOT_HAVE_UNIT_TEST_MESSAGE)
+                logger.error(NOT_HAVE_UNIT_TEST_MESSAGE)
                 return
             }
             runTestAsynchronous(classes)
@@ -129,15 +151,6 @@ class RunTestTask extends SalesforceTask {
         writeJenkinsPluginJson()
         generateUnitTestReportXml()
         deleteTemporaryFiles()
-    }
-
-    /**
-     * Verifies if exist an async parameter with its value
-     * @return true if exist an async parameter with its value otherwise false
-     */
-    def existAsyncParameter() {
-        return Util.isValidProperty(project, Constants.PARAMETER_ASYNC) &&
-                project.properties[Constants.PARAMETER_ASYNC].toString().equals("true")
     }
 
     /**
@@ -159,13 +172,13 @@ class RunTestTask extends SalesforceTask {
         String timeResult = Util.formatDurationHMS(runTestResult.totalTime as long)
         logger.log(LogLevel.INFO, "total time:  $timeResult")
 
-        if (runTestResult && runTestResult.failures && runTestResult.failures.size() > Constants.ZERO_NUMBER) {
+        if (runTestResult && runTestResult.failures && runTestResult.failures.size() > ZERO_NUMBER) {
             logger.log(LogLevel.LIFECYCLE, "${TEST_MESSAGE}:\n")
         }
 
         runTestResult.failures.each { testFailures ->
             ApexRunTestResult apexRunTestResult = new ApexRunTestResult()
-            apexRunTestResult.outcome = Constants.UNIT_TEST_FAIL
+            apexRunTestResult.outcome = UNIT_TEST_FAIL
             apexRunTestResult.stackTrace = testFailures.stackTrace
             apexRunTestResult.TestTimestamp = testFailures.time
             apexRunTestResult.methodName = testFailures.methodName
@@ -178,7 +191,7 @@ class RunTestTask extends SalesforceTask {
 
         runTestResult.successes.each { testFailures ->
             ApexRunTestResult apexRunTestResult = new ApexRunTestResult()
-            apexRunTestResult.outcome = Constants.UNIT_TEST_SUCCESS
+            apexRunTestResult.outcome = UNIT_TEST_SUCCESS
             apexRunTestResult.stackTrace = ""
             apexRunTestResult.TestTimestamp = testFailures.time
             apexRunTestResult.methodName = testFailures.methodName
@@ -320,12 +333,12 @@ class RunTestTask extends SalesforceTask {
         progressLogger.started()
 
         while (!runTestListener.done) {
-            sleep(Constants.TIME_RUN_TEST_ASYNC)
+            sleep(TIME_RUN_TEST_ASYNC)
             progressLogger.progress("$toolingAPISoap.numberUnitTest/$toolingAPISoap.currentUnitTestCompleted")
         }
 
         progressLogger.completed()
-        jsonCoverageLines = toolingAPI.httpAPIClient.executeQuery(Constants.QUERY_COVERAGE)
+        jsonCoverageLines = toolingAPI.httpAPIClient.executeQuery(QUERY_COVERAGE)
         apexTestResultArrayList = runTestListener.apexTestItem.apexTestResults
         generateHtmlReportCoverageAsync(apexClasses)
         generateCoverageReportXml()
@@ -339,7 +352,7 @@ class RunTestTask extends SalesforceTask {
         int unitTestSuccess = 0
 
         apexTestResultArrayList.each { apexTestResult ->
-            if (apexTestResult.outcome == Constants.UNIT_TEST_FAIL) {
+            if (apexTestResult.outcome == UNIT_TEST_FAIL) {
                 unitTestFail++
             } else {
                 unitTestSuccess++
@@ -359,7 +372,7 @@ class RunTestTask extends SalesforceTask {
      */
     def generateUnitTestReportXml() {
         testResultReport.loadInformationUnitTest(apexTestResultArrayList, jsonByClasses)
-        FileWriter unitTestXML = new FileWriter(Paths.get(folderReport, Constants.NAME_FILE_UNIT_TEXT_XML).toString())
+        FileWriter unitTestXML = new FileWriter(Paths.get(folderReport, NAME_FILE_UNIT_TEXT_XML).toString())
         testResultReport.generateUnitTestXML(unitTestXML)
         unitTestXML.close()
     }
@@ -370,7 +383,7 @@ class RunTestTask extends SalesforceTask {
     def generateCoverageReportXml() {
         testResultReport.loadInformationCoverage(jsonCoverageLines, jsonByClasses, jsonByTriggers, projectPath)
         FileWriter coverageReportXML = new FileWriter(Paths.get(folderReport,
-                Constants.NAME_FILE_COVERAGE_REPORT_XML).toString())
+                NAME_FILE_COVERAGE_REPORT_XML).toString())
         testResultReport.generateCoverageReportXML(coverageReportXML)
         coverageReportXML.close()
     }
@@ -385,7 +398,7 @@ class RunTestTask extends SalesforceTask {
         ArrayList<String> classNames = new ArrayList<String>()
         tree.each { File file ->
             if (file.path.endsWith(".${MetadataComponents.CLASSES.getExtension()}") &&
-                    StringUtils.containsIgnoreCase(file.text, Constants.IS_TEST)) {
+                    StringUtils.containsIgnoreCase(file.text, IS_TEST)) {
                 classNames.add(Util.getFileName(file.name))
             }
         }
