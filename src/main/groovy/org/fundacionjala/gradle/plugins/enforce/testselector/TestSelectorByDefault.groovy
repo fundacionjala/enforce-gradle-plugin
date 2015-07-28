@@ -5,27 +5,28 @@
 
 package org.fundacionjala.gradle.plugins.enforce.testselector
 
+import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.unittest.RunTestTaskConstants
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 
 class TestSelectorByDefault extends TestSelector {
 
-    private String wildCards
+    private String clsParamValue
 
-    public TestSelectorByDefault(ArrayList<String> testClassNameList, String wildCard) {
+    public TestSelectorByDefault(ArrayList<String> testClassNameList, String clsParamValue) {
         super(testClassNameList)
-        this.wildCards = wildCard ? wildCard.replace("*", "").replace(".${MetadataComponents.CLASSES.getExtension()}", "") : null
+        this.clsParamValue = clsParamValue ? clsParamValue.replace(RunTestTaskConstants.WILD_CARD_SIGN, "").replace(".${MetadataComponents.CLASSES.getExtension()}", "") : null
     }
 
     /**
-     * Returns the list of test classes according the wildCards form the parameters
+     * Returns the list of test classes according the fileParamValue form the parameters
      * @return an resultTracker with status
      */
     @Override
     ArrayList<String> getTestClassNames() {
-        if (this.wildCards) {
+        if (this.clsParamValue) {
             ArrayList<String> testClassList = new ArrayList<String>()
             testClassNameList.each { testClassName ->
-                this.wildCards.tokenize(',').each { wildCard ->
+                this.clsParamValue.tokenize(RunTestTaskConstants.FILE_SEPARATOR_SIGN).each { wildCard ->
                     if (testClassName.contains(wildCard)) {
                         testClassList.add(testClassName)
                     }

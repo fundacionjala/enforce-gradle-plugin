@@ -12,48 +12,29 @@ import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataCompone
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
 import org.gradle.api.Project
 import org.gradle.api.file.FileTree
+import org.gradle.api.logging.Logger
 
-@Singleton(lazy = true)
 class TestSelectorModerator {
 
-    private ArrayList<String> testClassNameList
-    private Map testSelectorCacheMap
+    private ArrayList<String> testClassNameList = []
     private Project project
+    private Logger logger
+    private String pathClasses
+    private ToolingAPI toolingAPI
 
-    /**
-     * Evaluates the params to build an instance of the ITestSelector
-     * @param project, the Program instance
-     * @param toolingAPI, the ToolingAPI instance
-     * @param pathClasses, the class path to load all the test classes
-     * @return an instance of the ITestSelector
-     */
-    public ITestSelector getTestSelector(Project project, ToolingAPI toolingAPI, String pathClasses) {
-        String wildCard
-        ITestSelector instance
+    public TestSelectorModerator(Project project, ToolingAPI toolingAPI, String pathClasses) {
         this.project = project
-        testClassNameList = getAllTestClassNames(pathClasses)
-        if (project.properties.containsKey(RunTestTaskConstants.CLASS_PARAM)) {
-            wildCard = project.properties[RunTestTaskConstants.CLASS_PARAM].toString()
-            if (wildCard) {
-                instance = new TestSelectorByDefault(testClassNameList, wildCard)
-            } else {
-                throw new Exception("Enter valid parameter ${RunTestTaskConstants.CLASS_PARAM}")
-            }
-//        } else if () { //look for more params
-//            throw new Exception("Enter valid parameter ${RunTestTaskConstants.CLASS_PARAM}")
-        } else { //run all tests
-            instance = new TestSelectorByDefault(testClassNameList, null)
-        }
-        return instance
+        this.toolingAPI = toolingAPI
+        this.pathClasses = pathClasses
     }
 
     /**
-     * Loads all the test classes from the class folder path
-     * @param pathClasses contains the class folder path
-     * @return ArrayList with all the test class names
+     * Gets all class names that match with the wildcard
+     * @param wildCard is the property sets from user
      */
-    private ArrayList<String> getAllTestClassNames(String pathClasses) {
-        FileTree tree = project.fileTree(dir: pathClasses)
+    public ArrayList<String> getClassNames(String path, String wildCard) {
+        FileTree tree = project.fileTree(dir: path)
+        tree.include wildCard
         ArrayList<String> classNames = new ArrayList<String>()
         tree.each { File file ->
             if (file.path.endsWith(".${MetadataComponents.CLASSES.getExtension()}") &&
@@ -64,10 +45,34 @@ class TestSelectorModerator {
         return classNames
     }
 
-    /**
-     * Clears the cache Map to re-load it newly
-     */
-    public void clearCacheMap() {
-        testSelectorCacheMap = [:]
+    public void setLogger(Logger logger) {
+        this.logger = logger
     }
+
+    public ArrayList<String> getTestClassNames() {
+        ArrayList<String> allTestClassNameList = getClassNames(pathClasses, RunTestTaskConstants.WILDCARD_ALL_TEST)
+
+        if (Util.isValidProperty(project, RunTestTaskConstants.CLASS_PARAM)) {
+            this.testClassNameList = (new TestSelectorByDefault(allTestClassNameList, project.properties[RunTestTaskConstants.CLASS_PARAM].toString())).getTestClassNames()
+        }
+
+        if (Util.isValidProperty(project, RunTestTaskConstants.FILE_PARAM)) {
+            String fileParamValue = project.properties[RunTestTaskConstants.FILE_PARAM].toString()
+            if (this.testClassNameList.size() < allTestClassNameList.size()) {
+                Boolean refreshClassAndTestMap = false
+                if (project.properties.containsKey("refreshMapping")) { //TODO: get this info from fileTraker[events: update, upload]
+                    refreshClassAndTestMap = (project.properties["refreshMapping"].toString()).toBoolean()
+                }
+                ITestSelector selector = new TestSelectorByReference(allTestClassNameList, this.toolingAPI, fileParamValue, refreshClassAndTestMap)
+                selector.setLogger(logger)
+                this.testClassNameList.addAll(selector.getTestClassNames())
+            }
+        }
+        else if (!Util.isValidProperty(project, RunTestTaskConstants.CLASS_PARAM)) {
+            this.testClassNameList = (new TestSelectorByDefault(allTestClassNameList, null)).getTestClassNames()
+        }
+
+        return this.testClassNameList.unique()
+    }
+
 }

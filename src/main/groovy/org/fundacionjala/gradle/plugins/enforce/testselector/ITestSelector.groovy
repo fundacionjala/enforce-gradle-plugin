@@ -5,8 +5,10 @@
 
 package org.fundacionjala.gradle.plugins.enforce.testselector;
 
-import java.util.ArrayList;
+import java.util.ArrayList
+import org.gradle.api.logging.Logger
 
 public interface ITestSelector {
-    ArrayList<String> getTestClassNames();
+    ArrayList<String> getTestClassNames()
+    void setLogger(Logger logger)
 }

@@ -9,7 +9,6 @@ import com.sforce.soap.apex.*
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.SalesforceTask
-import org.fundacionjala.gradle.plugins.enforce.testselector.ITestSelector
 import org.fundacionjala.gradle.plugins.enforce.testselector.TestSelectorModerator
 import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexClass
 import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexClasses
@@ -34,7 +33,6 @@ import java.nio.file.Paths
 class RunTestTask extends SalesforceTask {
     private String pathClasses
     private HtmlManager htmlManager
-    private ITestSelector testSelector
     public static final String TEST_MESSAGE = RunTestTaskConstants.UNIT_TEST_RESULT
     Boolean async
     String jsonByClasses
@@ -93,23 +91,29 @@ class RunTestTask extends SalesforceTask {
      */
     @Override
     void loadParameters() {
+        if (!ApexClasses.checkForRecords(jsonByClasses)) {
+            throw new Exception(RunTestTaskConstants.NOT_FOUND_ANY_CLASS)
+        }
+        if (Util.isEmptyProperty(project, RunTestTaskConstants.CLASS_PARAM)) {
+            throw new Exception("${RunTestTaskConstants.ENTER_VALID_PARAMETER} ${RunTestTaskConstants.CLASS_PARAM}")
+        }
         if (Util.isValidProperty(project, RunTestTaskConstants.PARAMETER_ASYNC) &&
                 project.properties[RunTestTaskConstants.PARAMETER_ASYNC].toString().equals(RunTestTaskConstants.TRUE_VALUE)) {
             async = true
         }
-        if (!ApexClasses.checkForRecords(jsonByClasses)) {
-            throw new Exception(RunTestTaskConstants.NOT_FOUND_ANY_CLASS)
-        }
-        testSelector = TestSelectorModerator.instance.getTestSelector(project, toolingAPI, pathClasses)
-        classesToExecute = getClassNames()
+        runTestSelector()
     }
 
     /**
-     * Injects a ITestSelector instance for test purposes
-     * @param testSelector the instance to be injected
+     * Initializes the TestSelector process for test purposes
      */
-    protected void setTestSelector(ITestSelector testSelector) {
-        this.testSelector = testSelector;
+    protected void runTestSelector() {
+        if (!pathClasses) { //TODO: remove or improve just for test purposes
+            pathClasses = Paths.get((project.enforce.srcPath as String), "test").toString()
+        }
+        TestSelectorModerator testModerator = new TestSelectorModerator(project, toolingAPI, pathClasses)
+        testModerator.setLogger(logger)
+        classesToExecute = testModerator.getTestClassNames()
     }
 
     /**
@@ -354,6 +358,6 @@ class RunTestTask extends SalesforceTask {
      * Gets all test class names to be executed
      */
     public ArrayList<String> getClassNames() {
-        return testSelector.getTestClassNames();
+        return classesToExecute
     }
 }

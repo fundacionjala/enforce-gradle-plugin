@@ -5,13 +5,20 @@
 
 package org.fundacionjala.gradle.plugins.enforce.testselector
 
+import org.gradle.api.logging.Logger
+
 public abstract class TestSelector implements ITestSelector {
 
     protected ArrayList<String> testClassNameList
+    protected Logger logger
 
     protected TestSelector(ArrayList<String> testClassNameList) {
         this.testClassNameList = testClassNameList
     }
 
     public abstract ArrayList<String> getTestClassNames();
+
+    public void setLogger(Logger logger) {
+        this.logger = logger
+    }
 }

@@ -6,7 +6,6 @@
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.unittest
 
 import org.fundacionjala.gradle.plugins.enforce.EnforcePlugin
-import org.fundacionjala.gradle.plugins.enforce.testselector.TestSelectorModerator
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.testfixtures.ProjectBuilder
@@ -73,7 +72,7 @@ class RunTestTaskTest extends Specification {
             RunTestTask runTestTask = project.tasks.findByName(RUN_TEST_TASK_NAME) as RunTestTask
             def path = Paths.get(SRC_PATH, "test").toString()
             this.project.ext[RunTestTaskConstants.CLASS_PARAM] = "*Test*"
-            runTestTask.setTestSelector(TestSelectorModerator.instance.getTestSelector(this.project, null, path))
+            runTestTask.runTestSelector()
             classNames = runTestTask.getClassNames()
         then:
             classNames.sort() == ["FGW_Console_CTRLTest", "FGW_APIFactoryTest"].sort()
@@ -92,7 +91,7 @@ class RunTestTaskTest extends Specification {
         when:
             RunTestTask runTestTask = project.tasks.findByName(RUN_TEST_TASK_NAME) as RunTestTask
             def path = Paths.get(SRC_PATH, "test").toString()
-            runTestTask.setTestSelector(TestSelectorModerator.instance.getTestSelector(this.project, null, path))
+            runTestTask.runTestSelector()
             classNames = runTestTask.getClassNames()
         then:
             classNames.sort() == ["FGW_Console_CTRLTest", "FGW_APIFactoryTest"].sort()
@@ -119,7 +118,7 @@ class RunTestTaskTest extends Specification {
             RunTestTask runTestTask = project.tasks.findByName(RUN_TEST_TASK_NAME) as RunTestTask
             String path = Paths.get(SRC_PATH, "test")
             this.project.ext[RunTestTaskConstants.CLASS_PARAM] = "*Test*"
-            runTestTask.setTestSelector(TestSelectorModerator.instance.getTestSelector(this.project, null, path))
+            runTestTask.runTestSelector()
         when:
             ArrayList<String> classNames = runTestTask.getClassNames()
         then:
