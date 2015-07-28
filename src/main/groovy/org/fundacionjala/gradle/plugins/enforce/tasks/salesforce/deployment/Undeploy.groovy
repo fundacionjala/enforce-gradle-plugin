@@ -172,6 +172,5 @@ class Undeploy extends Deployment {
     public void loadClassifiedFiles(String includes, String excludes) {
         ArrayList<File> filesFiltered = filter.getFiles(includes, excludes)
         classifiedFile = FileValidator.validateFiles(projectPath, filesFiltered)
-        Util.showExceptionOfInvalidFiles(classifiedFile)
     }
 }
