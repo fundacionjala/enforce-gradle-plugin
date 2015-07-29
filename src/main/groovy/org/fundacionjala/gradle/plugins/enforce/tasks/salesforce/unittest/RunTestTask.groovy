@@ -8,8 +8,8 @@ package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.unittest
 import com.sforce.soap.apex.*
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
-import org.apache.commons.lang.StringUtils
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.SalesforceTask
+import org.fundacionjala.gradle.plugins.enforce.testselector.TestSelectorModerator
 import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexClass
 import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexClasses
 import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexRunTestResult
@@ -21,7 +21,6 @@ import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
 import org.fundacionjala.gradle.plugins.enforce.wsc.soap.ApexAPI
-import org.gradle.api.file.FileTree
 import org.gradle.api.logging.LogLevel
 import org.gradle.logging.ProgressLoggerFactory
 
@@ -92,25 +91,29 @@ class RunTestTask extends SalesforceTask {
      */
     @Override
     void loadParameters() {
-        if (Util.isValidProperty(project, RunTestTaskConstants.PARAMETER_ASYNC) &&
-                project.properties[RunTestTaskConstants.PARAMETER_ASYNC].toString().equals(RunTestTaskConstants.TRUE_VALUE)) {
-            async = true
+        if (!ApexClasses.checkForRecords(jsonByClasses)) {
+            throw new Exception(RunTestTaskConstants.NOT_FOUND_ANY_CLASS)
         }
         if (Util.isEmptyProperty(project, RunTestTaskConstants.CLASS_PARAM)) {
             throw new Exception("${RunTestTaskConstants.ENTER_VALID_PARAMETER} ${RunTestTaskConstants.CLASS_PARAM}")
         }
-        if (!ApexClasses.checkForRecords(jsonByClasses)) {
-            throw new Exception(RunTestTaskConstants.NOT_FOUND_ANY_CLASS)
+        if (Util.isValidProperty(project, RunTestTaskConstants.PARAMETER_ASYNC) &&
+                project.properties[RunTestTaskConstants.PARAMETER_ASYNC].toString().equals(RunTestTaskConstants.TRUE_VALUE)) {
+            async = true
         }
-        if (Util.isValidProperty(project, RunTestTaskConstants.CLASS_PARAM)) {
-            classesToExecute = getClassNames(pathClasses, project.properties[RunTestTaskConstants.CLASS_PARAM].toString())
+        runTestSelector()
+    }
+
+    /**
+     * Initializes the TestSelector process for test purposes
+     */
+    protected void runTestSelector() {
+        if (!pathClasses) { //TODO: remove or improve just for test purposes
+            pathClasses = Paths.get((project.enforce.srcPath as String), "test").toString()
         }
-        if (async && !Util.isValidProperty(project, RunTestTaskConstants.CLASS_PARAM)) {
-            classesToExecute = getClassNames(pathClasses, RunTestTaskConstants.WILDCARD_ALL_TEST)
-        }
-        if (!async && !Util.isValidProperty(project, RunTestTaskConstants.CLASS_PARAM)) {
-            classesToExecute = []
-        }
+        TestSelectorModerator testModerator = new TestSelectorModerator(project, toolingAPI, pathClasses)
+        testModerator.setLogger(logger)
+        classesToExecute = testModerator.getTestClassNames()
     }
 
     /**
@@ -352,19 +355,9 @@ class RunTestTask extends SalesforceTask {
     }
 
     /**
-     * Gets all class names that match with the wildcard
-     * @param wildCard is the property sets from user
+     * Gets all test class names to be executed
      */
-    public ArrayList<String> getClassNames(String path, String wildCard) {
-        FileTree tree = project.fileTree(dir: path)
-        tree.include wildCard
-        ArrayList<String> classNames = new ArrayList<String>()
-        tree.each { File file ->
-            if (file.path.endsWith(".${MetadataComponents.CLASSES.getExtension()}") &&
-                    StringUtils.containsIgnoreCase(file.text, RunTestTaskConstants.IS_TEST)) {
-                classNames.add(Util.getFileName(file.name))
-            }
-        }
-        return classNames
+    public ArrayList<String> getClassNames() {
+        return classesToExecute
     }
 }
