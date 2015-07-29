@@ -3,6 +3,7 @@ package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.unittest
 class RunTestTaskConstants {
     protected static final String CLASS_PARAM = 'test'
     protected static final String FILE_PARAM = 'file'
+    protected static final String REFRESH_PARAM = 'refreshMapping'
     protected static final String CLASS_DIRECTORY = 'classes'
     protected static final String WILDCARD_ALL_TEST = '*'
     protected static final String NAME_FOLDER_REPORT = 'report'

@@ -95,7 +95,8 @@ class RunTestTask extends SalesforceTask {
             throw new Exception(RunTestTaskConstants.NOT_FOUND_ANY_CLASS)
         }
         if (Util.isEmptyProperty(project, RunTestTaskConstants.CLASS_PARAM)) {
-            throw new Exception("${RunTestTaskConstants.ENTER_VALID_PARAMETER} ${RunTestTaskConstants.CLASS_PARAM}")
+            throw new Exception("${RunTestTaskConstants.ENTER_VALID_PARAMETER} "
+                    + "${RunTestTaskConstants.CLASS_PARAM}")
         }
         if (Util.isValidProperty(project, RunTestTaskConstants.PARAMETER_ASYNC) &&
                 project.properties[RunTestTaskConstants.PARAMETER_ASYNC].toString().equals(RunTestTaskConstants.TRUE_VALUE)) {

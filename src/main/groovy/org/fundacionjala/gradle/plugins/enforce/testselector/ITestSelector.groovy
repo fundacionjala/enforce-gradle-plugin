@@ -9,6 +9,8 @@ import java.util.ArrayList
 import org.gradle.api.logging.Logger
 
 public interface ITestSelector {
+
     ArrayList<String> getTestClassNames()
+
     void setLogger(Logger logger)
 }

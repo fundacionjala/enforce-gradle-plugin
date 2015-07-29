@@ -29,6 +29,9 @@ class HttpAPIClient {
     private final String PATH_APEXCLASSMEMBER_CONTAINER = '/services/data/v32.0/tooling/sobjects/ApexClassMember/'
     private final String PATH_CONTAINERASYNCREQUEST_CONTAINER = '/services/data/v32.0/tooling/sobjects/ContainerAsyncRequest/'
 
+    private final String SELECT_CONTAINER_QUERY = 'SELECT ID FROM MetadataContainer WHERE Name=\'%1$s\''
+    private final String SELECT_APEX_CLASS_QUERY = 'SELECT Id, Body FROM ApexClass WHERE name IN (\'%1$s\')'
+
     private String authorization
     private String host
     private String oauthToken
@@ -113,7 +116,7 @@ class HttpAPIClient {
             HTTPBuilder http = new HTTPBuilder(getEndPoint(host))
 
             JsonSlurper jsonSlurper = new JsonSlurper()
-            Object resultJson = jsonSlurper.parseText(executeQuery("SELECT ID FROM MetadataContainer WHERE Name='${containerName}'"))
+            Object resultJson = jsonSlurper.parseText(executeQuery(sprintf(SELECT_CONTAINER_QUERY, [containerName])))
             if(resultJson.records.size() > 0) {
                 toReturn.put("Id", resultJson.records[0].Id)
                 toReturn.put("isNew", false)
@@ -142,7 +145,7 @@ class HttpAPIClient {
         try {
             HTTPBuilder http = new HTTPBuilder(getEndPoint(host))
             JsonSlurper jsonSlurper = new JsonSlurper()
-            Object resultJson = jsonSlurper.parseText(executeQuery("SELECT ID FROM MetadataContainer WHERE Name='${containerName}'"))
+            Object resultJson = jsonSlurper.parseText(executeQuery(sprintf(SELECT_CONTAINER_QUERY, [containerName])))
             if(resultJson.records.size() > 0) {
                 http.request( DELETE, TEXT ) {
                     uri.path = PATH_METADATA_CONTAINER + "${resultJson.records[0].Id}"
@@ -160,7 +163,7 @@ class HttpAPIClient {
             HTTPBuilder http = new HTTPBuilder(getEndPoint(host))
 
             JsonSlurper jsonSlurper = new JsonSlurper()
-            Object resultJson = jsonSlurper.parseText(executeQuery("SELECT Id, Body FROM ApexClass WHERE name IN ('" + classNameList.join("', '") + "')"))
+            Object resultJson = jsonSlurper.parseText(executeQuery(sprintf(SELECT_APEX_CLASS_QUERY, [classNameList.join("', '")])))
             if(resultJson.records.size() > 0) {
                 resultJson.records.each { classRecord ->
                     http.request(POST, JSON) {
