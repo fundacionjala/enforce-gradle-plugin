@@ -8,12 +8,12 @@ package org.fundacionjala.gradle.plugins.enforce.testselector
 import groovy.json.JsonSlurper
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.unittest.RunTestTaskConstants
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
-import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
+import org.fundacionjala.gradle.plugins.enforce.wsc.rest.IArtifactGenerator
 
 class TestSelectorByReference extends TestSelector  {
 
     private String filesParameterValue
-    private ToolingAPI toolingAPI
+    private IArtifactGenerator artifactGenerator
     private Map classAndTestMap = [:]
     private Boolean refreshClassAndTestMap = false
 
@@ -23,13 +23,13 @@ class TestSelectorByReference extends TestSelector  {
     /**
      * TestSelectorByReference class constructor
      * @param testClassNameList list of all available test class names
-     * @param toolingAPI instance reference of the current ToolingAPI
+     * @param artifactGenerator instance reference of the current HttpAPIClient
      * @param filesParameterValue value provided by the user to filter the class names
      * @param refreshClassAndTestMap value provided by the user to specify refresh the class-test mapping
      */
-    public TestSelectorByReference(ArrayList<String> testClassNameList, ToolingAPI toolingAPI, String filesParameterValue, Boolean refreshClassAndTestMap) {
+    public TestSelectorByReference(ArrayList<String> testClassNameList, IArtifactGenerator artifactGenerator, String filesParameterValue, Boolean refreshClassAndTestMap) {
         super(testClassNameList)
-        this.toolingAPI = toolingAPI
+        this.artifactGenerator = artifactGenerator
         this.filesParameterValue = null
         if (filesParameterValue) {
             this.filesParameterValue = filesParameterValue.replace(".${MetadataComponents.CLASSES.getExtension()}", "")
@@ -45,23 +45,23 @@ class TestSelectorByReference extends TestSelector  {
         //TODO: persist and request the mapping in the local machine?
         JsonSlurper jsonSlurper = new JsonSlurper()
         if (this.refreshClassAndTestMap) {
-            toolingAPI.httpAPIClient.deleteContainer(RunTestTaskConstants.METADATA_CONTAINER_NAME)
+            artifactGenerator.deleteContainer(RunTestTaskConstants.METADATA_CONTAINER_NAME)
         }
-        Map containerResp = toolingAPI.httpAPIClient.createContainer(RunTestTaskConstants.METADATA_CONTAINER_NAME)
+        Map containerResp = artifactGenerator.createContainer(RunTestTaskConstants.METADATA_CONTAINER_NAME)
         String containerId = containerResp["Id"]
         if (containerResp["isNew"]) {
-            ArrayList<String> apexClassMemberId = toolingAPI.httpAPIClient.createApexClassMember(containerId, testClassNameList)
-            String containerAsyncRequestId = toolingAPI.httpAPIClient.createContainerAsyncRequest(containerId)
+            ArrayList<String> apexClassMemberId = artifactGenerator.createApexClassMember(containerId, testClassNameList)
+            String containerAsyncRequestId = artifactGenerator.createContainerAsyncRequest(containerId)
             String requestStatus
             String requestStatusQuery = sprintf( CONTAINER_ASYNC_REQUEST_QUERY, [containerAsyncRequestId])
             while (requestStatus != 'Completed') {
                 sleep(1000)
-                requestStatus = jsonSlurper.parseText(toolingAPI.httpAPIClient.executeQuery(requestStatusQuery)).records[0].State.toString()
+                requestStatus = jsonSlurper.parseText(artifactGenerator.executeQuery(requestStatusQuery)).records[0].State.toString()
             }
         }
 
         String apexClassMemberQuery = sprintf( APEX_CLASS_MEMBER_QUERY, [containerId[0..14]])
-        jsonSlurper.parseText(toolingAPI.httpAPIClient.executeQuery(apexClassMemberQuery)).records.each { classMember ->
+        jsonSlurper.parseText(artifactGenerator.executeQuery(apexClassMemberQuery)).records.each { classMember ->
             classMember.SymbolTable.each() { symbolTableResult ->
                 symbolTableResult.every() { entry ->
                     if (entry.getKey() == "externalReferences") {
@@ -85,6 +85,7 @@ class TestSelectorByReference extends TestSelector  {
         if (!classAndTestMap) {
             buildReferences()
         }
+
         if (this.filesParameterValue) {
             classAndTestMap.keySet().each { className ->
                 this.filesParameterValue.tokenize(RunTestTaskConstants.FILE_SEPARATOR_SIGN).each { wildCard ->

@@ -17,7 +17,7 @@ import static groovyx.net.http.Method.POST
 /**
  * A wrapper around HTTP Builder that handles errors and makes requests to the tooling API with Rest
  */
-class HttpAPIClient {
+class HttpAPIClient implements IArtifactGenerator {
 
     public  static final String URL_COLON = ":"
     public  static final String URL_DOUBLE_SLASH = "//"
