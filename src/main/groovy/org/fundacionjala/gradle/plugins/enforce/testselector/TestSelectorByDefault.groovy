@@ -12,19 +12,24 @@ class TestSelectorByDefault extends TestSelector {
 
     private String clsParamValue
 
+    /**
+     * TestSelectorByDefault class constructor
+     * @param testClassNameList list of all available test class names
+     * @param clsParamValue value provided by the user to filter the test class names
+     */
     public TestSelectorByDefault(ArrayList<String> testClassNameList, String clsParamValue) {
         super(testClassNameList)
-        this.clsParamValue = clsParamValue ? clsParamValue.replace(RunTestTaskConstants.WILD_CARD_SIGN, "").replace(".${MetadataComponents.CLASSES.getExtension()}", "") : null
+        this.clsParamValue = null;
+        if (clsParamValue) {
+            this.clsParamValue = clsParamValue.replace(RunTestTaskConstants.WILD_CARD_SIGN, "")
+            this.clsParamValue.replace(".${MetadataComponents.CLASSES.getExtension()}", "")
+        }
     }
 
-    /**
-     * Returns the list of test classes according the fileParamValue form the parameters
-     * @return an resultTracker with status
-     */
     @Override
     ArrayList<String> getTestClassNames() {
+        ArrayList<String> testClassList = new ArrayList<String>()
         if (this.clsParamValue) {
-            ArrayList<String> testClassList = new ArrayList<String>()
             testClassNameList.each { testClassName ->
                 this.clsParamValue.tokenize(RunTestTaskConstants.FILE_SEPARATOR_SIGN).each { wildCard ->
                     if (testClassName.contains(wildCard)) {
@@ -32,8 +37,9 @@ class TestSelectorByDefault extends TestSelector {
                     }
                 }
             }
-            return testClassList
+        } else {
+            testClassList = testClassNameList
         }
-        return testClassNameList
+        return testClassList
     }
 }
