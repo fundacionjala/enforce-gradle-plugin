@@ -9,10 +9,12 @@ import org.apache.commons.lang.StringUtils
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.unittest.RunTestTaskConstants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
-import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
+import org.fundacionjala.gradle.plugins.enforce.wsc.rest.IArtifactGenerator
 import org.gradle.api.Project
 import org.gradle.api.file.FileTree
 import org.gradle.api.logging.Logger
+
+import java.nio.file.Paths
 
 class TestSelectorModerator {
 
@@ -20,17 +22,17 @@ class TestSelectorModerator {
     private Project project
     private Logger logger
     private String pathClasses
-    private ToolingAPI toolingAPI
+    private IArtifactGenerator artifactGenerator
 
     /**
      * TestSelectorModerator class constructor
      * @param project instance reference of the current Project
-     * @param toolingAPI instance reference of the current ToolingAPI
+     * @param artifactGenerator instance reference of the current HttpAPIClient
      * @param pathClasses class path location
      */
-    public TestSelectorModerator(Project project, ToolingAPI toolingAPI, String pathClasses) {
+    public TestSelectorModerator(Project project, IArtifactGenerator artifactGenerator, String pathClasses) {
         this.project = project
-        this.toolingAPI = toolingAPI
+        this.artifactGenerator = artifactGenerator
         this.pathClasses = pathClasses
     }
 
@@ -66,20 +68,26 @@ class TestSelectorModerator {
     public ArrayList<String> getTestClassNames() {
         ArrayList<String> allTestClassNameList = getClassNames(pathClasses, RunTestTaskConstants.WILDCARD_ALL_TEST)
 
-        if (Util.isValidProperty(project, RunTestTaskConstants.CLASS_PARAM)) {
+        if (Util.isEmptyProperty(project, RunTestTaskConstants.CLASS_PARAM)) {
+            throw new Exception("${RunTestTaskConstants.ENTER_VALID_PARAMETER} "
+                    + "${RunTestTaskConstants.CLASS_PARAM}")
+        } else if (Util.isValidProperty(project, RunTestTaskConstants.CLASS_PARAM)) {
             this.testClassNameList = (new TestSelectorByDefault(allTestClassNameList,
                                         project.properties[RunTestTaskConstants.CLASS_PARAM].toString())).getTestClassNames()
         }
 
-        if (Util.isValidProperty(project, RunTestTaskConstants.FILE_PARAM)) {
+        if (Util.isEmptyProperty(project, RunTestTaskConstants.FILE_PARAM)) {
+            throw new Exception("${RunTestTaskConstants.ENTER_VALID_PARAMETER} "
+                    + "${RunTestTaskConstants.FILE_PARAM}")
+        } else if (Util.isValidProperty(project, RunTestTaskConstants.FILE_PARAM)) {
             String fileParamValue = project.properties[RunTestTaskConstants.FILE_PARAM].toString()
             if (this.testClassNameList.size() < allTestClassNameList.size()) {
                 Boolean refreshClassAndTestMap = false
                 if (project.properties.containsKey(RunTestTaskConstants.REFRESH_PARAM)) { //TODO: get this info from fileTraker[events: update, upload]
                     refreshClassAndTestMap = (project.properties[RunTestTaskConstants.REFRESH_PARAM].toString()).toBoolean()
                 }
-                ITestSelector selector = new TestSelectorByReference(allTestClassNameList,
-                                            this.toolingAPI, fileParamValue, refreshClassAndTestMap)
+                ITestSelector selector = new TestSelectorByReference(Paths.get((project.enforce.srcPath as String)).toString(), allTestClassNameList,
+                                            this.artifactGenerator, fileParamValue, refreshClassAndTestMap)
                 selector.setLogger(logger)
                 this.testClassNameList.addAll(selector.getTestClassNames())
             }
