@@ -30,12 +30,11 @@ class CustomComponentTrackerTest extends Specification {
 
     def "Test should save customComponentTracker"() {
         given:
-            CustomComponentTracker.fileTrackerName = Paths.get(SRC_PATH, '.customComponentTracker.data')
             String projectPath = Paths.get(SRC_PATH, 'src')
         when:
             CustomComponentTracker.saveCustomComponent(projectPath)
         then:
-            new File(Paths.get(SRC_PATH, '.customComponentTracker.data').toString()).exists()
+            new File(Paths.get(SRC_PATH, 'src', '.customComponentTracker.data').toString()).exists()
     }
 
     def "Test should get files by extension from customComponentTrackerMap"() {
@@ -67,6 +66,6 @@ class CustomComponentTrackerTest extends Specification {
     }
 
     def cleanup() {
-        new File(Paths.get(SRC_PATH, '.customComponentTracker.data').toString()).delete()
+        new File(Paths.get(SRC_PATH, 'src', '.customComponentTracker.data').toString()).delete()
     }
 }

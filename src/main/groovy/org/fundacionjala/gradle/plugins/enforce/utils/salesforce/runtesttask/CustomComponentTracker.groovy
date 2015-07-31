@@ -1,7 +1,6 @@
 package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.runtesttask
 
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentMonitor
-import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentSerializer
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
@@ -10,9 +9,8 @@ import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import java.nio.file.Paths
 
 class CustomComponentTracker {
-    public static String fileTrackerName =  Paths.get(System.properties['user.home'].toString(), '.customComponentTracker.data')
     public static Map<String, ResultTracker> customComponentTrackerMap
-    public static ComponentMonitor componentMonitor
+    static String fileTrackerName = '.customComponentTracker.data'
     private static String XML_EXTENSION = 'xml'
 
     CustomComponentTracker(String projectPath) {
@@ -43,7 +41,8 @@ class CustomComponentTracker {
      * @param projectPath is String type
      */
     public static void saveCustomComponent(String projectPath) {
-        componentMonitor = getInstanceOfComponentMonitor(projectPath)
+        String fileTrackerPath = Paths.get(projectPath, fileTrackerName)
+        ComponentMonitor componentMonitor = new ComponentMonitor(projectPath, fileTrackerPath)
         ArrayList<File> components = getFilesFromProjectPath(projectPath)
         if (!componentMonitor.verifyFileMap()) {
             componentMonitor.saveCurrentComponents(components)
@@ -53,24 +52,11 @@ class CustomComponentTracker {
     }
 
     /**
-     * Gets an instance of componentMonitor
-     * @param projectPath is type String
-     * @return an instance of ComponentMonitor
-     */
-    private static ComponentMonitor getInstanceOfComponentMonitor(String projectPath) {
-        ComponentMonitor componentMonitor = new ComponentMonitor()
-        componentMonitor.setSrcProject(projectPath)
-        componentMonitor.componentSerializer = new ComponentSerializer(fileTrackerName)
-        componentMonitor.fileName = fileTrackerName
-        return componentMonitor
-    }
-
-    /**
      * Gets valid files from project directory
      * @param projectPath is type String
      * @return an arrayList of valid files
      */
-    private static getFilesFromProjectPath(String projectPath) {
+    private static ArrayList<File> getFilesFromProjectPath(String projectPath) {
         ManagementFile managementFile = new ManagementFile(projectPath)
         return managementFile.getValidElements(projectPath, [XML_EXTENSION])
     }
