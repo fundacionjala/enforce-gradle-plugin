@@ -22,7 +22,7 @@ class TestSelectorByDefault extends TestSelector {
         this.clsParamValue = null;
         if (clsParamValue) {
             this.clsParamValue = clsParamValue.replace(RunTestTaskConstants.WILD_CARD_SIGN, "")
-            this.clsParamValue.replace(".${MetadataComponents.CLASSES.getExtension()}", "")
+            this.clsParamValue = this.clsParamValue.replace(".${MetadataComponents.CLASSES.getExtension()}", "")
         }
     }
 

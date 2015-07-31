@@ -94,10 +94,6 @@ class RunTestTask extends SalesforceTask {
         if (!ApexClasses.checkForRecords(jsonByClasses)) {
             throw new Exception(RunTestTaskConstants.NOT_FOUND_ANY_CLASS)
         }
-        if (Util.isEmptyProperty(project, RunTestTaskConstants.CLASS_PARAM)) {
-            throw new Exception("${RunTestTaskConstants.ENTER_VALID_PARAMETER} "
-                    + "${RunTestTaskConstants.CLASS_PARAM}")
-        }
         if (Util.isValidProperty(project, RunTestTaskConstants.PARAMETER_ASYNC) &&
                 project.properties[RunTestTaskConstants.PARAMETER_ASYNC].toString().equals(RunTestTaskConstants.TRUE_VALUE)) {
             async = true
@@ -112,7 +108,7 @@ class RunTestTask extends SalesforceTask {
         if (!pathClasses) { //TODO: remove or improve just for test purposes
             pathClasses = Paths.get((project.enforce.srcPath as String), "test").toString()
         }
-        TestSelectorModerator testModerator = new TestSelectorModerator(project, toolingAPI, pathClasses)
+        TestSelectorModerator testModerator = new TestSelectorModerator(project, ((toolingAPI) ? toolingAPI.httpAPIClient : null), pathClasses)
         testModerator.setLogger(logger)
         classesToExecute = testModerator.getTestClassNames()
     }
