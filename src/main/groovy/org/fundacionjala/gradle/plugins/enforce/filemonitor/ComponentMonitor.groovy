@@ -30,6 +30,20 @@ class ComponentMonitor {
     }
 
     /**
+     * Sets a source project directory
+     * Creates and instance of ComponentSerializer class
+     * @param srcProject is project directory
+     * @param fileTrackerPath is fileTracker path
+     */
+    public ComponentMonitor(String srcProject, String fileTrackerPath) {
+        this.srcProject = srcProject
+        this.fileName = fileTrackerPath
+        this.componentSerializer = new ComponentSerializer(fileName)
+        currentFileHashCode = [:]
+        recoveryFileHashCode = [:]
+    }
+
+    /**
      * Initializes currentHashCode map and recoveryFileHashCode map
      */
     public ComponentMonitor() {
