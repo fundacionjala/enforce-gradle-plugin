@@ -66,7 +66,7 @@ class RunTestTask extends SalesforceTask {
     @Override
     void setup() {
         pathClasses = Paths.get(projectPath, RunTestTaskConstants.CLASS_DIRECTORY).toString()
-        folderReport = Paths.get(buildFolderPath, RunTestTaskConstants.NAME_FOLDER_REPORT).toString()
+        folderReport = getFolderReportPath()
         fileManager.createNewDirectory(folderReport)
         String folderPages = Paths.get(folderReport, RunTestTaskConstants.NAME_FOLDER_PAGES).toString()
         fileManager.createNewDirectory(folderPages)
@@ -353,6 +353,20 @@ class RunTestTask extends SalesforceTask {
                 RunTestTaskConstants.NAME_FILE_COVERAGE_REPORT_XML).toString())
         testResultReport.generateCoverageReportXML(coverageReportXML)
         coverageReportXML.close()
+    }
+
+    /**
+     * Gets report path to save unit test reports by default return build/report directory
+     * @return report path
+     */
+    private String getFolderReportPath() {
+        String folderReportPath = Paths.get(buildFolderPath, RunTestTaskConstants.NAME_FOLDER_REPORT).toString()
+        if (Util.isValidProperty(project, RunTestTaskConstants.DESTINATION_PARAMETER)) {
+            String destinationValue = project.properties[RunTestTaskConstants.DESTINATION_PARAMETER]
+            folderReportPath = Paths.get(destinationValue).isAbsolute()? destinationValue :
+                    Paths.get(project.projectDir.absolutePath, destinationValue).toString()
+        }
+        return folderReportPath
     }
 
     /**

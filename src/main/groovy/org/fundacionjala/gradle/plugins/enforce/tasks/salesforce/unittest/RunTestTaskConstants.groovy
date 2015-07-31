@@ -45,6 +45,7 @@ class RunTestTaskConstants {
     protected static final String METADATA_CONTAINER_NAME = "SampleContainer_001"
     protected static final String WILD_CARD_SIGN = "*"
     protected static final String FILE_SEPARATOR_SIGN = ","
+    protected static final String DESTINATION_PARAMETER = "destination"
 
 }
 
