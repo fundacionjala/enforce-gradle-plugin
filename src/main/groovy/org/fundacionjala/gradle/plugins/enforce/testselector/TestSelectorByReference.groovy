@@ -8,10 +8,12 @@ package org.fundacionjala.gradle.plugins.enforce.testselector
 import groovy.json.JsonSlurper
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.unittest.RunTestTaskConstants
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.runtesttask.CustomComponentTracker
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.IArtifactGenerator
 
 class TestSelectorByReference extends TestSelector  {
 
+    private String srcPath
     private String filesParameterValue
     private IArtifactGenerator artifactGenerator
     private Map classAndTestMap = [:]
@@ -27,14 +29,20 @@ class TestSelectorByReference extends TestSelector  {
      * @param filesParameterValue value provided by the user to filter the class names
      * @param refreshClassAndTestMap value provided by the user to specify refresh the class-test mapping
      */
-    public TestSelectorByReference(ArrayList<String> testClassNameList, IArtifactGenerator artifactGenerator, String filesParameterValue, Boolean refreshClassAndTestMap) {
+    public TestSelectorByReference(String srcPath, ArrayList<String> testClassNameList, IArtifactGenerator artifactGenerator
+                                   , String filesParameterValue, Boolean refreshClassAndTestMap) {
         super(testClassNameList)
+        this.srcPath = srcPath
         this.artifactGenerator = artifactGenerator
         this.filesParameterValue = null
         if (filesParameterValue) {
             this.filesParameterValue = filesParameterValue.replace(".${MetadataComponents.CLASSES.getExtension()}", "")
+            if (this.filesParameterValue == "*" || this.filesParameterValue == "all") {
+                CustomComponentTracker customComponentTracker = new CustomComponentTracker(this.srcPath)
+                this.filesParameterValue = (customComponentTracker.getFilesNameByExtension([MetadataComponents.CLASSES.getExtension()])).join("','")
+                this.filesParameterValue = this.filesParameterValue.replace(".${MetadataComponents.CLASSES.getExtension()}", "")
+            }
         }
-        //TODO: if this.filesParameterValue == * -> it can mean run all test related to last changes, get classNames from ComponentMonitor '.fileTracker.data' HISTORY FILE?
         this.refreshClassAndTestMap = refreshClassAndTestMap
     }
 
@@ -42,7 +50,6 @@ class TestSelectorByReference extends TestSelector  {
      * Builds the class-test mapping
      */
     private void buildReferences() {
-        //TODO: persist and request the mapping in the local machine?
         JsonSlurper jsonSlurper = new JsonSlurper()
         if (this.refreshClassAndTestMap) {
             artifactGenerator.deleteContainer(RunTestTaskConstants.METADATA_CONTAINER_NAME)

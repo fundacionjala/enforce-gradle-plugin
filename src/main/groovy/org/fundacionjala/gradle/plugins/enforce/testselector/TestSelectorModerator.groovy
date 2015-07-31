@@ -14,6 +14,8 @@ import org.gradle.api.Project
 import org.gradle.api.file.FileTree
 import org.gradle.api.logging.Logger
 
+import java.nio.file.Paths
+
 class TestSelectorModerator {
 
     private ArrayList<String> testClassNameList = []
@@ -84,7 +86,7 @@ class TestSelectorModerator {
                 if (project.properties.containsKey(RunTestTaskConstants.REFRESH_PARAM)) { //TODO: get this info from fileTraker[events: update, upload]
                     refreshClassAndTestMap = (project.properties[RunTestTaskConstants.REFRESH_PARAM].toString()).toBoolean()
                 }
-                ITestSelector selector = new TestSelectorByReference(allTestClassNameList,
+                ITestSelector selector = new TestSelectorByReference(Paths.get((project.enforce.srcPath as String)).toString(), allTestClassNameList,
                                             this.artifactGenerator, fileParamValue, refreshClassAndTestMap)
                 selector.setLogger(logger)
                 this.testClassNameList.addAll(selector.getTestClassNames())
