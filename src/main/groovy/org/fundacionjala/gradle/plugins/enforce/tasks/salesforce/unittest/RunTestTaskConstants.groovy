@@ -42,7 +42,7 @@ class RunTestTaskConstants {
     protected static final String NOT_FOUND_CLASS_TO_EXECUTE_UNIT_TEST = 'Not found class for execute unit test in your local repository'
     protected static final String SLEEPING = "Sleeping"
 
-    protected static final String METADATA_CONTAINER_NAME = "SampleContainer_001"
+    protected static final String METADATA_CONTAINER_NAME = "EnforceContainer_001"
     protected static final String WILD_CARD_SIGN = "*"
     protected static final String FILE_SEPARATOR_SIGN = ","
     protected static final String DESTINATION_PARAMETER = "destination"
