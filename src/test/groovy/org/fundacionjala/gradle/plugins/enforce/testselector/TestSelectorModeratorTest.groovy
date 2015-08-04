@@ -23,8 +23,6 @@ class TestSelectorModeratorTest extends Specification {
     def SRC_CLASSES_PATH = Paths.get(SRC_PATH, "test").toString()
 
     Project project
-
-
     def classNames = []
 
     def setup() {
@@ -96,24 +94,41 @@ class TestSelectorModeratorTest extends Specification {
         classNames.size() == 1
     }
 
-    def "Should get the test class names related to a class from last updated classes"() {
+    def "Should get the test class names related to a class from last updated classes, no changes"() {
         given:
-            ArtifactGeneratorMock artifactGenerator = new ArtifactGeneratorMock()
-            project.enforce {
+        ArtifactGeneratorMock artifactGenerator = new ArtifactGeneratorMock()
+        project.enforce {
             srcPath = SRC_PATH
             tool = "metadata"
             poll = 200
             waitTime = 10
         }
-            CustomComponentTracker customComponentTracker = new CustomComponentTracker(SRC_PATH)
-            File classFile = new File(Paths.get(SRC_PATH, 'classes', 'Class1.cls').toString())
-            classFile.write("some text")
         when:
-            project.ext[RunTestTaskConstants.FILE_PARAM] = "*"
-            TestSelectorModerator moderator = new TestSelectorModerator(project, artifactGenerator, SRC_CLASSES_PATH)
-            classNames = moderator.getTestClassNames()
+        project.ext[RunTestTaskConstants.FILE_PARAM] = "*"
+        TestSelectorModerator moderator = new TestSelectorModerator(project, artifactGenerator, SRC_CLASSES_PATH)
+        classNames = moderator.getTestClassNames()
         then:
-            classNames.size() == 1
+        classNames.size() == 0
+    }
+
+    def "Should get the test class names related to a class from last updated classes, add a new class"() {
+        given:
+        ArtifactGeneratorMock artifactGenerator = new ArtifactGeneratorMock()
+        project.enforce {
+            srcPath = SRC_PATH
+            tool = "metadata"
+            poll = 200
+            waitTime = 10
+        }
+        CustomComponentTracker customComponentTracker = new CustomComponentTracker(SRC_PATH)
+        File classFile = new File(Paths.get(SRC_PATH, 'classes', 'Class1.cls').toString())
+        classFile.write("some text")
+        when:
+        project.ext[RunTestTaskConstants.FILE_PARAM] = "*"
+        TestSelectorModerator moderator = new TestSelectorModerator(project, artifactGenerator, SRC_CLASSES_PATH)
+        classNames = moderator.getTestClassNames()
+        then:
+        classNames.size() == 1
     }
 
     def cleanupSpec() {
