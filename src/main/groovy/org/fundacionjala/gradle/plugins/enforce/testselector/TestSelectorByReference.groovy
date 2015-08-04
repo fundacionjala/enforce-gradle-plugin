@@ -18,9 +18,11 @@ class TestSelectorByReference extends TestSelector  {
     private IArtifactGenerator artifactGenerator
     private Map classAndTestMap = [:]
     private Boolean refreshClassAndTestMap = false
+    private Boolean displayNoChangesMessage = false
 
     private final String APEX_CLASS_MEMBER_QUERY = 'SELECT FullName, ContentEntityId, SymbolTable FROM ApexClassMember WHERE MetadataContainerId = \'%1$s\''
     private final String CONTAINER_ASYNC_REQUEST_QUERY = 'SELECT State FROM ContainerAsyncRequest WHERE Id=\'%1$s\''
+    private final String NO_RECENT_CHANGE_MESSAGE = 'You do not have any recent change to use to select Test classes.'
 
     /**
      * TestSelectorByReference class constructor
@@ -41,6 +43,10 @@ class TestSelectorByReference extends TestSelector  {
                 CustomComponentTracker customComponentTracker = new CustomComponentTracker(this.srcPath)
                 this.filesParameterValue = (customComponentTracker.getFilesNameByExtension([MetadataComponents.CLASSES.getExtension()])).join("','")
                 this.filesParameterValue = this.filesParameterValue.replace(".${MetadataComponents.CLASSES.getExtension()}", "")
+
+                if (!this.filesParameterValue) {
+                    displayNoChangesMessage = true
+                }
             }
         }
         this.refreshClassAndTestMap = refreshClassAndTestMap
@@ -89,11 +95,14 @@ class TestSelectorByReference extends TestSelector  {
     @Override
     ArrayList<String> getTestClassNames() {
         ArrayList<String> testClassList = new ArrayList<String>()
-        if (!classAndTestMap) {
-            buildReferences()
+        if (logger && displayNoChangesMessage) {
+            logger.error(NO_RECENT_CHANGE_MESSAGE)
         }
 
         if (this.filesParameterValue) {
+            if (!classAndTestMap) {
+                buildReferences()
+            }
             classAndTestMap.keySet().each { className ->
                 this.filesParameterValue.tokenize(RunTestTaskConstants.FILE_SEPARATOR_SIGN).each { wildCard ->
                     //if (className.contains(wildCard)) { //TODO: maybe we can work for wildCards at this point - if (contains("*") || startsWidth("*) endsWidth("*)) -> .replace("*", "")
@@ -103,6 +112,7 @@ class TestSelectorByReference extends TestSelector  {
                 }
             }
         }
+
         return testClassList.unique()
     }
 }
