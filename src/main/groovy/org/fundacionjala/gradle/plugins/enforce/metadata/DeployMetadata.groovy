@@ -6,6 +6,7 @@
 package org.fundacionjala.gradle.plugins.enforce.metadata
 
 import com.sforce.soap.metadata.DeployResult
+import org.fundacionjala.gradle.plugins.enforce.wsc.Connector
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.soap.MetadataAPI
 
@@ -33,9 +34,9 @@ class DeployMetadata {
     /**
      * Deploys an org using metadata API in the source path specified
      */
-    void deploy(int poll, int waitTime, Credential credential) {
+    void deploy(int poll, int waitTime, Credential credential, String apiVersion) {
 
-        MetadataAPI metadataAPI =  new MetadataAPI(credential)
+        MetadataAPI metadataAPI =  new MetadataAPI(credential, new Connector(credential.loginFormat, apiVersion))
         metadataAPI.poll = poll
         metadataAPI.waitTime = waitTime
         println startMessage
