@@ -12,6 +12,7 @@ import groovy.xml.DOMBuilder
 import groovy.xml.MarkupBuilder
 import groovy.xml.XmlUtil
 import groovy.xml.dom.DOMCategory
+import org.fundacionjala.gradle.plugins.enforce.undeploy.PackageComponent
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
@@ -216,8 +217,10 @@ class PackageBuilder {
         if (!invalidFolders.isEmpty()) {
             Util.logList(log, Constants.UNSUPPORTED_FOLDERS, invalidFolders)
         }
+        String packagePath = Paths.get(basePath, Constants.PACKAGE_FILE_NAME).toString()
         metaPackage.types = packageData
-        metaPackage.version = Connector.API_VERSION
+        metaPackage.version = PackageComponent.getApiVersion(packagePath) < Connector.API_VERSION?
+                              Connector.API_VERSION : PackageComponent.getApiVersion(packagePath)
     }
 
     /** Creates a packages by folders
