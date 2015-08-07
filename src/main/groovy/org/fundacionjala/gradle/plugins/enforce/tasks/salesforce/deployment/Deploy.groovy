@@ -116,7 +116,7 @@ class Deploy extends Deployment {
      */
     public void deployTruncateFiles() {
         if (codeTruncateOn) {
-            Files.copy(Paths.get(projectPath, PACKAGE_NAME), Paths.get(taskPackagePath), StandardCopyOption.REPLACE_EXISTING)
+            Files.copy(Paths.get(projectPath, Constants.PACKAGE_FILE_NAME), Paths.get(taskPackagePath), StandardCopyOption.REPLACE_EXISTING)
             logger.debug('Generating package')
             writePackage(taskPackagePath, filesToDeploy)
             combinePackageToUpdate(taskPackagePath)
