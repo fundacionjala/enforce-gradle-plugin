@@ -21,7 +21,7 @@ class CredentialGiver extends CredentialManagerTask {
 
     @Override
     void runTask() {
-        CredentialManager credentialManager = new CredentialManager();
+        CredentialManager credentialManager = new CredentialManager()
         CredentialFileManager credentialFileManager = new CredentialFileManager(credentialManager.pathCredentials,'');
         logger.quiet("*********************************************")
         logger.quiet("            Credentials registered             ")
@@ -36,10 +36,12 @@ class CredentialGiver extends CredentialManagerTask {
     }
 
     /**
-     * Sets a organization type message
+     * Sets an organization type message
+     * @param loginFormat contains the login format from credentials.dat
+     * @return a friendly message that represents credential type.
      */
-    String getOrganizationType(String loginFormat) {
-        String enviorement;
+    private String getOrganizationType(String loginFormat) {
+        String enviorement
         switch (loginFormat) {
             case CredentialMessage.LOGIN.value():
                 enviorement = CredentialMessage.DEVELOPER_ENVIRONMENT.value()
@@ -50,6 +52,6 @@ class CredentialGiver extends CredentialManagerTask {
             default:
                 enviorement = "$loginFormat ${CredentialMessage.OTHER_ENVIRONMENT.value()}"
         }
-        return enviorement;
+        return enviorement
     }
 }
