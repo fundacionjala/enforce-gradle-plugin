@@ -6,6 +6,7 @@
 package org.fundacionjala.gradle.plugins.enforce
 
 import org.fundacionjala.gradle.plugins.enforce.tasks.credentialmanager.CredentialAdder
+import org.fundacionjala.gradle.plugins.enforce.tasks.credentialmanager.CredentialGiver
 import org.fundacionjala.gradle.plugins.enforce.tasks.credentialmanager.CredentialUpdater
 import org.fundacionjala.gradle.plugins.enforce.tasks.filemonitor.FilesStatus
 import org.fundacionjala.gradle.plugins.enforce.tasks.filemonitor.Reset
@@ -56,6 +57,7 @@ class EnforcePlugin implements Plugin<Project> {
 
         project.task("addCredential", type: CredentialAdder)
         project.task("updateCredential", type: CredentialUpdater)
+        project.task("getCredentials", type: CredentialGiver)
 
         project.task("retrieve", type: Retrieve)
 

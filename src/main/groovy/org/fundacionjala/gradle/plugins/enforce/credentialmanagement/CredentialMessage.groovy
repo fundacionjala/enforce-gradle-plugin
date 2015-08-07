@@ -25,6 +25,7 @@ enum CredentialMessage {
     MESSAGE_UPDATE_SUCCESSFULLY('Credential was updated successfully'),
     MESSAGE_QUESTION_TRY_AGAIN('Do you want to try again (y/n)?'),
     ADD_CREDENTIAL_DESCRIPTION("You can add a credential"),
+    GET_CREDENTIALS_DESCRIPTION("You can obtain a credential registered"),
     CREDENTIAL_MANAGER_GROUP("Credential Manager"),
     UPDATE_CREDENTIAL_DESCRIPTION("You can update a credential"),
     LOCATION('\nCredential location (home/project by default is home):'),
@@ -40,6 +41,10 @@ enum CredentialMessage {
     ENCRYPTED('encrypted'),
     NORMAL('normal'),
     LOGIN('login'),
+    TEST('test'),
+    DEVELOPER_ENVIRONMENT('Production/Developer'),
+    TEST_ENVIRONMENT('Sandbox'),
+    OTHER_ENVIRONMENT('(Specified)'),
     DEFAULT_CREDENTIAL_NAME('default'),
     TOKEN('token')
 
