@@ -10,6 +10,7 @@ import org.fundacionjala.gradle.plugins.enforce.credentialmanagement.CredentialM
 import org.fundacionjala.gradle.plugins.enforce.exceptions.deploy.DeployException
 import org.fundacionjala.gradle.plugins.enforce.tasks.ForceTask
 import org.fundacionjala.gradle.plugins.enforce.tasks.credentialmanager.CredentialParameterValidator
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.helperManager.Helper
 import org.fundacionjala.gradle.plugins.enforce.utils.AnsiColor
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
@@ -241,6 +242,18 @@ abstract class SalesforceTask extends ForceTask {
     }
 
     /**
+     * Prints a help manual about a task on the terminal
+     * @return true if the task use de parameter help
+     */
+    public boolean showHelper() {
+        if(parameters.containsKey("help")) {
+            Helper.showHelp(this.getName())
+            return true
+        }
+        return false
+    }
+
+    /**
      * Load credential, gets version api and execute the method run
      */
     @Override
@@ -255,6 +268,7 @@ abstract class SalesforceTask extends ForceTask {
         parameters = project.properties.clone()
         setup()
         loadParameters()
+        if(!showHelper())
         runTask()
     }
 

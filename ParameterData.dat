@@ -1,0 +1,91 @@
+{
+    "sort": {
+        "description": "Sort the files by name",
+        "examples": [
+            "gradle *task* -Psort=name"
+        ]
+    },
+
+    "pkg.namespace": {
+       "description": "Package name to install",
+       "examples": [
+           "gradle *task* -Ppkg.namespace=al"
+       ]
+    },
+    "pkg.version": {
+        "description": "Version of the product / package you want to install",
+        "examples": [
+            "gradle *task* -Ppkg.version=1.18"
+        ]
+    },
+    "pkg.password": {
+         "description": "Password to package ",
+         "examples": [
+             "gradle *task* -Ppkg.namespace=al -Ppkg.version=1.18 -Ppkg.password=password"
+         ]
+    },
+    "files": {
+        "description": "Select which files will be executed by the process",
+        "examples": [
+            "gradle *task* -Pfiles=classes/Class1.cls",
+            "gradle *task* -Pfiles=classes/Class1.cls,classes/Class2.cls",
+            "gradle *task* -Pfiles=classes/*.cls,triggers/*.cls",
+            "gradle *task* -Pfiles=classes/**"
+        ]
+    },
+    "folders": {
+        "description": "Select which folders will be executed by the process",
+        "examples": [
+            "gradle *task* -Pfolders=classes",
+            "gradle *task* -Pfolders=classes,triggers,objects"
+        ]
+    },
+    "excludes": {
+        "description": "Select which files they will be ignored by the process",
+        "examples": [
+            "gradle *task* -Pexcludes=classes/Class1.cls",
+            "gradle *task* -Pexcludes=classes/Class1.cls,classes/Class2.cls",
+            "gradle *task* -Pexcludes=classes/*.cls,triggers/*.cls",
+            "gradle *task* -Pexcludes=classes/**"
+        ]
+    },
+    "destination": {
+        "description": "Specifies the folder on which the task is executed",
+        "examples": [
+           "gradle *task* -Pdestination=relative/path",
+           "gradle *task* -Pdestination=/absolute/path"
+        ]
+    },
+    "cls": {
+        "description": "Select which files will be executed by the process, it is possible to use wildcards",
+        "examples": [
+           "gradle *task* -Pcls=Test*"
+        ]
+    },
+    "async": {
+        "description": "Execute test asynchronously",
+        "examples": [
+           "gradle *task* -Pasync=true",
+           "gradle *task* -Pasync=false"
+        ]
+    },
+    "input": {
+        "description": "Set a file or inline code that you want to execute",
+        "examples": [
+           "gradle *task* -Pinput=src/classes/ClassOne.cls"
+        ]
+    },
+    "output": {
+        "description": "Set a file path and get results in this file",
+        "examples": [
+           "gradle *task* -Poutput=build/file.txt"
+        ]
+    },
+    "validation": {
+        "description": "Validates that files to deleted exist within their Org",
+        "examples": [
+           "gradle *task* -Pvalidate=true",
+           "gradle *task* -Pvalidate=false"
+        ]
+    },
+ }

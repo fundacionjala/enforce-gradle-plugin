@@ -1,0 +1,47 @@
+{
+    "status": {
+            "description": "Shows files which have been added, modified or deleted",
+            "parameters": ["sort"]
+    },
+    "installPackage": {
+            "description": "Installs a management package",
+            "parameters": ["pkg.namespace","pkg.version","pkg.password"]
+    },
+    "uninstallPackage": {
+            "description": "Uninstalls a management package",
+            "parameters": ["pkg.namespace"]
+    },
+    "update": {
+            "description": "Deploys changed code as: deleted code, added code and updated code",
+            "parameters": ["folders","excludes"]
+    },
+    "deploy": {
+            "description": "Deploys all code from your local code to Salesforce organization",
+            "parameters": ["folders","excludes"]
+    },
+    "upload": {
+            "description": "Uploads your code from your local repository to SalesForce organization directly as it is",
+            "parameters": ["files","excludes"]
+    },
+    "undeploy": {
+            "description": "Undeploys code from Salesforce organization",
+            "parameters": ["excludes"]
+    },
+    "retrieve": {
+            "description": "Download files from your organization is based on your .xml package",
+            "parameters": ["files","destination"]
+    },
+    "runTest": {
+           "description": "Runs only unit test classes according to wildcard and It generates XML reports ",
+           "parameters": ["cls","async"]
+    },
+    "execute": {
+           "description": "Executes a code block of Apex using input parameter to set inline code and output parameter to set a file path and get results in this file",
+           "parameters": ["input","output"]
+    },
+    "delete": {
+            "description": "Description Delete",
+            "parameters": ["files","excludes","validation"]
+    },
+
+ }
