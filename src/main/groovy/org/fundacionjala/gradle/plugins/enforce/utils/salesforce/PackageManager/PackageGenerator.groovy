@@ -110,7 +110,9 @@ class PackageGenerator {
     public void buildDestructive(Writer writer) {
         ArrayList<File> files = getFiles(ComponentStates.DELETED) + getSubComponents(ComponentStates.DELETED)
         files = FilterSubcomponents.filter(files, project.enforce.deleteSubComponents, projectPath)
-        files = OrgValidator.getValidFiles(credential, files, projectPath)
+        if(!project.properties.get(Constants.PARAMETER_VALIDATE_ORG).equals(Constants.FALSE_OPTION)) {
+            files = OrgValidator.getValidFiles(credential, files, projectPath)
+        }
         packageBuilder.createPackage(files, projectPath)
         packageBuilder.write(writer)
     }
