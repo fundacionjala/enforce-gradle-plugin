@@ -30,6 +30,7 @@ abstract class ForceTask extends DefaultTask {
     private final String FILE_NAME = 'buildLog.log'
     private final String CLASS_PATH_ERROR = 'org.gradle.color.error'
     private final String COLOR_ERROR = 'RED'
+    private final String PARAMETER_HELP = 'help'
 
     public String projectPath
     public ManagementFile fileManager
@@ -64,7 +65,7 @@ abstract class ForceTask extends DefaultTask {
      * @return true if the task use de parameter help
      */
     public boolean showHelper() {
-        if(project.properties.containsKey("help")) {
+        if(project.properties.containsKey(PARAMETER_HELP)) {
             Helper.showHelp(this.getName())
             return true
         }
