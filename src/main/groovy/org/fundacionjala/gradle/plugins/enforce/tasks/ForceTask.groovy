@@ -65,7 +65,7 @@ abstract class ForceTask extends DefaultTask {
      * @return true if the task use de parameter help
      */
     public boolean showHelper() {
-        boolean parameterExist = false;
+        boolean parameterExist = false
         if(project.properties.containsKey(PARAMETER_HELP)) {
             Helper.showHelp(this.getName())
             parameterExist = true
