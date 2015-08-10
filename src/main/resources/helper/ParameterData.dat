@@ -62,13 +62,6 @@
            "gradle *task* -Pcls=Test*"
         ]
     },
-    "async": {
-        "description": "Execute test asynchronously",
-        "examples": [
-           "gradle *task* -Pasync=true",
-           "gradle *task* -Pasync=false"
-        ]
-    },
     "input": {
         "description": "Set a file or inline code that you want to execute",
         "examples": [
@@ -134,6 +127,41 @@
         "examples": [
             "gradle *task* -Plocation=home",
             "gradle *task* -Plocation=project"
+        ]
+    },
+    "test": {
+        "description": "Is used to choose specific test classes using wildcards",
+        "examples": [
+            "gradle *task* ­Ptest=Test*",
+            "gradle *task* ­Ptest=TestClass1.cls"
+        ]
+    },
+    "file": {
+        "description": "Used to enter Apex class names and infer their related test classes using an engine test selector",
+        "examples": [
+            "gradle *task* -Pfile=Class1.cls",
+            "gradle *task* -Pfile=Class1.cls,Class2.cls",
+            "gradle *task* -Pfile="*",
+            "gradle *task* -Pfile="all"
+        ]
+    },
+    "refreshMapping": {
+        "description": "Restart the mapping that the engine uses to select test classes, if it is not present, default it is false",
+        "examples": [
+            "gradle *task* -PrefreshMapping=true"
+        ]
+    },
+    "async": {
+        "description": "The test run asynchronously, by default it runs test synchronously",
+        "examples": [
+           "gradle *task* -Pasync=true",
+           "gradle *task* -Pasync=false"
+        ]
+    },
+    "destination": {
+        "description": "Choose a directory in where save the run test results, by default they are saved in build/report directory",
+        "examples": [
+            "gradle *task* -Pdestination=/home/temporalReports/"
         ]
     }
  }

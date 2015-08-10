@@ -49,24 +49,23 @@ class Helper {
 
         if(helper.tasks[taskName]) {
             DescriptionTask task = helper.tasks[taskName]
-
-            println "Task : ${task.name}"
-            println "Description : ${task.description}"
-            println "Parameters :"
-            
-            log.print("asdfasdfasdfasdfasdf")
-
+            log.println("")
+            log.println("Task : ${task.name}")
+            log.println("Description : ${task.description}")
+            if(task.parameters.size() > 0) {
+                log.println("Parameters :")
+            }
             task.parameters.each {String parameter ->
                 if(helper.parameters[parameter]) {
                     helper.parameters[parameter].show(taskName)
                 }
                 else {
-                    println "  -P${parameter} : This parameter dont have a description and examples."
+                    log.println("  -P${parameter} : This parameter dont have a description and examples.")
                 }
             }
         }
         else {
-            println  "${taskName} task don't have a help manual. "
+            log.println("${taskName} task don't have a help manual. ")
         }
 
     }
