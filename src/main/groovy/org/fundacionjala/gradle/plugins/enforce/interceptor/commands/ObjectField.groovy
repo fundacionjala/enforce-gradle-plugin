@@ -19,11 +19,15 @@ class ObjectField {
     private final String FIELDS_REGEX = /<fields>.*([^\n]*?\n+?)*?.*<\/fields>/
     private final String DESCRIPTION_REGEX = /<description>(([^\n]*?\n+?)*?.*<\/description>){0,1}/
     private final String HELP_TEXT_REGEX = /<inlineHelpText>(([^\n]*?\n+?)*?.*<\/inlineHelpText>){0,1}/
+    private final String DEFAULT_VALUE_REGEX = /<defaultValue>(\$+|(.*\$+)|.*\$.*)<\/defaultValue>/
     private final int FIELD_INDEX = 0
     private final int DESCRIPTION_INDEX = 0
     private final int HELP_TEXT_INDEX = 0
+    private final int DEFAULT_VALUE_INDEX = 0
     private final String DESCRIPTION_TAG = "<description>new description</description>"
     private final String HELP_TEXT_TAG = "<inlineHelpText>new help text</inlineHelpText>"
+    private final String DEFAULT_VALUE_TAG = "<defaultValue></defaultValue>"
+
     String encoding
 
     ObjectField() {
@@ -52,6 +56,10 @@ class ObjectField {
                 Matcher helpTextMatcher = field =~ HELP_TEXT_REGEX
                 helpTextMatcher.each { helpTextIt ->
                     newField = newField.replace(helpTextIt[HELP_TEXT_INDEX].toString(), HELP_TEXT_TAG)
+                }
+                Matcher defaultValueMatcher = field =~ DEFAULT_VALUE_REGEX
+                defaultValueMatcher.each { defaultValueIt ->
+                    newField = newField.replace(defaultValueIt[DEFAULT_VALUE_INDEX].toString(), DEFAULT_VALUE_TAG)
                 }
                 objectField = objectField.replace(field, newField)
             }
