@@ -1,3 +1,9 @@
+## 1.0.8 - 2015-08-05
+
+### Enhancements
+
+* Take in account api version of Salesforce API from package.xml file to deploy code to an organization of Salesforce.
+
 
 ## 1.0.7 - 2015-07-28
 
