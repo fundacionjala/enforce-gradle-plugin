@@ -15,6 +15,7 @@ class Helper {
     public final String DESCRIPTION = "description"
     public final String PARAMETERS = "parameters"
     public final String EXAMPLES = "examples"
+    public final String DOCUMENTATION = "documentation"
 
     public void chargeTasks () {
         tasks = [:]
@@ -24,6 +25,7 @@ class Helper {
         mapTaskData.each { key, value ->
             DescriptionTask descriptionTask = new DescriptionTask(key)
             descriptionTask.description = value[DESCRIPTION]
+            descriptionTask.documentation = value[DOCUMENTATION]
             descriptionTask.parameters  = value[PARAMETERS]
             tasks.put(key,descriptionTask)
         }
@@ -51,7 +53,8 @@ class Helper {
             DescriptionTask task = helper.tasks[taskName]
             log.println("")
             log.println("Task : ${task.name}")
-            log.println("Description : ${task.description}")
+            log.println("Description   : ${task.description}")
+            log.println("Documentation : ${task.documentation}")
             if(task.parameters.size() > 0) {
                 log.println("Parameters :")
             }
