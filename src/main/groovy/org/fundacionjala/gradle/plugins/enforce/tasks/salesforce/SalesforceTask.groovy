@@ -10,6 +10,7 @@ import org.fundacionjala.gradle.plugins.enforce.credentialmanagement.CredentialM
 import org.fundacionjala.gradle.plugins.enforce.exceptions.deploy.DeployException
 import org.fundacionjala.gradle.plugins.enforce.tasks.ForceTask
 import org.fundacionjala.gradle.plugins.enforce.tasks.credentialmanager.CredentialParameterValidator
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.helperManager.Helper
 import org.fundacionjala.gradle.plugins.enforce.utils.AnsiColor
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
@@ -238,6 +239,7 @@ abstract class SalesforceTask extends ForceTask {
                                         Paths.get(buildFolderPath, Constants.REPORT_FOLDER_NAME).toString()])
         }
     }
+
 
     /**
      * Load credential, gets version api and execute the method run
