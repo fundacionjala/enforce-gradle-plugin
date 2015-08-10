@@ -47,4 +47,8 @@
             "description": "Description Delete",
             "parameters": ["files","excludes","validation"]
     },
+    "reset": {
+            "description": "Description Delete",
+            "parameters": []
+    },
  }
