@@ -1,4 +1,8 @@
 {
+    "addCredential": {
+            "description": "This task adds a new credential into credentials.dat located in user home directory by default.",
+            "parameters": ["id","username","password","token","sfdcType","type","location"]
+    },
     "status": {
             "description": "Shows files which have been added, modified or deleted",
             "parameters": ["sort"]
@@ -43,5 +47,4 @@
             "description": "Description Delete",
             "parameters": ["files","excludes","validation"]
     },
-
  }

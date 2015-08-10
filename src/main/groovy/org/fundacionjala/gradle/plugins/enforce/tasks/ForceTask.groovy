@@ -10,6 +10,7 @@ import org.fundacionjala.gradle.plugins.enforce.exceptions.deploy.DeployExceptio
 import org.fundacionjala.gradle.plugins.enforce.tasks.exception.GradleDeployException
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.helperManager.Helper
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.logging.StandardOutputListener
@@ -50,10 +51,24 @@ abstract class ForceTask extends DefaultTask {
      */
     @TaskAction
     void start() {
-        startLogger()
-        withExceptionHandling {
-            executeTask()
+        if(!showHelper()) {
+            startLogger()
+            withExceptionHandling {
+                executeTask()
+            }
         }
+    }
+
+    /**
+     * Prints a help manual about a task on the terminal
+     * @return true if the task use de parameter help
+     */
+    public boolean showHelper() {
+        if(project.properties.containsKey("help")) {
+            Helper.showHelp(this.getName())
+            return true
+        }
+        return false
     }
 
     /**

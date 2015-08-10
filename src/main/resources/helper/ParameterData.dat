@@ -88,4 +88,52 @@
            "gradle *task* -Pvalidate=false"
         ]
     },
+    "id": {
+        "description": "Is necessary to management your credential",
+        "examples": [
+           "gradle *task* -Pid=myId",
+           "gradle *task* -Pid=john"
+        ]
+    },
+    "username": {
+        "description": "Is a SalesForce account",
+        "examples": [
+           "gradle *task* -Pusername=example@email.com",
+           "gradle *task* -Pusername=john@email.com"
+        ]
+    },
+    "password": {
+        "description": "Is your SalesForce password",
+        "examples": [
+            "gradle *task* -Ppassword=mypassword"
+        ]
+    },
+    "token": {
+        "description": "Is your SalesForce token",
+        "examples": [
+            "gradle *task* -Ptoken=2B9UvHKK2E1ky1EkkYBPFvbLM"
+        ]
+    },
+    "sfdcType": {
+        "description": "Is a login type",
+        "examples": [
+            "gradle *task* -Ptoken=login (default value)",
+            "gradle *task* -Ptoken=test",
+            "gradle *task* -Ptoken=instance"
+        ]
+    },
+    "type": {
+        "description": "Defines whether your credential is encrypted or not",
+        "examples": [
+            "gradle *task* -Ptype=normal",
+            "gradle *task* -Ptype=encrypted"
+        ]
+    },
+    "location": {
+        "description": "Is credentials.dat file directory",
+        "examples": [
+            "gradle *task* -Plocation=home",
+            "gradle *task* -Plocation=project"
+        ]
+    }
  }

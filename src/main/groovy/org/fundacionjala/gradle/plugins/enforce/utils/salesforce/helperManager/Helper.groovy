@@ -2,23 +2,19 @@ package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.helperManager
 
 import groovy.json.JsonSlurper
 import groovy.json.internal.LazyMap
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.helperManager.DescriptionParameter
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.helperManager.DescriptionTask
 
-import java.nio.file.Paths
-
-
+@Singleton
 class Helper {
-    public static Map<String,DescriptionParameter> parameters
-    public static Map<String,ArrayList<String>> tasks
-    public static String FORLDER_RESOURCES = '/helper/'
-    public static String FILE_TASK = 'TaskData.dat'
-    public static String FILE_PARAMETERS = 'ParameterData.dat'
+    public  Map<String,DescriptionParameter> parameters
+    public  Map<String,ArrayList<String>> tasks
+    public final String FOLDER_RESOURCES = '/helper/'
+    public final String FILE_TASK = 'TaskData.dat'
+    public final String FILE_PARAMETERS = 'ParameterData.dat'
 
-    public static void chargeTasks () {
+    public void chargeTasks () {
         tasks = [:]
 
-        def jsonTask =  this.getResource("${FORLDER_RESOURCES}${FILE_TASK}").text
+        def jsonTask =  this.getClass().getResource("${FOLDER_RESOURCES}${FILE_TASK}").text
         LazyMap mapTaskData = new JsonSlurper().parseText(jsonTask)
         mapTaskData.each { key, value ->
             DescriptionTask descriptionTask = new DescriptionTask(key)
@@ -28,9 +24,9 @@ class Helper {
         }
     }
 
-    public static void chargeParameters() {
+    public void chargeParameters() {
         parameters = [:]
-        def jsonTask =  this.getResource("${FORLDER_RESOURCES}${FILE_PARAMETERS}").text
+        def jsonTask =  this.getClass().getResource("${FOLDER_RESOURCES}${FILE_PARAMETERS}").text
         LazyMap mapTaskData = new JsonSlurper().parseText(jsonTask)
         mapTaskData.each { key, value ->
             DescriptionParameter descriptionParameter = new DescriptionParameter(key)
@@ -42,24 +38,24 @@ class Helper {
     }
 
     public static void showHelp(String taskName) {
-        chargeTasks()
-        chargeParameters()
+        Helper helper = Helper.instance
+        helper.chargeTasks()
+        helper.chargeParameters()
 
-        if(tasks[taskName]) {
-            DescriptionTask task = tasks[taskName]
-
+        if(helper.tasks[taskName]) {
+            DescriptionTask task = helper.tasks[taskName]
+            println ""
             println "Task : " + task.name + ""
             println "Description : " + task.description + ""
             println "Parameters :"
 
             task.parameters.each {String parameter ->
-                if(parameters[parameter]) {
-                    parameters[parameter].show(taskName)
+                if(helper.parameters[parameter]) {
+                    helper.parameters[parameter].show(taskName)
                 }
                 else {
                     println "  -P" + parameter + " : This parameter dont have a description and examples."
                 }
-
             }
         }
         else {

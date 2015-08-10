@@ -240,17 +240,6 @@ abstract class SalesforceTask extends ForceTask {
         }
     }
 
-    /**
-     * Prints a help manual about a task on the terminal
-     * @return true if the task use de parameter help
-     */
-    public boolean showHelper() {
-        if(parameters.containsKey("help")) {
-            Helper.showHelp(this.getName())
-            return true
-        }
-        return false
-    }
 
     /**
      * Load credential, gets version api and execute the method run
@@ -268,7 +257,6 @@ abstract class SalesforceTask extends ForceTask {
         CustomComponentTracker.saveCustomComponent(projectPath)
         setup()
         loadParameters()
-        if(!showHelper())
         runTask()
     }
 
