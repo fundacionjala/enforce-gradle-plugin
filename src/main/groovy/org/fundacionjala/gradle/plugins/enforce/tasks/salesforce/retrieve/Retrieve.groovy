@@ -208,6 +208,6 @@ class Retrieve extends Retrieval {
      * @return true if exist a package xml file else return false
      */
     def hasPackage() {
-        return new File(packageFromSourcePath).exists()
+        return new File(Paths.get(projectPath, Constants.PACKAGE_FILE_NAME).toString()).exists()
     }
 }

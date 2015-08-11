@@ -8,12 +8,14 @@ package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 import org.fundacionjala.gradle.plugins.enforce.interceptor.InterceptorManager
 import org.fundacionjala.gradle.plugins.enforce.metadata.DeployMetadata
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.SalesforceTask
+import org.fundacionjala.gradle.plugins.enforce.undeploy.PackageComponent
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.ClassifiedFile
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.FileValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.PackageCombiner
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.filter.Filter
+import org.fundacionjala.gradle.plugins.enforce.wsc.Connector
 
 import java.nio.file.Paths
 
@@ -58,7 +60,9 @@ abstract class Deployment extends SalesforceTask {
         String pathZipToDeploy = createZip(sourcePath, buildFolderPath, fileName)
         componentDeploy.setPath(pathZipToDeploy)
         logger.debug('Deploying components')
-        componentDeploy.deploy(poll, waitTime, credential)
+        String apiVersion = PackageComponent.getApiVersion(projectPackagePath) < Connector.API_VERSION?
+                            Connector.API_VERSION : PackageComponent.getApiVersion(projectPackagePath)
+        componentDeploy.deploy(poll, waitTime, credential, apiVersion)
         deleteTemporaryFiles()
     }
 

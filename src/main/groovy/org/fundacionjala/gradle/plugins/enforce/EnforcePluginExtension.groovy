@@ -16,7 +16,7 @@ class EnforcePluginExtension {
     /**
      * The source directory path to monitor all changes on it.
      */
-    String srcPath = ""
+    String srcPath = "."
     /**
      * The temporal directory path to copy all files changed.
      */
