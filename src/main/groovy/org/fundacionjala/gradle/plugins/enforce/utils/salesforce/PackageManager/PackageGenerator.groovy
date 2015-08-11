@@ -5,6 +5,7 @@ import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ObjectResultTracker
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
+import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.OrgValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.filter.FilterSubcomponents
@@ -122,6 +123,10 @@ class PackageGenerator {
      * @param filteredFiles the filtered files
      */
     public void updateFileTracker(ArrayList<File> filteredFiles) {
+        if (fileTrackerMap == null) {
+            loadFileTrackerMap()
+            return
+        }
         Map<String, ResultTracker> fileTrackerMapClone = fileTrackerMap.clone() as Map<String, ResultTracker>
         fileTrackerMapClone.each { fileName, resultTracker ->
             File fileChanged = new File(fileName.toString())
@@ -132,5 +137,15 @@ class PackageGenerator {
                 fileTrackerMap.remove(fileName.toString())
             }
         }
+    }
+
+    /**
+     * Loads fileTrackerMap
+     */
+    private void loadFileTrackerMap() {
+        ManagementFile managementFile = new ManagementFile(projectPath)
+        ArrayList<File> sourceComponents = managementFile.getValidElements(projectPath, ['xml'])
+        componentMonitor.saveCurrentComponents(sourceComponents)
+        fileTrackerMap = componentMonitor.getComponentChanged(sourceComponents)
     }
 }
