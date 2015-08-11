@@ -240,7 +240,6 @@ abstract class SalesforceTask extends ForceTask {
         }
     }
 
-
     /**
      * Load credential, gets version api and execute the method run
      */
