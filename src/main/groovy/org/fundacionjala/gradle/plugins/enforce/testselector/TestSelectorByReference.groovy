@@ -63,7 +63,10 @@ class TestSelectorByReference extends TestSelector  {
         Map containerResp = artifactGenerator.createContainer(RunTestTaskConstants.METADATA_CONTAINER_NAME)
         String containerId = containerResp["Id"]
         if (containerResp["isNew"]) {
-            ArrayList<String> apexClassMemberId = artifactGenerator.createApexClassMember(containerId, testClassNameList)
+            ArrayList<String> apexClassMemberId = []
+            testClassNameList.collate(100).each {
+                apexClassMemberId.addAll(artifactGenerator.createApexClassMember(containerId, it))
+            }
             String containerAsyncRequestId = artifactGenerator.createContainerAsyncRequest(containerId)
             String requestStatus
             String requestStatusQuery = sprintf( CONTAINER_ASYNC_REQUEST_QUERY, [containerAsyncRequestId])
@@ -80,10 +83,16 @@ class TestSelectorByReference extends TestSelector  {
                     if (entry.getKey() == "externalReferences") {
                         entry.getValue().each() {
                             if (it["namespace"] != "System") {
-                                if (!classAndTestMap.containsKey(it["name"])) {
-                                    classAndTestMap.put(it["name"], new ArrayList<String>())
+                                String classToAdd
+                                if (it["namespace"]) {
+                                    classToAdd = it["namespace"]
+                                } else {
+                                    classToAdd = it["name"]
                                 }
-                                classAndTestMap.get(it["name"]).add(classMember.FullName)
+                                if (!classAndTestMap.containsKey(classToAdd)) {
+                                    classAndTestMap.put(classToAdd, new ArrayList<String>())
+                                }
+                                classAndTestMap.get(classToAdd).add(classMember.FullName)
                             }
                         }
                     }
