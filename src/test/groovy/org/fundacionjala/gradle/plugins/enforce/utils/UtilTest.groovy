@@ -352,6 +352,39 @@ class UtilTest extends Specification {
             thrown(Exception)
     }
 
+    def "Test should return a apexName from Json file " () {
+        given:
+            String json = '''{"size": 4,
+                              "totalSize": 4,
+                              "done": true,
+                              "queryLocator": null,
+                              "entityTypeName": "ApexClass",
+                              "records":   [
+                                    {
+                                  "attributes":       {
+                                    "type": "ApexClass",
+                                    "url": "/services/data/v32.0/tooling/sobjects/ApexClass/01pj0000003pIJaAAM"
+                                  },
+                                  "Id": "01pj0000003pIJaAAM",
+                                  "Name": "Class3"
+                                },
+                                    {
+                                  "attributes":       {
+                                    "type": "ApexClass",
+                                    "url": "/services/data/v32.0/tooling/sobjects/ApexClass/01pj0000003pIJbAAM"
+                                  },
+                                  "Id": "01pj0000003pIJbAAM",
+                                  "Name": "TestClass"
+                                }
+                              ]
+                            } '''
+            String id = '01pj0000003pIJaAAM'
+        when:
+            String result = Util.getApexNameByJson(id,json)
+        then:
+            result == 'Class3'
+    }
+
     def cleanupSpec() {
         new File(Paths.get(RESOURCES_PATH, 'triggers').toString()).deleteDir()
         new File(Paths.get(RESOURCES_PATH, 'relativeTest').toString()).deleteDir()

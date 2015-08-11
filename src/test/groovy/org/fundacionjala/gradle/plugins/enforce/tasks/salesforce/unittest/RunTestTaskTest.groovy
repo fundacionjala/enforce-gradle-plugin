@@ -71,7 +71,28 @@ class RunTestTaskTest extends Specification {
         when:
             RunTestTask runTestTask = project.tasks.findByName(RUN_TEST_TASK_NAME) as RunTestTask
             def path = Paths.get(SRC_PATH, "test").toString()
-            classNames = runTestTask.getClassNames(path, "*Test*")
+            this.project.ext[RunTestTaskConstants.CLASS_PARAM] = "*Test*"
+            runTestTask.runTestSelector()
+            classNames = runTestTask.getClassNames()
+        then:
+            classNames.sort() == ["FGW_Console_CTRLTest", "FGW_APIFactoryTest"].sort()
+    }
+
+    def "Should get the class names no param"() {
+        given:
+            project.enforce {
+                srcPath = SRC_PATH
+                standardObjects = ["Q2w_Test__c.object"]
+                tool = "metadata"
+                poll = 200
+                waitTime = 10
+            }
+            def classNames = []
+        when:
+            RunTestTask runTestTask = project.tasks.findByName(RUN_TEST_TASK_NAME) as RunTestTask
+            def path = Paths.get(SRC_PATH, "test").toString()
+            runTestTask.runTestSelector()
+            classNames = runTestTask.getClassNames()
         then:
             classNames.sort() == ["FGW_Console_CTRLTest", "FGW_APIFactoryTest"].sort()
     }
@@ -96,8 +117,10 @@ class RunTestTaskTest extends Specification {
 
             RunTestTask runTestTask = project.tasks.findByName(RUN_TEST_TASK_NAME) as RunTestTask
             String path = Paths.get(SRC_PATH, "test")
+            this.project.ext[RunTestTaskConstants.CLASS_PARAM] = "*Test*"
+            runTestTask.runTestSelector()
         when:
-            ArrayList<String> classNames = runTestTask.getClassNames(path, "*Test*")
+            ArrayList<String> classNames = runTestTask.getClassNames()
         then:
             classNames.sort() == ["FGW_Console_CTRLTest", "FGW_APIFactoryTest", "Class1Test", "Class2Test",
                                   "Class3Test"].sort()

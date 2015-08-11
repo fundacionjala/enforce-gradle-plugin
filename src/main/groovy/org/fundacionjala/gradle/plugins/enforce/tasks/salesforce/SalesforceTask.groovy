@@ -14,6 +14,7 @@ import org.fundacionjala.gradle.plugins.enforce.utils.AnsiColor
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.PackageBuilder
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.runtesttask.CustomComponentTracker
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.bundling.Zip
@@ -28,8 +29,6 @@ abstract class SalesforceTask extends ForceTask {
     private final String CREDENTIAL_NAME = "credentials.dat"
     private final String SAVE_PACKAGE_ERROR = "path package not defined, you need prepare package first"
     private final String UPDATE_PACKAGE_ERROR = "you need to prepare package first"
-    public final String PACKAGE_NAME = "package.xml"
-    public final String PACKAGE_NAME_DESTRUCTIVE = "destructiveChanges.xml"
     private final String DIR_USER = "user.home"
     private final String BUILD_FOLDER_NAME = "build"
     private CredentialManager credentialManagement
@@ -251,8 +250,9 @@ abstract class SalesforceTask extends ForceTask {
         logger.debug('Finished load credential')
         fileManager.createDirectory(buildFolderPath)
         logger.debug('Created directory at: ' + buildFolderPath)
-        projectPackagePath = Paths.get(projectPath, PACKAGE_NAME)
+        projectPackagePath = Paths.get(projectPath, Constants.PACKAGE_FILE_NAME)
         parameters = project.properties.clone()
+        CustomComponentTracker.saveCustomComponent(projectPath)
         setup()
         loadParameters()
         runTask()
