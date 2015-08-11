@@ -1,3 +1,9 @@
+## 1.0.9 - 2015-08-11
+
+### Bugs fixed
+
+* Once "execute task" is executed it shows a warning message that say input parameter is invalid.
+
 ## 1.0.8 - 2015-08-05
 
 ### Enhancements
