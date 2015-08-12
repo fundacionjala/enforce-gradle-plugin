@@ -36,20 +36,27 @@ class TestSelectorByReference extends TestSelector  {
         super(testClassNameList)
         this.srcPath = srcPath
         this.artifactGenerator = artifactGenerator
-        this.filesParameterValue = null
-        if (filesParameterValue) {
-            this.filesParameterValue = filesParameterValue.replace(".${MetadataComponents.CLASSES.getExtension()}", "")
-            if (this.filesParameterValue == "*" || this.filesParameterValue == "all") {
+        this.filesParameterValue = filesParameterValue
+        this.refreshClassAndTestMap = refreshClassAndTestMap
+    }
+
+    /**
+     * Initializes all local variables
+     */
+    private void init() {
+        if (this.filesParameterValue) {
+            this.filesParameterValue = this.filesParameterValue.replace(".${MetadataComponents.CLASSES.getExtension()}", "")
+            if (this.filesParameterValue == RunTestTaskConstants.RUN_ALL_UPDATED_PARAM_VALUE) {
+                displayMessage("Getting Apex classes from file tracker..")
                 CustomComponentTracker customComponentTracker = new CustomComponentTracker(this.srcPath)
                 this.filesParameterValue = (customComponentTracker.getFilesNameByExtension([MetadataComponents.CLASSES.getExtension()])).join("','")
                 this.filesParameterValue = this.filesParameterValue.replace(".${MetadataComponents.CLASSES.getExtension()}", "")
-
+                displayMessage("${this.filesParameterValue.size()} elements found..")
                 if (!this.filesParameterValue) {
                     displayNoChangesMessage = true
                 }
             }
         }
-        this.refreshClassAndTestMap = refreshClassAndTestMap
     }
 
     /**
@@ -58,24 +65,33 @@ class TestSelectorByReference extends TestSelector  {
     private void buildReferences() {
         JsonSlurper jsonSlurper = new JsonSlurper()
         if (this.refreshClassAndTestMap) {
+            displayMessage("\tRemoving existing MetaData Container..")
             artifactGenerator.deleteContainer(RunTestTaskConstants.METADATA_CONTAINER_NAME)
         }
+        displayMessage("\tGenerating MetaData Container..")
         Map containerResp = artifactGenerator.createContainer(RunTestTaskConstants.METADATA_CONTAINER_NAME)
         String containerId = containerResp["Id"]
         if (containerResp["isNew"]) {
             ArrayList<String> apexClassMemberId = []
+            displayMessage("\tGenerating Apex Class Members..")
+            def processedClasses = 0
             testClassNameList.collate(100).each {
                 apexClassMemberId.addAll(artifactGenerator.createApexClassMember(containerId, it))
+                processedClasses += it.size()
+                displayMessage("\r\t\tProcessed ${processedClasses}/${testClassNameList.size()} elements")
             }
+            displayMessage("\tGenerating Container Async Requester..")
             String containerAsyncRequestId = artifactGenerator.createContainerAsyncRequest(containerId)
+            displayMessage("\tRequesting Symbol Tables..")
             String requestStatus
             String requestStatusQuery = sprintf( CONTAINER_ASYNC_REQUEST_QUERY, [containerAsyncRequestId])
             while (requestStatus != 'Completed') {
                 sleep(1000)
                 requestStatus = jsonSlurper.parseText(artifactGenerator.executeQuery(requestStatusQuery)).records[0].State.toString()
             }
+            displayMessage("\r\tRequesting Symbol Tables, done")
         }
-
+        displayMessage("\tBuilding Tests/Classes mapping..")
         String apexClassMemberQuery = sprintf( APEX_CLASS_MEMBER_QUERY, [containerId[0..14]])
         jsonSlurper.parseText(artifactGenerator.executeQuery(apexClassMemberQuery)).records.each { classMember ->
             classMember.SymbolTable.each() { symbolTableResult ->
@@ -103,19 +119,25 @@ class TestSelectorByReference extends TestSelector  {
 
     @Override
     ArrayList<String> getTestClassNames() {
+        init()
         ArrayList<String> testClassList = new ArrayList<String>()
-        if (logger && displayNoChangesMessage) {
-            logger.error(NO_RECENT_CHANGE_MESSAGE)
+        if (displayNoChangesMessage) {
+            displayMessage(NO_RECENT_CHANGE_MESSAGE, true)
         }
 
         if (this.filesParameterValue) {
             if (!classAndTestMap) {
+                displayMessage("Building Apex class dependencies from SFDC")
                 buildReferences()
+                displayMessage("Building Apex class dependencies from SFDC, done")
             }
+            displayMessage("\n --- Test Class to run summary ---\n")
             classAndTestMap.keySet().each { className ->
                 this.filesParameterValue.tokenize(RunTestTaskConstants.FILE_SEPARATOR_SIGN).each { wildCard ->
                     //if (className.contains(wildCard)) { //TODO: maybe we can work for wildCards at this point - if (contains("*") || startsWidth("*) endsWidth("*)) -> .replace("*", "")
                     if (className == wildCard ) {
+                        displayMessage("Apex Class: ${className}")
+                        displayMessage("Related Test Class(es): ${classAndTestMap.get(className).unique()}\n")
                         testClassList.addAll(classAndTestMap.get(className))
                     }
                 }
@@ -123,5 +145,28 @@ class TestSelectorByReference extends TestSelector  {
         }
 
         return testClassList.unique()
+    }
+
+    /**
+     * Displays a quiet log message
+     * @param msg message to display
+     */
+    private void displayMessage(String msg) {
+        displayMessage(msg, false)
+    }
+
+    /**
+     * Displays a quiet or error log message
+     * @param msg message to display
+     * @param isError specifies the kind of message quiet/error
+     */
+    private void displayMessage(String msg, Boolean isError) {
+        if (logger) {
+            if (isError) {
+                logger.error(msg)
+            } else {
+                logger.quiet(msg)
+            }
+        }
     }
 }
