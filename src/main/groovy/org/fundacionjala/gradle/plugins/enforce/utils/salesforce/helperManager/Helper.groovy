@@ -16,6 +16,11 @@ class Helper {
     public final String PARAMETERS = "parameters"
     public final String EXAMPLES = "examples"
     public final String DOCUMENTATION = "documentation"
+    public static String WILDCARD_TASK = "*task*"
+    public static String SPACE = "    "
+    public static int maxLineSize = 80
+    public static String startLine = "****************************************************************************************************************************************************************"
+    public static String spaceLine = "                                                                                                                                                                "
 
     public void chargeTasks () {
         tasks = [:]
@@ -51,25 +56,57 @@ class Helper {
 
         if(helper.tasks[taskName]) {
             DescriptionTask task = helper.tasks[taskName]
-            log.println("")
-            log.println("Task : ${task.name}")
-            log.println("Description   : ${task.description}")
-            log.println("Documentation : ${task.documentation}")
-            if(task.parameters.size() > 0) {
-                log.println("Parameters :")
-            }
-            task.parameters.each {String parameter ->
-                if(helper.parameters[parameter]) {
-                    helper.parameters[parameter].show(taskName)
+            println(startLine.substring(0,maxLineSize))
+            println("")
+            printCenterln("${task.name} task")
+            println("")
+            println(startLine.substring(0,maxLineSize))
+            println("")
+            println("Description   :")
+            println(SPACE,task.description)
+            println("")
+            println("Documentation : ")
+            println(SPACE,task.documentation)
+            println("")
+            println("Parameters :")
+
+            task.parameters.each {String parameterName ->
+                def parameter = helper.parameters[parameterName]
+                if(parameter) {
+                    println(SPACE,"-P${parameter.name} : ${parameter.description}")
+                    parameter.examples.each {String example->
+                        example = example.replace(WILDCARD_TASK,parameterName)
+                        println("${SPACE}${SPACE}","> ${example}")
+                    }
                 }
                 else {
-                    log.println("  -P${parameter} : This parameter dont have a description and examples.")
+                    println(SPACE,"-P${parameter} : This parameter dont have a description and examples.")
                 }
             }
         }
         else {
-            log.println("${taskName} task don't have a help manual. ")
+            println(startLine.substring(0,maxLineSize))
+            printCenterln("${taskName} task don't have a help manual. ")
+            println(startLine.substring(0,maxLineSize))
         }
+        println("")
+        println(startLine.substring(0,maxLineSize))
+    }
 
+    def  static println(String text) {
+        println("",text)
+    }
+    def  static printCenterln(String text) {
+        int halfspace = (maxLineSize-text.size())/2
+        def spaces = spaceLine.substring(0,halfspace)
+        println(spaces,text)
+    }
+    def  static println(String space,String text) {
+        def lineSize = maxLineSize - space.size()
+        while(text.size()>lineSize) {
+            log.println("${space}${text.substring(0,lineSize)} ")
+            text = text.substring(lineSize)
+        }
+        log.println("${space}${text}")
     }
 }
