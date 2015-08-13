@@ -24,13 +24,13 @@ class CredentialGiver extends CredentialManagerTask {
         CredentialManager credentialManager = new CredentialManager()
         CredentialFileManager credentialFileManager = new CredentialFileManager(credentialManager.pathCredentials,'');
         logger.quiet("*********************************************")
-        logger.quiet("            Credentials registered             ")
+        logger.quiet("                Credentials                  ")
         logger.quiet("*********************************************")
         for (Credential credential in credentialFileManager.getCredentials()) {
             logger.quiet("")
             logger.quiet("Id : $credential.id")
             logger.quiet("User name : $credential.username")
-            logger.quiet("Organization type : ${getOrganizationType(credential.loginFormat)}")
+            logger.quiet("Type : ${getOrganizationType(credential.loginFormat)}")
         }
         logger.quiet("*********************************************")
     }
