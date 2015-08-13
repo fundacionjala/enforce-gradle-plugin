@@ -57,7 +57,7 @@ class EnforcePlugin implements Plugin<Project> {
 
         project.task("addCredential", type: CredentialAdder)
         project.task("updateCredential", type: CredentialUpdater)
-        project.task("getCredentials", type: CredentialGiver)
+        project.task("showCredentials", type: CredentialGiver)
 
         project.task("retrieve", type: Retrieve)
 

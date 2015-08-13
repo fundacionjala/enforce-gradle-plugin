@@ -124,7 +124,7 @@ class TestSelectorModeratorTest extends Specification {
         File classFile = new File(Paths.get(SRC_PATH, 'classes', 'Class1.cls').toString())
         classFile.write("some text")
         when:
-        project.ext[RunTestTaskConstants.FILE_PARAM] = "*"
+        project.ext[RunTestTaskConstants.FILE_PARAM] = RunTestTaskConstants.RUN_ALL_UPDATED_PARAM_VALUE
         TestSelectorModerator moderator = new TestSelectorModerator(project, artifactGenerator, SRC_CLASSES_PATH)
         classNames = moderator.getTestClassNames()
         then:
