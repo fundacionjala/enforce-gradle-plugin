@@ -20,9 +20,23 @@ class TestSelectorByReference extends TestSelector  {
     private Boolean refreshClassAndTestMap = false
     private Boolean displayNoChangesMessage = false
 
-    private final String APEX_CLASS_MEMBER_QUERY = 'SELECT FullName, ContentEntityId, SymbolTable FROM ApexClassMember WHERE MetadataContainerId = \'%1$s\''
-    private final String CONTAINER_ASYNC_REQUEST_QUERY = 'SELECT State FROM ContainerAsyncRequest WHERE Id=\'%1$s\''
+    private final String APEX_CLASS_MEMBER_QUERY = 'SELECT FullName, ContentEntityId, SymbolTable FROM ApexClassMember WHERE MetadataContainerId = \'%s\''
+    private final String CONTAINER_ASYNC_REQUEST_QUERY = 'SELECT State FROM ContainerAsyncRequest WHERE Id=\'%s\''
     private final String NO_RECENT_CHANGE_MESSAGE = 'You do not have any recent change to use to select Test classes.'
+    private final String GETTING_ELEMENTS_FROM_FILETRACKER_MSG = "Getting Apex classes from file tracker.."
+    private final String NUM_ELEMENTS_FOUND_MSG = "%d elements found.."
+    private final String REMOVE_METADATA_CONTAINER_MSG = "\tRemoving existing MetaData Container.."
+    private final String GENERATE_METADATA_CONTAINER_MSG = "\tGenerating MetaData Container.."
+    private final String GENERATE_APEX_CLASS_MEMBER_MSG = "\tGenerating Apex Class Members.."
+    private final String PROCESSED_ELEMENTS_MSG = "\r\t\tProcessed %d/%d elements"
+    private final String GENERATE_CONTAINER_REQUESTER_MSG = "\tGenerating Container Async Requester.."
+    private final String REQUEST_SYMBOL_TABLE_MSG = "\tRequesting Symbol Tables.."
+    private final String CONTAINER_ASYNC_REQUEST_DONE_QUERY = "\r\tRequesting Symbol Tables, done"
+    private final String BUILD_TESTCLASS_MAP_MSG = "\tBuilding Tests/Classes mapping.."
+    private final String BUILD_DEPENDENCIES_MSG = "Building Apex class dependencies from SFDC"
+    private final String BUILD_DEPENDENCIES_DONE_MSG = "Building Apex class dependencies from SFDC, done"
+    private final String TEST_CLASSES_SUMMARY_MSG = "\n --- Test Class to run summary ---\n"
+    private final String APEX_CLASS_RELATED_TESTS_MSG = "Apex Class: %s \n Related Test Class(es): %s\n"
 
     /**
      * TestSelectorByReference class constructor
@@ -47,11 +61,11 @@ class TestSelectorByReference extends TestSelector  {
         if (this.filesParameterValue) {
             this.filesParameterValue = this.filesParameterValue.replace(".${MetadataComponents.CLASSES.getExtension()}", "")
             if (this.filesParameterValue == RunTestTaskConstants.RUN_ALL_UPDATED_PARAM_VALUE) {
-                displayMessage("Getting Apex classes from file tracker..")
+                displayMessage(GETTING_ELEMENTS_FROM_FILETRACKER_MSG)
                 CustomComponentTracker customComponentTracker = new CustomComponentTracker(this.srcPath)
                 this.filesParameterValue = (customComponentTracker.getFilesNameByExtension([MetadataComponents.CLASSES.getExtension()])).join("','")
                 this.filesParameterValue = this.filesParameterValue.replace(".${MetadataComponents.CLASSES.getExtension()}", "")
-                displayMessage("${this.filesParameterValue.size()} elements found..")
+                displayMessage(sprintf(NUM_ELEMENTS_FOUND_MSG, [this.filesParameterValue.size()]))
                 if (!this.filesParameterValue) {
                     displayNoChangesMessage = true
                 }
@@ -65,34 +79,34 @@ class TestSelectorByReference extends TestSelector  {
     private void buildReferences() {
         JsonSlurper jsonSlurper = new JsonSlurper()
         if (this.refreshClassAndTestMap) {
-            displayMessage("\tRemoving existing MetaData Container..")
+            displayMessage(REMOVE_METADATA_CONTAINER_MSG)
             artifactGenerator.deleteContainer(RunTestTaskConstants.METADATA_CONTAINER_NAME)
         }
-        displayMessage("\tGenerating MetaData Container..")
+        displayMessage(GENERATE_METADATA_CONTAINER_MSG)
         Map containerResp = artifactGenerator.createContainer(RunTestTaskConstants.METADATA_CONTAINER_NAME)
         String containerId = containerResp["Id"]
         if (containerResp["isNew"]) {
             ArrayList<String> apexClassMemberId = []
-            displayMessage("\tGenerating Apex Class Members..")
+            displayMessage(GENERATE_APEX_CLASS_MEMBER_MSG)
             def processedClasses = 0
             testClassNameList.collate(100).each {
                 apexClassMemberId.addAll(artifactGenerator.createApexClassMember(containerId, it))
                 processedClasses += it.size()
-                displayMessage("\r\t\tProcessed ${processedClasses}/${testClassNameList.size()} elements")
+                displayMessage(sprintf(PROCESSED_ELEMENTS_MSG, [processedClasses, testClassNameList.size()]))
             }
-            displayMessage("\tGenerating Container Async Requester..")
+            displayMessage(GENERATE_CONTAINER_REQUESTER_MSG)
             String containerAsyncRequestId = artifactGenerator.createContainerAsyncRequest(containerId)
-            displayMessage("\tRequesting Symbol Tables..")
+            displayMessage(REQUEST_SYMBOL_TABLE_MSG)
             String requestStatus
-            String requestStatusQuery = sprintf( CONTAINER_ASYNC_REQUEST_QUERY, [containerAsyncRequestId])
+            String requestStatusQuery = sprintf(CONTAINER_ASYNC_REQUEST_QUERY, [containerAsyncRequestId])
             while (requestStatus != 'Completed') {
                 sleep(1000)
                 requestStatus = jsonSlurper.parseText(artifactGenerator.executeQuery(requestStatusQuery)).records[0].State.toString()
             }
-            displayMessage("\r\tRequesting Symbol Tables, done")
+            displayMessage(CONTAINER_ASYNC_REQUEST_DONE_QUERY)
         }
-        displayMessage("\tBuilding Tests/Classes mapping..")
-        String apexClassMemberQuery = sprintf( APEX_CLASS_MEMBER_QUERY, [containerId[0..14]])
+        displayMessage(BUILD_TESTCLASS_MAP_MSG)
+        String apexClassMemberQuery = sprintf(APEX_CLASS_MEMBER_QUERY, [containerId[0..14]])
         jsonSlurper.parseText(artifactGenerator.executeQuery(apexClassMemberQuery)).records.each { classMember ->
             classMember.SymbolTable.each() { symbolTableResult ->
                 symbolTableResult.every() { entry ->
@@ -127,17 +141,16 @@ class TestSelectorByReference extends TestSelector  {
 
         if (this.filesParameterValue) {
             if (!classAndTestMap) {
-                displayMessage("Building Apex class dependencies from SFDC")
+                displayMessage(BUILD_DEPENDENCIES_MSG)
                 buildReferences()
-                displayMessage("Building Apex class dependencies from SFDC, done")
+                displayMessage(BUILD_DEPENDENCIES_DONE_MSG)
             }
-            displayMessage("\n --- Test Class to run summary ---\n")
+            displayMessage(TEST_CLASSES_SUMMARY_MSG)
             classAndTestMap.keySet().each { className ->
                 this.filesParameterValue.tokenize(RunTestTaskConstants.FILE_SEPARATOR_SIGN).each { wildCard ->
                     //if (className.contains(wildCard)) { //TODO: maybe we can work for wildCards at this point - if (contains("*") || startsWidth("*) endsWidth("*)) -> .replace("*", "")
                     if (className == wildCard ) {
-                        displayMessage("Apex Class: ${className}")
-                        displayMessage("Related Test Class(es): ${classAndTestMap.get(className).unique()}\n")
+                        displayMessage(sprintf(APEX_CLASS_RELATED_TESTS_MSG, [className, classAndTestMap.get(className).unique().toString()]))
                         testClassList.addAll(classAndTestMap.get(className))
                     }
                 }
