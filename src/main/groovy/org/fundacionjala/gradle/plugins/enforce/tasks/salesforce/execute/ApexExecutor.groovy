@@ -18,7 +18,7 @@ class ApexExecutor extends SalesforceTask {
     private static final String DESCRIPTION_EXECUTE_TASK = "This task executes apex code from a file or inline code"
     private static final String UTILS_GROUP = "Utils"
     private static final String OUTPUT_RESULT = "Output result:\n"
-    private static final String INVALID_INPUT_PARAMETER = "parameter invalid"
+    private static final String INPUT_VALUE_IS_REQUIRED = "input' parameter is required, it cannot be empty"
     private ApexAPI apexAPI
     public String input
     public String output
@@ -36,10 +36,12 @@ class ApexExecutor extends SalesforceTask {
     @Override
     void runTask() {
         String resultExecute
+        if (input == null || input.isEmpty()) {
+            throw new Exception(INPUT_VALUE_IS_REQUIRED)
+        }
         if (new File(input).exists()) {
             resultExecute = apexAPI.executeApexFile(input)
         } else {
-
             resultExecute = apexAPI.executeApex(input)
         }
         if(output) {
@@ -64,10 +66,9 @@ class ApexExecutor extends SalesforceTask {
      */
     @Override
     void loadParameters() {
-        if (!Util.isValidProperty(parameters, APEX_CODE)) {
-            throw new Exception("${APEX_CODE} ${INVALID_INPUT_PARAMETER}")
+        if (Util.isValidProperty(parameters, APEX_CODE)) {
+            input = parameters[APEX_CODE].toString()
         }
-        input = parameters[APEX_CODE].toString()
 
         if (Util.isValidProperty(parameters, APEX_OUTPUT_FILE_PATH)) {
             output = parameters[APEX_OUTPUT_FILE_PATH].toString()

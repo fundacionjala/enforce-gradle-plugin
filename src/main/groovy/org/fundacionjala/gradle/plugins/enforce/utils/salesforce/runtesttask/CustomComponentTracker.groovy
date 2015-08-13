@@ -12,6 +12,7 @@ class CustomComponentTracker {
     public static Map<String, ResultTracker> customComponentTrackerMap
     static String fileTrackerName = '.customComponentTracker.data'
     private static String XML_EXTENSION = 'xml'
+    private static String PROJECT_DIRECTORY_DOES_NOT_EXIT = "doesn't exist!"
 
     CustomComponentTracker(String projectPath) {
         customComponentTrackerMap = [:]
@@ -41,6 +42,9 @@ class CustomComponentTracker {
      * @param projectPath is String type
      */
     public static void saveCustomComponent(String projectPath) {
+        if (!new File(projectPath).exists()) {
+            throw new Exception("${projectPath} ${PROJECT_DIRECTORY_DOES_NOT_EXIT}")
+        }
         String fileTrackerPath = Paths.get(projectPath, fileTrackerName)
         ComponentMonitor componentMonitor = new ComponentMonitor(projectPath, fileTrackerPath)
         ArrayList<File> components = getFilesFromProjectPath(projectPath)
