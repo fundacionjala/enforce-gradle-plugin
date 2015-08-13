@@ -2,7 +2,7 @@ package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.unittest
 
 class RunTestTaskConstants {
     protected static final String CLASS_PARAM = 'test'
-    protected static final String FILE_PARAM = 'file'
+    protected static final String FILE_PARAM = 'files'
     protected static final String REFRESH_PARAM = 'refreshMapping'
     protected static final String CLASS_DIRECTORY = 'classes'
     protected static final String WILDCARD_ALL_TEST = '*'
@@ -30,7 +30,7 @@ class RunTestTaskConstants {
     protected static final String ENTER_VALID_PARAMETER = "Enter valid parameter"
     protected static final String NOT_FOUND_ANY_CLASS = "Not found any class in your organization"
     protected static final String ALL_UNIT_TEST_WILL_BE_EXECUTED = "All unit test will be executed"
-    protected static final String TEST_CLASSES_WILL_BE_EXECUTED = "test classes will be executed"
+    protected static final String TEST_CLASSES_WILL_BE_EXECUTED = "test class(es) will be executed"
     protected static final String HOUR_FORMAT = "HH:mm:ss.SSS"
     protected static final String START_TIME = "Start time: %s"
     protected static final String FINISH_TIME = "Finish time: %s"
@@ -46,6 +46,6 @@ class RunTestTaskConstants {
     protected static final String WILD_CARD_SIGN = "*"
     protected static final String FILE_SEPARATOR_SIGN = ","
     protected static final String DESTINATION_PARAMETER = "destination"
-
+    protected static final String RUN_ALL_UPDATED_PARAM_VALUE = "allUpdated"
 }
 
