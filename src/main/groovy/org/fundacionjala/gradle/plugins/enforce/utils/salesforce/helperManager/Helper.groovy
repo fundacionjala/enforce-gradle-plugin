@@ -3,6 +3,7 @@ package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.helperManager
 import groovy.json.JsonSlurper
 import groovy.json.internal.LazyMap
 import groovy.util.logging.Log
+import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 
 @Log
 @Singleton
@@ -16,6 +17,7 @@ class Helper {
     public final String PARAMETERS = "parameters"
     public final String EXAMPLES = "examples"
     public final String DOCUMENTATION = "documentation"
+    public static int TWO = 2
     public static String WILDCARD_TASK = "*task*"
     public static String SPACE = "    "
     public static int maxLineSize = 80
@@ -56,55 +58,55 @@ class Helper {
 
         if(helper.tasks[taskName]) {
             DescriptionTask task = helper.tasks[taskName]
-            println(startLine.substring(0,maxLineSize))
-            println("")
-            printCenterln("${task.name} task")
-            println("")
-            println(startLine.substring(0,maxLineSize))
-            println("")
-            println("Description   :")
-            println(SPACE,task.description)
-            println("")
-            println("Documentation : ")
-            println(SPACE,task.documentation)
-            println("")
-            println("Parameters :")
+            printLine(startLine.substring(Constants.ZERO,maxLineSize))
+            printLine("")
+            printCenterLine("${task.name} task")
+            printLine("")
+            printLine(startLine.substring(Constants.ZERO,maxLineSize))
+            printLine("")
+            printLine("Description   :")
+            printLine(SPACE,task.description)
+            printLine("")
+            printLine("Documentation : ")
+            printLine(SPACE,task.documentation)
+            printLine("")
+            printLine("Parameters :")
 
             task.parameters.each {String parameterName ->
                 def parameter = helper.parameters[parameterName]
                 if(parameter) {
-                    println(SPACE,"-P${parameter.name} : ${parameter.description}")
+                    printLine(SPACE,"-P${parameter.name} : ${parameter.description}")
                     parameter.examples.each {String example->
                         example = example.replace(WILDCARD_TASK,parameterName)
-                        println("${SPACE}${SPACE}","> ${example}")
+                        printLine("${SPACE}${SPACE}","> ${example}")
                     }
                 }
                 else {
-                    println(SPACE,"-P${parameter} : This parameter dont have a description and examples.")
+                    printLine(SPACE,"-P${parameter} : This parameter dont have a description and examples.")
                 }
             }
         }
         else {
-            println(startLine.substring(0,maxLineSize))
-            printCenterln("${taskName} task don't have a help manual. ")
-            println(startLine.substring(0,maxLineSize))
+            printLine(startLine.substring(Constants.ZERO,maxLineSize))
+            printCenterLine("${taskName} task don't have a help manual. ")
+            printLine(startLine.substring(Constants.ZERO,maxLineSize))
         }
-        println("")
-        println(startLine.substring(0,maxLineSize))
+        printLine("")
+        printLine(startLine.substring(Constants.ZERO,maxLineSize))
     }
 
-    def  static println(String text) {
-        println("",text)
+    def static printLine(String text) {
+        printLine("",text)
     }
-    def  static printCenterln(String text) {
-        int halfspace = (maxLineSize-text.size())/2
-        def spaces = spaceLine.substring(0,halfspace)
-        println(spaces,text)
+    def static printCenterLine(String text) {
+        int halfspace = (maxLineSize-text.size())/TWO
+        def spaces = spaceLine.substring(Constants.ZERO,halfspace)
+        printLine(spaces,text)
     }
-    def  static println(String space,String text) {
+    def static printLine(String space,String text) {
         def lineSize = maxLineSize - space.size()
         while(text.size()>lineSize) {
-            log.println("${space}${text.substring(0,lineSize)} ")
+            log.println("${space}${text.substring(Constants.ZERO,lineSize)} ")
             text = text.substring(lineSize)
         }
         log.println("${space}${text}")
