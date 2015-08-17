@@ -41,8 +41,8 @@ class Retrieve extends Retrieval {
 
     @Override
     void runTask() {
-        loadFilesToRetrieve()
         verifyDestinationFolder()
+        loadFilesToRetrieve()
         ManagementFile.createDirectories(projectPath)
         Util.validateContentParameter(projectPath, files)
         !hasPackage() && !files ? retrieveWithoutPackageXml() : retrieveWithPackageXml()
