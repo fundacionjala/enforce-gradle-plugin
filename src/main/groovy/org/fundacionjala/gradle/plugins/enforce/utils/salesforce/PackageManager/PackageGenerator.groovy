@@ -5,6 +5,7 @@ import org.fundacionjala.gradle.plugins.enforce.filemonitor.ComponentStates
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ObjectResultTracker
 import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
+import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.OrgValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.filter.FilterSubcomponents
@@ -110,7 +111,9 @@ class PackageGenerator {
     public void buildDestructive(Writer writer) {
         ArrayList<File> files = getFiles(ComponentStates.DELETED) + getSubComponents(ComponentStates.DELETED)
         files = FilterSubcomponents.filter(files, project.enforce.deleteSubComponents, projectPath)
-        files = OrgValidator.getValidFiles(credential, files, projectPath)
+        if(!project.properties.get(Constants.PARAMETER_VALIDATE_ORG).equals(Constants.FALSE_OPTION)) {
+            files = OrgValidator.getValidFiles(credential, files, projectPath)
+        }
         packageBuilder.createPackage(files, projectPath)
         packageBuilder.write(writer)
     }
@@ -120,6 +123,10 @@ class PackageGenerator {
      * @param filteredFiles the filtered files
      */
     public void updateFileTracker(ArrayList<File> filteredFiles) {
+        if (fileTrackerMap == null) {
+            loadFileTrackerMap()
+            return
+        }
         Map<String, ResultTracker> fileTrackerMapClone = fileTrackerMap.clone() as Map<String, ResultTracker>
         fileTrackerMapClone.each { fileName, resultTracker ->
             File fileChanged = new File(fileName.toString())
@@ -130,5 +137,15 @@ class PackageGenerator {
                 fileTrackerMap.remove(fileName.toString())
             }
         }
+    }
+
+    /**
+     * Loads fileTrackerMap
+     */
+    private void loadFileTrackerMap() {
+        ManagementFile managementFile = new ManagementFile(projectPath)
+        ArrayList<File> sourceComponents = managementFile.getValidElements(projectPath, ['xml'])
+        componentMonitor.saveCurrentComponents(sourceComponents)
+        fileTrackerMap = componentMonitor.getComponentChanged(sourceComponents)
     }
 }

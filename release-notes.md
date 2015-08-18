@@ -1,3 +1,31 @@
+## 1.1.0 - 2015-08-18
+
+### Features
+
+* A new task was added to see all credentials from home directory.
+
+	    $gradle showCredentials
+
+* New parameter called "help" was added to see the parameters that are supported by task.
+
+	    $gradle <TASK_NAME> -Phelp
+
+### Bugs fixed
+
+* Once update task is executed and there isn't ".fileTracker.data" file in srcPath directory It shows an error.
+* Task with type: ApexExecutor finished with error "input parameter invalid".
+* Undeploy task fails when an SF object's field has a Default value referring to a SF object through a global variable like $Setup.
+
+### Enhancements
+
+* RunTest task - Test selector engine: It provides an engine to infer unit test classes according Apex class names by adding into the -Pfiles parameter, in order to reset the internal mapping used to infer each test class, there is a new param called ­-PrefreshMapping which takes a boolean value.
+* RunTest task - Choose target report folder: It provides a new parameter to specify a folder path to save the test results.
+
+### Known issues
+
+* Just the following sub components are validated: CustomField, RecordType,  CompactLayout, ValidationRule from a Salesforce org.
+* In the update task, During files filtering are not possible to exclude a deleted component.
+
 ## 1.0.9 - 2015-08-11
 
 ### Bugs fixed
@@ -89,7 +117,7 @@
 
 ### Features
 
-* There is an option to clean the temporary folders/files generated when tasks are executed. 
+* There is an option to clean the temporary folders/files generated when tasks are executed.
 Since now the build folder will be deleted after any operation unless the flag ***"deleteTemporaryFiles"*** is set to false, default value is true.
 
 * Improve status tasks report grouping and sorting results. When you run the task status, the list of files should be grouped by states, also it is possible to order by filename using the parameter ***"sort"***
@@ -98,7 +126,7 @@ Since now the build folder will be deleted after any operation unless the flag *
 
 * Undeploy task does not take in account the package.xml info for packaged objects.
 * Coverage report should be red when under 75%
-* Class name in unit test report is showing as null value 
+* Class name in unit test report is showing as null value
 * Upload/Deploy tasks don’t support Reports. Additionally. It supports documents and dashboards.
 
 
@@ -113,15 +141,15 @@ Since now the build folder will be deleted after any operation unless the flag *
 
 ### Features
 
-* Update task now is able to track custom fields, it uploads custom fields that were added, removed and updated.  This task only was able to track components like objects, classes, triggers, etc. 
+* Update task now is able to track custom fields, it uploads custom fields that were added, removed and updated.  This task only was able to track components like objects, classes, triggers, etc.
 
-It is able to track object elements like: 
+It is able to track object elements like:
 
 	custom fields, fields, fieldsets, compactLayouts, businessProcesses and validationRules.
-	
+
  Not supported elements:
- 
-	    actionOverrides, searchLayouts, sharingRecalculations	
+
+	    actionOverrides, searchLayouts, sharingRecalculations
 
 
 ### Enhancements

@@ -1,0 +1,72 @@
+{
+    "addCredential": {
+            "description": "This task adds a new credential into credentials.dat located in user home directory by default.",
+            "documentation": "http://fundacionjala.github.io/enforce-gradle-plugin/docs/credentials",
+            "parameters": ["id","username","password","token","sfdcType","type","location"]
+    },
+    "status": {
+            "description": "Shows files which have been added, modified or deleted",
+            "documentation": "http://fundacionjala.github.io/enforce-gradle-plugin/docs/file-monitor",
+            "parameters": ["sort"]
+    },
+    "installPackage": {
+            "description": "Installs a management package",
+            "documentation": "http://fundacionjala.github.io/enforce-gradle-plugin/docs/package-management",
+            "parameters": ["pkg.namespace","pkg.version","pkg.password"]
+    },
+    "uninstallPackage": {
+            "description": "Uninstalls a management package",
+            "documentation": "http://fundacionjala.github.io/enforce-gradle-plugin/docs/package-management",
+            "parameters": ["pkg.namespace"]
+    },
+    "update": {
+            "description": "Deploys changed code as: deleted code, added code and updated code",
+            "documentation": "http://fundacionjala.github.io/enforce-gradle-plugin/docs/update",
+            "parameters": ["folders","excludes","validation"]
+    },
+    "deploy": {
+            "description": "Deploys all code from your local code to Salesforce organization",
+            "documentation": "http://fundacionjala.github.io/enforce-gradle-plugin/docs/deployment",
+            "parameters": ["folders","excludes"]
+    },
+    "upload": {
+            "description": "Uploads your code from your local repository to SalesForce organization directly as it is",
+            "documentation": "http://fundacionjala.github.io/enforce-gradle-plugin/docs/deployment",
+            "parameters": ["files","excludes"]
+    },
+    "undeploy": {
+            "description": "Undeploys code from Salesforce organization",
+            "documentation": "http://fundacionjala.github.io/enforce-gradle-plugin/docs/undeploy",
+            "parameters": ["excludes"]
+    },
+    "retrieve": {
+            "description": "Download files from your organization is based on your .xml package",
+            "documentation": "http://fundacionjala.github.io/enforce-gradle-plugin/docs/retrieve",
+            "parameters": ["files","destination"]
+    },
+    "runTest": {
+           "description": "This task executes all unit test classes in your organization",
+           "documentation": "http://fundacionjala.github.io/enforce-gradle-plugin/docs/unit-test",
+           "parameters": ["async","test","file","refreshMapping","destination"]
+    },
+    "execute": {
+           "description": "Executes a code block of Apex using input parameter to set inline code and output parameter to set a file path and get results in this file",
+           "documentation": "http://fundacionjala.github.io/enforce-gradle-plugin/docs/utils",
+           "parameters": ["input","output"]
+    },
+    "truncate": {
+            "description": "This task truncates classes, objects, triggers, pages, components, workflows and tabs from your code",
+            "documentation": "fundacionjala.github.io/enforce-gradle-plugin/docs/truncate",
+            "parameters": ["files","excludes"]
+    },
+    "delete": {
+            "description": "Delete files that exist in our org",
+            "documentation": "fundacionjala.github.io/enforce-gradle-plugin/docs/delete",
+            "parameters": ["files","excludes","validation"]
+    },
+    "reset": {
+            "description": "File monitor tracker will be reset",
+            "documentation": "http://fundacionjala.github.io/enforce-gradle-plugin/docs/file-monitor/",
+            "parameters": []
+    },
+ }
