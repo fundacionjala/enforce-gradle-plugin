@@ -12,7 +12,7 @@
 
 ### Bugs fixed
 
-* Once update task is executed and there isn't .fileTracker.data file in srcPath directory It shows an error.
+* Once update task is executed and there isn't ".fileTracker.data" file in srcPath directory It shows an error.
 * Task with type: ApexExecutor finished with error "input parameter invalid".
 * Undeploy task fails when an SF object's field has a Default value referring to a SF object through a global variable like $Setup.
 
