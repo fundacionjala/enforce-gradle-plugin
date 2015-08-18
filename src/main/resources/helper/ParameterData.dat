@@ -29,7 +29,7 @@
         "examples": [
             "gradle *task* -Pfiles=classes/Class1.cls",
             "gradle *task* -Pfiles=classes/Class1.cls,classes/Class2.cls",
-            "gradle *task* -Pfiles=classes/*.cls,triggers/*.cls",
+            "gradle *task* -Pfiles=classes/*.cls,triggers/*.trigger",
             "gradle *task* -Pfiles=classes/**"
         ]
     },
@@ -45,7 +45,7 @@
         "examples": [
             "gradle *task* -Pexcludes=classes/Class1.cls",
             "gradle *task* -Pexcludes=classes/Class1.cls,classes/Class2.cls",
-            "gradle *task* -Pexcludes=classes/*.cls,triggers/*.cls",
+            "gradle *task* -Pexcludes=classes/*.cls,triggers/*.trigger",
             "gradle *task* -Pexcludes=classes/**"
         ]
     },
