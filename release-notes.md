@@ -1,3 +1,26 @@
+## 1.1.0 - 2015-08-18
+
+### Features
+
+* New task to see all credentials from home directory.
+* New parameter called help to see that parameters are supported by task.
+
+### Bugs fixed
+
+* Once update task is executed and there isn't .fileTracker.data file at srcPath It shows an error.
+* Task with type: ApexExecutor finished with error "input parameter invalid".
+* Undeploy task fails when an SF object's field has a Default value referring to a SF object through a global variable $Setup.
+
+### Enhancements
+
+* RunTest task - test selector engine: It was provided an engine to infer unit test classes according Apex class names by adding into the -Pfiles parameter, in order to reset the internal mapping used to infer each test class, there is a new param called ­-PrefreshMapping which takes a boolean value.
+* RunTest task - chose target report folder: It was provided a new param to specify a folder path in where save the test results.
+
+### Known issues
+
+* Just the following sub components are validated: CustomField, RecordType,  CompactLayout, ValidationRule.
+* In the update task, During file filtering is not possible to exclude a deleted component.
+
 ## 1.0.9 - 2015-08-11
 
 ### Bugs fixed
