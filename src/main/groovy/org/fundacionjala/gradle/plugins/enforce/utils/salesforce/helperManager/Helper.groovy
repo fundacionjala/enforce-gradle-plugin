@@ -77,7 +77,7 @@ class Helper {
                 if(parameter) {
                     printLine(SPACE,"-P${parameter.name} : ${parameter.description}")
                     parameter.examples.each {String example->
-                        example = example.replace(WILDCARD_TASK,parameterName)
+                        example = example.replace(WILDCARD_TASK,task.name)
                         printLine("${SPACE}${SPACE}","> ${example}")
                     }
                 }
