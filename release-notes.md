@@ -18,8 +18,8 @@
 
 ### Enhancements
 
-* RunTest task - test selector engine: It was provided an engine to infer unit test classes according Apex class names by adding into the -Pfiles parameter, in order to reset the internal mapping used to infer each test class, there is a new param called ­-PrefreshMapping which takes a boolean value.
-* RunTest task - chose target report folder: It was provided a new param to specify a folder path in where save the test results.
+* RunTest task - Test selector engine: It provides an engine to infer unit test classes according Apex class names by adding into the -Pfiles parameter, in order to reset the internal mapping used to infer each test class, there is a new param called ­-PrefreshMapping which takes a boolean value.
+* RunTest task - Choose target report folder: It provides a new parameter to specify a folder path to save the test results.
 
 ### Known issues
 
