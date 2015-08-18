@@ -43,3 +43,9 @@ Open the url: http://localhost:4000 on a browser
 
 Start changing the .md files, and refresh the browser in order to see changes
 
+## To work in localhost, update the _config.yml file with the localhost url
+
+Replace this line
+url:             "http://fundacionjala.github.io/enforce-gradle-plugin"
+By
+url:             "http://localhost:4000"
