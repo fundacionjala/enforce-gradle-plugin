@@ -129,20 +129,19 @@
             "gradle *task* -Plocation=project"
         ]
     },
-    "test": {
+    "tests": {
         "description": "Is used to choose specific test classes using wildcards",
         "examples": [
-            "gradle *task* ­Ptest=Test*",
-            "gradle *task* ­Ptest=TestClass1.cls"
+            "gradle *task* ­Ptests=Test*",
+            "gradle *task* ­Ptests=TestClass1.cls"
         ]
     },
-    "file": {
+    "files": {
         "description": "Used to enter Apex class names and infer their related test classes using an engine test selector",
         "examples": [
-            "gradle *task* -Pfile=Class1.cls",
-            "gradle *task* -Pfile=Class1.cls,Class2.cls",
-            "gradle *task* -Pfile=*",
-            "gradle *task* -Pfile=all"
+            "gradle *task* -Pfiles=Class1.cls",
+            "gradle *task* -Pfiles=Class1.cls,Class2.cls",
+            "gradle *task* -Pfiles=allUpdated"
         ]
     },
     "refreshMapping": {
