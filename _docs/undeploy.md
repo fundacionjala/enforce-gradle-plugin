@@ -149,6 +149,11 @@ This parameter can exclude files by:
     * -Pexcludes=\*\*/\*Account\*/**
     * -Pexcludes=\*\*/*.cls
 
+
+#### **Undeploy task help parameter**
+
+		$gradle truncate -Phelp
+
 ## **Examples:**
 
 ### **Using excludes parameter:**

@@ -53,7 +53,18 @@ This parameter can exclude files by:
         $ gradle update  -Pexcludes=objects/*.object
         $ gradle update  -Pexcludes=**/*Account*/**
         $ gradle update  -Pexcludes=**/*.cls
+        
+ 
+#### **Using validate parameter**
+Validates that files to deleted exist within their Org (Default value is false)
 
+		$gradle delete -Pvalidate=false
+
+#### **Using help parameter**
+A user can view the description and the parameters that contains the task by using the help
+
+		$gradle update -Phelp
+		
 ## Examples:
 
 ### without parameters:
