@@ -74,7 +74,7 @@
            "gradle *task* -Poutput=build/file.txt"
         ]
     },
-    "validation": {
+    "validate": {
         "description": "Validates that files to deleted exist within their Org",
         "examples": [
            "gradle *task* -Pvalidate=true",

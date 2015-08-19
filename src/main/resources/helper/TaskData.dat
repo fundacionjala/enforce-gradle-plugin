@@ -22,7 +22,7 @@
     "update": {
             "description": "Deploys changed code as: deleted code, added code and updated code",
             "documentation": "http://fundacionjala.github.io/enforce-gradle-plugin/docs/update",
-            "parameters": ["folders","excludes","validation"]
+            "parameters": ["folders","excludes","validate"]
     },
     "deploy": {
             "description": "Deploys all code from your local code to Salesforce organization",
@@ -62,7 +62,7 @@
     "delete": {
             "description": "Delete files that exist in our org",
             "documentation": "fundacionjala.github.io/enforce-gradle-plugin/docs/delete",
-            "parameters": ["files","excludes","validation"]
+            "parameters": ["files","excludes","validate"]
     },
     "reset": {
             "description": "File monitor tracker will be reset",
