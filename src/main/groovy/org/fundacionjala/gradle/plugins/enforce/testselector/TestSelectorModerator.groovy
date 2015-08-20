@@ -100,7 +100,6 @@ class TestSelectorModerator {
             } else {
                 this.testClassNameList = null
             }
-
         }
 
         if (this.testClassNameList && !this.testClassNameList.isEmpty()) {
