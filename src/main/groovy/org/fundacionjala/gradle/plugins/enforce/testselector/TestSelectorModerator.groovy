@@ -112,10 +112,10 @@ class TestSelectorModerator {
      * Returns all available test classes on demand
      */
     private ArrayList<String> getAllTestClassNameList() {
-        if (!allTestClassNameList) {
-            allTestClassNameList = getClassNames(pathClasses, RunTestTaskConstants.WILDCARD_ALL_TEST)
+        if (!this.allTestClassNameList) {
+            this.allTestClassNameList = getClassNames(this.pathClasses, RunTestTaskConstants.WILDCARD_ALL_TEST)
         }
-        return allTestClassNameList
+        return this.allTestClassNameList
     }
 
 }
