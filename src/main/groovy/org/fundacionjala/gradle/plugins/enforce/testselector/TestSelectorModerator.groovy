@@ -24,6 +24,7 @@ class TestSelectorModerator {
     private String pathClasses
     private IArtifactGenerator artifactGenerator
     private Boolean async
+    private ArrayList<String> allTestClassNameList
 
     /**
      * TestSelectorModerator class constructor
@@ -68,13 +69,11 @@ class TestSelectorModerator {
      * Collects and returns all test class names for each available TestSelector
      */
     public ArrayList<String> getTestClassNames() {
-        ArrayList<String> allTestClassNameList = getClassNames(pathClasses, RunTestTaskConstants.WILDCARD_ALL_TEST)
-
         if (Util.isEmptyProperty(project, RunTestTaskConstants.CLASS_PARAM)) {
             throw new Exception("${RunTestTaskConstants.ENTER_VALID_PARAMETER} "
                     + "${RunTestTaskConstants.CLASS_PARAM}")
         } else if (Util.isValidProperty(project, RunTestTaskConstants.CLASS_PARAM)) {
-            this.testClassNameList = (new TestSelectorByDefault(allTestClassNameList,
+            this.testClassNameList = (new TestSelectorByDefault(getAllTestClassNameList(),
                                         project.properties[RunTestTaskConstants.CLASS_PARAM].toString())).getTestClassNames()
         }
 
@@ -83,12 +82,12 @@ class TestSelectorModerator {
                     + "${RunTestTaskConstants.FILE_PARAM}")
         } else if (Util.isValidProperty(project, RunTestTaskConstants.FILE_PARAM)) {
             String fileParamValue = project.properties[RunTestTaskConstants.FILE_PARAM].toString()
-            if (this.testClassNameList.size() < allTestClassNameList.size()) {
+            if (this.testClassNameList.size() < getAllTestClassNameList().size()) {
                 Boolean refreshClassAndTestMap = false
                 if (project.properties.containsKey(RunTestTaskConstants.REFRESH_PARAM)) { //TODO: get this info from fileTraker[events: update, upload]
                     refreshClassAndTestMap = (project.properties[RunTestTaskConstants.REFRESH_PARAM].toString()).toBoolean()
                 }
-                ITestSelector selector = new TestSelectorByReference(Paths.get((project.enforce.srcPath as String)).toString(), allTestClassNameList,
+                ITestSelector selector = new TestSelectorByReference(Paths.get((project.enforce.srcPath as String)).toString(), getAllTestClassNameList(),
                                             this.artifactGenerator, fileParamValue, refreshClassAndTestMap)
                 selector.setLogger(logger)
                 this.testClassNameList.addAll(selector.getTestClassNames())
@@ -96,7 +95,7 @@ class TestSelectorModerator {
         }
         else if (!Util.isValidProperty(project, RunTestTaskConstants.CLASS_PARAM)) {
             if (this.async) {
-                this.testClassNameList = (new TestSelectorByDefault(allTestClassNameList, null)).getTestClassNames()
+                this.testClassNameList = (new TestSelectorByDefault(getAllTestClassNameList(), null)).getTestClassNames()
             } else {
                 this.testClassNameList = null
             }
@@ -107,6 +106,16 @@ class TestSelectorModerator {
         }
 
         return this.testClassNameList
+    }
+
+    /**
+     * Returns all available test classes on demand
+     */
+    private ArrayList<String> getAllTestClassNameList() {
+        if (!allTestClassNameList) {
+            allTestClassNameList = getClassNames(pathClasses, RunTestTaskConstants.WILDCARD_ALL_TEST)
+        }
+        return allTestClassNameList
     }
 
 }
