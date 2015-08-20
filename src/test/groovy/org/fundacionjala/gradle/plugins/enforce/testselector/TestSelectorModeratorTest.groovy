@@ -39,7 +39,7 @@ class TestSelectorModeratorTest extends Specification {
                 waitTime = 10
             }
         when:
-            TestSelectorModerator moderator = new TestSelectorModerator(project, null, SRC_CLASSES_PATH)
+            TestSelectorModerator moderator = new TestSelectorModerator(project, null, SRC_CLASSES_PATH, true)
             classNames = moderator.getTestClassNames()
         then:
             classNames.size() == 2
@@ -55,7 +55,7 @@ class TestSelectorModeratorTest extends Specification {
             }
         when:
             project.ext[RunTestTaskConstants.CLASS_PARAM] = "*Test*"
-            TestSelectorModerator moderator = new TestSelectorModerator(project, null, SRC_CLASSES_PATH)
+            TestSelectorModerator moderator = new TestSelectorModerator(project, null, SRC_CLASSES_PATH, false)
             classNames = moderator.getTestClassNames()
         then:
             classNames.size() == 2
@@ -71,7 +71,7 @@ class TestSelectorModeratorTest extends Specification {
             }
         when:
             project.ext[RunTestTaskConstants.CLASS_PARAM] = "FGW_APIFactoryTest.cls"
-            TestSelectorModerator moderator = new TestSelectorModerator(project, null, SRC_CLASSES_PATH)
+            TestSelectorModerator moderator = new TestSelectorModerator(project, null, SRC_CLASSES_PATH, false)
             classNames = moderator.getTestClassNames()
         then:
             classNames.size() == 1
@@ -88,7 +88,7 @@ class TestSelectorModeratorTest extends Specification {
         }
         when:
         project.ext[RunTestTaskConstants.FILE_PARAM] = "Class1.cls"
-        TestSelectorModerator moderator = new TestSelectorModerator(project, artifactGenerator, SRC_CLASSES_PATH)
+        TestSelectorModerator moderator = new TestSelectorModerator(project, artifactGenerator, SRC_CLASSES_PATH, false)
         classNames = moderator.getTestClassNames()
         then:
         classNames.size() == 1
@@ -105,7 +105,7 @@ class TestSelectorModeratorTest extends Specification {
         }
         when:
         project.ext[RunTestTaskConstants.FILE_PARAM] = "*"
-        TestSelectorModerator moderator = new TestSelectorModerator(project, artifactGenerator, SRC_CLASSES_PATH)
+        TestSelectorModerator moderator = new TestSelectorModerator(project, artifactGenerator, SRC_CLASSES_PATH, false)
         classNames = moderator.getTestClassNames()
         then:
         classNames.size() == 0
@@ -125,7 +125,7 @@ class TestSelectorModeratorTest extends Specification {
         classFile.write("some text")
         when:
         project.ext[RunTestTaskConstants.FILE_PARAM] = RunTestTaskConstants.RUN_ALL_UPDATED_PARAM_VALUE
-        TestSelectorModerator moderator = new TestSelectorModerator(project, artifactGenerator, SRC_CLASSES_PATH)
+        TestSelectorModerator moderator = new TestSelectorModerator(project, artifactGenerator, SRC_CLASSES_PATH, false)
         classNames = moderator.getTestClassNames()
         then:
         classNames.size() == 1
