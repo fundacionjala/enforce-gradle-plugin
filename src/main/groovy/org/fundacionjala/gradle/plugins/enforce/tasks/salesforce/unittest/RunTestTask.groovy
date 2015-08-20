@@ -108,7 +108,7 @@ class RunTestTask extends SalesforceTask {
         if (!pathClasses) { //TODO: remove or improve just for test purposes
             pathClasses = Paths.get((project.enforce.srcPath as String), "test").toString()
         }
-        TestSelectorModerator testModerator = new TestSelectorModerator(project, ((toolingAPI) ? toolingAPI.httpAPIClient : null), pathClasses)
+        TestSelectorModerator testModerator = new TestSelectorModerator(project, ((toolingAPI) ? toolingAPI.httpAPIClient : null), pathClasses, async)
         testModerator.setLogger(logger)
         classesToExecute = testModerator.getTestClassNames()
     }
