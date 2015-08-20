@@ -6,7 +6,8 @@ permalink: /docs/delete/
 ## Delete task
 
 #### **Objective**
-This task removes the components that exist in our  sales force organization
+This task removes the components that we have in our SalesForce organization, the components that will be removed should have no dependences.
+It is suggested to use the truncate task previously
 
 #### **Parameters**
 This task has four parameters called **excludes**, **files**, **validate** and **help**. 
@@ -15,11 +16,10 @@ This task has four parameters called **excludes**, **files**, **validate** and *
 
 #### **Without parameters**
 
-User can remove just components by default. If you want to run this task, you should write the next command:
+User can remove all components by default. If you want to run this task, you should write the next command:
 
 	$ gradle delete
 
-> **Note:** This command , when executed, remove all components in your organization.
 
 #### **Using files parameter**
 
@@ -32,21 +32,21 @@ A user can remove a files that you want.
 
 #### **Using excludes parameter**
 
-A user can remove files to organization excluding files by their name, by folders, or using wildcards.
+A user can remove files from an organization excluding files by their name, by folders, or using wildcards.
 
 This parameter can exclude files by:
 
- ***folder*** if you want to exclude a folder or folders, you should write the following parameter:
+ ***folder*** if you want to exclude a folder or folders, you should write the following parameters:
 
         $ gradle delete -Pexcludes=classes
         $ gradle delete -Pexcludes=classes,objects.
 
- ***file*** if you want to exclude a file or files, You should write the following parameter:
+ ***file*** if you want to exclude a file or files, You should write the following parameters:
 
         $ gradle delete -Pexcludes=classes/Class1.cls
         $ gradle delete -Pexcludes=classes/Class1.cls,objects/Object1__c.object
 
- ***wildcard*** if you want to exclude using wildcard, you should write the following parameter:
+ ***wildcard*** if you want to exclude using wildcard, you should write the following parameters:
 
         $ gradle delete -Pexcludes=classes/**
         $ gradle delete -Pexcludes=objects/*.object
@@ -171,7 +171,7 @@ Output:
 
 
 Using excludes parameter
-This commando delete all files excluding all classes.
+This command delete all files excluding all classes.
 
     $ gradle delete -Pexcludes=classes
 

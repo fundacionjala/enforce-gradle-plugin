@@ -119,7 +119,6 @@ Output:
     BUILD SUCCESSFUL
 ```
 
-
 ### Using excludes parameters
 This command deploys all files from your local respository excluding classes.
 
