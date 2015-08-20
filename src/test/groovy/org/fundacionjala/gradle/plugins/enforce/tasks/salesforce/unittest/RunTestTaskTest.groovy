@@ -78,7 +78,7 @@ class RunTestTaskTest extends Specification {
             classNames.sort() == ["FGW_Console_CTRLTest", "FGW_APIFactoryTest"].sort()
     }
 
-    def "Should get the class names no param"() {
+    def "Should get the class names no param, by default -Pasync=false"() {
         given:
             project.enforce {
                 srcPath = SRC_PATH
@@ -94,7 +94,7 @@ class RunTestTaskTest extends Specification {
             runTestTask.runTestSelector()
             classNames = runTestTask.getClassNames()
         then:
-            classNames.sort() == ["FGW_Console_CTRLTest", "FGW_APIFactoryTest"].sort()
+        classNames == null
     }
 
     def "Test should return the class name when notation is case insensitive"() {

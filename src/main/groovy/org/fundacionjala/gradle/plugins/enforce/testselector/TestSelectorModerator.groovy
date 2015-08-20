@@ -23,6 +23,7 @@ class TestSelectorModerator {
     private Logger logger
     private String pathClasses
     private IArtifactGenerator artifactGenerator
+    private Boolean async
 
     /**
      * TestSelectorModerator class constructor
@@ -30,10 +31,11 @@ class TestSelectorModerator {
      * @param artifactGenerator instance reference of the current HttpAPIClient
      * @param pathClasses class path location
      */
-    public TestSelectorModerator(Project project, IArtifactGenerator artifactGenerator, String pathClasses) {
+    public TestSelectorModerator(Project project, IArtifactGenerator artifactGenerator, String pathClasses, Boolean async) {
         this.project = project
         this.artifactGenerator = artifactGenerator
         this.pathClasses = pathClasses
+        this.async = async
     }
 
     /**
@@ -93,10 +95,19 @@ class TestSelectorModerator {
             }
         }
         else if (!Util.isValidProperty(project, RunTestTaskConstants.CLASS_PARAM)) {
-            this.testClassNameList = (new TestSelectorByDefault(allTestClassNameList, null)).getTestClassNames()
+            if (this.async) {
+                this.testClassNameList = (new TestSelectorByDefault(allTestClassNameList, null)).getTestClassNames()
+            } else {
+                this.testClassNameList = null
+            }
+
         }
 
-        return this.testClassNameList.unique()
+        if (this.testClassNameList && !this.testClassNameList.isEmpty()) {
+            this.testClassNameList.unique()
+        }
+
+        return this.testClassNameList
     }
 
 }
