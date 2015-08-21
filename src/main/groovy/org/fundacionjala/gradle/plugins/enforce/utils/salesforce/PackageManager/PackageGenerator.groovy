@@ -39,14 +39,12 @@ class PackageGenerator {
     }
 
     public void init(String projectPath, ArrayList<File> files, Credential credential, Project project) {
-
         this.projectPath = projectPath
         this.credential = credential
         this.project = project
         componentMonitor = new ComponentMonitor(projectPath)
         if (!componentMonitor.verifyFileMap()) {
             componentMonitor.saveCurrentComponents(files)
-            return
         }
         fileTrackerMap = componentMonitor.getComponentChanged(files)
     }
