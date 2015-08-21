@@ -141,8 +141,7 @@
         "examples": [
             "gradle *task* -Pfile=Class1.cls",
             "gradle *task* -Pfile=Class1.cls,Class2.cls",
-            "gradle *task* -Pfile=*",
-            "gradle *task* -Pfile=all"
+            "gradle *task* -Pfile=allUpdated"
         ]
     },
     "refreshMapping": {
