@@ -137,7 +137,7 @@ class Upload extends Deployment {
     */
     public void loadFilesChangedToUpload() {
         ArrayList<File> validatedFiles = fileManager.getValidElements(projectPath, excludeFilesToMonitor)
-        packageGenerator.init(projectPath, validatedFiles, credential)
+        packageGenerator.init(projectPath, validatedFiles, credential, project)
     }
 
     /**
