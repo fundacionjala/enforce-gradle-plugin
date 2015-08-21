@@ -1,3 +1,10 @@
+## 1.1.1 - 2015-08-21
+
+### Bugs fixed
+
+* Once upload task is executed and fileTracker files doesn't exist it shows an error message.
+* Jenkins report plugin shows code coverage 0% once runTest task is executed.
+
 ## 1.1.0 - 2015-08-18
 
 ### Features
