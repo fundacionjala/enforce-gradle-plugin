@@ -114,7 +114,7 @@ output:
 ### Using help parameter:
 
 Scenario:
-A user be able to  view the description and the parameters that contains the task by using the help.
+A user is able to view the description and the parameters that contains the task by using the help.
 
 command:
 
@@ -166,7 +166,7 @@ output:
 ### Using help parameter:
 
 Scenario:
-A user be able to  view the description and the parameters that contains the task by using the help.
+A user is able to  view the description and the parameters that contains the task by using the help.
 
 command:
 
