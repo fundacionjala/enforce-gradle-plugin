@@ -2,6 +2,7 @@
   docs:
   - home
   - quickstart
+  - code-build-gradle
   - installation
   - development
   - usage

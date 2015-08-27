@@ -12,7 +12,7 @@ relative_permalinks: true
 title:            EnForce
 tagline:          'EnForce tools for Salesforce'
 description:      'EnForce tools for Salesforce that helps on development and Continuous Integration for Salesforce projects.'
-url:             "http://fundacionjala.github.io/enforce-gradle-plugin"
+url:             "http://localhost:4000"
 baseurl:          "/"
 author:
   name:           'Fundacion Jala.'

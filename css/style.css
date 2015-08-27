@@ -1,0 +1,68 @@
+
+.table-quick-start-tutorials tr:nth-child(1) td {
+    font-size : 18px ;
+    font-weight: bold;
+    background-color: #6A9FB5;
+    color: #FFF;
+    text-align: center;
+}
+.table-quick-start-tutorials tr td:nth-child(1) {
+    font-weight: bold;
+    font-size : 18;
+    text-align: center;
+    width: 30px;
+}
+.table-quick-start-tutorials tr td:nth-child(2) {
+    font-weight: bold;
+    font-size : 16;
+    width: 220px;
+}
+.table-quick-start-tutorials tr td:nth-child(3) {
+    font-size : 14;
+}
+.table-quick-start-tutorials tr img {
+    width: 200px;
+    margin: 0px;
+}
+
+
+
+
+.table-quick-start-features tr:nth-child(1) td {
+    font-size : 18px ;
+    font-weight: bold;
+    background-color: #6A9FB5;
+    color: #FFF;
+    text-align: center;
+}
+.table-quick-start-features tr td:nth-child(1) {
+    font-weight: bold;
+    font-size : 16px;
+    text-align: left;
+    min-width: 150px;
+}
+.table-quick-start-features tr td:nth-child(2) {
+    text-align: left;
+    font-size : 14px;
+}
+
+
+
+
+.table-quick-start-build-gradle {
+    font-size : 16px;
+}
+.table-quick-start-build-gradle tr td:nth-child(1){
+    font-weight: bold;
+    width: 130px;
+}
+.table-quick-start-build-gradle tr:nth-child(1) td {
+    font-size : 18px ;
+    font-weight: bold;
+    background-color: #6A9FB5;
+    color: #FFF;
+}
+
+
+
+
