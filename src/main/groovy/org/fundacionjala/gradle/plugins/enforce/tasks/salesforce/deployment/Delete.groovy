@@ -45,7 +45,7 @@ class Delete extends Deployment {
         loadFilesToDelete()
         validateFilesInOrg()
         showFilesToDelete()
-        if( System.console().readLine("\n"+QUESTION_CONTINUE_DELETE) == Constants.YES_OPTION ) {
+        if(super.isIntegrationMode() || (System.console().readLine("\n"+QUESTION_CONTINUE_DELETE) == Constants.YES_OPTION) ) {
             createDestructive()
             createPackageEmpty()
             executeDeploy(taskFolderPath, START_DELETE_TASK, SUCCESSFULLY_DELETE_TASK)
