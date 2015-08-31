@@ -3,7 +3,17 @@ layout: gradle
 title: Quick start
 permalink: /docs/quickstart/
 ---
-### 1 Register credentials
+
+### 1 Installation
+
+Step | Links | Description
+1 | <a href="http://java.com/en/" target="_blank">Java JDK or JRE</a>| Install Java JDK or JRE, version 7 or higher
+2 | <a href="https://gradle.org/docs/current/userguide/installation.html" target="_blank">Gradle</a> | Install Gradle 2.0 version or higher
+3 | <a href="https://gradle.org/docs/current/userguide/build_environment.html" target="_blank">Configure Gradle</a> | Configure gradle if you are using a Proxy
+{: .table-quick-start-tutorials }
+
+
+### 2 Register credentials
 Enforce requires access to a Salesforce Organization, so you need to provide the credentials and Security Token for an user with System Administrator rights.
 Enforce provides a task for create credentials, which are stored on your home folder and can be encrypted also.
 
@@ -14,7 +24,7 @@ Step | Examples | Description
 4 | ![Con titulo](../../img/quick_start/credential-step-3.png ) | **View SalesForce credential** <br>A file is created in the  ./home folder with yours credentials . <br>
 {: .table-quick-start-tutorials }
 
-### 2 Retrive your code
+### 3 Retrive your code
 
 This task download files from your organization is based on your .xml package. If this file is missing, the system downloads files by default.
 
@@ -24,7 +34,7 @@ Step | Examples | Description
 3 | ![Con titulo](../../img/quick_start/retrieve-task-3.png ) | **Results** <br>This task download files from your organization is based on your .xml package. If this file is missing, the system downloads files by default.<br> - objects<br> - staticresources<br> - classes<br> - pages<br> - triggers<br> - components <br><br> For more information about the *package.xml* file see the following link <br> [package.xml information](https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/manifest_samples.htm)
 {: .table-quick-start-tutorials }
 
-### 3 Deploy your code
+### 4 Deploy your code
 
 This task deploys all code from your local code to Salesforce organization, for this as a first step It truncates your local code and deploys those files truncated to Salesforce organization, as second step It deploys your local code to SatesForce organization.
 
@@ -34,7 +44,7 @@ Step | Examples | Description
 {: .table-quick-start-tutorials }
 
 
-### 4 Update your code
+### 5 Update your code
 
 This task just deploys changed code as: deleted code, added code and updated code, for example if you changed a class called MyClass.cls and you deleted a trigger called MyTrigger.trigger This deletes MyTrigger.trigger and it updates MyClass.cls according file tracker in your organization.
 
@@ -94,17 +104,13 @@ Task | Description
 <a href="{{ site.url }}/docs/utils/" target="_blank">execute</a> | This task is able to execute code apex. |
 {: .table-quick-start-features }
 
-#### Help tasks
+### Development
+Here you can find required information  that is enough to have a Gradle project with Enforce running. If you are interested in developing new features  or just compile and pack the source code, you will have helpful information  at <a href="{{ site.url }}/docs/development/" target="_blank">Development</a> page
 
-Task | Description 
-Tasks | Displays the tasks runnable from the root project ‘user’. |
-Dependencies | Displays all dependencies declared in the root project ‘user’. |
-DependencyInsight | Displays an insight into a specific dependency in the root project ‘user’. |
-Help | Displays a help message |
-Projects | Displays the sub-projects of the root project ‘user’. |
-Properties | Displays the properties of the root ‘user’ |
-{: .table-quick-start-features }
-
+<br>
+<br>
+<br>
+<br>
 <br>
 <br>
 <br>
