@@ -176,7 +176,7 @@ class Retrieve extends Retrieval {
      */
     void showWarningMessage() {
         File[] arrayFiles = Util.getFiles(new File(projectPath))
-        if (arrayFiles.size() > Constants.ZERO && all == Constants.FALSE) {
+        if (!super.isIntegrationMode() && (arrayFiles.size() > Constants.ZERO) && all == Constants.FALSE) {
             logger.error(RETRIEVE_MESSAGE_WARNING)
             option = System.console().readLine("  ${RETRIEVE_QUESTION_TO_CONTINUE}")
         } else {
