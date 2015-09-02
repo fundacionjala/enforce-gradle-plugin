@@ -13,7 +13,7 @@ class FilterTest extends Specification{
         Filter filter
     @Shared
         String SRC_PATH = Paths.get(System.getProperty("user.dir"), "src", "test", "groovy", "org",
-            "fundacionjala", "gradle", "plugins","enforce","tasks", "salesforce", "resources").toString()
+            "fundacionjala", "gradle", "plugins","enforce","utils", "resources").toString()
     @Shared
         Project project
     @Shared
@@ -141,7 +141,7 @@ class FilterTest extends Specification{
 
     def "Test should return all classes from project path"() {
         given:
-            String includes =  'classes'
+            String includes = "classes"
             String excludes = ""
         when:
             ArrayList<File> result = filter.getFiles(includes, excludes)

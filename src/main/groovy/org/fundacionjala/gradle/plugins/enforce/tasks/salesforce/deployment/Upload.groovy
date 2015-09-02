@@ -96,7 +96,7 @@ class Upload extends Deployment {
      * Shows a warning message to upload all files to org
      */
     public void showWarningMessage() {
-        if (all == Constants.FALSE && files.isEmpty()  && excludes.isEmpty()) {
+        if (!super.isIntegrationMode() && (all == Constants.FALSE) && files.isEmpty()  && excludes.isEmpty()) {
             logger.warn("${ALL_FILES_UPLOAD}${projectPath}")
             option = System.console().readLine(QUESTION_CONTINUE)
         }
