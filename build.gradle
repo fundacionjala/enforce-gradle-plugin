@@ -29,10 +29,6 @@ build.doLast {
     uploadArchives.execute()
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.0'
-}
-
 cobertura {
     coverageFormats << "xml"
     coverageSourceDirs << project.sourceSets.main.groovy.srcDirs

@@ -1,6 +1,5 @@
 language: groovy
 before_install:
-  - gradle wrapper
   - sudo chmod +x run-publish.sh
 jdk:
   - oraclejdk7
