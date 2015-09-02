@@ -57,17 +57,21 @@ public class BasicOrgComponentsValidator implements OrgInterfaceValidator{
         QueryBuilder queryBuilder = new QueryBuilder()
         JsonSlurper jsonSlurper = new JsonSlurper()
 
+        def component = MetadataComponents.getComponent(folderComponent)
         ArrayList<File> orgFiles = []
-        def typeComponent = MetadataComponents.getComponent(folderComponent).getTypeName()
-        def extensionComponent = MetadataComponents.getComponent(folderComponent).getExtension()
-        def sqlString = queryBuilder.createQueryFromBasicComponent(typeComponent)
-        def resultSet =  toolingAPI.httpAPIClient.executeQuery(sqlString)
-        def jsonResulSet = jsonSlurper.parseText(resultSet as String)
+        if(component != null) {
+            def typeComponent = component.getTypeName()
+            def extensionComponent = component.getExtension()
+            def sqlString = queryBuilder.createQueryFromBasicComponent(typeComponent)
+            def resultSet =  toolingAPI.httpAPIClient.executeQuery(sqlString)
+            def jsonResulSet = jsonSlurper.parseText(resultSet as String)
 
-        for(def i = 0; i < jsonResulSet.records.size(); i++) {
-            def nameFile = "${jsonResulSet.records[i]['Name']}.${extensionComponent}"
-            orgFiles.add(new File(Paths.get(projectPath,folderComponent, nameFile ).toString()))
+            for(def i = 0; i < jsonResulSet.records.size(); i++) {
+                def nameFile = "${jsonResulSet.records[i]['Name']}.${extensionComponent}"
+                orgFiles.add(new File(Paths.get(projectPath,folderComponent, nameFile ).toString()))
+            }
         }
+
         return orgFiles
     }
 }

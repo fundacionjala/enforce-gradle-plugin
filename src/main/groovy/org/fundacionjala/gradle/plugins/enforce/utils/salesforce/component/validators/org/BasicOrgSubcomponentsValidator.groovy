@@ -73,18 +73,27 @@ public class BasicOrgSubcomponentsValidator implements OrgInterfaceValidator{
      */
     public boolean existFileInOrg(Credential credential, File filesToValidate, String typeSubcomponent) {
         ToolingAPI toolingAPI = new ToolingAPI(credential)
-        def typeComponent = MetadataComponents.getComponent(typeSubcomponent).getTypeName()
-        def extensionComponent = MetadataComponents.getComponent(typeSubcomponent).getExtension()
+        def existSubcomponent = false
+        def component = MetadataComponents.getComponent(typeSubcomponent)
 
-        def sqlString = queryBuilder.createQueryGetSubomponent(typeComponent, filesToValidate)
-        def resultSet =  toolingAPI.httpAPIClient.executeQuery(sqlString)
-        def jsonResulSet = jsonSlurper.parseText(resultSet as String)
-        for(def i = 0; i < jsonResulSet.records.size(); i++) {
-            String fullName = "${jsonResulSet.records[i]['FullName']}.${extensionComponent}"
-            if(fullName.equals(filesToValidate.getName())) {
-                return true
+        if(component != null) {
+            def typeComponent = component.getTypeName()
+            def extensionComponent = component.getExtension()
+
+            def sqlString = queryBuilder.createQueryGetSubomponent(typeComponent, filesToValidate)
+            def resultSet =  toolingAPI.httpAPIClient.executeQuery(sqlString)
+            def jsonResulSet = jsonSlurper.parseText(resultSet as String)
+            for(def i = 0; i < jsonResulSet.records.size(); i++) {
+                String fullName = "${jsonResulSet.records[i]['FullName']}.${extensionComponent}"
+                if(fullName.equals(filesToValidate.getName())) {
+                    existSubcomponent = true
+                }
             }
         }
-        return false
+        else {
+            existSubcomponent = true
+        }
+
+        return existSubcomponent
     }
 }
