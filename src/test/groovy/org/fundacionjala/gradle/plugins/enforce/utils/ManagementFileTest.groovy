@@ -127,14 +127,12 @@ class ManagementFileTest extends Specification {
             def pathDeploy = Paths.get(targetPath, 'deploy').toString()
             new File(pathDeploy).mkdir()
             def pathClass1 = Paths.get(pathDeploy, 'classes', 'class1.cls').toString()
-            def pathOther = Paths.get(pathDeploy, 'classes', 'other.data').toString()
 
             def pathAccount = Paths.get(pathDeploy, 'objects', 'Account.object').toString()
             def pathObject1 = Paths.get(pathDeploy, 'objects', 'Object1__c.object').toString()
             def pathPackage = Paths.get(pathDeploy, 'package.xml').toString()
 
             ArrayList<File> arrayFile = [new File(Paths.get(pathFrom, 'classes', 'class1.cls').toString()),
-                                         new File(Paths.get(pathFrom, 'classes', 'other.data').toString()),
                                          new File(Paths.get(pathFrom, 'objects', 'Account.object').toString()),
                                          new File(Paths.get(pathFrom, 'objects', 'Object1__c.object').toString()),
                                          new File(Paths.get(pathFrom, 'package.xml').toString()),]
@@ -143,14 +141,11 @@ class ManagementFileTest extends Specification {
             managementFile.copy(pathFrom, arrayFile, pathDeploy)
         then:
             File fileClass = new File(pathClass1)
-            File fileOther = new File(pathOther)
             File fileAccount = new File(pathAccount)
             File fileObject1 = new File(pathObject1)
             File filePackage = new File(pathPackage)
             fileClass.exists()
             fileClass.isFile()
-            fileOther.exists()
-            fileOther.isFile()
             fileAccount.exists()
             fileAccount.isFile()
             fileObject1.exists()
@@ -158,6 +153,7 @@ class ManagementFileTest extends Specification {
             filePackage.exists()
             filePackage.isFile()
             new File(pathDeploy).deleteDir()
+        true
     }
 
     def "Test copy from array file that contains sub folders to target path"() {
@@ -167,7 +163,6 @@ class ManagementFileTest extends Specification {
             def pathDeploy = Paths.get(targetPath, 'deploy').toString()
             new File(pathDeploy).mkdir()
             def pathClass1 = Paths.get(pathDeploy, 'classes', 'class1.cls').toString()
-            def pathOther = Paths.get(pathDeploy, 'classes', 'other.data').toString()
 
             def pathAccount = Paths.get(pathDeploy, 'objects', 'Account.object').toString()
             def pathObject1 = Paths.get(pathDeploy, 'objects', 'Object1__c.object').toString()
@@ -177,7 +172,6 @@ class ManagementFileTest extends Specification {
             def pathPackage = Paths.get(pathDeploy, 'package.xml').toString()
 
             ArrayList<File> arrayFile = [new File(Paths.get(pathFrom, 'classes', 'class1.cls').toString()),
-                                         new File(Paths.get(pathFrom, 'classes', 'other.data').toString()),
                                          new File(Paths.get(pathFrom, 'objects', 'Account.object').toString()),
                                          new File(Paths.get(pathFrom, 'objects', 'Object1__c.object').toString()),
                                          new File(Paths.get(pathFrom, 'reports', 'testFolder', 'testReport.report').toString()),
@@ -187,9 +181,7 @@ class ManagementFileTest extends Specification {
         when:
             managementFile.copy(pathFrom, arrayFile, pathDeploy)
         then:
-
             new File(pathClass1).exists()
-            new File(pathOther).exists()
             new File(pathAccount).exists()
             new File(pathObject1).exists()
             new File(pathPackage).exists()
