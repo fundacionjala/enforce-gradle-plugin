@@ -83,7 +83,7 @@ Reports
 ### Enforce code coverage and test result report
 * Summary, contains charts with the coverage and test results.
 * Unit Test, contains unit test execution results and also it has options to filter its results.
-* Coverage, contains a list of all clases categorized by coverage status(Danger, Risk, Acceptable, Safe) and also it is possible to review the covered and uncovered lines by file.
+* Coverage, contains a list of all classes categorized by coverage status(Danger, Risk, Acceptable, Safe) and also it is possible to review the covered and uncovered lines by file(click on file name).
 
 *Configuration*
 * Select your job.
