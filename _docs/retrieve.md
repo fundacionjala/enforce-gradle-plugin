@@ -97,6 +97,11 @@ When you use destination parameter you can use a relative or absolute path.
 
 >If you want to see only the retrieved files, you can find them on a build folder as a zip file with the name zipRecovered.zip
 
+
+#### **Using help parameter**
+
+		$gradle truncate -Phelp
+		
 ## Examples
 
 ### Without parameters
@@ -206,3 +211,37 @@ output:
 
     BUILD SUCCESSFUL
 ```
+
+
+Using help parameter
+
+    $ gradle delete -Phelp
+
+Output:
+
+    **************************************************************************
+    
+                                  retrieve task
+    
+    **************************************************************************
+    
+    Description   :
+        Download files from your organization is based on your .xml package
+    
+    Documentation : 
+        http://fundacionjala.github.io/enforce-gradle-plugin/docs/retrieve
+    
+    Parameters :
+        -Pfiles : Select which files will be executed by the process
+            > gradle retrieve -Pfiles=classes/Class1.cls
+            > gradle retrieve -Pfiles=classes/Class1.cls,classes/Class2.cls
+            > gradle retrieve -Pfiles=classes/*.cls,triggers/*.trigger
+            > gradle retrieve -Pfiles=classes/**
+        -Pdestination : Choose a directory in where save the run test results, 
+        by default they are saved in build/report directory
+            > gradle retrieve -Pdestination=/home/temporalReports/
+    
+    **************************************************************************
+    
+    BUILD SUCCESSFUL
+

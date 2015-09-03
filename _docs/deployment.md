@@ -61,6 +61,11 @@ User can deploy code excluding some files using **excludes** parameter.
     $ gradle deploy  -Pexcludes=objects/*.object
     $ gradle deploy  -Pexcludes=**/*Account*/**
     $ gradle deploy  -Pexcludes=**/*.cls
+    
+#### **Using help parameter**
+A user can view the description and the parameters that contains the task by using the help
+
+		$gradle deploy -Phelp
 
 ## Examples:
 
@@ -185,6 +190,40 @@ Output:
 
     BUILD SUCCESSFUL
 ```
+
+
+
+Using help parameter
+
+    $ gradle delete -Phelp
+
+Output:
+
+    **********************************************************************
+    
+                                   deploy task
+    
+    **********************************************************************
+    
+    Description   :
+        Deploys all code from your local code to Salesforce organization
+    
+    Documentation : 
+        http://fundacionjala.github.io/enforce-gradle-plugin/docs/deployment
+    
+    Parameters :
+        -Pfolders : Select which folders will be executed by the process
+            > gradle deploy -Pfolders=classes
+            > gradle deploy -Pfolders=classes,triggers,objects
+        -Pexcludes : Select which files they will be ignored by the process
+            > gradle deploy -Pexcludes=classes/Class1.cls
+            > gradle deploy -Pexcludes=classes/Class1.cls,classes/Class2.cls
+            > gradle deploy -Pexcludes=classes/*.cls,triggers/*.trigger
+            > gradle deploy -Pexcludes=classes/**
+    
+    **********************************************************************
+    
+    BUILD SUCCESSFUL
 
 ## Upload task
 
@@ -430,6 +469,44 @@ Output:
 
     BUILD SUCCESSFUL
 ```
+
+
+### Using help parameter
+
+    $ gradle upload -Phelp
+
+Output:
+    
+    **************************************************************************
+    
+                                   upload task
+    
+    **************************************************************************
+    
+    Description   :
+        Uploads your code from your local repository to SalesForce 
+        organization directly as it is
+    
+    Documentation : 
+        http://fundacionjala.github.io/enforce-gradle-plugin/docs/deployment
+    
+    Parameters :
+        -Pfiles : Select which files will be executed by the process
+            > gradle upload -Pfiles=classes/Class1.cls
+            > gradle upload -Pfiles=classes/Class1.cls,classes/Class2.cls
+            > gradle upload -Pfiles=classes/*.cls,triggers/*.trigger
+            > gradle upload -Pfiles=classes/**
+        -Pexcludes : Select which files they will be ignored by the process
+            > gradle upload -Pexcludes=classes/Class1.cls
+            > gradle upload -Pexcludes=classes/Class1.cls,classes/Class2.cls
+            > gradle upload -Pexcludes=classes/*.cls,triggers/*.trigger
+            > gradle upload -Pexcludes=classes/**
+    
+    **************************************************************************
+    
+    BUILD SUCCESSFUL
+
+
 
 ## Limitations of Upload task
 

@@ -231,14 +231,15 @@ Using help parameter
 Output:
 
 	:truncate
-	**********************************************************************
+	*******************************************************************
 
-	                           truncate task
+	                         truncate task
 
-	**********************************************************************
+	*******************************************************************
 
 	Description :
-	  This task truncates classes, objects, triggers, pages, components, workflows and tabs from your code
+	  This task truncates classes, objects, triggers, pages, components, 
+	  workflows and tabs from your code
 
 	Documentation :
 	    fundacionjala.github.io/enforce-gradle-plugin/docs/truncate
@@ -255,7 +256,7 @@ Output:
 	     > gradle truncate excludes -Pexcludes=classes/*.cls,*/*.trigger
 	     > gradle truncate excludes -Pexcludes=classes/**
 
-	**********************************************************************
+	*******************************************************************
 
 	BUILD SUCCESSFUL
 
