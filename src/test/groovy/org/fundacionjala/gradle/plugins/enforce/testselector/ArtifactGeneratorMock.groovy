@@ -14,7 +14,7 @@ class ArtifactGeneratorMock implements IArtifactGenerator {
         if (soql.contains("ContainerAsyncRequest")) {
             queryResult = '{"records": [{"State": "Completed"}]}'
         } else if (soql.contains("ApexClassMember")) {
-            queryResult = '{"records":[{"SymbolTable": [{"externalReferences": [{"namespace":"", "name":"Class1"}]}], "FullName":"TestClass1"}]}'
+            queryResult = '{"records":[{"SymbolTable": [{"externalReferences": [{"namespace":"", "name":"Class2"}]}], "FullName":"TestClass2"}]}'
         }
         return queryResult
     }

@@ -87,7 +87,7 @@ class TestSelectorModeratorTest extends Specification {
             waitTime = 10
         }
         when:
-        project.ext[RunTestTaskConstants.FILE_PARAM] = "Class1.cls"
+        project.ext[RunTestTaskConstants.FILE_PARAM] = "Class2.cls"
         TestSelectorModerator moderator = new TestSelectorModerator(project, artifactGenerator, SRC_CLASSES_PATH, false)
         classNames = moderator.getTestClassNames()
         then:
@@ -121,7 +121,7 @@ class TestSelectorModeratorTest extends Specification {
             waitTime = 10
         }
         CustomComponentTracker customComponentTracker = new CustomComponentTracker(SRC_PATH)
-        File classFile = new File(Paths.get(SRC_PATH, 'classes', 'Class1.cls').toString())
+        File classFile = new File(Paths.get(SRC_PATH, 'classes', 'Class2.cls').toString())
         classFile.write("some text")
         when:
         project.ext[RunTestTaskConstants.FILE_PARAM] = RunTestTaskConstants.RUN_ALL_UPDATED_PARAM_VALUE
@@ -133,6 +133,6 @@ class TestSelectorModeratorTest extends Specification {
 
     def cleanupSpec() {
         new File(Paths.get(SRC_PATH, '.customComponentTracker.data').toString()).delete()
-        new File(Paths.get(SRC_PATH, 'classes', 'Class1.cls').toString()).delete()
+        new File(Paths.get(SRC_PATH, 'classes', 'Class2.cls').toString()).delete()
     }
 }
