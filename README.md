@@ -63,6 +63,39 @@ This credential will be saved in credentials.dat file located in user HOME direc
 Now you can start using all the Enforce features.
 
 ---
+Reports
+---
+- These reports are generated on `{PROJECT_FOLDER}/build/report/` after execute `gradle runTest` command.
+- They are able to be integration with Jenkins enviroments
+
+### JUnit test result report
+*Configuration*
+ * Select your job.
+ * Go to ``Configure`` -> ``Add post-build action``
+ * Select ``Publish JUnit test result report`` option
+
+![Unit test result configuration](https://cloud.githubusercontent.com/assets/8682892/9668384/322f9e9a-524f-11e5-8664-a47427821371.png)
+
+*Review*
+
+![Unit test result preview](https://cloud.githubusercontent.com/assets/8682892/9668395/423cc2e0-524f-11e5-94c6-dffcd836b0dd.png)
+
+### Enforce code coverage and test result report
+* Summary, contains charts with the coverage and test results.
+* Unit Test, contains unit test execution results and also it has options to filter its results.
+* Coverage, contains a list of all classes categorized by coverage status(Danger, Risk, Acceptable, Safe) and also it is possible to review the covered and uncovered lines by file(click on file name).
+
+*Configuration*
+* Select your job.
+ * Go to ``Configure`` -> ``Add post-build action``
+ * Select ``Publish HTML reports`` option
+
+![Code coverage result configuration](https://cloud.githubusercontent.com/assets/8682892/9668401/477f41ec-524f-11e5-95b9-1b004d5616d8.png)
+
+*Review*
+![Enforce code coverage and test result report preview](https://cloud.githubusercontent.com/assets/8682892/9668406/4d35753e-524f-11e5-938b-9d9edcc79435.png)
+
+---
 Development
 ---
 
