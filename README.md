@@ -76,7 +76,7 @@ Reports
 
 ![Unit test result configuration](https://cloud.githubusercontent.com/assets/8682892/9668384/322f9e9a-524f-11e5-8664-a47427821371.png)
 
-*Review*
+*Preview*
 
 ![Unit test result preview](https://cloud.githubusercontent.com/assets/8682892/9668395/423cc2e0-524f-11e5-94c6-dffcd836b0dd.png)
 
@@ -92,7 +92,7 @@ Reports
 
 ![Code coverage result configuration](https://cloud.githubusercontent.com/assets/8682892/9668401/477f41ec-524f-11e5-95b9-1b004d5616d8.png)
 
-*Review*
+*Preview*
 ![Enforce code coverage and test result report preview](https://cloud.githubusercontent.com/assets/8682892/9668406/4d35753e-524f-11e5-938b-9d9edcc79435.png)
 
 ---
