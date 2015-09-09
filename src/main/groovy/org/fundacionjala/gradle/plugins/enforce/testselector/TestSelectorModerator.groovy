@@ -15,6 +15,7 @@ import org.gradle.api.file.FileTree
 import org.gradle.api.logging.Logger
 
 import java.nio.file.Paths
+import java.util.concurrent.ExecutionException
 
 class TestSelectorModerator {
 
@@ -90,7 +91,12 @@ class TestSelectorModerator {
                 ITestSelector selector = new TestSelectorByReference(Paths.get((project.enforce.srcPath as String)).toString(), getAllTestClassNameList(),
                                             this.artifactGenerator, fileParamValue, refreshClassAndTestMap)
                 selector.setLogger(logger)
-                this.testClassNameList.addAll(selector.getTestClassNames())
+                ArrayList<String> testClassNames = selector.getTestClassNames()
+                if (testClassNames.isEmpty() && fileParamValue != RunTestTaskConstants.WILD_CARD_SIGN &&
+                        fileParamValue != RunTestTaskConstants.RUN_ALL_UPDATED_PARAM_VALUE) {
+                    throw new Exception("${RunTestTaskConstants.THERE_ARE_NOT_TEST_CLASSES} ${fileParamValue}")
+                }
+                this.testClassNameList.addAll(testClassNames)
             }
         }
         else if (!Util.isValidProperty(project, RunTestTaskConstants.CLASS_PARAM)) {
