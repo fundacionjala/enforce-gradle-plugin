@@ -47,6 +47,8 @@ public class Constants {
     public static final String SLASH = '/'
     public static final String BACK_SLASH = '\\\\'
     public static final String EMPTY = ""
+    public static final String SEPARATOR = "___________________________________________"
+    public static final String LINE_SEPARATOR = "\n${SEPARATOR}\n"
 
     public static final String OBJECT_EXTENSION = 'object'
     public static final String OBJECTS_FOLDER = 'objects'
