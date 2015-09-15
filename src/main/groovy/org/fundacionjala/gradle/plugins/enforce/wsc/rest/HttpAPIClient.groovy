@@ -8,6 +8,8 @@ package org.fundacionjala.gradle.plugins.enforce.wsc.rest
 import groovy.json.JsonSlurper
 import groovyx.net.http.HTTPBuilder
 
+import java.nio.charset.StandardCharsets
+
 import static groovyx.net.http.ContentType.JSON
 import static groovyx.net.http.ContentType.TEXT
 import static groovyx.net.http.Method.DELETE
@@ -166,9 +168,10 @@ class HttpAPIClient implements IArtifactGenerator {
             Object resultJson = jsonSlurper.parseText(executeQuery(sprintf(SELECT_APEX_CLASS_QUERY, [classNameList.join("', '")])))
             if(resultJson.records.size() > 0) {
                 resultJson.records.each { classRecord ->
+                    String bodyContent = new String(classRecord.Body.toString().getBytes("ISO-8859-1"), StandardCharsets.UTF_8.displayName())
                     http.request(POST, JSON) {
                         uri.path = PATH_APEXCLASSMEMBER_CONTAINER
-                        body = [ContentEntityId: classRecord.Id, Body: classRecord.Body, MetadataContainerId: containerId] //TODO: is it possible send all in one?
+                        body = [ContentEntityId: classRecord.Id, Body: bodyContent, MetadataContainerId: containerId] //TODO: is it possible send all in one?
                         headers.Authorization = authorization
                         response.success = { resp, json ->
                             apexClassMember.add(jsonSlurper.parseText(json.toString(TEXT_FORMAT)).id.toString())

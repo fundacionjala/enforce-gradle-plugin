@@ -153,8 +153,8 @@ class RunTestTask extends SalesforceTask {
 
         logger.log(LogLevel.INFO, "${RunTestTaskConstants.TOTAL_TIME}  $timeResult")
 
-        if (runTestResult && runTestResult.failures && runTestResult.failures.size() > RunTestTaskConstants.ZERO_NUMBER) {
-            logger.log(LogLevel.LIFECYCLE, "${TEST_MESSAGE}:\n")
+        if (runTestResult && runTestResult.numFailures && runTestResult.numFailures > RunTestTaskConstants.ZERO_NUMBER) {
+            logger.log(LogLevel.LIFECYCLE, "${TEST_MESSAGE}:")
         }
 
         runTestResult.failures.each { testFailures ->
@@ -170,14 +170,18 @@ class RunTestTask extends SalesforceTask {
             apexTestResultArrayList.push(apexRunTestResult)
         }
 
-        runTestResult.successes.each { testFailures ->
+        if (runTestResult.numFailures && (runTestResult.numFailures > 0)) {
+            logger.quiet(Constants.SEPARATOR)
+        }
+
+        runTestResult.successes.each { testSuccesses ->
             ApexRunTestResult apexRunTestResult = new ApexRunTestResult()
             apexRunTestResult.outcome = RunTestTaskConstants.UNIT_TEST_SUCCESS
             apexRunTestResult.stackTrace = ""
-            apexRunTestResult.TestTimestamp = testFailures.time
-            apexRunTestResult.methodName = testFailures.methodName
-            apexRunTestResult.apexClassId = testFailures.id
-            apexRunTestResult.className = testFailures.name
+            apexRunTestResult.TestTimestamp = testSuccesses.time
+            apexRunTestResult.methodName = testSuccesses.methodName
+            apexRunTestResult.apexClassId = testSuccesses.id
+            apexRunTestResult.className = testSuccesses.name
             apexTestResultArrayList.push(apexRunTestResult)
         }
 
@@ -193,10 +197,10 @@ class RunTestTask extends SalesforceTask {
      */
     void printTestFailure(RunTestFailure runTestFailure) {
         if (runTestFailure) {
-            String errorMessage = runTestFailure.message?"\n\t\tMessage: ${runTestFailure.message}":""
-            errorMessage = runTestFailure.stackTrace?"${errorMessage}\n\t\tStacktrace: ${runTestFailure.stackTrace}":errorMessage
+            String errorMessage = runTestFailure.message?"\n-------- Message --------\n${runTestFailure.message}":""
+            errorMessage = runTestFailure.stackTrace?"${errorMessage}\n-------- Stacktrace --------\n${runTestFailure.stackTrace}":errorMessage
             if(!errorMessage.empty) {
-                String message = "\t${runTestFailure.name}.${runTestFailure.methodName}${errorMessage}\n"
+                String message = "${Constants.LINE_SEPARATOR}${runTestFailure.name}.${runTestFailure.methodName}${errorMessage}"
                 logger.quiet(message)
             }
         }
