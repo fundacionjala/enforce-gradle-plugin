@@ -10,7 +10,6 @@ import org.fundacionjala.gradle.plugins.enforce.credentialmanagement.CredentialM
 import org.fundacionjala.gradle.plugins.enforce.exceptions.deploy.DeployException
 import org.fundacionjala.gradle.plugins.enforce.tasks.ForceTask
 import org.fundacionjala.gradle.plugins.enforce.tasks.credentialmanager.CredentialParameterValidator
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.helperManager.Helper
 import org.fundacionjala.gradle.plugins.enforce.utils.AnsiColor
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
@@ -105,12 +104,16 @@ abstract class SalesforceTask extends ForceTask {
      * @param packagePath is path when package xml will be to create
      * @param files is an array of files
      */
-    void writePackage(String packagePath, ArrayList<File> files) {
+    void writePackage(String packagePath, ArrayList<File> files, boolean withProjectPath = true) {
         FileWriter fileWriter = new FileWriter(packagePath)
         files = files.grep({ file ->
             !file.name.endsWith(Constants.META_XML_NAME)
         })
-        packageBuilder.createPackage(files, projectPath)
+        if (withProjectPath) {
+            packageBuilder.createPackage(files, projectPath)
+        } else {
+            packageBuilder.createPackage(files)
+        }
         packageBuilder.write(fileWriter)
         fileWriter.close()
     }
