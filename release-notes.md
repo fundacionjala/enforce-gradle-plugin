@@ -1,3 +1,12 @@
+## 1.1.2 - 2015-09-16
+
+### Bugs fixed
+
+* Once $gradle runTest -Pfiles=Class1.cls is executed, and in the inside of SalesForce Org there is a prefix, it is executing all unit test.
+* Once $gradle runTest is executed. and there is a special character in test class,This  shows a "bad request" message.
+* UninstallPackage does not uninstall package.
+* Running uninstallPackage twice fails.
+
 ## 1.1.1 - 2015-08-21
 
 ### Bugs fixed
