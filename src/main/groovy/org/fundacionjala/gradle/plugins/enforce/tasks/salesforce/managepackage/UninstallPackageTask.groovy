@@ -132,8 +132,7 @@ class UninstallPackageTask extends Deployment {
                              "${MetadataComponents.INSTALLEDPACKAGES.extension}"
 
         FileWriter fileWriter = new FileWriter(pkgFileName)
-        PackageBuilder xml = new PackageBuilder()
-        xml.writeInstalledPackageXML(null, null, fileWriter)
+        PackageBuilder.writeInstalledPackageXML(null, null, fileWriter)
         return new File(pkgFileName)
     }
 }

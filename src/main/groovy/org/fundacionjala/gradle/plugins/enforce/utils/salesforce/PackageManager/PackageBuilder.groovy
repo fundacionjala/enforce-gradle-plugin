@@ -102,7 +102,7 @@ class PackageBuilder {
             }
         }
         if (!packageTypeMembersFound) {
-            packageTypeMembers.addAll(getPackageTypeMembers(name, members))
+            packageTypeMembers.addAll(PackageUtil.getPackageTypeMembers(name, members))
             metaPackage.types = packageTypeMembers.toArray() as PackageTypeMembers[]
         } else {
             List packageTypes = packageTypeMembersFound.members.toList()
@@ -179,26 +179,11 @@ class PackageBuilder {
     }
 
     /**
-     * Gets an array list of package member objects from type name and member list
-     * @param name represents a type name in package xml file
-     * @param members an array list of member
-     */
-    private ArrayList<PackageTypeMembers> getPackageTypeMembers(String name, ArrayList<String> members) {
-        ArrayList<PackageTypeMembers> packageTypeMembers = new ArrayList<PackageTypeMembers>()
-        PackageTypeMembers packageTypeMember = new PackageTypeMembers()
-        packageTypeMember.members = members.toArray() as String[]
-        packageTypeMember.name = name
-        packageTypeMembers.push(packageTypeMember)
-
-        return packageTypeMembers
-    }
-
-    /**
      * Creates package from an array files
      * @param files contains files which will be the body of package
      */
     public void createPackage(ArrayList<File> files, String basePath='') {
-        ArrayList<String> folders = selectFolders(files, basePath)
+        ArrayList<String> folders = PackageUtil.selectFolders(files, basePath)
         ArrayList<PackageTypeMembers> packageData = []
         PackageTypeMembers packageTypeMembers
         ArrayList<String> invalidFolders = []
@@ -206,7 +191,7 @@ class PackageBuilder {
             MetadataComponents component = MetadataComponents.getComponentByPath(folder as String)
             if (component) {
                 packageTypeMembers = new PackageTypeMembers()
-                ArrayList<String> filesMembers = selectFilesMembers(folder, files, basePath)
+                ArrayList<String> filesMembers = PackageUtil.selectFilesMembers(folder, files, basePath)
                 packageTypeMembers.members = filesMembers ?: [WILDCARD]
                 packageTypeMembers.name = component.getTypeName()
                 packageData.push(packageTypeMembers)
@@ -249,47 +234,11 @@ class PackageBuilder {
     }
 
     /**
-     * Filters folders from array of files
-     * @param files contains all files
-     * @return folders
-     */
-    public ArrayList<String> selectFolders(ArrayList<File> files, String basePath) {
-        ArrayList<String> folders = []
-        files.each { File file ->
-            String relativePath = Util.getRelativePath(file, basePath)
-            String folderName = Util.getFirstPath(relativePath)
-            if(!folders.contains(folderName)) {
-                folders.push(folderName)
-            }
-        }
-        return folders
-    }
-
-    /**
-     * Selects all files inside folder required
-     * @param folder contains the folder to get all files
-     * @param files contains the list of files
-     * @return all files inside folders
-     */
-    private ArrayList<String> selectFilesMembers(String folder, ArrayList<File> files, String basePath) {
-        ArrayList<String> members = []
-        files.each { file ->
-            String relativePath = Util.getRelativePath(file, basePath)
-            String parentName = Util.getFirstPath(relativePath)
-            String fileName = Util.getRelativePath(file, Paths.get(basePath, parentName).toString(), false)
-            if (parentName == folder && !fileName.isEmpty()) {
-                members.push(Util.getFileName(fileName as String))
-            }
-        }
-        return members.unique()
-    }
-
-    /**
      * Write the xml file
      * @param arrayPaths is the paths of files with the xml is generated
      * @return
      */
-    def writeInstalledPackageXML(String packageVersion, String packagePassword, Writer writer) {
+    public static void writeInstalledPackageXML(String packageVersion, String packagePassword, Writer writer) {
         MarkupBuilder xml = new MarkupBuilder(writer)
         xml.mkp.xmlDeclaration(version: VERSION, encoding: ENCODING)
         xml.InstalledPackage(xmlns: XMLNS) {
