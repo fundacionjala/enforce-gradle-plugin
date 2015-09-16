@@ -342,20 +342,6 @@ class PackageBuilderTest extends Specification {
             packageBuilder.metaPackage.types[0].members[1] == 'Class2'
    }
 
-    def "Test should support valid folder names"() {
-        given:
-            def packageBuilder = new PackageBuilder()
-            ArrayList<File> files = [new File(Paths.get(RESOURCE_PATH, 'reports', 'testFolder', 'Myreport1.report').toString()),
-                                     new File(Paths.get(RESOURCE_PATH, 'reports', 'testFolder', 'Myreport2.report').toString()),
-                                     new File(Paths.get(RESOURCE_PATH, 'reports', 'testFolder1', 'AnotherReport.report').toString()),
-                                     new File(Paths.get(RESOURCE_PATH, 'objects', 'Object1__c.object').toString()),
-                                     new File(Paths.get(RESOURCE_PATH, 'classes', 'Class1.cls').toString())]
-        when:
-            ArrayList<String> result = packageBuilder.selectFolders(files, RESOURCE_PATH)
-        then:
-            result.sort() ==  ['reports', 'objects', 'classes'].sort()
-    }
-
     def "Test should not update package xml from project directory if exist name label with member as '*' " () {
         given:
             def unPackagedPath = Paths.get(RESOURCE_PATH, 'retrieve', 'resources', 'unpackaged').toString()
