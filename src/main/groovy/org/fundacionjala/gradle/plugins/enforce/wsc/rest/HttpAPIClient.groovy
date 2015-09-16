@@ -33,6 +33,7 @@ class HttpAPIClient implements IArtifactGenerator {
 
     private final String SELECT_CONTAINER_QUERY = 'SELECT ID FROM MetadataContainer WHERE Name=\'%1$s\''
     private final String SELECT_APEX_CLASS_QUERY = 'SELECT Id, Body FROM ApexClass WHERE name IN (\'%1$s\')'
+    private final String ISO_8859_1 = "ISO-8859-1"
 
     private String authorization
     private String host
@@ -168,7 +169,7 @@ class HttpAPIClient implements IArtifactGenerator {
             Object resultJson = jsonSlurper.parseText(executeQuery(sprintf(SELECT_APEX_CLASS_QUERY, [classNameList.join("', '")])))
             if(resultJson.records.size() > 0) {
                 resultJson.records.each { classRecord ->
-                    String bodyContent = new String(classRecord.Body.toString().getBytes("ISO-8859-1"), StandardCharsets.UTF_8.displayName())
+                    String bodyContent = new String(classRecord.Body.toString().getBytes(ISO_8859_1), StandardCharsets.UTF_8.displayName())
                     http.request(POST, JSON) {
                         uri.path = PATH_APEXCLASSMEMBER_CONTAINER
                         body = [ContentEntityId: classRecord.Id, Body: bodyContent, MetadataContainerId: containerId] //TODO: is it possible send all in one?
