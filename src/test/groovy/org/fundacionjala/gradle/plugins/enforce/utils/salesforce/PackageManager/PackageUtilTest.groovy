@@ -38,6 +38,19 @@ class PackageUtilTest extends Specification {
             listResult == ['classes']
     }
 
+    def "Test should support valid folder names"() {
+        given:
+            ArrayList<File> files = [new File(Paths.get(RESOURCE_PATH, 'reports', 'testFolder', 'Myreport1.report').toString()),
+                                     new File(Paths.get(RESOURCE_PATH, 'reports', 'testFolder', 'Myreport2.report').toString()),
+                                     new File(Paths.get(RESOURCE_PATH, 'reports', 'testFolder1', 'AnotherReport.report').toString()),
+                                     new File(Paths.get(RESOURCE_PATH, 'objects', 'Object1__c.object').toString()),
+                                     new File(Paths.get(RESOURCE_PATH, 'classes', 'Class1.cls').toString())]
+        when:
+            ArrayList<String> result = PackageUtil.selectFolders(files, RESOURCE_PATH)
+        then:
+            result.sort() ==  ['reports', 'objects', 'classes'].sort()
+    }
+
     def "Test should return only a folder when base path is empty" () {
         given:
             def listFiles = [new File(Paths.get('installedPackages', 'al.installedPackage').toString())]
