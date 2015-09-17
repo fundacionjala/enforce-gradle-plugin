@@ -15,7 +15,6 @@ import org.gradle.api.file.FileTree
 import org.gradle.api.logging.Logger
 
 import java.nio.file.Paths
-import java.util.concurrent.ExecutionException
 
 class TestSelectorModerator {
 
@@ -88,7 +87,7 @@ class TestSelectorModerator {
                 if (project.properties.containsKey(RunTestTaskConstants.REFRESH_PARAM)) { //TODO: get this info from fileTraker[events: update, upload]
                     refreshClassAndTestMap = (project.properties[RunTestTaskConstants.REFRESH_PARAM].toString()).toBoolean()
                 }
-                ITestSelector selector = new TestSelectorByReference(Paths.get((project.enforce.srcPath as String)).toString(), getAllTestClassNameList(),
+                ITestSelector selector = new TestSelectorByReferenceSFDC(Paths.get((project.enforce.srcPath as String)).toString(), getAllTestClassNameList(),
                                             this.artifactGenerator, fileParamValue, refreshClassAndTestMap)
                 selector.setLogger(logger)
                 ArrayList<String> testClassNames = selector.getTestClassNames()
