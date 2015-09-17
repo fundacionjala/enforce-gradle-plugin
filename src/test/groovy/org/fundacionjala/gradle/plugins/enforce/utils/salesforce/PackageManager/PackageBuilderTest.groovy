@@ -151,74 +151,6 @@ class PackageBuilderTest extends Specification {
             xmlDiff.similar()
     }
 
-    def "Test should return all folders from the files of resources" () {
-        given:
-            def metaPackage = new Package()
-            def packageBuilder = new PackageBuilder(metaPackage: metaPackage)
-            def listFiles = [new File(Paths.get(RESOURCE_PATH, 'classes', 'class1.cls').toString()),
-                             new File(Paths.get(RESOURCE_PATH, 'classes', 'class1.cls').toString()),
-                             new File(Paths.get(RESOURCE_PATH, 'classes', 'class1.cls').toString()),
-                             new File(Paths.get(RESOURCE_PATH, 'objects', 'Object1__c.object').toString()),
-                             new File(Paths.get(RESOURCE_PATH, 'objects', 'Object1__c.object').toString()),
-                             new File(Paths.get(RESOURCE_PATH, 'web', 'InvalidClass.cls').toString()),
-                             new File(Paths.get(RESOURCE_PATH, 'web', 'InvalidClass.cls').toString())]
-            def listResult
-        when:
-            listResult = packageBuilder.selectFolders(listFiles, RESOURCE_PATH)
-        then:
-            listResult == ['classes', 'objects', 'web']
-    }
-
-    def "Test should return only a folder even there there are more files" () {
-        given:
-            def metaPackage = new Package()
-            def packageBuilder = new PackageBuilder(metaPackage: metaPackage)
-            def listFiles = [new File(Paths.get(RESOURCE_PATH, 'classes', 'class1.cls').toString()),
-                             new File(Paths.get(RESOURCE_PATH, 'classes', 'class1.cls').toString()),
-                             new File(Paths.get(RESOURCE_PATH, 'classes', 'class1.cls').toString()),
-                             new File(Paths.get(RESOURCE_PATH, 'classes', 'class1.cls').toString())
-            ]
-            def listResult
-        when:
-            listResult = packageBuilder.selectFolders(listFiles, RESOURCE_PATH)
-        then:
-            listResult == ['classes']
-
-    }
-
-    def "Test should return all names of files without extension inside a folder" () {
-        given:
-            def metaPackage = new Package()
-            def packageBuilder = new PackageBuilder(metaPackage: metaPackage)
-            def listFiles = [new File(Paths.get(RESOURCE_PATH, 'classes', 'class1.cls').toString()),
-                             new File(Paths.get(RESOURCE_PATH, 'classes', 'class1.cls').toString()),
-                             new File(Paths.get(RESOURCE_PATH, 'objects', 'Object1__c.object').toString()),
-                             new File(Paths.get(RESOURCE_PATH, 'web', 'InvalidClass.cls').toString()),
-                             new File(Paths.get(RESOURCE_PATH, 'web', 'InvalidClass.cls').toString())]
-            def listResult
-        when:
-            listResult = packageBuilder.selectFilesMembers('objects', listFiles, RESOURCE_PATH)
-        then:
-            listResult == ['Object1__c']
-
-    }
-
-    def "Test should return all names inside a report folder" () {
-        given:
-            def metaPackage = new Package()
-            def packageBuilder = new PackageBuilder(metaPackage: metaPackage)
-            def listFiles = [new File(Paths.get(RESOURCE_PATH, 'reports', 'reportTest', 'AccountReport').toString()),
-                             new File(Paths.get(RESOURCE_PATH, 'reports', 'reportTest' , 'OpportunityReport').toString()),
-                             new File(Paths.get(RESOURCE_PATH, 'reports', 'report2Test', 'Account2Report').toString())]
-            def listResult
-        when:
-            listResult = packageBuilder.selectFilesMembers('reports', listFiles, RESOURCE_PATH)
-        then:
-            listResult == ['reportTest/AccountReport',
-                           'reportTest/OpportunityReport',
-                           'report2Test/Account2Report']
-    }
-
     def "Test should set values of package" () {
         given:
             def metaPackage = new Package()
@@ -409,20 +341,6 @@ class PackageBuilderTest extends Specification {
             packageBuilder.metaPackage.types[0].members[0] == 'Class1'
             packageBuilder.metaPackage.types[0].members[1] == 'Class2'
    }
-
-    def "Test should support valid folder names"() {
-        given:
-            def packageBuilder = new PackageBuilder()
-            ArrayList<File> files = [new File(Paths.get(RESOURCE_PATH, 'reports', 'testFolder', 'Myreport1.report').toString()),
-                                     new File(Paths.get(RESOURCE_PATH, 'reports', 'testFolder', 'Myreport2.report').toString()),
-                                     new File(Paths.get(RESOURCE_PATH, 'reports', 'testFolder1', 'AnotherReport.report').toString()),
-                                     new File(Paths.get(RESOURCE_PATH, 'objects', 'Object1__c.object').toString()),
-                                     new File(Paths.get(RESOURCE_PATH, 'classes', 'Class1.cls').toString())]
-        when:
-            ArrayList<String> result = packageBuilder.selectFolders(files, RESOURCE_PATH)
-        then:
-            result.sort() ==  ['reports', 'objects', 'classes'].sort()
-    }
 
     def "Test should not update package xml from project directory if exist name label with member as '*' " () {
         given:

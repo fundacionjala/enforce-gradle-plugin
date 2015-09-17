@@ -15,3 +15,6 @@ _site/
 *.fileTracker.data
 *file.data
 src/test/groovy/org/fundacionjala/gradle/plugins/enforce/tasks/credentialmanager/resources/secretKeyGenerated.text
+src/test/groovy/org/fundacionjala/gradle/plugins/enforce/credentialmanagement/resources/credentialSaved.dat
+src/test/groovy/org/fundacionjala/gradle/plugins/enforce/credentialmanagement/resources/credentials.dat
+src/test/groovy/org/fundacionjala/gradle/plugins/enforce/credentialmanagement/resources/credentialsNotExist.dat
