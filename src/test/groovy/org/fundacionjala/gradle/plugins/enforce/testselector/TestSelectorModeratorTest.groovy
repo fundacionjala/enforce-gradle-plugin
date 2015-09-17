@@ -77,7 +77,28 @@ class TestSelectorModeratorTest extends Specification {
             classNames.size() == 1
     }
 
-    def "Should get the test class names related to a class"() {
+    def "Should get the test class names related to a class - local"() {
+        given:
+        ArtifactGeneratorMock artifactGenerator = new ArtifactGeneratorMock()
+        project.enforce {
+            srcPath = SRC_PATH
+            tool = "metadata"
+            poll = 200
+            waitTime = 10
+        }
+        File classFile = new File(Paths.get(SRC_CLASSES_PATH, 'NewClass2.cls').toString())
+        classFile.write("some text")
+        File testFile = new File(Paths.get(SRC_CLASSES_PATH, 'NewClass2Test.cls').toString())
+        testFile.write(RunTestTaskConstants.IS_TEST + " NewClass2")
+        when:
+        project.ext[RunTestTaskConstants.FILE_PARAM] = "NewClass2.cls"
+        TestSelectorModerator moderator = new TestSelectorModerator(project, artifactGenerator, SRC_CLASSES_PATH, false)
+        classNames = moderator.getTestClassNames()
+        then:
+        classNames.size() == 1
+    }
+
+    def "Should get the test class names related to a class - remote"() {
         given:
         ArtifactGeneratorMock artifactGenerator = new ArtifactGeneratorMock()
         project.enforce {
@@ -88,13 +109,14 @@ class TestSelectorModeratorTest extends Specification {
         }
         when:
         project.ext[RunTestTaskConstants.FILE_PARAM] = "Class2.cls"
+        project.ext[RunTestTaskConstants.REMOTE_PARAM] = true
         TestSelectorModerator moderator = new TestSelectorModerator(project, artifactGenerator, SRC_CLASSES_PATH, false)
         classNames = moderator.getTestClassNames()
         then:
         classNames.size() == 1
     }
 
-    def "Should get the test class names related to a class from last updated classes, no changes"() {
+    def "Should get the test class names related to a class from last updated classes, no changes - remote"() {
         given:
         ArtifactGeneratorMock artifactGenerator = new ArtifactGeneratorMock()
         project.enforce {
@@ -111,7 +133,7 @@ class TestSelectorModeratorTest extends Specification {
         classNames.size() == 0
     }
 
-    def "Should get the test class names related to a class from last updated classes, add a new class"() {
+    def "Should get the test class names related to a class from last updated classes, add a new class - remote"() {
         given:
         ArtifactGeneratorMock artifactGenerator = new ArtifactGeneratorMock()
         project.enforce {
@@ -125,6 +147,7 @@ class TestSelectorModeratorTest extends Specification {
         classFile.write("some text")
         when:
         project.ext[RunTestTaskConstants.FILE_PARAM] = RunTestTaskConstants.RUN_ALL_UPDATED_PARAM_VALUE
+        project.ext[RunTestTaskConstants.REMOTE_PARAM] = true
         TestSelectorModerator moderator = new TestSelectorModerator(project, artifactGenerator, SRC_CLASSES_PATH, false)
         classNames = moderator.getTestClassNames()
         then:
@@ -134,5 +157,7 @@ class TestSelectorModeratorTest extends Specification {
     def cleanupSpec() {
         new File(Paths.get(SRC_PATH, '.customComponentTracker.data').toString()).delete()
         new File(Paths.get(SRC_PATH, 'classes', 'Class2.cls').toString()).delete()
+        new File(Paths.get(SRC_CLASSES_PATH, 'NewClass2.cls').toString()).delete()
+        new File(Paths.get(SRC_CLASSES_PATH, 'NewClass2Test.cls').toString()).delete()
     }
 }
