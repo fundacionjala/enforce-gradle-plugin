@@ -30,6 +30,9 @@ class InstallPackageTask extends Deployment {
     private String packageNamespace
     private String packageVersion
     private String packagePassword
+    private final String START_MESSAGE = "Installing package......."
+    private final String SUCCESS_MESSAGE = "Package was installed successfully!"
+    private final String MISSING_PARAMETERS = "There are missing required parameters."
 
     InstallPackageTask() {
         super(TASK_DESCRIPTION, TASK_GROUP)
@@ -40,10 +43,10 @@ class InstallPackageTask extends Deployment {
         if (Util.validateRequiredParameters(project, requiredParams)) {
             setup()
             createPackage()
-            executeDeploy(installPkgRootDir, "", "")
+            executeDeploy(installPkgRootDir, START_MESSAGE, SUCCESS_MESSAGE)
             logger.quiet("Install package '${packageNamespace}' v${packageVersion} success.")
         } else {
-            throw new Exception("There are missing required parameters.")
+            throw new Exception(MISSING_PARAMETERS)
         }
     }
 
@@ -69,9 +72,7 @@ class InstallPackageTask extends Deployment {
      */
     void createPackage() {
         File pkgFile = this.generatedInstallPackageFile()
-        ArrayList<File> filesToDeploy = new ArrayList<File>()
-        filesToDeploy.add(pkgFile)
-        writePackage(Paths.get(this.installPkgRootDir, Constants.PACKAGE_FILE_NAME).toString(), filesToDeploy)
+        writePackage(Paths.get(this.installPkgRootDir, Constants.PACKAGE_FILE_NAME).toString(), [pkgFile], false)
     }
 
     /**
@@ -82,8 +83,7 @@ class InstallPackageTask extends Deployment {
         def pkgFileName = "${this.installedPkgsCompDir}${File.separator}${this.packageNamespace}" +
                           ".${MetadataComponents.INSTALLEDPACKAGES.extension}"
         def fileWriter = new FileWriter(pkgFileName)
-        PackageBuilder xml = new PackageBuilder()
-        xml.writeInstalledPackageXML(this.packageVersion, this.packagePassword, fileWriter)
+        PackageBuilder.writeInstalledPackageXML(this.packageVersion, this.packagePassword, fileWriter)
         return new File(pkgFileName)
     }
 }

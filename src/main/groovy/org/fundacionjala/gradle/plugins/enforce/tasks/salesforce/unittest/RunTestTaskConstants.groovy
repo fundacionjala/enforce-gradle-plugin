@@ -1,11 +1,23 @@
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.unittest
 
 class RunTestTaskConstants {
-    protected static final String CLASS_PARAM = 'test'
-    protected static final String FILE_PARAM = 'files'
-    protected static final String REFRESH_PARAM = 'refreshMapping'
+    public static final String CLASS_PARAM = 'test'
+    public static final String FILE_PARAM = 'files'
+    public static final String REFRESH_PARAM = 'refreshMapping'
+    public static final String REMOTE_PARAM = 'remote'
+    public static final String IS_TEST = "@isTest"
+    public static final String WILDCARD_ALL_TEST = '*'
+    public static final String METADATA_CONTAINER_NAME = "EnforceContainer_001"
+    public static final String WILD_CARD_SIGN = "*"
+    public static final String FILE_SEPARATOR_SIGN = ","
+    public static final String RUN_ALL_UPDATED_PARAM_VALUE = "allUpdated"
+    public static final String COMPLETED = 'Completed'
+    public static final String EXTERNAL_REFERENCES = "externalReferences"
+    public static final String SYSTEM = "System"
+    public static final String NAME_LABEL = "name"
+    public static final String NAMESPACE_LABEL = "namespace"
+
     protected static final String CLASS_DIRECTORY = 'classes'
-    protected static final String WILDCARD_ALL_TEST = '*'
     protected static final String NAME_FOLDER_REPORT = 'report'
     protected static final String NAME_FOLDER_PAGES = 'pages'
     protected static final String NAME_FILE = 'index.html'
@@ -15,7 +27,7 @@ class RunTestTaskConstants {
     protected static final String QUERY_CLASSES = "SELECT Id, Name FROM ApexClass"
     protected static final String QUERY_TRIGGERS = "SELECT Id, Name FROM ApexTrigger"
     protected static final String NOT_HAVE_UNIT_TEST_MESSAGE = "You don't have any test class to execute in your local repository"
-    protected static final String IS_TEST = "@isTest"
+
     protected static final String UNIT_TEST_SUCCESS = 'Success'
     protected static final String UNIT_TEST_FAIL = 'Fail'
     protected static final String QUERY_COVERAGE = "SELECT NumLinesCovered, NumLinesUncovered, ApexClassorTriggerId, Coverage" +
@@ -41,11 +53,8 @@ class RunTestTaskConstants {
     protected static final String JSON_CREATED_AT =  "JSON created at:"
     protected static final String NOT_FOUND_CLASS_TO_EXECUTE_UNIT_TEST = 'Not found class for execute unit test in your local repository'
     protected static final String SLEEPING = "Sleeping"
-
-    protected static final String METADATA_CONTAINER_NAME = "EnforceContainer_001"
-    protected static final String WILD_CARD_SIGN = "*"
-    protected static final String FILE_SEPARATOR_SIGN = ","
     protected static final String DESTINATION_PARAMETER = "destination"
-    protected static final String RUN_ALL_UPDATED_PARAM_VALUE = "allUpdated"
+    protected static final String THERE_ARE_NOT_TEST_CLASSES = "Warning: There aren't test classes to:"
+
 }
 

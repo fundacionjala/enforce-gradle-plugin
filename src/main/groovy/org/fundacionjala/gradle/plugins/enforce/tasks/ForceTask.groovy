@@ -113,7 +113,7 @@ abstract class ForceTask extends DefaultTask {
         catch (DeployException deployException) {
             logger.error("Failed execute deployment task ")
             String message
-            if (project.enforce.integration == AFFIRMATIVE) {
+            if (this.isIntegrationMode()) {
                 message = deployException.getMessageJsonFormat()
             } else {
                 message = deployException.message
@@ -124,6 +124,10 @@ abstract class ForceTask extends DefaultTask {
             logger.error("Failed execute task")
             throw new GradleException(exception.message, exception)
         }
+    }
+
+    public Boolean isIntegrationMode() {
+        return  (project.enforce.integration == AFFIRMATIVE)
     }
 
     /**

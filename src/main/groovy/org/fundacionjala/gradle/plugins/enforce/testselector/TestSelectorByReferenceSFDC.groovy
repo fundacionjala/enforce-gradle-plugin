@@ -11,7 +11,7 @@ import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataCompone
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.runtesttask.CustomComponentTracker
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.IArtifactGenerator
 
-class TestSelectorByReference extends TestSelector  {
+class TestSelectorByReferenceSFDC extends TestSelector  {
 
     private String srcPath
     private String filesParameterValue
@@ -39,13 +39,13 @@ class TestSelectorByReference extends TestSelector  {
     private final String APEX_CLASS_RELATED_TESTS_MSG = "Apex Class: %s \n Related Test Class(es): %s\n"
 
     /**
-     * TestSelectorByReference class constructor
+     * TestSelectorByReferenceSFDC class constructor
      * @param testClassNameList list of all available test class names
      * @param artifactGenerator instance reference of the current HttpAPIClient
      * @param filesParameterValue value provided by the user to filter the class names
      * @param refreshClassAndTestMap value provided by the user to specify refresh the class-test mapping
      */
-    public TestSelectorByReference(String srcPath, ArrayList<String> testClassNameList, IArtifactGenerator artifactGenerator
+    public TestSelectorByReferenceSFDC(String srcPath, ArrayList<String> testClassNameList, IArtifactGenerator artifactGenerator
                                    , String filesParameterValue, Boolean refreshClassAndTestMap) {
         super(testClassNameList)
         this.srcPath = srcPath
@@ -99,7 +99,7 @@ class TestSelectorByReference extends TestSelector  {
             displayMessage(REQUEST_SYMBOL_TABLE_MSG)
             String requestStatus
             String requestStatusQuery = sprintf(CONTAINER_ASYNC_REQUEST_QUERY, [containerAsyncRequestId])
-            while (requestStatus != 'Completed') {
+            while (requestStatus != RunTestTaskConstants.COMPLETED) {
                 sleep(1000)
                 requestStatus = jsonSlurper.parseText(artifactGenerator.executeQuery(requestStatusQuery)).records[0].State.toString()
             }
@@ -107,24 +107,32 @@ class TestSelectorByReference extends TestSelector  {
         }
         displayMessage(BUILD_TESTCLASS_MAP_MSG)
         String apexClassMemberQuery = sprintf(APEX_CLASS_MEMBER_QUERY, [containerId[0..14]])
+        ArrayList<String> classNames = []
+        String testClassName
         jsonSlurper.parseText(artifactGenerator.executeQuery(apexClassMemberQuery)).records.each { classMember ->
             classMember.SymbolTable.each() { symbolTableResult ->
                 symbolTableResult.every() { entry ->
-                    if (entry.getKey() == "externalReferences") {
+                    if (entry.getKey() == RunTestTaskConstants.EXTERNAL_REFERENCES) {
                         entry.getValue().each() {
-                            if (it["namespace"] != "System") {
-                                String classToAdd
-                                if (it["namespace"]) {
-                                    classToAdd = it["namespace"]
-                                } else {
-                                    classToAdd = it["name"]
+                            if (it[RunTestTaskConstants.NAMESPACE_LABEL] != RunTestTaskConstants.SYSTEM) {
+                                entry.getValue().each() {
+                                    String className = it[RunTestTaskConstants.NAME_LABEL]
+                                    if (!classAndTestMap.containsKey(className)) {
+                                        classAndTestMap.put(className, new ArrayList<String>())
+                                    }
+                                    classNames.add(className)
                                 }
-                                if (!classAndTestMap.containsKey(classToAdd)) {
-                                    classAndTestMap.put(classToAdd, new ArrayList<String>())
-                                }
-                                classAndTestMap.get(classToAdd).add(classMember.FullName)
                             }
                         }
+                    }
+                    if (entry.getKey() == RunTestTaskConstants.NAME_LABEL) {
+                        testClassName = entry.getValue()
+                        classNames.unique().each {String className ->
+                            if (testClassName != null && classAndTestMap.containsKey(className)) {
+                                classAndTestMap.get(className).add(testClassName)
+                            }
+                        }
+                        classNames = []
                     }
                 }
             }
@@ -146,40 +154,13 @@ class TestSelectorByReference extends TestSelector  {
                 displayMessage(BUILD_DEPENDENCIES_DONE_MSG)
             }
             displayMessage(TEST_CLASSES_SUMMARY_MSG)
-            classAndTestMap.keySet().each { className ->
-                this.filesParameterValue.tokenize(RunTestTaskConstants.FILE_SEPARATOR_SIGN).each { wildCard ->
-                    //if (className.contains(wildCard)) { //TODO: maybe we can work for wildCards at this point - if (contains("*") || startsWidth("*) endsWidth("*)) -> .replace("*", "")
-                    if (className == wildCard ) {
-                        displayMessage(sprintf(APEX_CLASS_RELATED_TESTS_MSG, [className, classAndTestMap.get(className).unique().toString()]))
-                        testClassList.addAll(classAndTestMap.get(className))
-                    }
+            classAndTestMap.keySet().each { String className ->
+                if (this.filesParameterValue.tokenize(RunTestTaskConstants.FILE_SEPARATOR_SIGN).contains(className)) {
+                    displayMessage(sprintf(APEX_CLASS_RELATED_TESTS_MSG, [className, classAndTestMap.get(className).unique().toString()]))
+                    testClassList.addAll((classAndTestMap.get(className) as ArrayList<String>).unique())
                 }
             }
         }
-
         return testClassList.unique()
-    }
-
-    /**
-     * Displays a quiet log message
-     * @param msg message to display
-     */
-    private void displayMessage(String msg) {
-        displayMessage(msg, false)
-    }
-
-    /**
-     * Displays a quiet or error log message
-     * @param msg message to display
-     * @param isError specifies the kind of message quiet/error
-     */
-    private void displayMessage(String msg, Boolean isError) {
-        if (logger) {
-            if (isError) {
-                logger.error(msg)
-            } else {
-                logger.quiet(msg)
-            }
-        }
     }
 }
