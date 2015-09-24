@@ -16,7 +16,6 @@ public class DocumentSalesforceValidator implements SalesforceValidator{
      */
     @Override
     boolean validateFile(File file, String folderComponent) {
-
         return folderComponent == MetadataComponents.DOCUMENTS.getDirectory() &&
                !file.isDirectory()
     }
@@ -32,9 +31,9 @@ public class DocumentSalesforceValidator implements SalesforceValidator{
         String fileName = file.getName()
         if (!fileName.endsWith(Constants.META_XML)) {
             String xmlFileName = "${file.getAbsolutePath()}${Constants.META_XML}".toString()
-            File xmlFile = new File(xmlFileName);
+            File xmlFile = new File(xmlFileName)
             return xmlFile.exists()
         }
-        return true;
+        return true
     }
 }
