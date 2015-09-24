@@ -12,7 +12,7 @@ import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.runtesttask.Cus
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.IArtifactGenerator
 import org.gradle.api.logging.Logger
 
-class TestSelectorByReference extends TestSelector  {
+class TestSelectorByReferenceSFDC extends TestSelector  {
 
     private String srcPath
     private String filesParameterValue
@@ -41,13 +41,13 @@ class TestSelectorByReference extends TestSelector  {
     private final String APEX_CLASS_RELATED_TESTS_MSG = "Apex Class: %s \n Related Test Class(es): %s\n"
 
     /**
-     * TestSelectorByReference class constructor
+     * TestSelectorByReferenceSFDC class constructor
      * @param testClassNameList list of all available test class names
      * @param artifactGenerator instance reference of the current HttpAPIClient
      * @param filesParameterValue value provided by the user to filter the class names
      * @param refreshClassAndTestMap value provided by the user to specify refresh the class-test mapping
      */
-    public TestSelectorByReference(String srcPath, ArrayList<String> testClassNameList, IArtifactGenerator artifactGenerator
+    public TestSelectorByReferenceSFDC(String srcPath, ArrayList<String> testClassNameList, IArtifactGenerator artifactGenerator
                                    , String filesParameterValue, Boolean refreshClassAndTestMap) {
         super(testClassNameList)
         this.srcPath = srcPath
@@ -178,33 +178,10 @@ class TestSelectorByReference extends TestSelector  {
                 if (this.filesParameterValue.tokenize(RunTestTaskConstants.FILE_SEPARATOR_SIGN).contains(className)) {
                     logger.debug("ENFORCE - className conatins -----> ${className}")
                     displayMessage(sprintf(APEX_CLASS_RELATED_TESTS_MSG, [className, classAndTestMap.get(className).unique().toString()]))
-                    testClassList.addAll(classAndTestMap.get(className) as ArrayList<String>)
+                    testClassList.addAll((classAndTestMap.get(className) as ArrayList<String>).unique())
                 }
             }
         }
         return testClassList.unique()
-    }
-
-    /**
-     * Displays a quiet log message
-     * @param msg message to display
-     */
-    private void displayMessage(String msg) {
-        displayMessage(msg, false)
-    }
-
-    /**
-     * Displays a quiet or error log message
-     * @param msg message to display
-     * @param isError specifies the kind of message quiet/error
-     */
-    private void displayMessage(String msg, Boolean isError) {
-        if (logger) {
-            if (isError) {
-                logger.error(msg)
-            } else {
-                logger.quiet(msg)
-            }
-        }
     }
 }
