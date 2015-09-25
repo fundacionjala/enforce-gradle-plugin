@@ -83,45 +83,33 @@ class TestSelectorModerator {
                     + "${RunTestTaskConstants.FILE_PARAM}")
         } else if (Util.isValidProperty(project, RunTestTaskConstants.FILE_PARAM)) {
             String fileParamValue = project.properties[RunTestTaskConstants.FILE_PARAM].toString()
-            logger.debug("ENFORCE - fileParamValue -----> ${fileParamValue}")
             if (this.testClassNameList.size() < getAllTestClassNameList().size()) {
                 Boolean refreshClassAndTestMap = false
                 if (project.properties.containsKey(RunTestTaskConstants.REFRESH_PARAM)) { //TODO: get this info from fileTraker[events: update, upload]
                     refreshClassAndTestMap = (project.properties[RunTestTaskConstants.REFRESH_PARAM].toString()).toBoolean()
                 }
-
-                logger.debug("ENFORCE - refreshClassAndTestMap -----> ${refreshClassAndTestMap}")
-                logger.debug("ENFORCE - srcPath -----> ${Paths.get((project.enforce.srcPath as String)).toString()}")
-                logger.debug("ENFORCE - getAllTestClassNameList() -----> ${getAllTestClassNameList()}")
-                logger.debug("ENFORCE - this.artifactGenerator() -----> ${this.artifactGenerator}")
-
                 ITestSelector selector = new TestSelectorByReference(Paths.get((project.enforce.srcPath as String)).toString(), getAllTestClassNameList(),
                                             this.artifactGenerator, fileParamValue, refreshClassAndTestMap)
                 selector.setLogger(logger)
                 ArrayList<String> testClassNames = selector.getTestClassNames()
-                logger.debug("ENFORCE - testClassNames -----> ${testClassNames}")
                 if (testClassNames.isEmpty() && fileParamValue != RunTestTaskConstants.WILD_CARD_SIGN &&
                         fileParamValue != RunTestTaskConstants.RUN_ALL_UPDATED_PARAM_VALUE) {
                     throw new Exception("${RunTestTaskConstants.THERE_ARE_NOT_TEST_CLASSES} ${fileParamValue}")
                 }
                 this.testClassNameList.addAll(testClassNames)
-                logger.debug("ENFORCE - this.testClassNameList with -Pfiles -----> ${this.testClassNameList}")
             }
         }
         else if (!Util.isValidProperty(project, RunTestTaskConstants.CLASS_PARAM)) {
             if (this.async) {
                 this.testClassNameList = (new TestSelectorByDefault(getAllTestClassNameList(), null)).getTestClassNames()
-                logger.debug("ENFORCE - this.testClassNameList when test parameter is invalid and async -----> ${this.testClassNameList}")
             } else {
                 this.testClassNameList = null
-                logger.debug("ENFORCE - this.testClassNameList when test parameter is invalid and is not async -----> ${this.testClassNameList}")
             }
         }
 
         if (this.testClassNameList && !this.testClassNameList.isEmpty()) {
             this.testClassNameList.unique()
         }
-        logger.debug("ENFORCE - this.testClassNameList end -----> ${this.testClassNameList}")
         return this.testClassNameList
     }
 
