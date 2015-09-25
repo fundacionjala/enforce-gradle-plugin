@@ -174,9 +174,7 @@ abstract class Deployment extends SalesforceTask {
     void loadClassifiedFiles(String includes, String excludes) {
         ArrayList<File> filesFiltered = filter.getFiles(includes, excludes)
         classifiedFile = FileValidator.validateFiles(projectPath, filesFiltered)
-        println 'showFilesValidated ->' + showFilesValidated
-        println 'excludes ->' + excludes
-        classifiedFile.ShowClassifiedFiles(showFilesValidated == "true")
+        classifiedFile.ShowClassifiedFiles(showFilesValidated == Constants.TRUE_OPTION)
     }
 
     /**
@@ -187,6 +185,9 @@ abstract class Deployment extends SalesforceTask {
         fileManager.copy(projectPath, filesToCopy, taskFolderPath)
     }
 
+    /**
+     * Loads showFilesValidated and excludes parameter
+     */
     void loadExcludesAndShowFileValidatedParameters() {
         if (Util.isValidProperty(parameters, Constants.PARAMETER_EXCLUDES) &&
                 !Util.isEmptyProperty(parameters, Constants.PARAMETER_EXCLUDES)) {
