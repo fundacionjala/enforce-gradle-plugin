@@ -10,6 +10,7 @@ import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.unittest.RunTes
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.runtesttask.CustomComponentTracker
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.IArtifactGenerator
+import org.gradle.api.logging.Logger
 
 class TestSelectorByReferenceSFDC extends TestSelector  {
 
@@ -19,6 +20,7 @@ class TestSelectorByReferenceSFDC extends TestSelector  {
     private Map classAndTestMap = [:]
     private Boolean refreshClassAndTestMap = false
     private Boolean displayNoChangesMessage = false
+    private Logger logger
 
     private final String APEX_CLASS_MEMBER_QUERY = 'SELECT FullName, ContentEntityId, SymbolTable FROM ApexClassMember WHERE MetadataContainerId = \'%s\''
     private final String CONTAINER_ASYNC_REQUEST_QUERY = 'SELECT State FROM ContainerAsyncRequest WHERE Id=\'%s\''
@@ -52,6 +54,14 @@ class TestSelectorByReferenceSFDC extends TestSelector  {
         this.artifactGenerator = artifactGenerator
         this.filesParameterValue = filesParameterValue
         this.refreshClassAndTestMap = refreshClassAndTestMap
+    }
+
+    /**
+     * Sets the logger to allow display messages
+     * @param logger instance reference of the current Logger
+     */
+    public void setLogger(Logger logger) {
+        this.logger = logger
     }
 
     /**
@@ -162,5 +172,28 @@ class TestSelectorByReferenceSFDC extends TestSelector  {
             }
         }
         return testClassList.unique()
+    }
+
+    /**
+     * Displays a quiet log message
+     * @param msg message to display
+     */
+    private void displayMessage(String msg) {
+        displayMessage(msg, false)
+    }
+
+    /**
+     * Displays a quiet or error log message
+     * @param msg message to display
+     * @param isError specifies the kind of message quiet/error
+     */
+    private void displayMessage(String msg, Boolean isError) {
+        if (logger) {
+            if (isError) {
+                logger.error(msg)
+            } else {
+                logger.quiet(msg)
+            }
+        }
     }
 }
