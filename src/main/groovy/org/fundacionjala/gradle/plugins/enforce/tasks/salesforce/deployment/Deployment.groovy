@@ -28,6 +28,7 @@ abstract class Deployment extends SalesforceTask {
     public List<String> interceptorsToExecute = []
     public List<String> interceptors = []
     public String excludes = ""
+    public String showFilesValidated = "true"
 
     public Filter filter
     public String taskFolderPath
@@ -161,9 +162,7 @@ abstract class Deployment extends SalesforceTask {
      */
     @Override
     void loadParameters() {
-        if (Util.isValidProperty(parameters, Constants.PARAMETER_EXCLUDES) && !Util.isEmptyProperty(parameters, Constants.PARAMETER_EXCLUDES)) {
-            excludes = parameters[Constants.PARAMETER_EXCLUDES].toString()
-        }
+        loadExcludesAndShowFileValidatedParameters()
     }
 
     /**
@@ -175,6 +174,9 @@ abstract class Deployment extends SalesforceTask {
     void loadClassifiedFiles(String includes, String excludes) {
         ArrayList<File> filesFiltered = filter.getFiles(includes, excludes)
         classifiedFile = FileValidator.validateFiles(projectPath, filesFiltered)
+        println 'showFilesValidated ->' + showFilesValidated
+        println 'excludes ->' + excludes
+        classifiedFile.ShowClassifiedFiles(showFilesValidated == "true")
     }
 
     /**
@@ -183,5 +185,16 @@ abstract class Deployment extends SalesforceTask {
      */
     void copyFilesToTaskDirectory(ArrayList<File> filesToCopy) {
         fileManager.copy(projectPath, filesToCopy, taskFolderPath)
+    }
+
+    void loadExcludesAndShowFileValidatedParameters() {
+        if (Util.isValidProperty(parameters, Constants.PARAMETER_EXCLUDES) &&
+                !Util.isEmptyProperty(parameters, Constants.PARAMETER_EXCLUDES)) {
+            excludes = parameters[Constants.PARAMETER_EXCLUDES].toString()
+        }
+
+        if (Util.isValidProperty(parameters, Constants.PARAMETER_SHOW_FILES_VALIDATED)) {
+            showFilesValidated = parameters[Constants.PARAMETER_SHOW_FILES_VALIDATED].toString()
+        }
     }
 }
