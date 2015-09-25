@@ -15,6 +15,7 @@ import org.gradle.api.file.FileTree
 import org.gradle.api.logging.Logger
 
 import java.nio.file.Paths
+import java.util.concurrent.ExecutionException
 
 class TestSelectorModerator {
 
