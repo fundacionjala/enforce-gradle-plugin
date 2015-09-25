@@ -61,6 +61,7 @@ public class Constants {
     public static final String PARAMETER_FOLDERS = 'folders'
     public static final String PARAMETER_FILES = 'files'
     public static final String PARAMETER_EXCLUDES = 'excludes'
+    public static final String PARAMETER_SHOW_FILES_VALIDATED = 'showFilesValidated'
     public static final String PARAMETER_VALIDATE_ORG = 'validate'
     public static final String YES_OPTION = 'y'
     public static final String FALSE_OPTION = 'false'
