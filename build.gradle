@@ -95,16 +95,25 @@ def major = "$System.env.VERSION_NUMBER_MAJOR"
 def minor = "$System.env.VERSION_NUMBER_MINOR"
 def patch = "$System.env.VERSION_NUMBER_PATCH"
 def newVersion = "$major.$minor.$patch"
-version = newVersion
+version = '1.1.2.b11'
 
-
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "http://10.31.2.240:8081/artifactory/salesforce") {
+                authentication(userName: "mcadima", password: "mcadima")
+            }
+        }
+    }
+}
+/*
 uploadArchives {
     repositories {
         mavenDeployer {
             repository url: "file://${System.properties['user.home']}/.m2/repository"
         }
     }
-}
+}*/
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'

@@ -12,7 +12,6 @@ import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.runtesttask.Cus
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.IArtifactGenerator
 
 class TestSelectorByReference extends TestSelector  {
-
     private String srcPath
     private String filesParameterValue
     private IArtifactGenerator artifactGenerator

@@ -111,6 +111,7 @@ class RunTestTask extends SalesforceTask {
         TestSelectorModerator testModerator = new TestSelectorModerator(project, ((toolingAPI) ? toolingAPI.httpAPIClient : null), pathClasses, async)
         testModerator.setLogger(logger)
         classesToExecute = testModerator.getTestClassNames()
+        logger.debug("ENFORCE - classesToExecute -----> ${classesToExecute}")
     }
 
     /**
