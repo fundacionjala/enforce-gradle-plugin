@@ -94,38 +94,29 @@ class TestSelectorByReferenceSFDC extends TestSelector  {
         }
         displayMessage(GENERATE_METADATA_CONTAINER_MSG)
         Map containerResp = artifactGenerator.createContainer(RunTestTaskConstants.METADATA_CONTAINER_NAME)
-        logger.debug("ENFORCE - containerResp -----> ${containerResp}")
         String containerId = containerResp["Id"]
-        logger.debug("ENFORCE - containerId -----> ${containerId}")
-        logger.debug("ENFORCE - containerResp[isNew] -----> ${containerResp["isNew"]}")
         if (containerResp["isNew"]) {
             ArrayList<String> apexClassMemberId = []
             displayMessage(GENERATE_APEX_CLASS_MEMBER_MSG)
             def processedClasses = 0
             testClassNameList.collate(100).each {
                 apexClassMemberId.addAll(artifactGenerator.createApexClassMember(containerId, it))
-                logger.debug("ENFORCE - apexClassMemberId start -----> ${apexClassMemberId}")
-                logger.debug("ENFORCE - apexClassMemberId end ----->")
                 processedClasses += it.size()
                 displayMessage(sprintf(PROCESSED_ELEMENTS_MSG, [processedClasses, testClassNameList.size()]))
             }
             displayMessage(GENERATE_CONTAINER_REQUESTER_MSG)
             String containerAsyncRequestId = artifactGenerator.createContainerAsyncRequest(containerId)
-            logger.debug("ENFORCE - containerAsyncRequestId -----> ${containerAsyncRequestId}")
             displayMessage(REQUEST_SYMBOL_TABLE_MSG)
             String requestStatus
             String requestStatusQuery = sprintf(CONTAINER_ASYNC_REQUEST_QUERY, [containerAsyncRequestId])
-            logger.debug("ENFORCE - requestStatusQuery -----> ${requestStatusQuery}")
             while (requestStatus != RunTestTaskConstants.COMPLETED) {
                 sleep(1000)
                 requestStatus = jsonSlurper.parseText(artifactGenerator.executeQuery(requestStatusQuery)).records[0].State.toString()
-                logger.debug("ENFORCE - requestStatus -----> ${requestStatus}")
             }
             displayMessage(CONTAINER_ASYNC_REQUEST_DONE_QUERY)
         }
         displayMessage(BUILD_TESTCLASS_MAP_MSG)
         String apexClassMemberQuery = sprintf(APEX_CLASS_MEMBER_QUERY, [containerId[0..14]])
-        logger.debug("ENFORCE - apexClassMemberQuery -----> ${apexClassMemberQuery}")
         ArrayList<String> classNames = []
         String testClassName
         jsonSlurper.parseText(artifactGenerator.executeQuery(apexClassMemberQuery)).records.each { classMember ->
@@ -170,18 +161,39 @@ class TestSelectorByReferenceSFDC extends TestSelector  {
             if (!classAndTestMap) {
                 displayMessage(BUILD_DEPENDENCIES_MSG)
                 buildReferences()
-                logger.debug("ENFORCE - classAndTestMap -----> ${classAndTestMap}")
                 displayMessage(BUILD_DEPENDENCIES_DONE_MSG)
             }
             displayMessage(TEST_CLASSES_SUMMARY_MSG)
             classAndTestMap.keySet().each { String className ->
                 if (this.filesParameterValue.tokenize(RunTestTaskConstants.FILE_SEPARATOR_SIGN).contains(className)) {
-                    logger.debug("ENFORCE - className conatins -----> ${className}")
                     displayMessage(sprintf(APEX_CLASS_RELATED_TESTS_MSG, [className, classAndTestMap.get(className).unique().toString()]))
                     testClassList.addAll((classAndTestMap.get(className) as ArrayList<String>).unique())
                 }
             }
         }
         return testClassList.unique()
+    }
+
+    /**
+     * Displays a quiet log message
+     * @param msg message to display
+     */
+    private void displayMessage(String msg) {
+        displayMessage(msg, false)
+    }
+
+    /**
+     * Displays a quiet or error log message
+     * @param msg message to display
+     * @param isError specifies the kind of message quiet/error
+     */
+    private void displayMessage(String msg, Boolean isError) {
+        if (logger) {
+            if (isError) {
+                logger.error(msg)
+            } else {
+                logger.quiet(msg)
+            }
+        }
     }
 }

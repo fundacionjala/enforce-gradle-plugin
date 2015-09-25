@@ -92,7 +92,6 @@ class TestSelectorModerator {
         } else if (Util.isValidProperty(project, RunTestTaskConstants.FILE_PARAM)) {
 
             String fileParamValue = project.properties[RunTestTaskConstants.FILE_PARAM].toString()
-            logger.debug("ENFORCE - fileParamValue -----> ${fileParamValue}")
             if (this.testClassNameList.size() < getAllTestClassNameList().size()) {
                 ArrayList<String> testClassNames = []
                 ITestSelector selector
@@ -118,23 +117,19 @@ class TestSelectorModerator {
                     throw new Exception("${RunTestTaskConstants.THERE_ARE_NOT_TEST_CLASSES} ${fileParamValue}")
                 }
                 this.testClassNameList.addAll(testClassNames)
-                logger.debug("ENFORCE - this.testClassNameList with -Pfiles -----> ${this.testClassNameList}")
             }
         }
         else if (!Util.isValidProperty(project, RunTestTaskConstants.CLASS_PARAM)) {
             if (this.async) {
                 this.testClassNameList = (new TestSelectorByDefault(getAllTestClassNameList(), null)).getTestClassNames()
-                logger.debug("ENFORCE - this.testClassNameList when test parameter is invalid and async -----> ${this.testClassNameList}")
             } else {
                 this.testClassNameList = null
-                logger.debug("ENFORCE - this.testClassNameList when test parameter is invalid and is not async -----> ${this.testClassNameList}")
             }
         }
 
         if (this.testClassNameList && !this.testClassNameList.isEmpty()) {
             this.testClassNameList.unique()
         }
-        logger.debug("ENFORCE - this.testClassNameList end -----> ${this.testClassNameList}")
         return this.testClassNameList
     }
 
@@ -142,6 +137,9 @@ class TestSelectorModerator {
      * Returns all available test classes on demand
      */
     private ArrayList<String> getAllTestClassNameList() {
+        if (!this.allTestClassNameList) {
+            this.allTestClassNameList = getClassNames(this.pathClasses, RunTestTaskConstants.WILDCARD_ALL_TEST)
+        }
         return this.allTestClassNameList
     }
 
