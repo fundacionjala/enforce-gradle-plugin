@@ -4,7 +4,7 @@ class RunTestTaskConstants {
     public static final String CLASS_PARAM = 'test'
     public static final String FILE_PARAM = 'files'
     public static final String REFRESH_PARAM = 'refreshMapping'
-    public static final String REMOTE_PARAM = 'remote'
+    public static final String REMOTE_PARAM = 'server'
     public static final String IS_TEST = "@isTest"
     public static final String WILDCARD_ALL_TEST = '*'
     public static final String METADATA_CONTAINER_NAME = "EnforceContainer_001"
