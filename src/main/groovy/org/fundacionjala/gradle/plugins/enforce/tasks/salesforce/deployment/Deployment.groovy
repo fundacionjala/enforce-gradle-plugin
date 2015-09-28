@@ -28,7 +28,7 @@ abstract class Deployment extends SalesforceTask {
     public List<String> interceptorsToExecute = []
     public List<String> interceptors = []
     public String excludes = ""
-    public String showFilesValidated = "true"
+    public String showValidatedFiles = Constants.TRUE_OPTION
 
     public Filter filter
     public String taskFolderPath
@@ -174,7 +174,7 @@ abstract class Deployment extends SalesforceTask {
     void loadClassifiedFiles(String includes, String excludes) {
         ArrayList<File> filesFiltered = filter.getFiles(includes, excludes)
         classifiedFile = FileValidator.validateFiles(projectPath, filesFiltered)
-        classifiedFile.ShowClassifiedFiles(showFilesValidated == Constants.TRUE_OPTION)
+        classifiedFile.ShowClassifiedFiles(showValidatedFiles == Constants.TRUE_OPTION)
     }
 
     /**
@@ -186,7 +186,7 @@ abstract class Deployment extends SalesforceTask {
     }
 
     /**
-     * Loads showFilesValidated and excludes parameter
+     * Loads showValidatedFiles and excludes parameter
      */
     void loadExcludesAndShowFileValidatedParameters() {
         if (Util.isValidProperty(parameters, Constants.PARAMETER_EXCLUDES) &&
@@ -194,8 +194,13 @@ abstract class Deployment extends SalesforceTask {
             excludes = parameters[Constants.PARAMETER_EXCLUDES].toString()
         }
 
-        if (Util.isValidProperty(parameters, Constants.PARAMETER_SHOW_FILES_VALIDATED)) {
-            showFilesValidated = parameters[Constants.PARAMETER_SHOW_FILES_VALIDATED].toString()
+        if (Util.isValidProperty(parameters, Constants.PARAMETER_SHOW_VALIDATED_FILES)) {
+            showValidatedFiles = parameters[Constants.PARAMETER_SHOW_VALIDATED_FILES].toString()
+            return
+        }
+
+        if (project.enforce.showValidatedFiles) {
+            showValidatedFiles = project.enforce.showValidatedFiles
         }
     }
 }
