@@ -10,7 +10,6 @@ import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.unittest.RunTes
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.runtesttask.CustomComponentTracker
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.IArtifactGenerator
-import org.gradle.api.logging.Logger
 
 class TestSelectorByReferenceSFDC extends TestSelector  {
 
