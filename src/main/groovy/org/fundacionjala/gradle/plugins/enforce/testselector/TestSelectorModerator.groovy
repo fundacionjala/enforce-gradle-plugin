@@ -110,7 +110,6 @@ class TestSelectorModerator {
         if (this.testClassNameList && !this.testClassNameList.isEmpty()) {
             this.testClassNameList.unique()
         }
-
         return this.testClassNameList
     }
 

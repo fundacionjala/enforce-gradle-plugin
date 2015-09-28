@@ -34,4 +34,24 @@ class DocumentSalesforceValidatorTest extends Specification {
         then:
             result
     }
+
+    def "Test should return false if file sent does not have xml extension"() {
+        given:
+            def file = new File(Paths.get('myDocuments/MyDocument.txt-meta.txt').toString())
+            def folder = 'documents'
+        when:
+            def result = validator.validateFileContainsXML(file, folder)
+        then:
+            !result
+    }
+
+    def "Test should return false if file sent have xml extension"() {
+        given:
+            def file = new File(Paths.get('myDocuments/MyDocument.txt-meta.xml').toString())
+            def folder = 'documents'
+        when:
+            def result = validator.validateFileContainsXML(file, folder)
+        then:
+            result
+    }
 }
