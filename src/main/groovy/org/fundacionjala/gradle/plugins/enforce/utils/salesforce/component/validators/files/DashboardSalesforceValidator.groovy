@@ -14,13 +14,9 @@ class DashboardSalesforceValidator implements SalesforceValidator {
      */
     @Override
     boolean validateFile(File file, String folderComponent) {
-        boolean result = false
-        if (folderComponent.equals(MetadataComponents.DASHBOARDS.getDirectory()) &&
-                !file.isDirectory()) {
-            result = Util.getFileExtension(file).equals(MetadataComponents.DASHBOARDS.getExtension()) ||
-                    file.getName().endsWith(Constants.META_XML)
-        }
-        return result
+        return (folderComponent.equals(MetadataComponents.DASHBOARDS.getDirectory()) &&
+                !file.isDirectory()) && (Util.getFileExtension(file).equals(MetadataComponents.DASHBOARDS.getExtension()) ||
+                file.getName().endsWith(Constants.META_XML))
     }
 
     /**
