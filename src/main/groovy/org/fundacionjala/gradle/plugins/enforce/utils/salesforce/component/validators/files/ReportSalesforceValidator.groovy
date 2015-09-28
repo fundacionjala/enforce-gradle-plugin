@@ -14,10 +14,13 @@ class ReportSalesforceValidator implements SalesforceValidator {
      */
     @Override
     boolean validateFile(File file, String folderComponent) {
-        boolean isValidExtension = Util.getFileExtension(file).equals(MetadataComponents.REPORTS.getExtension()) ||
-                                    file.getName().endsWith(Constants.META_XML)
-        return folderComponent.equals(MetadataComponents.REPORTS.getDirectory()) &&
-                !file.isDirectory() && isValidExtension
+        boolean result = false
+        if (folderComponent.equals(MetadataComponents.REPORTS.getDirectory()) &&
+                !file.isDirectory()) {
+            result = Util.getFileExtension(file).equals(MetadataComponents.REPORTS.getExtension()) ||
+                    file.getName().endsWith(Constants.META_XML)
+        }
+        return result
     }
 
     /**
