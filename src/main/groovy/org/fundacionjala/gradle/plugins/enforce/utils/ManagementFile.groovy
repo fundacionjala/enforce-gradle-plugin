@@ -26,7 +26,6 @@ class ManagementFile {
     final String ERROR_GETTING_SOURCE_CODE_PATH = "ManagementFile: It's necessary send in constructor source path of user code"
     private File sourcePath
     private final String DOES_NOT_EXIT = 'does not exist'
-    public static final COMPONENTS_HAVE_SUB_FOLDER = ['reports', 'dashboards', 'documents']
     ArrayList<File> validFiles
 
     /**
@@ -79,16 +78,12 @@ class ManagementFile {
     private ArrayList<File> getFilesByFolder(String parentName, File file) {
         ArrayList<File> result = []
         file.eachFile { File reportFile ->
-            File xmlReportFile = getValidateXmlFile(file)
-            if (xmlReportFile) {
-                result.push(xmlReportFile)
-            }
             SalesforceValidator validator = SalesforceValidatorManager.getValidator(parentName)
             if (validator.validateFile(reportFile, parentName)) {
                 result.push(reportFile)
             }
         }
-        return result;
+        return result
     }
 
     /**
@@ -288,13 +283,11 @@ class ManagementFile {
             SalesforceValidator validator = SalesforceValidatorManager.getValidator(folder.getName())
             if (validator.validateFile(file, folder.getName())) {
                 result.push(file)
-            } else if (COMPONENTS_HAVE_SUB_FOLDER.contains(folder.getName())) {
-                if (file.isDirectory()) {
-                    result.addAll(getFilesByFolder(folder.getName(), file))
-                }
+            }
+            if (file.isDirectory()) {
+                result.addAll(getFilesByFolder(folder.getName(), file))
             }
         }
-
         return result
     }
 

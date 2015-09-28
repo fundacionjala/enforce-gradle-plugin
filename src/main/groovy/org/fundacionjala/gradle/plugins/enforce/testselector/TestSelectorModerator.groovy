@@ -130,7 +130,6 @@ class TestSelectorModerator {
         if (this.testClassNameList && !this.testClassNameList.isEmpty()) {
             this.testClassNameList.unique()
         }
-
         return this.testClassNameList
     }
 
@@ -138,6 +137,9 @@ class TestSelectorModerator {
      * Returns all available test classes on demand
      */
     private ArrayList<String> getAllTestClassNameList() {
+        if (!this.allTestClassNameList) {
+            this.allTestClassNameList = getClassNames(this.pathClasses, RunTestTaskConstants.WILDCARD_ALL_TEST)
+        }
         return this.allTestClassNameList
     }
 
