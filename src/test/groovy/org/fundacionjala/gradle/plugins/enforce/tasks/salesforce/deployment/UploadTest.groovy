@@ -354,6 +354,35 @@ class UploadTest extends Specification {
             packagedExpected.get('ApexClass').sort() == ['Class2', 'Class3'].sort()
     }
 
+    def "Test should load value to showValidatedFiles by default is 'true'" () {
+        when:
+            uploadInstance.loadExcludesAndShowFileValidatedParameters()
+        then:
+            uploadInstance.showValidatedFiles == 'true'
+    }
+
+    def "Test should load value to showValidatedFiles sent as parameter -PshowFilteredFiles=false'" () {
+        given:
+            uploadInstance.parameters[Constants.PARAMETER_SHOW_VALIDATED_FILES] = 'false'
+        when:
+            uploadInstance.loadExcludesAndShowFileValidatedParameters()
+        then:
+            uploadInstance.showValidatedFiles == 'false'
+    }
+
+    def "Test should load value to showValidatedFiles sent since build.gradle file'" () {
+        given:
+            Project myProject = ProjectBuilder.builder().build()
+            myProject.apply(plugin: EnforcePlugin)
+            myProject.enforce.srcPath = SRC_PATH
+            def uploadInstance = myProject.tasks.upload
+            uploadInstance.project.enforce.showValidatedFiles = false
+        when:
+            uploadInstance.loadExcludesAndShowFileValidatedParameters()
+        then:
+            uploadInstance.showValidatedFiles == 'false'
+    }
+
     def cleanupSpec() {
         new File(Paths.get(SRC_PATH, 'classes', 'class2.cls').toString()).delete()
         new File(Paths.get(SRC_PATH, 'build').toString()).deleteDir()
