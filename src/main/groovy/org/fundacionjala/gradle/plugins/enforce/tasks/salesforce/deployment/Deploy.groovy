@@ -88,9 +88,7 @@ class Deploy extends Deployment {
         if (Util.isValidProperty(parameters, Constants.PARAMETER_FOLDERS)) {
             folders = parameters[Constants.PARAMETER_FOLDERS].toString()
         }
-        if (Util.isValidProperty(parameters, Constants.PARAMETER_EXCLUDES)) {
-            excludes = parameters[Constants.PARAMETER_EXCLUDES].toString()
-        }
+        loadExcludesAndShowFileValidatedParameters()
         if (!Util.isValidProperty(parameters, TURN_OFF_TRUNCATE)) {
             return
         }
