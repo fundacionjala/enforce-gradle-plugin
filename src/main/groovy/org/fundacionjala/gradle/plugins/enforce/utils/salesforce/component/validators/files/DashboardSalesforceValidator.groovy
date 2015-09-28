@@ -4,7 +4,6 @@ import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 
-
 class DashboardSalesforceValidator implements SalesforceValidator {
 
     /**
@@ -15,10 +14,9 @@ class DashboardSalesforceValidator implements SalesforceValidator {
      */
     @Override
     boolean validateFile(File file, String folderComponent) {
-        boolean isValidExtension = Util.getFileExtension(file).equals(MetadataComponents.DASHBOARDS.getExtension()) ||
-                file.getName().endsWith(Constants.META_XML)
-        return folderComponent.equals(MetadataComponents.DASHBOARDS.getDirectory()) &&
-                !file.isDirectory() && isValidExtension
+        return (folderComponent.equals(MetadataComponents.DASHBOARDS.getDirectory()) &&
+                !file.isDirectory()) && (Util.getFileExtension(file).equals(MetadataComponents.DASHBOARDS.getExtension()) ||
+                file.getName().endsWith(Constants.META_XML))
     }
 
     /**
