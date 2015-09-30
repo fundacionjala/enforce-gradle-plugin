@@ -178,6 +178,7 @@ class Retrieve extends Retrieval {
         File[] arrayFiles = Util.getFiles(new File(projectPath))
         if (!super.isIntegrationMode() && (arrayFiles.size() > Constants.ZERO) && all == Constants.FALSE) {
             logger.error(RETRIEVE_MESSAGE_WARNING)
+            Util.showExceptionWhenSystemConsoleIsNull(System.console())
             option = System.console().readLine("  ${RETRIEVE_QUESTION_TO_CONTINUE}")
         } else {
             option = Constants.YES_OPTION

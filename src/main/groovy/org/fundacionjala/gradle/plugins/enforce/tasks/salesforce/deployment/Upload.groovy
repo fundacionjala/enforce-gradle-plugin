@@ -96,6 +96,7 @@ class Upload extends Deployment {
     public void showWarningMessage() {
         if (!super.isIntegrationMode() && (all == Constants.FALSE) && files.isEmpty()  && excludes.isEmpty()) {
             logger.warn("${ALL_FILES_UPLOAD}${projectPath}")
+            Util.showExceptionWhenSystemConsoleIsNull(System.console())
             option = System.console().readLine(QUESTION_CONTINUE)
         }
     }
