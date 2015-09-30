@@ -61,9 +61,11 @@ public class Constants {
     public static final String PARAMETER_FOLDERS = 'folders'
     public static final String PARAMETER_FILES = 'files'
     public static final String PARAMETER_EXCLUDES = 'excludes'
+    public static final String PARAMETER_SHOW_VALIDATED_FILES = 'showValidatedFiles'
     public static final String PARAMETER_VALIDATE_ORG = 'validate'
     public static final String YES_OPTION = 'y'
     public static final String FALSE_OPTION = 'false'
+    public static final String TRUE_OPTION = 'true'
 
     //I/O constants
     public static final String IO_MESSAGE_TEMP_DIR = 'Could not create temp directory'
