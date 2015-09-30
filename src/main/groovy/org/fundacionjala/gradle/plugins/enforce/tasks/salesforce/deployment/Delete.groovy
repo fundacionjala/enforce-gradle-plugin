@@ -64,9 +64,7 @@ class Delete extends Deployment {
         if (Util.isValidProperty(parameters, Constants.PARAMETER_FILES)) {
             files = parameters[Constants.PARAMETER_FILES]
         }
-        if (Util.isValidProperty(parameters, Constants.PARAMETER_EXCLUDES)) {
-            excludes = parameters[Constants.PARAMETER_EXCLUDES]
-        }
+        loadCommonParameters()
     }
 
     /**

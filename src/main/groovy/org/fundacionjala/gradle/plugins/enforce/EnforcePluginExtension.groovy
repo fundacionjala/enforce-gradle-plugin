@@ -5,6 +5,8 @@
 
 package org.fundacionjala.gradle.plugins.enforce
 
+import org.fundacionjala.gradle.plugins.enforce.utils.Constants
+
 import java.nio.charset.StandardCharsets
 
 /**
@@ -67,4 +69,5 @@ class EnforcePluginExtension {
         interceptors.put(metadataGroup, interceptor)
     }
 
+    String showValidatedFiles
 }

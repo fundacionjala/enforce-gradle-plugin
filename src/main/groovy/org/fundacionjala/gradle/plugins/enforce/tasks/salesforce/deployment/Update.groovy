@@ -183,9 +183,6 @@ class Update extends Deployment {
         if (Util.isValidProperty(parameters, Constants.PARAMETER_FOLDERS) && !Util.isEmptyProperty(parameters, Constants.PARAMETER_FOLDERS)) {
             folders = parameters.get(Constants.PARAMETER_FOLDERS)
         }
-
-        if (Util.isValidProperty(parameters, Constants.PARAMETER_EXCLUDES) && !Util.isEmptyProperty(parameters, Constants.PARAMETER_EXCLUDES)) {
-            excludes = parameters.get(Constants.PARAMETER_EXCLUDES)
-        }
+        loadCommonParameters()
     }
 }
