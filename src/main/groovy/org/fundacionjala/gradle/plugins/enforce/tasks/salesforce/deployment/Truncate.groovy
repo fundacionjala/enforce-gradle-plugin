@@ -66,6 +66,6 @@ class Truncate extends Deployment {
         if (Util.isValidProperty(parameters, Constants.PARAMETER_FILES)) {
             files = parameters[Constants.PARAMETER_FILES].toString()
         }
-        loadExcludesAndShowFileValidatedParameters()
+        loadCommonParameters()
     }
 }
