@@ -162,7 +162,7 @@ abstract class Deployment extends SalesforceTask {
      */
     @Override
     void loadParameters() {
-        loadExcludesAndShowFileValidatedParameters()
+        loadCommonParameters()
     }
 
     /**
@@ -188,7 +188,7 @@ abstract class Deployment extends SalesforceTask {
     /**
      * Loads showValidatedFiles and excludes parameter
      */
-    void loadExcludesAndShowFileValidatedParameters() {
+    void loadCommonParameters() {
         if (Util.isValidProperty(parameters, Constants.PARAMETER_EXCLUDES) &&
                 !Util.isEmptyProperty(parameters, Constants.PARAMETER_EXCLUDES)) {
             excludes = parameters[Constants.PARAMETER_EXCLUDES].toString()
