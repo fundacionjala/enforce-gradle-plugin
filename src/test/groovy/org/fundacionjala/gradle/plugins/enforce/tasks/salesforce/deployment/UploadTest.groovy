@@ -356,7 +356,7 @@ class UploadTest extends Specification {
 
     def "Test should load value to showValidatedFiles by default is 'true'" () {
         when:
-            uploadInstance.loadExcludesAndShowFileValidatedParameters()
+            uploadInstance.loadCommonParameters()
         then:
             uploadInstance.showValidatedFiles == 'true'
     }
@@ -365,7 +365,7 @@ class UploadTest extends Specification {
         given:
             uploadInstance.parameters[Constants.PARAMETER_SHOW_VALIDATED_FILES] = 'false'
         when:
-            uploadInstance.loadExcludesAndShowFileValidatedParameters()
+            uploadInstance.loadCommonParameters()
         then:
             uploadInstance.showValidatedFiles == 'false'
     }
@@ -378,7 +378,7 @@ class UploadTest extends Specification {
             def uploadInstance = myProject.tasks.upload
             uploadInstance.project.enforce.showValidatedFiles = false
         when:
-            uploadInstance.loadExcludesAndShowFileValidatedParameters()
+            uploadInstance.loadCommonParameters()
         then:
             uploadInstance.showValidatedFiles == 'false'
     }

@@ -68,7 +68,7 @@ class Upload extends Deployment {
         if (Util.isValidProperty(parameters, FILES_TO_UPLOAD) && !Util.isEmptyProperty(parameters, FILES_TO_UPLOAD)) {
             files = parameters[FILES_TO_UPLOAD].toString()
         }
-        loadExcludesAndShowFileValidatedParameters()
+        loadCommonParameters()
         if (Util.isValidProperty(parameters, ALL_FILES_TO_UPLOAD) && !Util.isEmptyProperty(parameters, ALL_FILES_TO_UPLOAD)) {
             all = parameters[ALL_FILES_TO_UPLOAD].toString()
         }
