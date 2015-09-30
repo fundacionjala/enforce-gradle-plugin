@@ -385,6 +385,15 @@ class UtilTest extends Specification {
             result == 'Class3'
     }
 
+    def "Test should return an exception if System.console is null"() {
+        given:
+            def console = System.console()
+        when:
+            Util.showExceptionWhenSystemConsoleIsNull(console)
+        then:
+            thrown(Exception)
+    }
+
     def cleanupSpec() {
         new File(Paths.get(RESOURCES_PATH, 'triggers').toString()).deleteDir()
         new File(Paths.get(RESOURCES_PATH, 'relativeTest').toString()).deleteDir()
