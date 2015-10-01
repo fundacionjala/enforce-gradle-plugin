@@ -20,6 +20,7 @@ public class RetrieveMetadata {
     private org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.Package metaPackage
     private byte[] zipFileRetrieved
     private ArrayList<String> warningMessages
+    private ArrayList<String> specificFiles
     private String RETRIEVE_RESULT_NULL = "Retrieve result instance is NULL"
 
     /**
@@ -29,6 +30,10 @@ public class RetrieveMetadata {
     RetrieveMetadata(org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.Package metaPackage) {
         this.metaPackage = metaPackage
         warningMessages = new ArrayList<String>()
+    }
+
+    public void setSpecificFiles(ArrayList<String> specificFiles) {
+        this.specificFiles = specificFiles
     }
 
     /**
@@ -64,7 +69,7 @@ public class RetrieveMetadata {
         MetadataAPI metadataAPI = (MetadataAPI) ForceFactory.getForceAPI(ForceApiType.METADATA, credential)
         metadataAPI.poll = poll
         metadataAPI.waitTime = waitTime
-        RetrieveResult retrieveResult = metadataAPI.retrieve(metaPackage)
+        RetrieveResult retrieveResult = metadataAPI.retrieve(metaPackage, specificFiles)
         checkStatusSucceeded(retrieveResult)
         loadWarningsMessages(retrieveResult.getMessages())
         zipFileRetrieved = retrieveResult.getZipFile()
