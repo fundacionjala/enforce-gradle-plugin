@@ -116,7 +116,7 @@ class MetadataAPI extends ForceAPI {
         retrieveRequest.setUnpackaged(metaPackage)
         if (specificFiles && !specificFiles.isEmpty()) {
             retrieveRequest.setSpecificFiles(specificFiles.toArray() as String[])
-            retrieveRequest.setSinglePackage(true);
+            retrieveRequest.setSinglePackage(true)
         }
         println STARTING_RETRIEVE
         AsyncResult asyncResult = metadataConnection.retrieve(retrieveRequest)
