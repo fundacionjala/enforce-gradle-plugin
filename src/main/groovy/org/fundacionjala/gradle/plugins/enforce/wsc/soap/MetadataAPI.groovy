@@ -108,8 +108,16 @@ class MetadataAPI extends ForceAPI {
      * @return the retrieve result
      */
     public RetrieveResult retrieve(Package metaPackage) {
+        retrieve(metaPackage, null)
+    }
+
+    public RetrieveResult retrieve(Package metaPackage, ArrayList<String> specificFiles) {
         RetrieveRequest retrieveRequest = new RetrieveRequest()
         retrieveRequest.setUnpackaged(metaPackage)
+        if (specificFiles && !specificFiles.isEmpty()) {
+            retrieveRequest.setSpecificFiles(specificFiles.toArray() as String[])
+            retrieveRequest.setSinglePackage(true)
+        }
         println STARTING_RETRIEVE
         AsyncResult asyncResult = metadataConnection.retrieve(retrieveRequest)
         println WAITING_RETRIEVE
