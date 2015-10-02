@@ -4,29 +4,36 @@
  */
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.retrieve
-
 import org.fundacionjala.gradle.plugins.enforce.metadata.RetrieveMetadata
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.SalesforceTask
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.ZipFileManager
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.ClassifiedFile
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.FileValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.Package
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.PackageBuilder
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.filter.Filter
 
 import java.nio.file.Paths
 
 abstract class Retrieval extends SalesforceTask {
     private final String ZIP_FILE_NAME = 'retrieve.zip'
     private final String UNPACKAGE_FOLDER = 'unpackaged'
+    private final String SPECIFIC_FILES_NOT_FOUND = "Valid files were not found, retrieve task was canceled!!"
+    protected final int CODE_TO_EXIT = 0
     public RetrieveMetadata retrieveMetadata
     public PackageBuilder packageBuilder
     public String unPackageFolder
     public String packageFromSourcePath
     public String packageFromBuildPath
     private final String FILES_RETRIEVE = 'files'
+    private final String SPECIFIC_FILES_RETRIEVE = 'specificFiles'
     private final String ALL_PARAMETER = 'all'
     public String files
     public String all = Constants.FALSE
+    public Boolean specificFiles = Constants.FALSE
+    public ArrayList<String> specificFileNames
 
     /**
      * Sets description and group task
@@ -58,6 +65,7 @@ abstract class Retrieval extends SalesforceTask {
             if (Util.isValidProperty(project, FILES_RETRIEVE)) {
                 files = project.property(FILES_RETRIEVE) as String
             }
+            specificFiles = project.hasProperty(SPECIFIC_FILES_RETRIEVE)
         }
         if (Util.isValidProperty(project, ALL_PARAMETER)) {
             all = project.property(ALL_PARAMETER) as String
@@ -69,6 +77,10 @@ abstract class Retrieval extends SalesforceTask {
      */
     void executeRetrieve(Package metaPackage) {
         retrieveMetadata = new RetrieveMetadata(metaPackage)
+        if (specificFiles) {
+            readSpecificFilesToRetrieve()
+            retrieveMetadata.setSpecificFiles(specificFileNames)
+        }
         retrieveMetadata.executeRetrieve(poll, waitTime, credential)
     }
 
@@ -79,7 +91,11 @@ abstract class Retrieval extends SalesforceTask {
     void saveOnDiskFileUnzipped(byte[] zipFile) {
         ZipFileManager zipFileManager = new ZipFileManager()
         zipFileManager.flushZipFile(zipFile, buildFolderPath, ZIP_FILE_NAME)
-        unZip(Paths.get(buildFolderPath, ZIP_FILE_NAME).toString(), buildFolderPath)
+        if (!specificFiles) {
+            unZip(Paths.get(buildFolderPath, ZIP_FILE_NAME).toString(), buildFolderPath)
+        } else {
+            unZip(Paths.get(buildFolderPath, ZIP_FILE_NAME).toString(), projectPath)
+        }
     }
 
     /**
@@ -92,5 +108,42 @@ abstract class Retrieval extends SalesforceTask {
         retrieveMetadata.getWarningsMessages().each { message ->
             logger.warn(message)
         }
+    }
+    /**
+     * Loads specific files to be retrieved, their file names must be encoded by URLEncoder logic in order to avoid SOAP exceptions.
+     **/
+    void readSpecificFilesToRetrieve() {
+        specificFileNames = []
+        Filter filter = new Filter(project, projectPath)
+        ClassifiedFile classifiedFile = null
+        if (files) {
+            ArrayList<File> filesFiltered = filter.getFiles(files, null)
+            classifiedFile = FileValidator.validateFiles(projectPath, filesFiltered)
+        }
+        if (!classifiedFile || !classifiedFile.validFiles || classifiedFile.validFiles.isEmpty()) {
+            logger.error(SPECIFIC_FILES_NOT_FOUND)
+            System.exit(CODE_TO_EXIT)
+        }
+        println "*********************************************\t"
+        println "        Specific files to retrieve\t"
+        println "*********************************************\t"
+        if (classifiedFile.validFiles) {
+            classifiedFile.validFiles.each { file ->
+                String fileNameToRetrieve = getSpecificFileFormattedName(file)
+                println(fileNameToRetrieve)
+                specificFileNames.add(fileNameToRetrieve)
+            }
+        }
+        println "*********************************************\t"
+    }
+
+    /**
+     * Returns file's relative path and applies URLEncoder to file names, it is in order to ensure safe SOAP requests.
+     * @return String, relative path with encoded name.
+     */
+    String getSpecificFileFormattedName(File file) {
+        String fileName = file.getName()
+        String fileNameToRetrieve = file.getAbsolutePath().replace(projectPath, "").replace(fileName, URLEncoder.encode(fileName, "UTF-8"))
+        return fileNameToRetrieve.substring(1).replaceAll("\\\\", "/")
     }
 }
