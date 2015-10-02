@@ -94,7 +94,7 @@ class FilterSubcomponents {
         def folderPath  = Util.getFirstPath(relativePath)
         def component = MetadataComponents.getComponentByFolder(folderPath)
         if (!component) {
-            println('ComponentNotFound: ' + relativePath);
+            println('ComponentNotFound: ' + relativePath)
         } else if(components.contains(component) || !supportedSubcomponents.contains(component.getDirectory())) {
             return true
         }

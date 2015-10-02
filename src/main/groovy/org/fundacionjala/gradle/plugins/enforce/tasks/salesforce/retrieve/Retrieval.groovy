@@ -65,7 +65,7 @@ abstract class Retrieval extends SalesforceTask {
             if (Util.isValidProperty(project, FILES_RETRIEVE)) {
                 files = project.property(FILES_RETRIEVE) as String
             }
-            specificFiles = project.hasProperty(SPECIFIC_FILES_RETRIEVE);
+            specificFiles = project.hasProperty(SPECIFIC_FILES_RETRIEVE)
         }
         if (Util.isValidProperty(project, ALL_PARAMETER)) {
             all = project.property(ALL_PARAMETER) as String
@@ -129,14 +129,18 @@ abstract class Retrieval extends SalesforceTask {
         println "*********************************************\t"
         if (classifiedFile.validFiles) {
             classifiedFile.validFiles.each { file ->
-                String fileNameToRetrieve = getSpecificFileFormattedName(file);
+                String fileNameToRetrieve = getSpecificFileFormattedName(file)
                 println(fileNameToRetrieve)
-                specificFileNames.add(fileNameToRetrieve);
+                specificFileNames.add(fileNameToRetrieve)
             }
         }
         println "*********************************************\t"
     }
 
+    /**
+     * Returns file's relative path and applies URLEncoder to file names, it is in order to ensure safe SOAP requests.
+     * @return String, relative path with encoded name.
+     */
     String getSpecificFileFormattedName(File file) {
         String fileName = file.getName()
         String fileNameToRetrieve = file.getAbsolutePath().replace(projectPath, "").replace(fileName, URLEncoder.encode(fileName, "UTF-8"))

@@ -31,7 +31,10 @@ public class RetrieveMetadata {
         this.metaPackage = metaPackage
         warningMessages = new ArrayList<String>()
     }
-
+    /**
+     * Allows define the files that will be downloaded in the Retrieve command's response.
+     * @param specificFiles, relative file paths with encoded names(URLEncoder).
+     */
     public void setSpecificFiles(ArrayList<String> specificFiles) {
         this.specificFiles = specificFiles
     }
