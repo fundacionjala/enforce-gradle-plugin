@@ -15,7 +15,6 @@ import org.gradle.api.file.FileTree
 import org.gradle.api.logging.Logger
 
 import java.nio.file.Paths
-import java.util.concurrent.ExecutionException
 
 class TestSelectorModerator {
 
@@ -76,7 +75,6 @@ class TestSelectorModerator {
      * Collects and returns all test class names for each available TestSelector
      */
     public ArrayList<String> getTestClassNames() {
-
         makeClassNamesAvailable()//TODO: load on deman
 
         if (Util.isEmptyProperty(project, RunTestTaskConstants.CLASS_PARAM)) {
@@ -91,12 +89,10 @@ class TestSelectorModerator {
             throw new Exception("${RunTestTaskConstants.ENTER_VALID_PARAMETER} "
                     + "${RunTestTaskConstants.FILE_PARAM}")
         } else if (Util.isValidProperty(project, RunTestTaskConstants.FILE_PARAM)) {
-
             String fileParamValue = project.properties[RunTestTaskConstants.FILE_PARAM].toString()
             if (this.testClassNameList.size() < getAllTestClassNameList().size()) {
                 ArrayList<String> testClassNames = []
                 ITestSelector selector
-
                 if (!Util.isEmptyProperty(project, RunTestTaskConstants.REMOTE_PARAM)
                         && (project.properties[RunTestTaskConstants.REMOTE_PARAM].toString()).toBoolean()) {
                     Boolean refreshClassAndTestMap = false
@@ -131,6 +127,7 @@ class TestSelectorModerator {
         if (this.testClassNameList && !this.testClassNameList.isEmpty()) {
             this.testClassNameList.unique()
         }
+
         return this.testClassNameList
     }
 
@@ -138,9 +135,6 @@ class TestSelectorModerator {
      * Returns all available test classes on demand
      */
     private ArrayList<String> getAllTestClassNameList() {
-        if (!this.allTestClassNameList) {
-            this.allTestClassNameList = getClassNames(this.pathClasses, RunTestTaskConstants.WILDCARD_ALL_TEST)
-        }
         return this.allTestClassNameList
     }
 

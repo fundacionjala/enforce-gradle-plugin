@@ -11,7 +11,8 @@ import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataCompone
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.runtesttask.CustomComponentTracker
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.IArtifactGenerator
 
-class TestSelectorByReference extends TestSelector  {
+class TestSelectorByReferenceSFDC extends TestSelector  {
+
     private String srcPath
     private String filesParameterValue
     private IArtifactGenerator artifactGenerator
@@ -161,28 +162,5 @@ class TestSelectorByReference extends TestSelector  {
             }
         }
         return testClassList.unique()
-    }
-
-    /**
-     * Displays a quiet log message
-     * @param msg message to display
-     */
-    private void displayMessage(String msg) {
-        displayMessage(msg, false)
-    }
-
-    /**
-     * Displays a quiet or error log message
-     * @param msg message to display
-     * @param isError specifies the kind of message quiet/error
-     */
-    private void displayMessage(String msg, Boolean isError) {
-        if (logger) {
-            if (isError) {
-                logger.error(msg)
-            } else {
-                logger.quiet(msg)
-            }
-        }
     }
 }

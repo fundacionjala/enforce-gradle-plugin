@@ -31,6 +31,9 @@ class TestSelectorByReferenceLocal extends TestSelector {
         this.filesParameterValue = filesParameterValue
     }
 
+    /**
+     * starts to collect all test classes which contains Apex classes name
+     */
     private void init() {
         this.filesParameterValue = this.filesParameterValue.replace(".${MetadataComponents.CLASSES.getExtension()}", "")
         testClassNameList.each { testClass ->
