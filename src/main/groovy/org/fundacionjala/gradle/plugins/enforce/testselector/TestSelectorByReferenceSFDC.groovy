@@ -11,15 +11,13 @@ import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataCompone
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.runtesttask.CustomComponentTracker
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.IArtifactGenerator
 
-class TestSelectorByReferenceSFDC extends TestSelector  {
-
+class TestSelectorByReference extends TestSelector  {
     private String srcPath
     private String filesParameterValue
     private IArtifactGenerator artifactGenerator
     private Map classAndTestMap = [:]
     private Boolean refreshClassAndTestMap = false
     private Boolean displayNoChangesMessage = false
-    private Logger logger
 
     private final String APEX_CLASS_MEMBER_QUERY = 'SELECT FullName, ContentEntityId, SymbolTable FROM ApexClassMember WHERE MetadataContainerId = \'%s\''
     private final String CONTAINER_ASYNC_REQUEST_QUERY = 'SELECT State FROM ContainerAsyncRequest WHERE Id=\'%s\''
@@ -53,14 +51,6 @@ class TestSelectorByReferenceSFDC extends TestSelector  {
         this.artifactGenerator = artifactGenerator
         this.filesParameterValue = filesParameterValue
         this.refreshClassAndTestMap = refreshClassAndTestMap
-    }
-
-    /**
-     * Sets the logger to allow display messages
-     * @param logger instance reference of the current Logger
-     */
-    public void setLogger(Logger logger) {
-        this.logger = logger
     }
 
     /**
