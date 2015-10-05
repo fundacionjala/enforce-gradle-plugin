@@ -32,4 +32,28 @@ public abstract class TestSelector implements ITestSelector {
     public void setLogger(Logger logger) {
         this.logger = logger
     }
+
+
+    /**
+     * Displays a quiet log message
+     * @param msg message to display
+     */
+    protected void displayMessage(String msg) {
+        displayMessage(msg, false)
+    }
+
+    /**
+     * Displays a quiet or error log message
+     * @param msg message to display
+     * @param isError specifies the kind of message quiet/error
+     */
+    protected void displayMessage(String msg, Boolean isError) {
+        if (logger) {
+            if (isError) {
+                logger.error(msg)
+            } else {
+                logger.quiet(msg)
+            }
+        }
+    }
 }
