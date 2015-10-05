@@ -616,4 +616,23 @@ class Util {
         }
         return nameApex
     }
+
+    /**
+     * Shows an exception message when object sent is null
+     * @param object is type Object
+     */
+    public static void showExceptionWhenSystemConsoleIsNull(Object object) {
+        if (!object) {
+            throw new Exception(
+                '''[Warning] Execute this task on console is not supported when gradle daemon is running!
+                   \nSolutions:
+                       \n1. Stop daemon process, executing $gradle <Task_Name> --no-daemon
+                       \n2. Execute this task using parameters, examples:
+                            \n\t$gradle retrieve -Pall=true
+                            \n\t$gradle upload -Pall=true
+                            \n\t$gradle addCredential -Pid=Myid -Pusername=user@enforce.com -Ppassword=myPassword -Ptoken=myToken
+                            \n\t$gradle updateCrendetial -Pid=Myid -Pusername=newUser@enforce.com -Ppassword=myPassword -Ptoken=myToken''')
+
+        }
+    }
 }

@@ -40,6 +40,7 @@ class Delete extends Deployment {
      */
     @Override
     void runTask() {
+        Util.showExceptionWhenSystemConsoleIsNull(System.console())
         createDeploymentDirectory(taskFolderPath)
         loadClassifiedFiles(files, excludes)
         loadFilesToDelete()
