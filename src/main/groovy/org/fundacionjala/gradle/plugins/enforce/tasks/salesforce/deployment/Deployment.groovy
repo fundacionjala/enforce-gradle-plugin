@@ -35,6 +35,7 @@ abstract class Deployment extends SalesforceTask {
     public String taskFolderName
     public String taskPackagePath
     public String taskDestructivePath
+    private final String FILE_CUSTOM_COMPONENT_TRACKER_NAME = ".customComponentTracker.data"
     ClassifiedFile classifiedFile
 
     /**
@@ -172,6 +173,7 @@ abstract class Deployment extends SalesforceTask {
      * @return a map with files classified
      */
     void loadClassifiedFiles(String includes, String excludes) {
+        filter.excludeFiles.add(FILE_CUSTOM_COMPONENT_TRACKER_NAME)
         ArrayList<File> filesFiltered = filter.getFiles(includes, excludes)
         classifiedFile = FileValidator.validateFiles(projectPath, filesFiltered)
         classifiedFile.ShowClassifiedFiles(showValidatedFiles == Constants.TRUE_OPTION, projectPath)

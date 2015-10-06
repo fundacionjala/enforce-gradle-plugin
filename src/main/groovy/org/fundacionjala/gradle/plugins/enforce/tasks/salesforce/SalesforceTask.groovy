@@ -107,7 +107,7 @@ abstract class SalesforceTask extends ForceTask {
     void writePackage(String packagePath, ArrayList<File> files, boolean withProjectPath = true) {
         FileWriter fileWriter = new FileWriter(packagePath)
         files = files.grep({ file ->
-            !file.name.endsWith(Constants.META_XML_NAME)
+            !file.name.endsWith(Constants.META_XML)
         })
         if (withProjectPath) {
             packageBuilder.createPackage(files, projectPath)

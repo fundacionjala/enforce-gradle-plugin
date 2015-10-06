@@ -31,7 +31,7 @@ public class BasicOrgSubcomponentsValidator implements OrgInterfaceValidator{
     public Map<String,ArrayList<File>> validateFiles(Credential credential, ArrayList<File> filesToVerify, String folderComponent, String projectPath) {
         Map<String,ArrayList<File>> mapFiles = [:]
         mapFiles.put(Constants.VALID_FILE, new ArrayList<File>())
-        mapFiles.put(Constants.DOES_NOT_EXIST_FILES, new ArrayList<File>())
+        mapFiles.put(Constants.FILES_NOT_FOUND, new ArrayList<File>())
         mapFiles.put(Constants.FILE_WITHOUT_VALIDATOR, new ArrayList<File>())
 
         ArrayList<File> orgFiles = getSubcomponentsInOrg(credential, filesToVerify, folderComponent)
@@ -41,7 +41,7 @@ public class BasicOrgSubcomponentsValidator implements OrgInterfaceValidator{
                mapFiles[Constants.VALID_FILE].add(file)
             }
             else {
-               mapFiles[Constants.DOES_NOT_EXIST_FILES].add(file)
+               mapFiles[Constants.FILES_NOT_FOUND].add(file)
             }
         }
         return mapFiles
