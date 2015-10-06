@@ -48,7 +48,7 @@ class FileValidator {
             SalesforceValidator validator = SalesforceValidatorManager.getValidator(parentFileName)
             boolean isValid = true
             if (!Files.exists(path)) {
-                classifiedFile.notFoundFiles.add(file)
+                classifiedFile.filesNotFound.add(file)
                 isValid = false
             }
             if (!validator.validateFile(file, parentFileName)) {
@@ -56,7 +56,7 @@ class FileValidator {
                 isValid = false
             }
             if (!validator.validateFileContainsXML(file, parentFileName)) {
-                classifiedFile.filesWithoutXml.add(file)
+                classifiedFile.filesWithoutMetadata.add(file)
                 isValid = false
             }
             if(isValid){
