@@ -40,7 +40,7 @@ class DocumentSalesforceValidatorTest extends Specification {
             def file = new File(Paths.get('myDocuments/MyDocument.txt-meta.txt').toString())
             def folder = 'documents'
         when:
-            def result = validator.validateFileContainsXML(file, folder)
+            def result = validator.hasMetadataFile(file, folder)
         then:
             !result
     }
@@ -50,7 +50,7 @@ class DocumentSalesforceValidatorTest extends Specification {
             def file = new File(Paths.get('myDocuments/MyDocument.txt-meta.xml').toString())
             def folder = 'documents'
         when:
-            def result = validator.validateFileContainsXML(file, folder)
+            def result = validator.hasMetadataFile(file, folder)
         then:
             result
     }

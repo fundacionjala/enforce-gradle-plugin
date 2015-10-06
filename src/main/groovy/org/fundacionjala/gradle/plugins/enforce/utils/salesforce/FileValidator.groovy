@@ -55,7 +55,7 @@ class FileValidator {
                 classifiedFile.invalidFiles.add(file)
                 isValid = false
             }
-            if (!validator.validateFileContainsXML(file, parentFileName)) {
+            if (!validator.hasMetadataFile(file, parentFileName)) {
                 classifiedFile.filesWithoutMetadata.add(file)
                 isValid = false
             }

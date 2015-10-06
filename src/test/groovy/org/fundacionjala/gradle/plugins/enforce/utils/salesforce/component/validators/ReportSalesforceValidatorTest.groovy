@@ -51,7 +51,7 @@ class ReportSalesforceValidatorTest extends Specification {
             def file = new File(Paths.get('myReports/CustomReport.report-meta.xml').toString())
             def folder = 'reports'
         when:
-            def result = validator.validateFileContainsXML(file, folder)
+            def result = validator.hasMetadataFile(file, folder)
         then:
             result
     }

@@ -26,7 +26,7 @@ class ReportSalesforceValidator implements SalesforceValidator {
      * @return true if file is valid
      */
     @Override
-    boolean validateFileContainsXML(File file, String folderComponent) {
+    boolean hasMetadataFile(File file, String folderComponent) {
         return true
     }
 }
