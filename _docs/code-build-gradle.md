@@ -13,7 +13,7 @@ permalink: /docs/code-build-gradle/
          jcenter()
        }
        dependencies {
-           classpath 'org.fundacionjala.gradle.plugins.enforce:enforce-gradle-plugin:1.1.0'
+           classpath 'org.fundacionjala.gradle.plugins.enforce:enforce-gradle-plugin:1.1.2'
        }
    }
 
@@ -30,7 +30,7 @@ permalink: /docs/code-build-gradle/
 ## Configuration parameters
 
 Task | srcPath |
-Description | Specify the folder where we store our code.|
+Description | Specifies the folder where we store our code.|
 Examples | 'src' |
 {: .table-quick-start-build-gradle }
 

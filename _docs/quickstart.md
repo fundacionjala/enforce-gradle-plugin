@@ -26,12 +26,12 @@ Step | Examples | Description
 
 ### 3 Retrive your code
 
-This task download files from your organization is based on your .xml package. If this file is missing, the system downloads files by default.
+This task downloads files from your organization is based on your .xml package. If this file is missing, the system downloads files by default.
 
 Step | Examples | Description
 1 | ![Con titulo](../../img/quick_start/retrieve-task-1.png )| **Open a terminal** <br>Open a terminal in the same folder as your project
 2 | ![Con titulo](../../img/quick_start/retrieve-task-2.png )| **Execute retrieve task** <br>Execute the following command<br>  *> gradle retrieve*<br> This task downloaded the salesforce components contained in your organization. <br><br> For more information about the *retrieve task* see the following link <br> <a href="{{ site.url }}/docs/retrieve/" target="_blank">Retrieve code</a>
-3 | ![Con titulo](../../img/quick_start/retrieve-task-3.png ) | **Results** <br>This task download files from your organization is based on your .xml package. If this file is missing, the system downloads files by default.<br> - objects<br> - staticresources<br> - classes<br> - pages<br> - triggers<br> - components <br><br> For more information about the *package.xml* file see the following link <br> [package.xml information](https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/manifest_samples.htm)
+3 | ![Con titulo](../../img/quick_start/retrieve-task-3.png ) | **Results** <br>This task downloads files from your organization is based on your .xml package. If this file is missing, the system downloads files by default.<br> - objects<br> - staticresources<br> - classes<br> - pages<br> - triggers<br> - components <br><br> For more information about the *package.xml* file see the following link <br> [package.xml information](https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/manifest_samples.htm)
 {: .table-quick-start-tutorials }
 
 ### 4 Deploy your code
@@ -40,7 +40,7 @@ This task deploys all code from your local code to Salesforce organization, for 
 
 Step | Examples | Description
 1 | ![Con titulo](../../img/quick_start/deploy-task-1.png )| **Open a terminal** <br> Open a terminal in the same folder as your project <br><br> **Execute deploy task** <br>Execute the following command<br>  *> gradle deploy*<br> This task deployed all code from your local code to Salesforce organization. <br><br> For more information about the *deploy task* see the following link <br> <a href="{{ site.url }}/docs/deployment/" target="_blank">Deployed code</a>
-2 | ![Con titulo](../../img/quick_start/deploy-task-2.png )| **Results** <br> All code will be deployed to organization using a smart deploy. That means that when you execute the task deploy:<br><br> a) First step is truncate the next elements and deploy it.<br> - classes <br> - objects <br> - triggers <br> - components <br> - rages <br> - workFlows <br><br> b) Second step is deploy all local code to your organization 
+2 | ![Con titulo](../../img/quick_start/deploy-task-2.png )| **Results** <br> All code will be deployed to organization using a smart deploy. That means that when you execute the task deploy:<br><br> a) First step is truncate the next elements and deploy it.<br> - classes <br> - objects <br> - triggers <br> - components <br> - pages <br> - workFlows <br><br> b) Second step is deploy all local code to your organization
 {: .table-quick-start-tutorials }
 
 
@@ -82,7 +82,7 @@ Task | Description
 #### Retrieve tasks
 
 Task | Description 
-<a href="{{ site.url }}/docs/retrieve/" target="_blank">retrieve</a> | This task download files from your organization is based on your .xml package. If this file is missing, the system downloads files by default. |
+<a href="{{ site.url }}/docs/retrieve/" target="_blank">retrieve</a> | This task downloads files from your organization is based on your .xml package. If this file is missing, the system downloads files by default. |
 {: .table-quick-start-features }
 
 #### Unit-test tasks

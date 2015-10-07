@@ -171,7 +171,7 @@ Output:
 
 
 Using excludes parameter
-This command delete all files excluding all classes.
+This command deletes all files excluding all classes.
 
     $ gradle delete -Pexcludes=classes
 
