@@ -31,8 +31,8 @@ abstract class Retrieval extends SalesforceTask {
     private final String SPECIFIC_FILES_RETRIEVE = 'specificFiles'
     private final String ALL_PARAMETER = 'all'
     public String files
-    public String all = Constants.FALSE
-    public Boolean specificFiles = Constants.FALSE
+    public String all = Constants.FALSE_OPTION
+    public Boolean specificFiles = Constants.FALSE_OPTION
     public ArrayList<String> specificFileNames
 
     /**

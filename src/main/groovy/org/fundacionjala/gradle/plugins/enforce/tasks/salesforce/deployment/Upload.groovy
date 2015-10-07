@@ -28,7 +28,7 @@ class Upload extends Deployment {
     public ArrayList<File> filesToUpload
     public PackageGenerator packageGenerator
     public String option = Constants.YES_OPTION
-    public String all = Constants.FALSE
+    public String all = Constants.FALSE_OPTION
     String files = Constants.EMPTY
 
     Upload() {
@@ -94,7 +94,7 @@ class Upload extends Deployment {
      * Shows a warning message to upload all files to org
      */
     public void showWarningMessage() {
-        if (!super.isIntegrationMode() && (all == Constants.FALSE) && files.isEmpty()  && excludes.isEmpty()) {
+        if (!super.isIntegrationMode() && (all == Constants.FALSE_OPTION) && files.isEmpty()  && excludes.isEmpty()) {
             logger.warn("${ALL_FILES_UPLOAD}${projectPath}")
             Util.showExceptionWhenSystemConsoleIsNull(System.console())
             option = System.console().readLine(QUESTION_CONTINUE)

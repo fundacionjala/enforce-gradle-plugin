@@ -10,6 +10,8 @@ class Filter {
     private Project project
     private String projectPath
     ArrayList<String> excludeFiles
+    private final String FILE_CUSTOM_COMPONENT_TRACKER_NAME = ".customComponentTracker.data"
+    ArrayList<String> defaultExcludedFiles = [Constants.FILE_TRACKER_NAME, FILE_CUSTOM_COMPONENT_TRACKER_NAME]
 
     Filter(Project project, String projectPath) {
         this.project = project
@@ -46,7 +48,7 @@ class Filter {
      * @return an array list of files
      */
     public ArrayList<File> getFiles(String includes, String excludes) {
-        ArrayList<String> criteriaToExclude = [Constants.FILE_TRACKER_NAME]
+        ArrayList<String> criteriaToExclude = defaultExcludedFiles
         ArrayList<String> criteriaToInclude = []
         criteriaToExclude.addAll(excludeFiles)
         if(excludes && !excludes.isEmpty()) {

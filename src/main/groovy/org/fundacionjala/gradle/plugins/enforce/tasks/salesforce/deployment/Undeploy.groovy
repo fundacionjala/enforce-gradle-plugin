@@ -146,7 +146,7 @@ class Undeploy extends Deployment {
         ArrayList<File> validFiles = filesClassified.get(Constants.VALID_FILE)
         validFiles.addAll(filesClassified.get(Constants.FILE_WITHOUT_VALIDATOR))
 
-        filesClassified.get(Constants.DOES_NOT_EXIST_FILES).each { File file ->
+        filesClassified.get(Constants.FILES_NOT_FOUND).each { File file ->
             notFoundFiles.push(file.name)
         }
 

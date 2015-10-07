@@ -20,10 +20,8 @@ import org.fundacionjala.gradle.plugins.enforce.wsc.rest.QueryBuilder
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
 import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.gradle.api.file.FileTree
 
 import java.nio.charset.Charset
-import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.logging.Logger
 import java.util.regex.Matcher
@@ -45,7 +43,11 @@ class Util {
      * @param fileName the file typeName
      */
     public static String getFileName(String fileName) {
-        fileName.replaceFirst(PATTERN_FILE_EXT, '')
+        String result = fileName.replaceFirst(PATTERN_FILE_EXT, Constants.EMPTY)
+        if (fileName.contains(Constants.META_XML)) {
+            result = fileName.replaceFirst(Constants.META_XML, Constants.EMPTY)
+        }
+        return result
     }
 
     /**
@@ -379,7 +381,7 @@ class Util {
 
         ArrayList<String> notExistFolders = getNotExistFolders(foldersName, projectPath)
         if (!notExistFolders.empty) {
-            errorMessage += "\n${Constants.DOES_NOT_EXIST_FOLDER} ${notExistFolders}"
+            errorMessage += "\n${Constants.FOLDERS_NOT_FOUND} ${notExistFolders}"
         }
 
         if (!errorMessage.isEmpty()) {
@@ -410,7 +412,7 @@ class Util {
             errorMessage = "${Constants.INVALID_FILE}: ${invalidFiles}"
         }
         if (!notExistFiles.isEmpty()) {
-            errorMessage += "\n${Constants.DOES_NOT_EXIST_FILES} ${notExistFiles}"
+            errorMessage += "\n${Constants.FILES_NOT_FOUND} ${notExistFiles}"
         }
         if (!errorMessage.isEmpty()) {
             throw new Exception(errorMessage)

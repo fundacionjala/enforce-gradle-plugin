@@ -27,7 +27,7 @@ public class DocumentSalesforceValidator implements SalesforceValidator{
      * @return returns true if the file contains a xml file
      */
     @Override
-    public boolean validateFileContainsXML(File file, String folderComponent) {
+    public boolean hasMetadataFile(File file, String folderComponent) {
         String fileName = file.getName()
         if (!fileName.endsWith(Constants.META_XML)) {
             String xmlFileName = "${file.getAbsolutePath()}${Constants.META_XML}".toString()

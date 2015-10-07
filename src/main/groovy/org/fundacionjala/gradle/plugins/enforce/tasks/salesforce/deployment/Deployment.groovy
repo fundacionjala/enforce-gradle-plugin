@@ -174,7 +174,7 @@ abstract class Deployment extends SalesforceTask {
     void loadClassifiedFiles(String includes, String excludes) {
         ArrayList<File> filesFiltered = filter.getFiles(includes, excludes)
         classifiedFile = FileValidator.validateFiles(projectPath, filesFiltered)
-        classifiedFile.ShowClassifiedFiles(showValidatedFiles == Constants.TRUE_OPTION)
+        classifiedFile.ShowClassifiedFiles(showValidatedFiles == Constants.TRUE_OPTION, projectPath)
     }
 
     /**

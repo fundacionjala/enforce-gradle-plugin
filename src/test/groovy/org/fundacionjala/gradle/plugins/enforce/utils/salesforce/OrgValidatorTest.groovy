@@ -76,7 +76,7 @@ class OrgValidatorTest extends Specification {
         unvalidatedDocumentFiles.add(new File(Paths.get(SRC_PATH,'documents','myDocuments','doc2.txt').toString()))
 
         mapExpected.put(Constants.VALID_FILE, new ArrayList<File>())
-        mapExpected.put(Constants.DOES_NOT_EXIST_FILES, new ArrayList<File>())
+        mapExpected.put(Constants.FILES_NOT_FOUND, new ArrayList<File>())
         mapExpected.put(Constants.FILE_WITHOUT_VALIDATOR, new ArrayList<File>())
     }
 
@@ -111,13 +111,13 @@ class OrgValidatorTest extends Specification {
 
         then:
             mapResponse[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
-            mapResponse[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
+            mapResponse[Constants.FILES_NOT_FOUND].sort() == mapExpected[Constants.FILES_NOT_FOUND].sort()
             mapResponse[Constants.FILE_WITHOUT_VALIDATOR].sort() == mapExpected[Constants.FILE_WITHOUT_VALIDATOR].sort()
     }
 
     def "Test should returns a map that contains all invalid class" () {
         given:
-            mapExpected[Constants.DOES_NOT_EXIST_FILES].addAll(invalidClassFiles)
+            mapExpected[Constants.FILES_NOT_FOUND].addAll(invalidClassFiles)
             allFiles.addAll(invalidClassFiles)
 
         when:
@@ -125,14 +125,14 @@ class OrgValidatorTest extends Specification {
 
         then:
             mapResponse[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
-            mapResponse[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
+            mapResponse[Constants.FILES_NOT_FOUND].sort() == mapExpected[Constants.FILES_NOT_FOUND].sort()
             mapResponse[Constants.FILE_WITHOUT_VALIDATOR].sort() == mapExpected[Constants.FILE_WITHOUT_VALIDATOR].sort()
     }
 
     def "Test should returns a map that contains all valid and invalid trigger" () {
         given:
             mapExpected[Constants.VALID_FILE].addAll(validTriggerFiles)
-            mapExpected[Constants.DOES_NOT_EXIST_FILES].addAll(invalidTriggerFiles)
+            mapExpected[Constants.FILES_NOT_FOUND].addAll(invalidTriggerFiles)
             allFiles.addAll(validTriggerFiles)
             allFiles.addAll(invalidTriggerFiles)
 
@@ -141,7 +141,7 @@ class OrgValidatorTest extends Specification {
 
         then:
             mapResponse[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
-            mapResponse[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
+            mapResponse[Constants.FILES_NOT_FOUND].sort() == mapExpected[Constants.FILES_NOT_FOUND].sort()
             mapResponse[Constants.FILE_WITHOUT_VALIDATOR].sort() == mapExpected[Constants.FILE_WITHOUT_VALIDATOR].sort()
     }
 
@@ -149,8 +149,8 @@ class OrgValidatorTest extends Specification {
         given:
             mapExpected[Constants.VALID_FILE].addAll(validClassFiles)
             mapExpected[Constants.VALID_FILE].addAll(validTriggerFiles)
-            mapExpected[Constants.DOES_NOT_EXIST_FILES].addAll(invalidClassFiles)
-            mapExpected[Constants.DOES_NOT_EXIST_FILES].addAll(invalidTriggerFiles)
+            mapExpected[Constants.FILES_NOT_FOUND].addAll(invalidClassFiles)
+            mapExpected[Constants.FILES_NOT_FOUND].addAll(invalidTriggerFiles)
 
             allFiles.addAll(validClassFiles)
             allFiles.addAll(validTriggerFiles)
@@ -163,7 +163,7 @@ class OrgValidatorTest extends Specification {
 
         then:
             mapResponse[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
-            mapResponse[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
+            mapResponse[Constants.FILES_NOT_FOUND].sort() == mapExpected[Constants.FILES_NOT_FOUND].sort()
             mapResponse[Constants.FILE_WITHOUT_VALIDATOR].sort() == mapExpected[Constants.FILE_WITHOUT_VALIDATOR].sort()
     }
 }
