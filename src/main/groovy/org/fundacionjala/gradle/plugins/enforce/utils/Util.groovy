@@ -43,7 +43,11 @@ class Util {
      * @param fileName the file typeName
      */
     public static String getFileName(String fileName) {
-        fileName.replaceFirst(PATTERN_FILE_EXT, '')
+        String result = fileName.replaceFirst(PATTERN_FILE_EXT, Constants.EMPTY)
+        if (fileName.contains(Constants.META_XML)) {
+            result = fileName.replaceFirst(Constants.META_XML, Constants.EMPTY)
+        }
+        return result
     }
 
     /**
