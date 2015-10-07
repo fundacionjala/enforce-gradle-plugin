@@ -16,6 +16,7 @@
   - deployment
   - undeploy
   - truncate
+  - delete
   - retrieve
   - unit-test
   - utils

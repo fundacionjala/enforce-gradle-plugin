@@ -77,7 +77,6 @@ output:
 ```
 
 
-
 ### Using sort parameter:
 
 Scenario:
@@ -112,6 +111,41 @@ output:
     BUILD SUCCESSFUL
 ```
 
+### Using help parameter:
+
+Scenario:
+A user is able to view the description and the parameters that contains the task by using the help.
+
+command:
+
+    $gradle status -Phelp
+
+output:
+
+```bash
+    **********************************************************************
+    
+                               status task
+    
+    **********************************************************************
+    
+    Description   :
+        Shows files which have been added, modified or deleted
+    
+    Documentation : 
+        http://fundacionjala.github.io/enforce-gradle-plugin/docs/file-
+        monitor
+    
+    Parameters :
+        -Psort : Sort the files by name
+            > gradle status -Psort=name
+    
+    **********************************************************************
+    
+    BUILD SUCCESSFUL
+
+```
+
 ## Reset task
 
 File monitor tracker will be reset.
@@ -126,4 +160,39 @@ output:
    :reset
 
     BUILD SUCCESSFUL
+```
+
+
+### Using help parameter:
+
+Scenario:
+A user is able to  view the description and the parameters that contains the task by using the help.
+
+command:
+
+    $gradle reset -Phelp
+
+output:
+
+```
+    **********************************************************************
+    
+                                 reset task
+    
+    **********************************************************************
+    
+    Description   :
+        File monitor tracker will be reset
+    
+    Documentation : 
+        http://fundacionjala.github.io/enforce-gradle-plugin/docs/file-
+        monitor/
+    
+    Parameters :
+    
+    **********************************************************************
+
+    BUILD SUCCESSFUL
+
+
 ```
