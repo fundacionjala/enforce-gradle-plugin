@@ -35,7 +35,7 @@ class EnforcePluginExtension {
      */
     ArrayList<String> deleteSubComponents = ['*']
 
-    ArrayList<String> standardObjects = []
+    ArrayList<String> standardComponents = []
 
     String tool = ""
 
