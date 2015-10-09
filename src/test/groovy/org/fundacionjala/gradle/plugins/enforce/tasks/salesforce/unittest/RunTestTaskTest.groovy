@@ -26,7 +26,7 @@ class RunTestTaskTest extends Specification {
         project.apply(plugin: EnforcePlugin)
         project.enforce {
             srcPath = "${File.separator}home${File.separator}user${File.separator}project${File.separator}one"
-            standardObjects = ["Q2w_Test__c.object"]
+            standardComponents = ["Q2w_Test__c.object"]
             tool = "metadata"
             poll = 200
             waitTime = 10
@@ -50,7 +50,7 @@ class RunTestTaskTest extends Specification {
 
     def "Should get the standard objects assigned"() {
         expect:
-        project.extensions.findByName('enforce').standardObjects == ["Q2w_Test__c.object"]
+        project.extensions.findByName('enforce').standardComponents == ["Q2w_Test__c.object"]
     }
 
     def "Should get the tool assigned"() {
@@ -62,7 +62,7 @@ class RunTestTaskTest extends Specification {
         given:
             project.enforce {
                 srcPath = SRC_PATH
-                standardObjects = ["Q2w_Test__c.object"]
+                standardComponents = ["Q2w_Test__c.object"]
                 tool = "metadata"
                 poll = 200
                 waitTime = 10
@@ -82,7 +82,7 @@ class RunTestTaskTest extends Specification {
         given:
             project.enforce {
                 srcPath = SRC_PATH
-                standardObjects = ["Q2w_Test__c.object"]
+                standardComponents = ["Q2w_Test__c.object"]
                 tool = "metadata"
                 poll = 200
                 waitTime = 10

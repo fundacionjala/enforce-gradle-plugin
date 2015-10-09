@@ -53,7 +53,7 @@ class Undeploy extends Deployment {
     @Override
     void runTask() {
         truncate()
-        addNewStandardObjects()
+        addNewStandardComponents()
         unDeploy()
     }
 
@@ -67,7 +67,7 @@ class Undeploy extends Deployment {
         copyFilesToTaskDirectory(filesToTruncate)
         addInterceptor()
         writePackage(taskPackagePath, filesToTruncate)
-        combinePackage(taskPackagePath)
+        combinePackageToUpdate(taskPackagePath)
         executeDeploy(taskFolderPath, START_MESSAGE_TRUNCATE, SUCCESS_MESSAGE_TRUNCATE)
     }
 
@@ -93,7 +93,7 @@ class Undeploy extends Deployment {
     public void unDeploy() {
         createDeploymentDirectory(taskFolderPath)
         deployToDeleteComponents()
-        combinePackage(taskDestructivePath)
+        combinePackageToUpdate(taskDestructivePath)
         executeDeploy(taskFolderPath, START_MESSAGE_UNDEPLOY, SUCCESS_MESSAGE_DELETE)
     }
 
@@ -159,10 +159,10 @@ class Undeploy extends Deployment {
     /**
      * Adds new standard objects from user property
      */
-    public void addNewStandardObjects() {
+    public void addNewStandardComponents() {
         if (Util.isValidProperty(project, Constants.FORCE_EXTENSION) &&
-                project[Constants.FORCE_EXTENSION].standardObjects) {
-            standardComponents += project[Constants.FORCE_EXTENSION].standardObjects
+                project[Constants.FORCE_EXTENSION].standardComponents) {
+            standardComponents += project[Constants.FORCE_EXTENSION].standardComponents
         }
     }
 
