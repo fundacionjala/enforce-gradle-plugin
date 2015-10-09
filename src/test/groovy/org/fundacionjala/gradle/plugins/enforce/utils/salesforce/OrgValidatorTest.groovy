@@ -202,7 +202,7 @@ class OrgValidatorTest extends Specification {
 
         then:
             mapResponse[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
-            mapResponse[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
+            mapResponse[Constants.FILES_NOT_FOUND].sort() == mapExpected[Constants.FILES_NOT_FOUND].sort()
             mapResponse[Constants.FILE_WITHOUT_VALIDATOR].sort() == mapExpected[Constants.FILE_WITHOUT_VALIDATOR].sort()
     }
 
@@ -211,9 +211,9 @@ class OrgValidatorTest extends Specification {
             mapExpected[Constants.VALID_FILE].addAll(validClassFiles)
             mapExpected[Constants.VALID_FILE].addAll(validTriggerFiles)
             mapExpected[Constants.VALID_FILE].addAll(validPagesFiles)
-            mapExpected[Constants.DOES_NOT_EXIST_FILES].addAll(invalidClassFiles)
-            mapExpected[Constants.DOES_NOT_EXIST_FILES].addAll(invalidTriggerFiles)
-            mapExpected[Constants.DOES_NOT_EXIST_FILES].addAll(invalidPagesFiles)
+            mapExpected[Constants.FILES_NOT_FOUND].addAll(invalidClassFiles)
+            mapExpected[Constants.FILES_NOT_FOUND].addAll(invalidTriggerFiles)
+            mapExpected[Constants.FILES_NOT_FOUND].addAll(invalidPagesFiles)
 
             allFiles.addAll(validClassFiles)
             allFiles.addAll(validTriggerFiles)
@@ -228,7 +228,7 @@ class OrgValidatorTest extends Specification {
 
         then:
             mapResponse[Constants.VALID_FILE].sort() == mapExpected[Constants.VALID_FILE].sort()
-            mapResponse[Constants.DOES_NOT_EXIST_FILES].sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
+            mapResponse[Constants.FILES_NOT_FOUND].sort() == mapExpected[Constants.FILES_NOT_FOUND].sort()
             mapResponse[Constants.FILE_WITHOUT_VALIDATOR].sort() == mapExpected[Constants.FILE_WITHOUT_VALIDATOR].sort()
     }
 }
