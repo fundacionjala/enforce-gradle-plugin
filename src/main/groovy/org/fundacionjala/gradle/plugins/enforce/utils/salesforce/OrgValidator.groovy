@@ -2,8 +2,8 @@ package org.fundacionjala.gradle.plugins.enforce.utils.salesforce
 
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files.BasicOrgComponentsValidator
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files.DefaultOrgComponentsValidator
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.org.BasicOrgComponentsValidator
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.org.DefaultOrgComponentsValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files.SalesforceValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.org.BasicOrgSubcomponentsValidator
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
@@ -38,7 +38,7 @@ class OrgValidator {
      * @param filesToValidate ia a list of files that need to validate
      * @param projectPath our repository
      */
-    public static Map<String,ArrayList<File>> validateFiles(Credential credential,ArrayList<File> filesToValidate, String projectPath) {
+    public static Map<String,ArrayList<File>> validateFiles(Credential credential, ArrayList<File> filesToValidate, String projectPath) {
         Map<String, ArrayList<File>> mapFiles = filesToValidate.groupBy {
             Util.getFirstPath(Util.getRelativePath(it,projectPath))
         }

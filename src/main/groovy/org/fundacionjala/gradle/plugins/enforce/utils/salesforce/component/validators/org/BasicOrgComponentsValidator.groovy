@@ -1,4 +1,4 @@
-package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files
+package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.org
 
 import groovy.json.JsonSlurper
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
@@ -24,12 +24,10 @@ public class BasicOrgComponentsValidator implements OrgInterfaceValidator{
      */
     @Override
     public Map<String,ArrayList<File>> validateFiles(Credential credential, ArrayList<File> filesToVerify, String folderComponent, String projectPath) {
-
         Map<String,ArrayList<File>> mapFiles = [:]
         mapFiles.put(Constants.VALID_FILE, new ArrayList<File>())
         mapFiles.put(Constants.FILES_NOT_FOUND, new ArrayList<File>())
         mapFiles.put(Constants.FILE_WITHOUT_VALIDATOR, new ArrayList<File>())
-
         ArrayList<File> orgFiles = getFilesIntoOrg(credential, folderComponent, projectPath)
 
         filesToVerify.findAll{ File file ->
@@ -52,22 +50,25 @@ public class BasicOrgComponentsValidator implements OrgInterfaceValidator{
      * @param path orn repository
      */
     public ArrayList<File> getFilesIntoOrg(Credential credential, String folderComponent, String projectPath) {
-
         ToolingAPI toolingAPI = new ToolingAPI(credential)
         QueryBuilder queryBuilder = new QueryBuilder()
         JsonSlurper jsonSlurper = new JsonSlurper()
 
+        MetadataComponents component = MetadataComponents.getComponent(folderComponent)
         ArrayList<File> orgFiles = []
-        def typeComponent = MetadataComponents.getComponent(folderComponent).getTypeName()
-        def extensionComponent = MetadataComponents.getComponent(folderComponent).getExtension()
-        def sqlString = queryBuilder.createQueryFromBasicComponent(typeComponent)
-        def resultSet =  toolingAPI.httpAPIClient.executeQuery(sqlString)
-        def jsonResulSet = jsonSlurper.parseText(resultSet as String)
+        if(component != null) {
+            String typeComponent = component.getTypeName()
+            String extensionComponent = component.getExtension()
+            String sqlString = queryBuilder.createQueryFromBasicComponent(typeComponent)
+            String resultSet =  toolingAPI.httpAPIClient.executeQuery(sqlString)
+            def jsonResulSet = jsonSlurper.parseText(resultSet as String)
 
-        for(def i = 0; i < jsonResulSet.records.size(); i++) {
-            def nameFile = "${jsonResulSet.records[i]['Name']}.${extensionComponent}"
-            orgFiles.add(new File(Paths.get(projectPath,folderComponent, nameFile ).toString()))
+            for(def i = 0; i < jsonResulSet.records.size(); i++) {
+                def nameFile = "${jsonResulSet.records[i]['Name']}.${extensionComponent}"
+                orgFiles.add(new File(Paths.get(projectPath,folderComponent, nameFile ).toString()))
+            }
         }
+
         return orgFiles
     }
 }
