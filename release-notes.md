@@ -32,7 +32,7 @@
 
 	       -Pserver=true
 
-   To infer TestClasses from ApexClass from local code:
+       To infer TestClasses from ApexClass from local code:
 
 	       -Pserver=false
 
@@ -61,7 +61,6 @@
 
 * Upload task isn’t take in account metadata file of reports and dashboards folders.
 * AddCredential task by console shows an exception on Mac OS.
-
 
 ## 1.1.2 - 2015-09-16
 
