@@ -57,9 +57,11 @@ class TestSelectorByReferenceLocal extends TestSelector {
         displayMessage(TEST_CLASSES_SUMMARY_MSG)
         ArrayList<String> testClassList = []
         classAndTestMap.keySet().each { String className ->
-            if (this.filesParameterValue.tokenize(RunTestTaskConstants.FILE_SEPARATOR_SIGN).contains(className)) {
-                displayMessage(sprintf(APEX_CLASS_RELATED_TESTS_MSG, [className, classAndTestMap.get(className).unique().toString()]))
-                testClassList.addAll((classAndTestMap.get(className) as ArrayList<String>).unique())
+            this.filesParameterValue.tokenize(RunTestTaskConstants.FILE_SEPARATOR_SIGN).each { String originClassName ->
+                if ((originClassName.toLowerCase()).contains(className.toLowerCase())) {
+                    displayMessage(sprintf(APEX_CLASS_RELATED_TESTS_MSG, [className, classAndTestMap.get(className).unique().toString()]))
+                    testClassList.addAll((classAndTestMap.get(className) as ArrayList<String>).unique())
+                }
             }
         }
         return testClassList.unique()

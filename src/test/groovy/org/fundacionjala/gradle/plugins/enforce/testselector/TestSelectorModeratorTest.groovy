@@ -98,6 +98,27 @@ class TestSelectorModeratorTest extends Specification {
         classNames.size() == 1
     }
 
+    def "Should get the test class names related to a class - local - ignore case"() {
+        given:
+        ArtifactGeneratorMock artifactGenerator = new ArtifactGeneratorMock()
+        project.enforce {
+            srcPath = SRC_PATH
+            tool = "metadata"
+            poll = 200
+            waitTime = 10
+        }
+        File classFile = new File(Paths.get(SRC_CLASSES_PATH, 'NewClass3.cls').toString())
+        classFile.write("some text")
+        File testFile = new File(Paths.get(SRC_CLASSES_PATH, 'NewClass3Test.cls').toString())
+        testFile.write(RunTestTaskConstants.IS_TEST + " NewClass3")
+        when:
+        project.ext[RunTestTaskConstants.FILE_PARAM] = "NewCLaSs3.cls"
+        TestSelectorModerator moderator = new TestSelectorModerator(project, artifactGenerator, SRC_CLASSES_PATH, false)
+        classNames = moderator.getTestClassNames()
+        then:
+        classNames.size() == 1
+    }
+
     def "Should get the test class names related to a class - remote"() {
         given:
         ArtifactGeneratorMock artifactGenerator = new ArtifactGeneratorMock()
@@ -159,5 +180,7 @@ class TestSelectorModeratorTest extends Specification {
         new File(Paths.get(SRC_PATH, 'classes', 'Class2.cls').toString()).delete()
         new File(Paths.get(SRC_CLASSES_PATH, 'NewClass2.cls').toString()).delete()
         new File(Paths.get(SRC_CLASSES_PATH, 'NewClass2Test.cls').toString()).delete()
+        new File(Paths.get(SRC_CLASSES_PATH, 'NewClass3.cls').toString()).delete()
+        new File(Paths.get(SRC_CLASSES_PATH, 'NewClass3Test.cls').toString()).delete()
     }
 }
