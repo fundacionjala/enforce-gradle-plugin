@@ -9,7 +9,6 @@ import org.fundacionjala.gradle.plugins.enforce.interceptor.InterceptorManager
 import org.fundacionjala.gradle.plugins.enforce.undeploy.PackageComponent
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.FileValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponent
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.OrgValidator
 
@@ -28,6 +27,8 @@ class Undeploy extends Deployment {
     private static final String START_MESSAGE_UNDEPLOY = 'Starting undeploy process...'
     private static final String DIR_UN_DEPLOY = "undeploy"
     private static final String FILE_NOT_FOUND = "these files can't be deleted from your organization, because these weren't found!"
+    private static final String METADATA_WILDCARD = "*${File.separator}*-meta.xml"
+    private static final String DOCUMENTS_WILDCARD = "*documents${File.separator}**"
 
     public PackageComponent packageComponent
     public ArrayList<File> filesToTruncate
@@ -109,8 +110,10 @@ class Undeploy extends Deployment {
         ArrayList<String> filesToExclude = Util.getComponentsWithWildcard(standardComponents)
 
         includes.addAll(Util.getComponentsWithWildcard(standardComponents).grep(~/.*.object$/))
+        includes.addAll([METADATA_WILDCARD, DOCUMENTS_WILDCARD])
         filesToExclude.addAll(packageComponent.components.grep(~/.*.workflow$/) as ArrayList<String>)
         filesToExclude.add(excludes)
+        showValidatedFiles = Constants.FALSE_OPTION
 
         loadClassifiedFiles(includes.join(', '), "${filesToExclude.join(', ')}")
         ArrayList<File> filesToWriteAtDestructive = getValidFilesFromOrg(classifiedFile.validFiles)
@@ -164,13 +167,5 @@ class Undeploy extends Deployment {
                 project[Constants.FORCE_EXTENSION].standardComponents) {
             standardComponents += project[Constants.FORCE_EXTENSION].standardComponents
         }
-    }
-
-    /**
-     * Loads files classified at ClassifiedFile class
-     */
-    public void loadClassifiedFiles(String includes, String excludes) {
-        ArrayList<File> filesFiltered = filter.getFiles(includes, excludes)
-        classifiedFile = FileValidator.validateFiles(projectPath, filesFiltered)
     }
 }
