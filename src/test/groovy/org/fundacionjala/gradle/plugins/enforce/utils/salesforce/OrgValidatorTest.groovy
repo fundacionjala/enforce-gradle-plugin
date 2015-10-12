@@ -11,7 +11,6 @@ import java.nio.file.Paths
 
 
 class OrgValidatorTest extends Specification {
-
     @Shared
     def credential
 
@@ -33,9 +32,7 @@ class OrgValidatorTest extends Specification {
     @Shared
     Map<String, ArrayList<File>> mapExpected
 
-
     def setup() {
-
         credential = new Credential()
         credential.id = 'id'
         credential.username = 'salesforce2014.test@gmail.com'
