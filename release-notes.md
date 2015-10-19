@@ -1,3 +1,67 @@
+## 1.1.3 - 2015-10-12
+
+### Features
+
+* Add new parameter to show invalid files, not found files and files without xml. The new parameter is called ‘showValidatedFiles’ was added to deployment tasks, when it is with true value shows a list of invalid files, not found files and files without metadata, its value by default is true.
+
+	This parameter can be used by parameter:
+
+	>$gradle <Deployment_task_name> -PshowValidatedFiles=true
+
+	Also It can be used into build.gradle file:
+
+		 enforce {
+		        srcPath = 'src'
+		        showValidatedFiles = false
+		  }
+
+	Or into custom task :
+
+		task simpleUpload(type:Upload) {
+		         credentialId = "demo2015"
+		         interceptors = ['truncateClasses']
+		         excludes = "profiles"
+		         showValidatedFiles = true
+	     }
+
+### Enhancements
+
+* Add new TestSelector engine to infer TestClasses from ApexClass names by exploring class body. To infer TestClass from ApexClass names now there are two option:
+
+	   to infer TestClasses from ApexClass from server:
+
+	       -Pserver=true
+
+       To infer TestClasses from ApexClass from local code:
+
+	       -Pserver=false
+
+	By default its value is false.
+
+
+
+* Add 'specificFiles' parameter to Retrieve command. It is in order to retrieve components (vfcomponents, vfpages, classes, objects, profiles, permissionset, etc ) with the project's package.xml file in the Retrieve request and then download only the files/folders defined on '-Pfiles' parameter.
+
+	E.G. Common use case: Retrieve profiles and permissionsets.
+
+	Before having this parameter we were not able to retrieve only the profiles and permissionsets, because the following command does not send the project’s package.xml in the retrieve request, it generates a package.xml with the files defined on ‘Pfiles’ parameter.
+
+	> $gradle retrieve -Pfiles=profiles,permissionsets
+
+
+	It means that these components are retrieved with the SalesForce base permissions and does not with the ones defined on the project’s package.xml file (EG custom vfpages, custom objects, etc) that typically they are the components that we want to have in our local code.
+
+	Now we are able to retrieve components based in the project’s package.xml file.
+
+	> $gradle retrieve -Pfiles=profiles,permissionsets -PspecificFiles
+
+	When we define -PspecificFiles parameter, the project’s package.xml goes in the Retrieve request and only the files/folders defined on -Pfiles parameters will be downloaded. It means that the retrieved components will be processed based in the
+
+### Bugs fixed
+
+* Upload task isn’t take in account metadata file of reports and dashboards folders.
+* AddCredential task by console shows an exception on Mac OS.
+
 ## 1.1.2 - 2015-09-16
 
 ### Bugs fixed
