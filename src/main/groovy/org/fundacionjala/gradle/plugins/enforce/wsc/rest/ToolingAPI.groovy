@@ -116,7 +116,7 @@ class ToolingAPI extends ForceAPI {
      * Gets a prefix name from an Salesforce organization
      * @return prefix name from org
      */
-    public String getPrefixNameByClass() {
+    public String getPrefixName() {
         String jsonResult = httpAPIClient.executeQuery(QUERY_TO_GET_PREFIX)
         JsonSlurper jsonSlurper = new JsonSlurper()
         Object apexTestResults = jsonSlurper.parseText(jsonResult)
