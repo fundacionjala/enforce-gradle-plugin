@@ -40,6 +40,7 @@ class Delete extends Deployment {
      */
     @Override
     void runTask() {
+        Util.showExceptionWhenSystemConsoleIsNull(System.console())
         createDeploymentDirectory(taskFolderPath)
         loadClassifiedFiles(files, excludes)
         loadFilesToDelete()
@@ -64,9 +65,7 @@ class Delete extends Deployment {
         if (Util.isValidProperty(parameters, Constants.PARAMETER_FILES)) {
             files = parameters[Constants.PARAMETER_FILES]
         }
-        if (Util.isValidProperty(parameters, Constants.PARAMETER_EXCLUDES)) {
-            excludes = parameters[Constants.PARAMETER_EXCLUDES]
-        }
+        loadCommonParameters()
     }
 
     /**

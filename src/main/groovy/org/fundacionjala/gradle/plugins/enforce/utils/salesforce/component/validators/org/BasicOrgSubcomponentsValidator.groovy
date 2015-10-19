@@ -31,7 +31,7 @@ public class BasicOrgSubcomponentsValidator implements OrgInterfaceValidator{
     public Map<String,ArrayList<File>> validateFiles(Credential credential, ArrayList<File> filesToVerify, String folderComponent, String projectPath) {
         Map<String,ArrayList<File>> mapFiles = [:]
         mapFiles.put(Constants.VALID_FILE, new ArrayList<File>())
-        mapFiles.put(Constants.DOES_NOT_EXIST_FILES, new ArrayList<File>())
+        mapFiles.put(Constants.FILES_NOT_FOUND, new ArrayList<File>())
         mapFiles.put(Constants.FILE_WITHOUT_VALIDATOR, new ArrayList<File>())
 
         ArrayList<File> orgFiles = getSubcomponentsInOrg(credential, filesToVerify, folderComponent)
@@ -41,7 +41,7 @@ public class BasicOrgSubcomponentsValidator implements OrgInterfaceValidator{
                mapFiles[Constants.VALID_FILE].add(file)
             }
             else {
-               mapFiles[Constants.DOES_NOT_EXIST_FILES].add(file)
+               mapFiles[Constants.FILES_NOT_FOUND].add(file)
             }
         }
         return mapFiles
@@ -67,24 +67,29 @@ public class BasicOrgSubcomponentsValidator implements OrgInterfaceValidator{
     /**
      * Validates the subcomponents defined in Salesforce organization
      * @param credential  contains the data needed to connect with the API sales force
-     * @param filesToValidate is a list of files that need to validate
-     * @param typeSubcomponent is a subcomponent type that we need validate
+     * @param fileToValidate is a list of files that need to validate
+     * @param subcomponentType is a subcomponent type that we need validate
      * @return a boolean value that indicate if a subComponent exist in Salesforce organization
      */
-    public boolean existFileInOrg(Credential credential, File filesToValidate, String typeSubcomponent) {
+    public boolean existFileInOrg(Credential credential, File fileToValidate, String subcomponentType) {
         ToolingAPI toolingAPI = new ToolingAPI(credential)
-        def typeComponent = MetadataComponents.getComponent(typeSubcomponent).getTypeName()
-        def extensionComponent = MetadataComponents.getComponent(typeSubcomponent).getExtension()
+        def existSubcomponent = false
+        def component = MetadataComponents.getComponent(subcomponentType)
 
-        def sqlString = queryBuilder.createQueryGetSubomponent(typeComponent, filesToValidate)
-        def resultSet =  toolingAPI.httpAPIClient.executeQuery(sqlString)
-        def jsonResulSet = jsonSlurper.parseText(resultSet as String)
-        for(def i = 0; i < jsonResulSet.records.size(); i++) {
-            String fullName = "${jsonResulSet.records[i]['FullName']}.${extensionComponent}"
-            if(fullName.equals(filesToValidate.getName())) {
-                return true
+        if(component != null) {
+            def typeComponent = component.getTypeName()
+            def extensionComponent = component.getExtension()
+
+            def sqlString = queryBuilder.createQueryGetSubomponent(typeComponent, fileToValidate)
+            def resultSet =  toolingAPI.httpAPIClient.executeQuery(sqlString)
+            def jsonResulSet = jsonSlurper.parseText(resultSet as String)
+            for(def i = 0; i < jsonResulSet.records.size(); i++) {
+                String fullName = "${jsonResulSet.records[i]['FullName']}.${extensionComponent}"
+                if(fullName.equals(fileToValidate.getName())) {
+                    existSubcomponent = true
+                }
             }
         }
-        return false
+        return existSubcomponent
     }
 }

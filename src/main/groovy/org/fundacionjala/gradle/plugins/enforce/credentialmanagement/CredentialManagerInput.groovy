@@ -191,7 +191,7 @@ class CredentialManagerInput {
         print AnsiColor.ANSI_BLUE.value()
         println CredentialMessage.MESSAGE_QUESTION_TRY_AGAIN.value()
         println AnsiColor.ANSI_RESET.value()
-        option = System.console().readLine(' : ')
+        option = console.readLine(' : ')
         if (option != CredentialMessage.OPTION_YES.value()) {
             finished = false
         }

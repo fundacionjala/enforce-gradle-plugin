@@ -9,7 +9,6 @@ import org.fundacionjala.gradle.plugins.enforce.interceptor.InterceptorManager
 import org.fundacionjala.gradle.plugins.enforce.undeploy.PackageComponent
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.FileValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponent
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.OrgValidator
 
@@ -28,6 +27,8 @@ class Undeploy extends Deployment {
     private static final String START_MESSAGE_UNDEPLOY = 'Starting undeploy process...'
     private static final String DIR_UN_DEPLOY = "undeploy"
     private static final String FILE_NOT_FOUND = "these files can't be deleted from your organization, because these weren't found!"
+    private static final String METADATA_WILDCARD = "*${File.separator}*-meta.xml"
+    private static final String DOCUMENTS_WILDCARD = "*documents${File.separator}**"
 
     public PackageComponent packageComponent
     public ArrayList<File> filesToTruncate
@@ -53,7 +54,7 @@ class Undeploy extends Deployment {
     @Override
     void runTask() {
         truncate()
-        addNewStandardObjects()
+        addNewStandardComponents()
         unDeploy()
     }
 
@@ -67,7 +68,7 @@ class Undeploy extends Deployment {
         copyFilesToTaskDirectory(filesToTruncate)
         addInterceptor()
         writePackage(taskPackagePath, filesToTruncate)
-        combinePackage(taskPackagePath)
+        combinePackageToUpdate(taskPackagePath)
         executeDeploy(taskFolderPath, START_MESSAGE_TRUNCATE, SUCCESS_MESSAGE_TRUNCATE)
     }
 
@@ -93,7 +94,7 @@ class Undeploy extends Deployment {
     public void unDeploy() {
         createDeploymentDirectory(taskFolderPath)
         deployToDeleteComponents()
-        combinePackage(taskDestructivePath)
+        combinePackageToUpdate(taskDestructivePath)
         executeDeploy(taskFolderPath, START_MESSAGE_UNDEPLOY, SUCCESS_MESSAGE_DELETE)
     }
 
@@ -109,8 +110,10 @@ class Undeploy extends Deployment {
         ArrayList<String> filesToExclude = Util.getComponentsWithWildcard(standardComponents)
 
         includes.addAll(Util.getComponentsWithWildcard(standardComponents).grep(~/.*.object$/))
+        includes.addAll([METADATA_WILDCARD, DOCUMENTS_WILDCARD])
         filesToExclude.addAll(packageComponent.components.grep(~/.*.workflow$/) as ArrayList<String>)
         filesToExclude.add(excludes)
+        showValidatedFiles = Constants.FALSE_OPTION
 
         loadClassifiedFiles(includes.join(', '), "${filesToExclude.join(', ')}")
         ArrayList<File> filesToWriteAtDestructive = getValidFilesFromOrg(classifiedFile.validFiles)
@@ -146,7 +149,7 @@ class Undeploy extends Deployment {
         ArrayList<File> validFiles = filesClassified.get(Constants.VALID_FILE)
         validFiles.addAll(filesClassified.get(Constants.FILE_WITHOUT_VALIDATOR))
 
-        filesClassified.get(Constants.DOES_NOT_EXIST_FILES).each { File file ->
+        filesClassified.get(Constants.FILES_NOT_FOUND).each { File file ->
             notFoundFiles.push(file.name)
         }
 
@@ -159,18 +162,10 @@ class Undeploy extends Deployment {
     /**
      * Adds new standard objects from user property
      */
-    public void addNewStandardObjects() {
+    public void addNewStandardComponents() {
         if (Util.isValidProperty(project, Constants.FORCE_EXTENSION) &&
-                project[Constants.FORCE_EXTENSION].standardObjects) {
-            standardComponents += project[Constants.FORCE_EXTENSION].standardObjects
+                project[Constants.FORCE_EXTENSION].standardComponents) {
+            standardComponents += project[Constants.FORCE_EXTENSION].standardComponents
         }
-    }
-
-    /**
-     * Loads files classified at ClassifiedFile class
-     */
-    public void loadClassifiedFiles(String includes, String excludes) {
-        ArrayList<File> filesFiltered = filter.getFiles(includes, excludes)
-        classifiedFile = FileValidator.validateFiles(projectPath, filesFiltered)
     }
 }

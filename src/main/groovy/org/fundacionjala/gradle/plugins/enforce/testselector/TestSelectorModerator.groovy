@@ -15,7 +15,6 @@ import org.gradle.api.file.FileTree
 import org.gradle.api.logging.Logger
 
 import java.nio.file.Paths
-import java.util.concurrent.ExecutionException
 
 class TestSelectorModerator {
 
@@ -26,6 +25,7 @@ class TestSelectorModerator {
     private IArtifactGenerator artifactGenerator
     private Boolean async
     private ArrayList<String> allTestClassNameList
+    private ArrayList<String> allApexClassNameList
 
     /**
      * TestSelectorModerator class constructor
@@ -45,17 +45,22 @@ class TestSelectorModerator {
      * @param path is the path classes location information
      * @param wildCard is the property sets from user
      */
-    public ArrayList<String> getClassNames(String path, String wildCard) {
+    public void fillClassNames(String path, String wildCard) {
+        this.allTestClassNameList = []
+        this.allApexClassNameList = []
+
         FileTree tree = project.fileTree(dir: path)
         tree.include wildCard
-        ArrayList<String> classNames = new ArrayList<String>()
         tree.each { File file ->
-            if (file.path.endsWith(".${MetadataComponents.CLASSES.getExtension()}") &&
-                    StringUtils.containsIgnoreCase(file.text, RunTestTaskConstants.IS_TEST)) {
-                classNames.add(Util.getFileName(file.name))
+            if (file.path.endsWith(".${MetadataComponents.CLASSES.getExtension()}")) {
+                if (StringUtils.containsIgnoreCase(file.text, RunTestTaskConstants.IS_TEST)) {
+                    this.allTestClassNameList.add(Util.getFileName(file.name))
+                }
+                else {
+                    this.allApexClassNameList.add(Util.getFileName(file.name))
+                }
             }
         }
-        return classNames
     }
 
     /**
@@ -70,6 +75,8 @@ class TestSelectorModerator {
      * Collects and returns all test class names for each available TestSelector
      */
     public ArrayList<String> getTestClassNames() {
+        makeClassNamesAvailable()//TODO: load on deman
+
         if (Util.isEmptyProperty(project, RunTestTaskConstants.CLASS_PARAM)) {
             throw new Exception("${RunTestTaskConstants.ENTER_VALID_PARAMETER} "
                     + "${RunTestTaskConstants.CLASS_PARAM}")
@@ -84,14 +91,24 @@ class TestSelectorModerator {
         } else if (Util.isValidProperty(project, RunTestTaskConstants.FILE_PARAM)) {
             String fileParamValue = project.properties[RunTestTaskConstants.FILE_PARAM].toString()
             if (this.testClassNameList.size() < getAllTestClassNameList().size()) {
-                Boolean refreshClassAndTestMap = false
-                if (project.properties.containsKey(RunTestTaskConstants.REFRESH_PARAM)) { //TODO: get this info from fileTraker[events: update, upload]
-                    refreshClassAndTestMap = (project.properties[RunTestTaskConstants.REFRESH_PARAM].toString()).toBoolean()
+                ArrayList<String> testClassNames = []
+                ITestSelector selector
+                if (!Util.isEmptyProperty(project, RunTestTaskConstants.REMOTE_PARAM)
+                        && (project.properties[RunTestTaskConstants.REMOTE_PARAM].toString()).toBoolean()) {
+                    Boolean refreshClassAndTestMap = false
+                    if (project.properties.containsKey(RunTestTaskConstants.REFRESH_PARAM)) {
+                        refreshClassAndTestMap = (project.properties[RunTestTaskConstants.REFRESH_PARAM].toString()).toBoolean()
+                    }
+                    selector = new TestSelectorByReferenceSFDC(Paths.get((project.enforce.srcPath as String)).toString(), getAllTestClassNameList(),
+                            this.artifactGenerator, fileParamValue, refreshClassAndTestMap)
+                    selector.setLogger(logger)
                 }
-                ITestSelector selector = new TestSelectorByReference(Paths.get((project.enforce.srcPath as String)).toString(), getAllTestClassNameList(),
-                                            this.artifactGenerator, fileParamValue, refreshClassAndTestMap)
-                selector.setLogger(logger)
-                ArrayList<String> testClassNames = selector.getTestClassNames()
+                else {
+                    selector = new TestSelectorByReferenceLocal(pathClasses, getAllApexClassNameList(), getAllTestClassNameList(), fileParamValue)
+                    selector.setLogger(logger)
+                }
+
+                testClassNames = selector.getTestClassNames()
                 if (testClassNames.isEmpty() && fileParamValue != RunTestTaskConstants.WILD_CARD_SIGN &&
                         fileParamValue != RunTestTaskConstants.RUN_ALL_UPDATED_PARAM_VALUE) {
                     throw new Exception("${RunTestTaskConstants.THERE_ARE_NOT_TEST_CLASSES} ${fileParamValue}")
@@ -118,10 +135,21 @@ class TestSelectorModerator {
      * Returns all available test classes on demand
      */
     private ArrayList<String> getAllTestClassNameList() {
-        if (!this.allTestClassNameList) {
-            this.allTestClassNameList = getClassNames(this.pathClasses, RunTestTaskConstants.WILDCARD_ALL_TEST)
-        }
         return this.allTestClassNameList
+    }
+
+    /**
+     * Returns all available Apex classes on demand
+     */
+    private ArrayList<String> getAllApexClassNameList() {
+        return this.allApexClassNameList
+    }
+
+    private void makeClassNamesAvailable() {
+        if (!this.allTestClassNameList || !this.allApexClassNameList) {
+            println "filling classNames"
+            fillClassNames(this.pathClasses, RunTestTaskConstants.WILDCARD_ALL_TEST)
+        }
     }
 
 }

@@ -1,7 +1,6 @@
 package org.fundacionjala.gradle.plugins.enforce.utils.salesforce
 
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
-import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -29,8 +28,8 @@ class FileValidatorTest extends Specification {
         mapExpected = [:]
         mapExpected.put(Constants.INVALID_FILE_BY_FOLDER,[])
         mapExpected.put(Constants.VALID_FILE,[])
-        mapExpected.put(Constants.DOES_NOT_EXIST_FILES,[])
-        mapExpected.put(Constants.FILE_WITHOUT_XML,[])
+        mapExpected.put(Constants.FILES_NOT_FOUND,[])
+        mapExpected.put(Constants.FILE_WITHOUT_METADATA,[])
 
         ArrayList<File> folders = new ArrayList<File>()
         folders.add(new File(Paths.get(SRC_PATH).toString()))
@@ -153,8 +152,8 @@ class FileValidatorTest extends Specification {
             ClassifiedFile classifiedFile = FileValidator.validateFiles(SRC_PATH, allFiles)
         then:
             classifiedFile.invalidFiles.sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
-            classifiedFile.notFoundFiles.sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
-            classifiedFile.filesWithoutXml.sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
+            classifiedFile.filesNotFound.sort() == mapExpected[Constants.FILES_NOT_FOUND].sort()
+            classifiedFile.filesWithoutMetadata.sort() == mapExpected[Constants.FILE_WITHOUT_METADATA].sort()
             classifiedFile.validFiles.sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 
@@ -168,8 +167,8 @@ class FileValidatorTest extends Specification {
             ClassifiedFile classifiedFile = FileValidator.validateFiles(SRC_PATH, allFiles)
         then:
             classifiedFile.invalidFiles.sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
-            classifiedFile.notFoundFiles.sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
-            classifiedFile.filesWithoutXml.sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
+            classifiedFile.filesNotFound.sort() == mapExpected[Constants.FILES_NOT_FOUND].sort()
+            classifiedFile.filesWithoutMetadata.sort() == mapExpected[Constants.FILE_WITHOUT_METADATA].sort()
             classifiedFile.validFiles.sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 
@@ -183,8 +182,8 @@ class FileValidatorTest extends Specification {
             ClassifiedFile classifiedFile = FileValidator.validateFiles(SRC_PATH, allFiles)
         then:
             classifiedFile.invalidFiles.sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
-            classifiedFile.notFoundFiles.sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
-            classifiedFile.filesWithoutXml.sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
+            classifiedFile.filesNotFound.sort() == mapExpected[Constants.FILES_NOT_FOUND].sort()
+            classifiedFile.filesWithoutMetadata.sort() == mapExpected[Constants.FILE_WITHOUT_METADATA].sort()
             classifiedFile.validFiles.sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 
@@ -192,26 +191,26 @@ class FileValidatorTest extends Specification {
         given:
             createFolderWithXml('classes', 1, 5, 'cls', true , true)
             allFiles.each {it.delete()}
-            addFolderExpected(Constants.DOES_NOT_EXIST_FILES,'classes', 1, 5, 'cls', true , true)
+            addFolderExpected(Constants.FILES_NOT_FOUND,'classes', 1, 5, 'cls', true , true)
         when:
             ClassifiedFile classifiedFile = FileValidator.validateFiles(SRC_PATH, allFiles)
         then:
             classifiedFile.invalidFiles.sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
-            classifiedFile.notFoundFiles.sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
-            classifiedFile.filesWithoutXml.sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
+            classifiedFile.filesNotFound.sort() == mapExpected[Constants.FILES_NOT_FOUND].sort()
+            classifiedFile.filesWithoutMetadata.sort() == mapExpected[Constants.FILE_WITHOUT_METADATA].sort()
             classifiedFile.validFiles.sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 
     def "Test should returns a map that contains [ FILE_WHITOUT_XML: 5 class files ]" () {
         given:
             createFolderWithXml('classes', 1, 5, 'cls', true , false)
-            addFolderExpected(Constants.FILE_WITHOUT_XML,'classes', 1, 5, 'cls', true , false)
+            addFolderExpected(Constants.FILE_WITHOUT_METADATA,'classes', 1, 5, 'cls', true , false)
         when:
             ClassifiedFile classifiedFile = FileValidator.validateFiles(SRC_PATH, allFiles)
         then:
             classifiedFile.invalidFiles.sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
-            classifiedFile.notFoundFiles.sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
-            classifiedFile.filesWithoutXml.sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
+            classifiedFile.filesNotFound.sort() == mapExpected[Constants.FILES_NOT_FOUND].sort()
+            classifiedFile.filesWithoutMetadata.sort() == mapExpected[Constants.FILE_WITHOUT_METADATA].sort()
             classifiedFile.validFiles.sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 
@@ -223,8 +222,8 @@ class FileValidatorTest extends Specification {
             ClassifiedFile classifiedFile = FileValidator.validateFiles(SRC_PATH, allFiles)
         then:
             classifiedFile.invalidFiles.sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
-            classifiedFile.notFoundFiles.sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
-            classifiedFile.filesWithoutXml.sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
+            classifiedFile.filesNotFound.sort() == mapExpected[Constants.FILES_NOT_FOUND].sort()
+            classifiedFile.filesWithoutMetadata.sort() == mapExpected[Constants.FILE_WITHOUT_METADATA].sort()
             classifiedFile.validFiles.sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 
@@ -233,13 +232,13 @@ class FileValidatorTest extends Specification {
             crateFolderWithXml('documents','DocumentsFolder1', 1, 2, 'txt', true , true)
             crateFolderWithXml('documents','DocumentsFolder1', 3, 4, 'txt', true , false)
             addFolderExpected(Constants.VALID_FILE,'documents','DocumentsFolder1', 1, 2, 'txt', true , true)
-            addFolderExpected(Constants.FILE_WITHOUT_XML,'documents','DocumentsFolder1', 3, 4, 'txt', true , false)
+            addFolderExpected(Constants.FILE_WITHOUT_METADATA,'documents','DocumentsFolder1', 3, 4, 'txt', true , false)
         when:
             ClassifiedFile classifiedFile = FileValidator.validateFiles(SRC_PATH, allFiles)
         then:
             classifiedFile.invalidFiles.sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
-            classifiedFile.notFoundFiles.sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
-            classifiedFile.filesWithoutXml.sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
+            classifiedFile.filesNotFound.sort() == mapExpected[Constants.FILES_NOT_FOUND].sort()
+            classifiedFile.filesWithoutMetadata.sort() == mapExpected[Constants.FILE_WITHOUT_METADATA].sort()
             classifiedFile.validFiles.sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 
@@ -251,8 +250,8 @@ class FileValidatorTest extends Specification {
             ClassifiedFile classifiedFile = FileValidator.validateFiles(SRC_PATH, allFiles)
         then:
             classifiedFile.invalidFiles.sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
-            classifiedFile.notFoundFiles.sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
-            classifiedFile.filesWithoutXml.sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
+            classifiedFile.filesNotFound.sort() == mapExpected[Constants.FILES_NOT_FOUND].sort()
+            classifiedFile.filesWithoutMetadata.sort() == mapExpected[Constants.FILE_WITHOUT_METADATA].sort()
             classifiedFile.validFiles.sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 
@@ -268,8 +267,8 @@ class FileValidatorTest extends Specification {
             ClassifiedFile classifiedFile = FileValidator.validateFiles(SRC_PATH, allFiles)
         then:
             classifiedFile.invalidFiles.sort() == mapExpected[Constants.INVALID_FILE_BY_FOLDER].sort()
-            classifiedFile.notFoundFiles.sort() == mapExpected[Constants.DOES_NOT_EXIST_FILES].sort()
-            classifiedFile.filesWithoutXml.sort() == mapExpected[Constants.FILE_WITHOUT_XML].sort()
+            classifiedFile.filesNotFound.sort() == mapExpected[Constants.FILES_NOT_FOUND].sort()
+            classifiedFile.filesWithoutMetadata.sort() == mapExpected[Constants.FILE_WITHOUT_METADATA].sort()
             classifiedFile.validFiles.sort() == mapExpected[Constants.VALID_FILE].sort()
     }
 

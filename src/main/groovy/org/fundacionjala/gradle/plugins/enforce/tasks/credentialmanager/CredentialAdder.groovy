@@ -6,6 +6,7 @@
 package org.fundacionjala.gradle.plugins.enforce.tasks.credentialmanager
 
 import org.fundacionjala.gradle.plugins.enforce.credentialmanagement.CredentialMessage
+import org.fundacionjala.gradle.plugins.enforce.utils.Util
 
 class CredentialAdder extends CredentialManagerTask {
 
@@ -23,6 +24,7 @@ class CredentialAdder extends CredentialManagerTask {
         }
         if (!CredentialParameterValidator.hasIdCredential(project) || !CredentialParameterValidator.hasUserName(project)) {
             while (credentialManagerInput.finished) {
+                Util.showExceptionWhenSystemConsoleIsNull(System.console())
                 credentialManagerInput.addCredentialByConsole()
             }
         }

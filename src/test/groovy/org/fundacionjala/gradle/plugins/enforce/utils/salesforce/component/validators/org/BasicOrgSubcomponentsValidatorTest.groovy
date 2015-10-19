@@ -44,7 +44,7 @@ class BasicOrgSubcomponentsValidatorTest extends Specification {
 
         expectedMap = [:]
         expectedMap.put(Constants.VALID_FILE, new ArrayList<File>())
-        expectedMap.put(Constants.DOES_NOT_EXIST_FILES, new ArrayList<File>())
+        expectedMap.put(Constants.FILES_NOT_FOUND, new ArrayList<File>())
         expectedMap.put(Constants.FILE_WITHOUT_VALIDATOR, new ArrayList<File>())
     }
 
@@ -189,16 +189,16 @@ class BasicOrgSubcomponentsValidatorTest extends Specification {
             expectedMap[Constants.VALID_FILE].add(new File(Paths.get(projectPath,'src', 'fields', 'Object1__c.Field1__c.sbc').toString()))
             expectedMap[Constants.VALID_FILE].add(new File(Paths.get(projectPath,'src', 'fields', 'Object1__c.Field2__c.sbc').toString()))
             expectedMap[Constants.VALID_FILE].add(new File(Paths.get(projectPath,'src', 'fields', 'Object1__c.Field3__c.sbc').toString()))
-            expectedMap[Constants.DOES_NOT_EXIST_FILES].add(new File(Paths.get(projectPath,'src', 'fields', 'Object1__c.Field4__c.sbc').toString()))
-            expectedMap[Constants.DOES_NOT_EXIST_FILES].add(new File(Paths.get(projectPath,'src', 'fields', 'Object1__c.Field5__c.sbc').toString()))
-            expectedMap[Constants.DOES_NOT_EXIST_FILES].add(new File(Paths.get(projectPath,'src', 'fields', 'Object1__c.Field6__c.sbc').toString()))
+            expectedMap[Constants.FILES_NOT_FOUND].add(new File(Paths.get(projectPath,'src', 'fields', 'Object1__c.Field4__c.sbc').toString()))
+            expectedMap[Constants.FILES_NOT_FOUND].add(new File(Paths.get(projectPath,'src', 'fields', 'Object1__c.Field5__c.sbc').toString()))
+            expectedMap[Constants.FILES_NOT_FOUND].add(new File(Paths.get(projectPath,'src', 'fields', 'Object1__c.Field6__c.sbc').toString()))
 
         when:
             Map<String,ArrayList<File>> resultMap = validator.validateFiles(credential, filesToVerify, folderComponent, projectPath)
 
         then:
             resultMap[Constants.VALID_FILE].sort() == expectedMap[Constants.VALID_FILE].sort()
-            resultMap[Constants.DOES_NOT_EXIST_FILES].sort() ==  expectedMap[Constants.DOES_NOT_EXIST_FILES].sort()
+            resultMap[Constants.FILES_NOT_FOUND].sort() ==  expectedMap[Constants.FILES_NOT_FOUND].sort()
             resultMap[Constants.FILE_WITHOUT_VALIDATOR].sort() == expectedMap[Constants.FILE_WITHOUT_VALIDATOR].sort()
     }
 
@@ -217,16 +217,16 @@ class BasicOrgSubcomponentsValidatorTest extends Specification {
             expectedMap[Constants.VALID_FILE].add(new File(Paths.get(projectPath,'src', 'compactLayouts', 'Object1__c.compactLayout1.sbc').toString()))
             expectedMap[Constants.VALID_FILE].add(new File(Paths.get(projectPath,'src', 'compactLayouts', 'Object1__c.compactLayout2.sbc').toString()))
             expectedMap[Constants.VALID_FILE].add(new File(Paths.get(projectPath,'src', 'compactLayouts', 'Object1__c.compactLayout3.sbc').toString()))
-            expectedMap[Constants.DOES_NOT_EXIST_FILES].add(new File(Paths.get(projectPath,'src', 'compactLayouts', 'Object1__c.compactLayout4.sbc').toString()))
-            expectedMap[Constants.DOES_NOT_EXIST_FILES].add(new File(Paths.get(projectPath,'src', 'compactLayouts', 'Object1__c.compactLayout5.sbc').toString()))
-            expectedMap[Constants.DOES_NOT_EXIST_FILES].add(new File(Paths.get(projectPath,'src', 'compactLayouts', 'Object1__c.compactLayout6.sbc').toString()))
+            expectedMap[Constants.FILES_NOT_FOUND].add(new File(Paths.get(projectPath,'src', 'compactLayouts', 'Object1__c.compactLayout4.sbc').toString()))
+            expectedMap[Constants.FILES_NOT_FOUND].add(new File(Paths.get(projectPath,'src', 'compactLayouts', 'Object1__c.compactLayout5.sbc').toString()))
+            expectedMap[Constants.FILES_NOT_FOUND].add(new File(Paths.get(projectPath,'src', 'compactLayouts', 'Object1__c.compactLayout6.sbc').toString()))
 
         when:
             Map<String,ArrayList<File>> resultMap = validator.validateFiles(credential, filesToVerify, folderComponent, projectPath)
 
         then:
             resultMap[Constants.VALID_FILE].sort() == expectedMap[Constants.VALID_FILE].sort()
-            resultMap[Constants.DOES_NOT_EXIST_FILES].sort() ==  expectedMap[Constants.DOES_NOT_EXIST_FILES].sort()
+            resultMap[Constants.FILES_NOT_FOUND].sort() ==  expectedMap[Constants.FILES_NOT_FOUND].sort()
             resultMap[Constants.FILE_WITHOUT_VALIDATOR].sort() == expectedMap[Constants.FILE_WITHOUT_VALIDATOR].sort()
     }
 
@@ -245,16 +245,16 @@ class BasicOrgSubcomponentsValidatorTest extends Specification {
         expectedMap[Constants.VALID_FILE].add(new File(Paths.get(projectPath,'src', 'validationRules', 'Object1__c.Validation1.sbc').toString()))
         expectedMap[Constants.VALID_FILE].add(new File(Paths.get(projectPath,'src', 'validationRules', 'Object1__c.Validation2.sbc').toString()))
         expectedMap[Constants.VALID_FILE].add(new File(Paths.get(projectPath,'src', 'validationRules', 'Object1__c.Validation3.sbc').toString()))
-        expectedMap[Constants.DOES_NOT_EXIST_FILES].add(new File(Paths.get(projectPath,'src', 'validationRules', 'Object1__c.Validation4.sbc').toString()))
-        expectedMap[Constants.DOES_NOT_EXIST_FILES].add(new File(Paths.get(projectPath,'src', 'validationRules', 'Object1__c.Validation5.sbc').toString()))
-        expectedMap[Constants.DOES_NOT_EXIST_FILES].add(new File(Paths.get(projectPath,'src', 'validationRules', 'Object1__c.Validation6.sbc').toString()))
+        expectedMap[Constants.FILES_NOT_FOUND].add(new File(Paths.get(projectPath,'src', 'validationRules', 'Object1__c.Validation4.sbc').toString()))
+        expectedMap[Constants.FILES_NOT_FOUND].add(new File(Paths.get(projectPath,'src', 'validationRules', 'Object1__c.Validation5.sbc').toString()))
+        expectedMap[Constants.FILES_NOT_FOUND].add(new File(Paths.get(projectPath,'src', 'validationRules', 'Object1__c.Validation6.sbc').toString()))
 
         when:
         Map<String,ArrayList<File>> resultMap = validator.validateFiles(credential, filesToVerify, folderComponent, projectPath)
 
         then:
         resultMap[Constants.VALID_FILE].sort() == expectedMap[Constants.VALID_FILE].sort()
-        resultMap[Constants.DOES_NOT_EXIST_FILES].sort() ==  expectedMap[Constants.DOES_NOT_EXIST_FILES].sort()
+        resultMap[Constants.FILES_NOT_FOUND].sort() ==  expectedMap[Constants.FILES_NOT_FOUND].sort()
         resultMap[Constants.FILE_WITHOUT_VALIDATOR].sort() == expectedMap[Constants.FILE_WITHOUT_VALIDATOR].sort()
     }
 
@@ -273,16 +273,16 @@ class BasicOrgSubcomponentsValidatorTest extends Specification {
             expectedMap[Constants.VALID_FILE].add(new File(Paths.get(projectPath,'src', 'recordTypes', 'Object1__c.recordType1.sbc').toString()))
             expectedMap[Constants.VALID_FILE].add(new File(Paths.get(projectPath,'src', 'recordTypes', 'Object1__c.recordType2.sbc').toString()))
             expectedMap[Constants.VALID_FILE].add(new File(Paths.get(projectPath,'src', 'recordTypes', 'Object1__c.recordType3.sbc').toString()))
-            expectedMap[Constants.DOES_NOT_EXIST_FILES].add(new File(Paths.get(projectPath,'src', 'recordTypes', 'Object1__c.recordType4.sbc').toString()))
-            expectedMap[Constants.DOES_NOT_EXIST_FILES].add(new File(Paths.get(projectPath,'src', 'recordTypes', 'Object1__c.recordType5.sbc').toString()))
-            expectedMap[Constants.DOES_NOT_EXIST_FILES].add(new File(Paths.get(projectPath,'src', 'recordTypes', 'Object1__c.recordType6.sbc').toString()))
+            expectedMap[Constants.FILES_NOT_FOUND].add(new File(Paths.get(projectPath,'src', 'recordTypes', 'Object1__c.recordType4.sbc').toString()))
+            expectedMap[Constants.FILES_NOT_FOUND].add(new File(Paths.get(projectPath,'src', 'recordTypes', 'Object1__c.recordType5.sbc').toString()))
+            expectedMap[Constants.FILES_NOT_FOUND].add(new File(Paths.get(projectPath,'src', 'recordTypes', 'Object1__c.recordType6.sbc').toString()))
 
         when:
             Map<String,ArrayList<File>> resultMap = validator.validateFiles(credential, filesToVerify, folderComponent, projectPath)
 
         then:
             resultMap[Constants.VALID_FILE].sort() == expectedMap[Constants.VALID_FILE].sort()
-            resultMap[Constants.DOES_NOT_EXIST_FILES].sort() ==  expectedMap[Constants.DOES_NOT_EXIST_FILES].sort()
+            resultMap[Constants.FILES_NOT_FOUND].sort() ==  expectedMap[Constants.FILES_NOT_FOUND].sort()
             resultMap[Constants.FILE_WITHOUT_VALIDATOR].sort() == expectedMap[Constants.FILE_WITHOUT_VALIDATOR].sort()
     }
 }

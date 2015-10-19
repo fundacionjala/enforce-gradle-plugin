@@ -54,7 +54,7 @@ class UndeployTest extends Specification {
         project.apply(plugin: EnforcePlugin)
         project.enforce {
             srcPath = "${File.separator}home${File.separator}user${File.separator}project${File.separator}one"
-            standardObjects = ["Q2w_Test__c.object"]
+            standardComponents = ["Q2w_Test__c.object"]
             tool = "metadata"
             poll = 200
             waitTime = 10
@@ -113,7 +113,7 @@ class UndeployTest extends Specification {
 
     def "Test should get the standard objects assigned"() {
         expect:
-        project.extensions.findByName('enforce').standardObjects == ["Q2w_Test__c.object"]
+        project.extensions.findByName('enforce').standardComponents == ["Q2w_Test__c.object"]
     }
 
     def "Test should get the tool assigned"() {
@@ -160,8 +160,8 @@ class UndeployTest extends Specification {
             undeployInstance.copyFilesToTaskDirectory(undeployInstance.filesToTruncate)
             undeployInstance.addInterceptor()
             undeployInstance.writePackage(undeployInstance.taskPackagePath, undeployInstance.filesToTruncate)
-            undeployInstance.combinePackage(undeployInstance.taskPackagePath)
-            undeployInstance.addNewStandardObjects()
+            undeployInstance.combinePackageToUpdate(undeployInstance.taskPackagePath)
+            undeployInstance.addNewStandardComponents()
             undeployInstance.createDeploymentDirectory(undeployInstance.taskFolderPath)
             undeployInstance.deployToDeleteComponents()
             def destructiveXmlContent =  new File(Paths.get(SRC_PATH, 'build', 'undeploy', 'destructiveChanges.xml').toString()).text

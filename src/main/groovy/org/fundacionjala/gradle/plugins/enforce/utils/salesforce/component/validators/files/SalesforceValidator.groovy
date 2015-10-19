@@ -5,5 +5,5 @@ package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.vali
  */
 public interface SalesforceValidator {
     boolean validateFile(File file, String folderComponent)
-    boolean validateFileContainsXML(File file, String folderComponent)
+    boolean hasMetadataFile(File file, String folderComponent)
 }

@@ -15,13 +15,13 @@ import org.fundacionjala.gradle.plugins.enforce.wsc.ForceAPI
  * A wrapper around http client that execute queries
  */
 class ToolingAPI extends ForceAPI {
-
     private final String QUERY_QUEUE_ITEM = "Select Id, ApexClassId, Status " +
                                             "FROM ApexTestQueueItem WHERE ParentJobId = "
-
     private final String QUERY_TEST_RESULT = "SELECT StackTrace, Message, MethodName, Outcome, ApexClassId " +
                                              "FROM ApexTestResult WHERE AsyncApexJobId = "
-
+    private final String QUERY_TO_GET_PREFIX = "select NamespacePrefix from ApexClass"
+    private final int FIRST_CLASS = 0
+    private final String NAMESPACE_PREFIX_LABEL = "NamespacePrefix"
     private final String STATUS_COMPLETED = "Completed"
     private final String STATUS_ABORTED = "Aborted"
     private final String STATUS_FAILES = "Failed"
@@ -110,5 +110,16 @@ class ToolingAPI extends ForceAPI {
         }
 
         return apexTestResultsArrayList
+    }
+
+    /**
+     * Gets a prefix name from an Salesforce organization
+     * @return prefix name from org
+     */
+    public String getPrefixName() {
+        String jsonResult = httpAPIClient.executeQuery(QUERY_TO_GET_PREFIX)
+        JsonSlurper jsonSlurper = new JsonSlurper()
+        Object apexTestResults = jsonSlurper.parseText(jsonResult)
+        return apexTestResults.records[NAMESPACE_PREFIX_LABEL][FIRST_CLASS] as String
     }
 }

@@ -28,6 +28,7 @@ abstract class Deployment extends SalesforceTask {
     public List<String> interceptorsToExecute = []
     public List<String> interceptors = []
     public String excludes = ""
+    public String showValidatedFiles = Constants.TRUE_OPTION
 
     public Filter filter
     public String taskFolderPath
@@ -111,17 +112,6 @@ abstract class Deployment extends SalesforceTask {
     }
 
     /**
-     * Combines package that was updated from build folder and package from source directory
-     * @param buildPackagePath is path of package that is into build directory
-     */
-    public void combinePackage(String buildPackagePath) {
-        PackageCombiner.packageCombine(projectPackagePath, buildPackagePath)
-        if (excludes) {
-            removeFilesExcluded(buildPackagePath)
-        }
-    }
-
-    /**
      * Combines package from build folder and package from source directory
      * @param buildPackagePath is path of package that is into build directory
      */
@@ -161,9 +151,7 @@ abstract class Deployment extends SalesforceTask {
      */
     @Override
     void loadParameters() {
-        if (Util.isValidProperty(parameters, Constants.PARAMETER_EXCLUDES) && !Util.isEmptyProperty(parameters, Constants.PARAMETER_EXCLUDES)) {
-            excludes = parameters[Constants.PARAMETER_EXCLUDES].toString()
-        }
+        loadCommonParameters()
     }
 
     /**
@@ -175,6 +163,7 @@ abstract class Deployment extends SalesforceTask {
     void loadClassifiedFiles(String includes, String excludes) {
         ArrayList<File> filesFiltered = filter.getFiles(includes, excludes)
         classifiedFile = FileValidator.validateFiles(projectPath, filesFiltered)
+        classifiedFile.ShowClassifiedFiles(showValidatedFiles == Constants.TRUE_OPTION, projectPath)
     }
 
     /**
@@ -183,5 +172,24 @@ abstract class Deployment extends SalesforceTask {
      */
     void copyFilesToTaskDirectory(ArrayList<File> filesToCopy) {
         fileManager.copy(projectPath, filesToCopy, taskFolderPath)
+    }
+
+    /**
+     * Loads showValidatedFiles and excludes parameter
+     */
+    void loadCommonParameters() {
+        if (Util.isValidProperty(parameters, Constants.PARAMETER_EXCLUDES) &&
+                !Util.isEmptyProperty(parameters, Constants.PARAMETER_EXCLUDES)) {
+            excludes = parameters[Constants.PARAMETER_EXCLUDES].toString()
+        }
+
+        if (Util.isValidProperty(parameters, Constants.PARAMETER_SHOW_VALIDATED_FILES)) {
+            showValidatedFiles = parameters[Constants.PARAMETER_SHOW_VALIDATED_FILES].toString()
+            return
+        }
+
+        if (project.enforce.showValidatedFiles) {
+            showValidatedFiles = project.enforce.showValidatedFiles
+        }
     }
 }

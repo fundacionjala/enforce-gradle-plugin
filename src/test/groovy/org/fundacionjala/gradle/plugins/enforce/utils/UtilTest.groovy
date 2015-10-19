@@ -385,6 +385,29 @@ class UtilTest extends Specification {
             result == 'Class3'
     }
 
+    def "Test should return an exception if System.console is null"() {
+        given:
+            def console = System.console()
+        when:
+            Util.showExceptionWhenSystemConsoleIsNull(console)
+        then:
+            thrown(Exception)
+    }
+
+    def "Test should return a file name Class1.cls without its extension"() {
+        when:
+            String result = Util.getFileName('Class1.cls')
+        then:
+            result == 'Class1'
+    }
+
+    def "Test should return a file name 'MyReports-meta.xml' without '-meta.xml'"() {
+        when:
+            String result = Util.getFileName('MyReports-meta.xml')
+        then:
+            result == 'MyReports'
+    }
+
     def cleanupSpec() {
         new File(Paths.get(RESOURCES_PATH, 'triggers').toString()).deleteDir()
         new File(Paths.get(RESOURCES_PATH, 'relativeTest').toString()).deleteDir()
