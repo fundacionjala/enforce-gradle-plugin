@@ -1,4 +1,4 @@
-## 1.1.3 - 2015-10-12
+## 1.1.3 - 2015-10-19
 
 ### Features
 
@@ -61,6 +61,7 @@
 
 * Upload task isn’t take in account metadata file of reports and dashboards folders.
 * AddCredential task by console shows an exception on Mac OS.
+* Once $gradle runTest -Pfiles=class1.cls command is executed it shows empty reports.
 
 ## 1.1.2 - 2015-09-16
 
