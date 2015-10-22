@@ -59,15 +59,17 @@ When you add credential by parameters it is encrypted by default also, you are a
 	 -Pusername is your account
 	 -Ppassword is your password
 	 -Ptoken is your token
+	 -Pencrypted has 'y' and 'n' values (by default is 'y')
 	 -Plocation is credentials.dat file location
 
 The command to add is:
 
 	$ gradle addCredential -Pid=myidLZ
-			       -Pusername=juana@gmail.com
+					       -Pusername=juana@gmail.com
 	                       -Ppassword=123456
-	                       -Ptoken=as:addCredential
-			       -Plocation=project
+	                       -Ptoken=asasddezcx10123
+   	                       -Pencrypted=n
+					       -Plocation=project
 
 
 ## UpdateCredential  task
