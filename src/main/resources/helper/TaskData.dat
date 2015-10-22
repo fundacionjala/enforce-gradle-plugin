@@ -2,7 +2,17 @@
     "addCredential": {
             "description": "This task adds a new credential into credentials.dat located in user home directory by default.",
             "documentation": "http://fundacionjala.github.io/enforce-gradle-plugin/docs/credentials",
-            "parameters": ["id","username","password","token","sfdcType","type","location"]
+            "parameters": ["id","username","password","token","login","encrypted","location"]
+    },
+    "updateCredential": {
+            "description": "This task updates a credential into credentials.dat located in user home directory by default. If you want to update credentials from project you should use location parameter.",
+            "documentation": "http://fundacionjala.github.io/enforce-gradle-plugin/docs/credentials",
+            "parameters": ["id","username","password","token","login","location"]
+    },
+    "showCredentials": {
+            "description": "This task shows credentials registered at home directory by default, but if you want to see credentials from project directory you should use location parameter.",
+            "documentation": "http://fundacionjala.github.io/enforce-gradle-plugin/docs/credentials",
+            "parameters": ["location"]
     },
     "status": {
             "description": "Shows files which have been added, modified or deleted",
