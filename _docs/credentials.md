@@ -63,9 +63,9 @@ When you add credential by parameters it is encrypted by default also, you are a
 
 The command to add is:
 
-	$ gradle addCredential -Pid=myidLZ 
+	$ gradle addCredential -Pid=myidLZ
 			       -Pusername=juana@gmail.com
-	                       -Ppassword=123456 
+	                       -Ppassword=123456
 	                       -Ptoken=as:addCredential
 			       -Plocation=project
 
@@ -93,11 +93,33 @@ If you want to update credential from project directory you should write ***'pro
 
 Command:
 
-	$ gradle updateCredential -Pid=myId 
+	$ gradle updateCredential -Pid=myId
 			          -Pusername=user@organization.com
-	                          -Ppassword=myPassword 
+	                          -Ppassword=myPassword
 	                          -Ptoken=myToken
 	                          -Plocation=project
+
+## ShowCredentials task
+
+This task shows credentials registered at credentials.dat file located at home and project directories, it shows credentials from home directory by default, to see credentials from project directory you should use parameter location.
+
+### Parameters
+
+When you execute show credentials task, it shows credentials from home directory by default also, you are able to choose the credentials.dat file from project to choose this you should use parameter called ***location*** it has two values: 'project' and 'home'
+
+	 -Plocation is credentials.dat file location
+
+The command to show the credentials from project directory is:
+
+	$ gradle showCredentials -Plocation=project
+
+The command to show the credentials from home directory is:
+
+	$ gradle showCredentials
+
+or
+
+	$ gradle showCredentials -Plocation=home
 
 
 ## Examples
@@ -129,9 +151,9 @@ BUILD SUCCESSFUL
 
 Command:
 
-	$ gradle addCredential -Pid=myidLZ 
+	$ gradle addCredential -Pid=myidLZ
 			       -Pusername=juana@gmail.com
-			       -Ppassword=123456 
+			       -Ppassword=123456
 			       -Ptoken=as:addCredential
 			       -Plocation=project
 
@@ -170,9 +192,9 @@ BUILD SUCCESSFUL
 
 Command:
 
-	$ gradle updateCredential -Pid=myId 
+	$ gradle updateCredential -Pid=myId
 			          -Pusername=user@organization.com
-		    		  -Ppassword=myPassword 
+		    		  -Ppassword=myPassword
 		    		  -Ptoken=myToken
 		    		  -Plocation=project
 
@@ -180,6 +202,42 @@ Output:
 
 ```bash
 :updateCredential
+
+BUILD SUCCESSFUL
+```
+
+### Show credentials
+
+Command:
+
+	$ gradle showCredentials
+
+Output:
+
+```bash
+:showCredentials
+*********************************************
+                Credentials
+*********************************************
+
+Id : john.enforce
+User name : john@enforce.com
+Type : Production/Developer
+
+Id : mine
+User name : john@hotmail.com
+Type : Production/Developer
+
+Id : my
+User name : john.cdlv@gmail.com
+Type : Production/Developer
+
+Id : recru
+User name : admin@enforce.com
+Type : dev (Specified)
+
+*********************************************
+Those credentials are located at /home/john/credentials.dat
 
 BUILD SUCCESSFUL
 ```
