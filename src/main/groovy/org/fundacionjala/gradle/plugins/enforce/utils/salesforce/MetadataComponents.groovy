@@ -64,6 +64,7 @@ public enum MetadataComponents {
     PROFILES("Profile", "profile", "profiles"),
     TABS("CustomTab", "tab", "tabs"),
     TRANSLATIONS("Translations", "translation", "translations"),
+    AURADEFINITIONBUNDLE("AuraDefinitionBundle", "", "aura", Constants.CONTAINS_XML_FILE),
     FIELDS("CustomField", "sbc", "fields"),
     COMPACTLAYOUTS("CompactLayout", "sbc", "compactLayouts"),
     RECORDTYPES("RecordType", "sbc", "recordTypes"),
@@ -75,14 +76,13 @@ public enum MetadataComponents {
     OBJECTWEBLINKS("Weblink", "sbc", "webLinks"),
     CUSTOMPERMISSIONS("CustomPermission", "customPermission", "customPermissions")
 
-
-    public final static Map<String, MetadataComponents> COMPONENT;
+    public final static Map<String, MetadataComponents> COMPONENT
 
     static {
-        COMPONENT = new HashMap<String, MetadataComponents>();
+        COMPONENT = new HashMap<String, MetadataComponents>()
 
         for (MetadataComponents input : values()) {
-            COMPONENT.put(input.name(), input);
+            COMPONENT.put(input.name(), input)
         }
     }
 
@@ -255,7 +255,7 @@ public enum MetadataComponents {
      */
     public static boolean validFolder(String folderName) {
         for (MetadataComponents input : values()) {
-            if (input.name() == folderName.toUpperCase()) {
+            if (input.getDirectory() == folderName) {
                 return true
             }
         }

@@ -596,9 +596,25 @@ class Util {
         }
         //validates files
         ClassifiedFile classifiedFile = FileValidator.validateFiles(projectPath, filesToRetrieve)
-        if (!classifiedFile.invalidFiles.isEmpty()) {
-            throw new Exception("${Constants.INVALID_FILE}: ${classifiedFile.invalidFiles}")
+        ArrayList<File> invalidFiles = getFilesWithoutAuraComponents(classifiedFile.invalidFiles)
+        if (!invalidFiles.isEmpty()) {
+            throw new Exception("${Constants.INVALID_FILE}: ${invalidFiles}")
         }
+    }
+
+    /**
+     * Gets files excluding aura files
+     * @param files is an array list o files
+     * @return an array list of files
+     */
+    public static ArrayList<File> getFilesWithoutAuraComponents(ArrayList<File> files) {
+        ArrayList<File> filesFiltered = files.clone() as ArrayList<File>
+        files.each {File file ->
+            if(file.getPath().contains('aura')) {
+                filesFiltered.remove(file)
+            }
+        }
+        return filesFiltered
     }
 
     /**

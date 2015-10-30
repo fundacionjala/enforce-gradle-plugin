@@ -28,7 +28,6 @@ class Undeploy extends Deployment {
     private static final String DIR_UN_DEPLOY = "undeploy"
     private static final String FILE_NOT_FOUND = "these files can't be deleted from your organization, because these weren't found!"
     private static final String METADATA_WILDCARD = "*${File.separator}*-meta.xml"
-    private static final String DOCUMENTS_WILDCARD = "*documents${File.separator}**"
 
     public PackageComponent packageComponent
     public ArrayList<File> filesToTruncate
@@ -110,7 +109,7 @@ class Undeploy extends Deployment {
         ArrayList<String> filesToExclude = Util.getComponentsWithWildcard(standardComponents)
 
         includes.addAll(Util.getComponentsWithWildcard(standardComponents).grep(~/.*.object$/))
-        includes.addAll([METADATA_WILDCARD, DOCUMENTS_WILDCARD])
+        includes.addAll([METADATA_WILDCARD])
         filesToExclude.addAll(packageComponent.components.grep(~/.*.workflow$/) as ArrayList<String>)
         filesToExclude.add(excludes)
         showValidatedFiles = Constants.FALSE_OPTION
