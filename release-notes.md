@@ -1,3 +1,50 @@
+## 1.1.4 - 2015-11-04
+
+### Features
+
+* Add 'location' parameter to shows credentials from home directory and project directory
+
+    This can be used as:
+
+    >$ gradle showCredentials
+
+        :showCredentials
+        *********************************************
+                        Credentials
+        *********************************************
+        Id : iterum
+        User name : iterum.plugin@gmail.com
+        Type : Production/Developer
+
+        Id : test
+        User name : john_smith@enforce.com
+        Type : dev (Specified)
+
+        *********************************************
+        Those credentials are located at /home/user_directory/credentials.dat
+
+    >$ gradle showCredentials -Plocation=project
+
+        :showCredentials
+        *********************************************
+                        Credentials
+        *********************************************
+        Id : myId
+        User name : ana.perez@enforce.com
+        Type : jeje (Specified)
+
+        Id : demo
+        User name : john.cdlv@gmail.com
+        Type : Production/Developer
+
+        *********************************************
+        Those credentials are located at /home/user_directory/project_directory/credentials.dat
+
+### Enhancements
+
+* Support new components called lightning.
+
+
 ## 1.1.3 - 2015-10-19
 
 ### Features
