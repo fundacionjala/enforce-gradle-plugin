@@ -24,7 +24,7 @@ You should create a file called build.gradle as:
        	   jcenter()
        }
        dependencies {
-           classpath 'org.fundacionjala.gradle.plugins.enforce:enforce-gradle-plugin:1.1.3'
+           classpath 'org.fundacionjala.gradle.plugins.enforce:enforce-gradle-plugin:1.1.4'
        }
    }
 
