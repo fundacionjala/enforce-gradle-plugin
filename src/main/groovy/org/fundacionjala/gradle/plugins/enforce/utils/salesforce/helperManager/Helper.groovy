@@ -80,6 +80,7 @@ class Helper {
                         example = example.replace(WILDCARD_TASK,task.name)
                         printLine("${SPACE}${SPACE}","> ${example}")
                     }
+                    printLine("")
                 }
                 else {
                     printLine(SPACE,"-P${parameter} : This parameter dont have a description and examples.")
@@ -91,7 +92,6 @@ class Helper {
             printCenterLine("${taskName} task don't have a help manual. ")
             printLine(startLine.substring(Constants.ZERO,maxLineSize))
         }
-        printLine("")
         printLine(startLine.substring(Constants.ZERO,maxLineSize))
     }
 

@@ -122,28 +122,6 @@ abstract class SalesforceTask extends ForceTask {
     }
 
     /**
-     * Prepares the packages requested
-     * @param packagePath is path when package xml will be to create
-     * @param files is an array of files
-     */
-    void preparePackage(String packagePath, ArrayList<File> files) {
-        this.packageLoaded = packagePath
-        packageBuilder.createPackage(files, projectPath)
-    }
-
-    /**
-     * Saves package created
-     */
-    void savePackage() {
-        if (!this.packageLoaded) {
-            throw new DeployException(SAVE_PACKAGE_ERROR, [])
-        }
-        FileWriter fileWriter = new FileWriter(this.packageLoaded)
-        packageBuilder.write(fileWriter)
-        fileWriter.close()
-    }
-
-    /**
      * Updates the package prepared
      */
     void updatePackage(String nameOfType, ArrayList<String> members, String pathPackage) {

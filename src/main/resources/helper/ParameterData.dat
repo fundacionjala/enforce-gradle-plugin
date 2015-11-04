@@ -107,25 +107,25 @@
             "gradle *task* -Ptoken=2B9UvHKK2E1ky1EkkYBPFvbLM"
         ]
     },
-    "sfdcType": {
+    "login": {
         "description": "Is a login type",
         "examples": [
-            "gradle *task* -Ptoken=login (default value)",
-            "gradle *task* -Ptoken=test",
-            "gradle *task* -Ptoken=instance"
+            "gradle *task* -Plogin=login (default value)",
+            "gradle *task* -Plogin=test",
+            "gradle *task* -Plogin=instance"
         ]
     },
-    "type": {
+    "encrypted": {
         "description": "Defines whether your credential is encrypted or not",
         "examples": [
-            "gradle *task* -Ptype=normal",
-            "gradle *task* -Ptype=encrypted"
+            "gradle *task* -Pencrypted=n",
+            "gradle *task* -Pencrypted=y (default value)"
         ]
     },
     "location": {
         "description": "Is credentials.dat file directory",
         "examples": [
-            "gradle *task* -Plocation=home",
+            "gradle *task* -Plocation=home (default value)",
             "gradle *task* -Plocation=project"
         ]
     },

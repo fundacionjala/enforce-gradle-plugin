@@ -35,11 +35,11 @@ class CredentialUpdater extends CredentialManagerTask {
      * Updates a credential by parameters
      */
     public void updateCredentialByParameters() {
-        if (!credentialManagerInput.hasCredential(project.properties[CredentialMessage.ID_PARAM.value()].toString())) {
-            throw new CredentialException(CredentialMessage.MESSAGE_ID_CREDENTIAL_DOES_NOT_EXIST.value())
+        String credentialId = project.properties[CredentialMessage.ID_PARAM.value()].toString()
+        if (!credentialManagerInput.hasCredential(credentialId)) {
+            throw new CredentialException("${credentialId} ${CredentialMessage.MESSAGE_ID_CREDENTIAL_DOES_NOT_EXIST.value()}" )
         }
         if (CredentialParameterValidator.validateFieldsCredential(project)) {
-            String credentialId = project.properties[CredentialMessage.ID_PARAM.value()].toString()
             String credentialType = credentialManagerInput.getCredentialToUpdate(credentialId).type
             credentialManagerInput.updateCredential(CredentialParameterValidator.getCredentialInserted(project, credentialType))
         }

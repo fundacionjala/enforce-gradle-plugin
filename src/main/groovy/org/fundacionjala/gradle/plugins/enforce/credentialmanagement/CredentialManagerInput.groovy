@@ -16,13 +16,13 @@ import org.fundacionjala.gradle.plugins.enforce.wsc.LoginType
 import java.nio.file.Paths
 
 class CredentialManagerInput {
-    private final String HOME_PATH = Paths.get(System.properties['user.home'].toString(), 'credentials.dat').toString()
-    private final String PROJECT_PATH = Paths.get(System.getProperty("user.dir"), 'credentials.dat').toString()
     private final String PROJECT = 'project'
     private CredentialManager credentialManager
     private String pathSecretKey
     private String option
 
+    public static final String HOME_PATH = Paths.get(System.properties['user.home'].toString(), 'credentials.dat').toString()
+    public static final String PROJECT_PATH = Paths.get(System.getProperty("user.dir"), 'credentials.dat').toString()
     public String locationInput
     public String idInput
     public String userNameInput

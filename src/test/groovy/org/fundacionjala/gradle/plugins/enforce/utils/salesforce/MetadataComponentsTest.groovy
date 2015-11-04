@@ -63,7 +63,7 @@ class MetadataComponentsTest extends Specification {
     def "Test enum name is equals to directory name"() {
         expect:
             MetadataComponents.COMPONENT.each {key, value->
-                if(value.extension != 'sbc') {
+                if(value.extension != 'sbc' && value.directory != 'aura') {
                     assert key == value.directory.toUpperCase()
                 }
             }

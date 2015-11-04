@@ -1,6 +1,5 @@
 package org.fundacionjala.gradle.plugins.enforce.utils.salesforce.component.validators.files
 
-import org.codehaus.groovy.runtime.GStringImpl
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 
 /**
@@ -13,6 +12,7 @@ public class SalesforceValidatorManager {
             "${MetadataComponents.DOCUMENTS.getDirectory()}": new DocumentSalesforceValidator(),
             "${MetadataComponents.REPORTS.getDirectory()}": new ReportSalesforceValidator(),
             "${MetadataComponents.DASHBOARDS.getDirectory()}": new DashboardSalesforceValidator(),
+            "${MetadataComponents.AURADEFINITIONBUNDLE.getDirectory()}": new LightningSalesforceValidator(),
             "${COMPONENTS_SUPPORT_XML}": new XMLFileSalesforceValidator()
     ]
 
