@@ -81,6 +81,9 @@ class PackageComponent {
         Package.types.each { type ->
             type.members.each { memberName ->
                 def fileExtension = MetadataComponents.getExtensionByName(type.name.text() as String)
+                if (fileExtension == null) {
+                    return
+                }
                 if (fileExtension.isEmpty()) {
                     files.add("**")
                 } else {
