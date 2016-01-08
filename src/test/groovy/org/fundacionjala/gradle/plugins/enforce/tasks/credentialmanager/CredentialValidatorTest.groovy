@@ -89,7 +89,7 @@ class CredentialValidatorTest extends Specification {
         given:
         Credential credential = credentialFileManager.getCredentialById("validencrypted")
         when:
-        CredentialValidator.validateCredential(credential, connector)
+        credentialValidator.validateCredential(credential, connector)
         then:
         1 * connector.login(_)
     }
