@@ -42,8 +42,10 @@ class CredentialValidatorTest extends Specification {
         credentialValidator = new CredentialValidator()
         connector = Mock(Connector)
         session = Mock(Session)
-        connector.login(_) >> { Credential credential ->
-            if (credential.equals(credentialFileManager.getCredentialById("valid"))) {
+        connector.login(_ as Credential) >> { Credential credential ->
+            Credential validCredential = credentialFileManager.getCredentialById("valid")
+            if (credential.username == validCredential.username &&
+                    credential.passwordToken == validCredential.passwordToken) {
                 return session
             }
             throw new Exception()
@@ -81,7 +83,7 @@ class CredentialValidatorTest extends Specification {
         when:
         credentialValidator.validateCredential(credential, connector)
         then:
-        1 * connector.login(_)
+        1 * connector.login(_ as Credential)
     }
 
 
@@ -91,6 +93,6 @@ class CredentialValidatorTest extends Specification {
         when:
         credentialValidator.validateCredential(credential, connector)
         then:
-        1 * connector.login(_)
+        1 * connector.login(_ as Credential)
     }
 }
