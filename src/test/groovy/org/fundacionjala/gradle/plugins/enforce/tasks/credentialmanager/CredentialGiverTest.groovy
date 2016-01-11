@@ -5,7 +5,6 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.credentialmanager
 
-import javafx.concurrent.Task
 import org.fundacionjala.gradle.plugins.enforce.EnforcePlugin
 import org.fundacionjala.gradle.plugins.enforce.credentialmanagement.CredentialFileManager
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
