@@ -53,16 +53,13 @@ class CredentialGiver extends CredentialManagerTask {
         logger.quiet("*********************************************")
 
         Map<Credential, String> credentialsResult = filterCredentials(status)
-        logger.quiet("size : ${credentialsResult.size()} - status : $status")
-
 
         for (mapItem in credentialsResult) {
             printCredential(mapItem.key)
             logger.quiet(mapItem.value)
             logger.quiet("")
+            logger.quiet("*********************************************")
         }
-
-        logger.quiet("*********************************************")
         logger.quiet("${CREDENTIAL_LOCATION_INFO} ${getCredentialsFilePath()}")
     }
 

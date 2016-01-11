@@ -5,6 +5,7 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.credentialmanager
 
+import javafx.concurrent.Task
 import org.fundacionjala.gradle.plugins.enforce.EnforcePlugin
 import org.fundacionjala.gradle.plugins.enforce.credentialmanagement.CredentialFileManager
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
@@ -62,6 +63,46 @@ class CredentialGiverTest extends Specification {
     def "Test should be instance of CredentialGiver"() {
         expect:
         credentialGiver instanceof CredentialGiver
+    }
+
+    def "Test should be verify when the parameter sent is 'status' change the local variable 'status' to 'allStatus'"() {
+        given:
+        credentialManagerTask.setProperty("status","allStatus")
+        when:
+        credentialManagerTask.loadLocationParameter()
+        String status = credentialGiver.status
+        then:
+        status == "allStatus"
+    }
+
+    def "Test should be verify when the parameter sent is 'status=isValid' change the local variable 'status' to 'isValid"() {
+        given:
+        credentialManagerTask.setProperty("status","isValid")
+        when:
+        credentialManagerTask.loadLocationParameter()
+        String status = credentialGiver.status
+        then:
+        status == "isValid"
+    }
+
+    def "Test should be verify when the parameter sent is 'status=isValid' change the local variable 'status' to 'isInvalid"() {
+        given:
+        credentialManagerTask.setProperty("status","isInvalid")
+        when:
+        credentialManagerTask.loadLocationParameter()
+        String status = credentialGiver.status
+        then:
+        status == "isInvalid"
+    }
+
+    def "Test should be verify when the parameter sent is 'location' change the local variable 'status' to 'empty"() {
+        given:
+        credentialManagerTask.setProperty("location","")
+        when:
+        credentialManagerTask.loadLocationParameter()
+        String status = credentialGiver.status
+        then:
+        status == ""
     }
 
     def "Test should by return a map that contains valid credentials when use 'isValid' Parameter"() {
