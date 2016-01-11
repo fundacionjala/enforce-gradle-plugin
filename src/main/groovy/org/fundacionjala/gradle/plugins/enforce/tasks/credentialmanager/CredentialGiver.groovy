@@ -51,7 +51,6 @@ class CredentialGiver extends CredentialManagerTask {
         logger.quiet("*********************************************")
         logger.quiet("                Credentials                  ")
         logger.quiet("*********************************************")
-
         Map<Credential, String> credentialsResult = filterCredentials(status)
 
         for (mapItem in credentialsResult) {
@@ -63,6 +62,13 @@ class CredentialGiver extends CredentialManagerTask {
         logger.quiet("${CREDENTIAL_LOCATION_INFO} ${getCredentialsFilePath()}")
     }
 
+    /**
+     * Returns the map of credentials associated with its error message.
+     * If the credential is valid, it message is empty.
+     *
+     * @param type of credential.
+     * @return the map of credentials.
+     */
     Map<Credential, String> filterCredentials(String type) {
         Map<Credential, String> credentialsMap = new HashMap<>()
         for (Credential credential in credentialFileManager.getCredentials()) {
@@ -73,12 +79,12 @@ class CredentialGiver extends CredentialManagerTask {
                     credentialValidator.validateCredential(credential)
                     if (type == ShowCredentialOptions.VALID_STATUS.value() ||
                             type == ShowCredentialOptions.ALL_STATUS.value()) {
-                        credentialsMap.put(credential, "Status: $VALID_STATUS_MESSAGE")
+                        credentialsMap.put(credential, "Status : $VALID_STATUS_MESSAGE")
                     }
                 } catch (Exception e) {
                     if (type == ShowCredentialOptions.INVALID_STATUS.value() ||
                             type == ShowCredentialOptions.ALL_STATUS.value()) {
-                        credentialsMap.put(credential, "Status: $INVALID_STATUS_MESSAGE - ${e.message}")
+                        credentialsMap.put(credential, "Status : $INVALID_STATUS_MESSAGE - ${e.message}")
                     }
                 }
             }
@@ -86,14 +92,29 @@ class CredentialGiver extends CredentialManagerTask {
         return credentialsMap
     }
 
+    /**
+     * Sets the credential validator only available for unit test.
+     *
+     * @param credentialValidator to be set.
+     */
     void setCredentialValidator(CredentialValidator credentialValidator) {
         this.credentialValidator = credentialValidator
     }
 
+    /**
+     * Sets the credential file manager only available for unit test.
+     *
+     * @param credentialFileManager to be set.
+     */
     void setCredentialFileManager (CredentialFileManager credentialFileManager) {
         this.credentialFileManager = credentialFileManager
     }
 
+    /**
+     * Prints the credential data.
+     *
+     * @param credential contains the data to be printed.
+     */
     private void printCredential(Credential credential) {
         logger.quiet("Id : $credential.id")
         logger.quiet("User name : $credential.username")
