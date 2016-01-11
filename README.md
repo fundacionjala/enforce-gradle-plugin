@@ -177,6 +177,15 @@ dependencies {
 	compile 'org.codehaus.groovy:groovy-all:2.4.4'
 	testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
 }
+
+```
+To gradle  2.9 and 2.10 versions
+
+```groovy
+dependencies {
+	compile 'org.codehaus.groovy:groovy-all:2.4.4'
+	testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
+}
 ```
  For more information about spock and groovy versions [click here](https://code.google.com/p/spock/wiki/SpockVersionsAndDependencies)
 
