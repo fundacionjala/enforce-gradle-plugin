@@ -127,11 +127,11 @@ or
 
 #### ***Status***
 
-It is also possible to display the status of all credentials(*valid/invalid*) by the parameter ***status***
+It is also possible to display the status of all credentials by the parameter ***status***
 
 	$ gradle showCredentials -Pstatus
 
-This parameter can filter credentials with two values: 'isValid' and 'isInvalid'.
+This parameter can filter credentials with two values: 'valid' and 'invalid'.
 
 	$ gradle showCredentials -Pstatus=isValid
 
@@ -277,22 +277,22 @@ Output:
 Id : john.enforce
 User name : john@enforce.com
 Type : Production/Developer
-Status : is valid
+Status : Ok
 
 Id : mine
 User name : john@hotmail.com
 Type : Production/Developer
-Status : is valid
+Status : Ok
 
 Id : my
 User name : john.cdlv@gmail.com
 Type : Production/Developer
-Status : is invalid - Invalid username, password, security token; or user locked out.
+Status : Outdated - Invalid username, password, security token; or user locked out.
 
 Id : recru
 User name : admin@enforce.com
 Type : dev (Specified)
-Status : is invalid - Invalid username, password, security token; or user locked out.
+Status : Outdated - Invalid username, password, security token; or user locked out.
 
 *********************************************
 Those credentials are located at /home/john/credentials.dat
@@ -315,12 +315,12 @@ Output:
 Id : john.enforce
 User name : john@enforce.com
 Type : Production/Developer
-Status : is valid
+Status : Ok
 
 Id : mine
 User name : john@hotmail.com
 Type : Production/Developer
-Status : is valid
+Status : Ok
 
 *********************************************
 Those credentials are located at /home/john/credentials.dat
