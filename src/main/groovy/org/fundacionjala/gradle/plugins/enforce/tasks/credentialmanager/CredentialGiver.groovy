@@ -20,6 +20,7 @@ class CredentialGiver extends CredentialManagerTask {
 
     private final String VALID_STATUS_MESSAGE = "Ok"
     private final String INVALID_STATUS_MESSAGE = "Outdated"
+    private final String CREDENTIAL_DATA_TEMPLATE = "%-10s : %s"
 
     private CredentialValidator credentialValidator
     /**
@@ -71,22 +72,25 @@ class CredentialGiver extends CredentialManagerTask {
      * @return the map of credentials.
      */
     Map<Credential, String> filterCredentials(String type) {
+        String message = Constants.EMPTY
         Map<Credential, String> credentialsMap = new HashMap<>()
         for (Credential credential in credentialFileManager.getCredentials()) {
             if (type.empty) {
-                credentialsMap.put(credential, Constants.EMPTY)
+                credentialsMap.put(credential, message)
             } else {
                 try {
                     credentialValidator.validateCredential(credential)
                     if (type == ShowCredentialOptions.VALID_STATUS.value() ||
                             type == ShowCredentialOptions.ALL_STATUS.value()) {
-                        credentialsMap.put(credential, "Status : $VALID_STATUS_MESSAGE")
+                        message = sprintf(CREDENTIAL_DATA_TEMPLATE, "Status", VALID_STATUS_MESSAGE)
+                        credentialsMap.put(credential, message)
                     }
                 } catch (Exception e) {
                     if (type == ShowCredentialOptions.INVALID_STATUS.value() ||
                             type == ShowCredentialOptions.ALL_STATUS.value()) {
-                        String formatMessage = "Status : $INVALID_STATUS_MESSAGE \nMessage : ${e.message}"
-                        credentialsMap.put(credential, formatMessage)
+                        message = sprintf(CREDENTIAL_DATA_TEMPLATE, "Status", INVALID_STATUS_MESSAGE)
+                        message = "$message\n${sprintf(CREDENTIAL_DATA_TEMPLATE, "Message", e.message)}"
+                        credentialsMap.put(credential, message)
                     }
                 }
             }
@@ -118,9 +122,9 @@ class CredentialGiver extends CredentialManagerTask {
      * @param credential contains the data to be printed.
      */
     private void printCredential(Credential credential) {
-        logger.quiet("Id : $credential.id")
-        logger.quiet("User name : $credential.username")
-        logger.quiet("Type : ${getOrganizationType(credential.loginFormat)}")
+        logger.quiet(sprintf(CREDENTIAL_DATA_TEMPLATE, "Id", credential.id))
+        logger.quiet(sprintf(CREDENTIAL_DATA_TEMPLATE, "User name", credential.username))
+        logger.quiet(sprintf(CREDENTIAL_DATA_TEMPLATE, "Type", getOrganizationType(credential.loginFormat)))
     }
 
     /**
