@@ -238,21 +238,21 @@ Output:
                 Credentials
 *********************************************
 
-Id : john.enforce
+Id        : john.enforce
 User name : john@enforce.com
-Type : Production/Developer
+Type      : Production/Developer
 
-Id : mine
+Id        : mine
 User name : john@hotmail.com
-Type : Production/Developer
+Type      : Production/Developer
 
-Id : my
+Id        : my
 User name : john.cdlv@gmail.com
-Type : Production/Developer
+Type      : Production/Developer
 
-Id : recru
+Id        : recru
 User name : admin@enforce.com
-Type : dev (Specified)
+Type      : dev (Specified)
 
 *********************************************
 Those credentials are located at /home/john/credentials.dat
@@ -274,25 +274,27 @@ Output:
                 Credentials
 *********************************************
 
-Id : john.enforce
+Id        : john.enforce
 User name : john@enforce.com
-Type : Production/Developer
-Status : Ok
+Type      : Production/Developer
+Status    : Ok
 
-Id : mine
+Id        : mine
 User name : john@hotmail.com
-Type : Production/Developer
-Status : Ok
+Type      : Production/Developer
+Status    : Ok
 
-Id : my
+Id        : my
 User name : john.cdlv@gmail.com
-Type : Production/Developer
-Status : Outdated - Invalid username, password, security token; or user locked out.
+Type      : Production/Developer
+Status    : Outdated
+Message   : Invalid username, password, security token; or user locked out.
 
-Id : recru
+Id        : recru
 User name : admin@enforce.com
-Type : dev (Specified)
-Status : Outdated - Invalid username, password, security token; or user locked out.
+Type      : dev (Specified)
+Status    : Outdated
+Message   : Invalid username, password, security token; or user locked out.
 
 *********************************************
 Those credentials are located at /home/john/credentials.dat
@@ -312,15 +314,15 @@ Output:
                 Credentials
 *********************************************
 
-Id : john.enforce
+Id        : john.enforce
 User name : john@enforce.com
-Type : Production/Developer
-Status : Ok
+Type      : Production/Developer
+Status    : Ok
 
-Id : mine
+Id        : mine
 User name : john@hotmail.com
-Type : Production/Developer
-Status : Ok
+Type      : Production/Developer
+Status    : Ok
 
 *********************************************
 Those credentials are located at /home/john/credentials.dat
