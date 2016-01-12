@@ -133,11 +133,11 @@ It is also possible to display the status of all credentials by the parameter **
 
 This parameter can filter credentials with two values: 'valid' and 'invalid'.
 
-	$ gradle showCredentials -Pstatus=isValid
+	$ gradle showCredentials -Pstatus=valid
 
 or
 
-	$ gradle showCredentials -Pstatus=isInvalid
+	$ gradle showCredentials -Pstatus=invalid
 
 
 ## Examples
@@ -300,9 +300,9 @@ Those credentials are located at /home/john/credentials.dat
 BUILD SUCCESSFUL
 ```
 
-Or, using the command(*isValid/isInvalid*):
+Or, using the command(*valid/invalid*):
 
-	$ gradle showCredentials -Pstatus=isValid
+	$ gradle showCredentials -Pstatus=valid
 
 Output:
 
