@@ -74,24 +74,24 @@ class CredentialGiverTest extends Specification {
         status == "allStatus"
     }
 
-    def "Test should be verify when the parameter sent is 'status=isValid' change the local variable 'status' to 'isValid"() {
+    def "Test should be verify when the parameter sent is 'status=valid' change the local variable 'status' to 'invalid"() {
         given:
-        credentialManagerTask.setProperty("status","isValid")
+        credentialManagerTask.setProperty("status","valid")
         when:
         credentialManagerTask.loadLocationParameter()
         String status = credentialGiver.status
         then:
-        status == "isValid"
+        status == "valid"
     }
 
-    def "Test should be verify when the parameter sent is 'status=isValid' change the local variable 'status' to 'isInvalid"() {
+    def "Test should be verify when the parameter sent is 'status=isValid' change the local variable 'status' to 'invalid"() {
         given:
-        credentialManagerTask.setProperty("status","isInvalid")
+        credentialManagerTask.setProperty("status","invalid")
         when:
         credentialManagerTask.loadLocationParameter()
         String status = credentialGiver.status
         then:
-        status == "isInvalid"
+        status == "invalid"
     }
 
     def "Test should be verify when the parameter sent is 'location' change the local variable 'status' to 'empty"() {
@@ -104,23 +104,23 @@ class CredentialGiverTest extends Specification {
         status == ""
     }
 
-    def "Test should by return a map that contains valid credentials when use 'isValid' Parameter"() {
+    def "Test should by return a map that contains valid credentials when use 'valid' Parameter"() {
         given:
         credentialGiver.credentialFileManager = this.credentialFileManager
 
         when:
-        Map<Credential, String> resultCredential = credentialGiver.filterCredentials("isValid")
+        Map<Credential, String> resultCredential = credentialGiver.filterCredentials("valid")
 
         then:
         resultCredential.size() == 3
     }
 
-    def "Test should by return a map that contains invalid credentials when use 'isValid' Parameter"() {
+    def "Test should by return a map that contains invalid credentials when use 'invalid' Parameter"() {
         given:
         credentialGiver.credentialFileManager = this.credentialFileManager
 
         when:
-        Map<Credential, String> resultCredential = credentialGiver.filterCredentials("isInvalid")
+        Map<Credential, String> resultCredential = credentialGiver.filterCredentials("invalid")
 
         then:
         resultCredential.size() == 2

@@ -4,7 +4,6 @@ import org.fundacionjala.gradle.plugins.enforce.credentialmanagement.CredentialF
 import org.fundacionjala.gradle.plugins.enforce.credentialmanagement.CredentialManagerInput
 import org.fundacionjala.gradle.plugins.enforce.credentialmanagement.CredentialMessage
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
-import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 
 /**
@@ -19,8 +18,8 @@ class CredentialGiver extends CredentialManagerTask {
     final String WARNING_MESSAGE = "doesn't exist, \nYou should add credential here using parameter location: " +
             "\n\t${'$'}gradle addCredential -Pid=my -Pusername=john@enforce.com -Ppassword=qweasd456fgh -Plocation="
 
-    private final String VALID_STATUS_MESSAGE = "is valid"
-    private final String INVALID_STATUS_MESSAGE = "is invalid"
+    private final String VALID_STATUS_MESSAGE = "Ok"
+    private final String INVALID_STATUS_MESSAGE = "Outdated"
 
     private CredentialValidator credentialValidator
     /**

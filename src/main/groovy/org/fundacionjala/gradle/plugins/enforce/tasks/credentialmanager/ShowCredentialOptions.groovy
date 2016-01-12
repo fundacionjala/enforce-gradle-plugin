@@ -1,12 +1,14 @@
+/*
+ * Copyright (c) Fundacion Jala. All rights reserved.
+ * Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ */
+
 package org.fundacionjala.gradle.plugins.enforce.tasks.credentialmanager
 
-/**
- * Created by fernando_hurtado on 11-01-16.
- */
 enum ShowCredentialOptions {
     STATUS("status"),
-    VALID_STATUS("isValid"),
-    INVALID_STATUS("isInvalid"),
+    VALID_STATUS("valid"),
+    INVALID_STATUS("invalid"),
     ALL_STATUS("allStatus"),
     LOCATION("location")
 
