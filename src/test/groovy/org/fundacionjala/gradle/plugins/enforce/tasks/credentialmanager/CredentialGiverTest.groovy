@@ -74,7 +74,7 @@ class CredentialGiverTest extends Specification {
         status == "allStatus"
     }
 
-    def "Test should be verify when the parameter sent is 'status=valid' change the local variable 'status' to 'invalid"() {
+    def "Test should be verify when the parameter sent is 'status=valid' change the local variable 'status' to 'valid'"() {
         given:
         credentialManagerTask.setProperty("status","valid")
         when:
@@ -84,7 +84,7 @@ class CredentialGiverTest extends Specification {
         status == "valid"
     }
 
-    def "Test should be verify when the parameter sent is 'status=isValid' change the local variable 'status' to 'invalid"() {
+    def "Test should be verify when the parameter sent is 'status=isValid' change the local variable 'status' to 'invalid'"() {
         given:
         credentialManagerTask.setProperty("status","invalid")
         when:

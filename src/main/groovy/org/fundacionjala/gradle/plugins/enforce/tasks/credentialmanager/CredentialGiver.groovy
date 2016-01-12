@@ -54,7 +54,9 @@ class CredentialGiver extends CredentialManagerTask {
 
         for (mapItem in credentialsResult) {
             printCredential(mapItem.key)
-            logger.quiet(mapItem.value)
+            if (!mapItem.value.empty) {
+                logger.quiet(mapItem.value)
+            }
             logger.quiet("")
             logger.quiet("*********************************************")
         }
@@ -83,7 +85,8 @@ class CredentialGiver extends CredentialManagerTask {
                 } catch (Exception e) {
                     if (type == ShowCredentialOptions.INVALID_STATUS.value() ||
                             type == ShowCredentialOptions.ALL_STATUS.value()) {
-                        credentialsMap.put(credential, "Status : $INVALID_STATUS_MESSAGE - ${e.message}")
+                        String formatMessage = "Status : $INVALID_STATUS_MESSAGE \nMessage : ${e.message}"
+                        credentialsMap.put(credential, formatMessage)
                     }
                 }
             }
@@ -105,7 +108,7 @@ class CredentialGiver extends CredentialManagerTask {
      *
      * @param credentialFileManager to be set.
      */
-    void setCredentialFileManager (CredentialFileManager credentialFileManager) {
+    void setCredentialFileManager(CredentialFileManager credentialFileManager) {
         this.credentialFileManager = credentialFileManager
     }
 
