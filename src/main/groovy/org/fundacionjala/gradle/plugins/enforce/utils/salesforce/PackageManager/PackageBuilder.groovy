@@ -191,7 +191,8 @@ class PackageBuilder {
             MetadataComponents component = MetadataComponents.getComponentByPath(folder as String)
             if (component) {
                 packageTypeMembers = new PackageTypeMembers()
-                ArrayList<String> filesMembers = PackageUtil.selectFilesMembers(folder, files, basePath)
+                ArrayList<File> filesByFolder =  PackageUtil.getFilesByFolder(folder, files)
+                ArrayList<String> filesMembers = PackageUtil.selectFilesMembers(filesByFolder, basePath)
                 packageTypeMembers.members = filesMembers ?: [WILDCARD]
                 packageTypeMembers.name = component.getTypeName()
                 packageData.push(packageTypeMembers)

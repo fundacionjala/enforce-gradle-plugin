@@ -62,16 +62,11 @@ class PackageUtilTest extends Specification {
 
     def "Test should return all names of files without extension inside a folder" () {
         given:
-            def listFiles = [new File(Paths.get(RESOURCE_PATH, 'classes', 'class1.cls').toString()),
-                             new File(Paths.get(RESOURCE_PATH, 'classes', 'class1.cls').toString()),
-                             new File(Paths.get(RESOURCE_PATH, 'objects', 'Object1__c.object').toString()),
-                             new File(Paths.get(RESOURCE_PATH, 'web', 'InvalidClass.cls').toString()),
-                             new File(Paths.get(RESOURCE_PATH, 'web', 'InvalidClass.cls').toString())]
+            def listFiles = [new File(Paths.get(RESOURCE_PATH, 'objects', 'Object1__c.object').toString())]
         when:
-            def listResult = PackageUtil.selectFilesMembers('objects', listFiles, RESOURCE_PATH)
+            def listResult = PackageUtil.selectFilesMembers(listFiles, RESOURCE_PATH)
         then:
             listResult == ['Object1__c']
-
     }
 
     def "Test should return all names inside a report folder" () {
@@ -80,7 +75,7 @@ class PackageUtilTest extends Specification {
                              new File(Paths.get(RESOURCE_PATH, 'reports', 'reportTest' , 'OpportunityReport').toString()),
                              new File(Paths.get(RESOURCE_PATH, 'reports', 'report2Test', 'Account2Report').toString())]
         when:
-            def listResult = PackageUtil.selectFilesMembers('reports', listFiles, RESOURCE_PATH)
+            def listResult = PackageUtil.selectFilesMembers(listFiles, RESOURCE_PATH)
         then:
             listResult == ['reportTest/AccountReport',
                            'reportTest/OpportunityReport',
@@ -91,7 +86,7 @@ class PackageUtilTest extends Specification {
         given:
             def listFiles = [new File(Paths.get('installedPackages', 'al.installedPackage').toString())]
         when:
-            def listResult = PackageUtil.selectFilesMembers('installedPackages', listFiles, '')
+            def listResult = PackageUtil.selectFilesMembers(listFiles, '')
         then:
             listResult == ["al"]
     }

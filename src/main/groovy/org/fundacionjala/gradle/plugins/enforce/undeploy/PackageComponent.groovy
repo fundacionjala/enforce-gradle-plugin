@@ -75,21 +75,26 @@ class PackageComponent {
      * @return a map with all directory names with its components
      */
     private Map getComponentsFromPackage(File packageFile) {
-
         def Package = new XmlParser().parse(packageFile)
         def files = []
         def directories = [:]
         Package.types.each { type ->
             type.members.each { memberName ->
                 def fileExtension = MetadataComponents.getExtensionByName(type.name.text() as String)
-                if (!memberName.text().equals("*")) {
-                    files.add("${memberName.text()}.${fileExtension}")
+                if (fileExtension == null) {
+                    return
+                }
+                if (fileExtension.isEmpty()) {
+                    files.add("**")
                 } else {
-                    def wildCard = "*.${fileExtension}"
-                    files.add(wildCard)
+                    if (!memberName.text().equals("*")) {
+                        files.add("${memberName.text()}.${fileExtension}")
+                    } else {
+                        def wildCard = "*.${fileExtension}"
+                        files.add(wildCard)
+                    }
                 }
             }
-
             directories.put(MetadataComponents.getDirectoryByName(type.name.text() as String), files.clone())
             files.clear()
         }

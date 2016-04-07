@@ -5,7 +5,6 @@
 
 package org.fundacionjala.gradle.plugins.enforce.interceptor
 
-import com.jalasoft.sfdc.devtool.interceptor.interceptors.*
 import org.fundacionjala.gradle.plugins.enforce.interceptor.interceptors.*
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 

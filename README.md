@@ -21,7 +21,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'org.fundacionjala.gradle.plugins.enforce:enforce-gradle-plugin:1.1.3'
+        classpath 'org.fundacionjala.gradle.plugins.enforce:enforce-gradle-plugin:1.1.4'
     }
 }
 
@@ -171,6 +171,15 @@ dependencies {
 ```
 
 To gradle  2.5 and 2.6 versions
+
+```groovy
+dependencies {
+	compile 'org.codehaus.groovy:groovy-all:2.4.4'
+	testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
+}
+
+```
+To gradle  2.9 and 2.10 versions
 
 ```groovy
 dependencies {

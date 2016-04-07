@@ -8,6 +8,7 @@ import java.nio.file.Paths
 
 class PackageUtil {
     private final static EMPTY = ''
+    private final static AURA_FOLDER_NAME = 'aura'
     /**
      * Gets an array list of package member objects from type name and member list
      * @param name represents a type name in package xml file
@@ -83,30 +84,33 @@ class PackageUtil {
      * @param files contains the list of files
      * @return all files inside folders
      */
-    public static ArrayList<String> selectFilesMembers(String folder, ArrayList<File> files, String basePath) {
+    public static ArrayList<String> selectFilesMembers(ArrayList<File> files, String basePath) {
         ArrayList<String> members = []
         if (basePath == EMPTY){
-            members = selectFilesMembersWithoutPath(folder, files)
+            members = selectFilesMembersWithoutPath(files)
         } else {
-            members = selectFilesMembersWithBasePath(folder, files, basePath)
+            members = selectFilesMembersWithBasePath(files, basePath)
         }
         return members.unique()
     }
 
     /**
      * Filters files taking in account base path o files
-     * @param folder contains a folder name
      * @param files contains a files
      * @param basePath contains a files bse path
      * @return an array of files filtered
      */
-    private static ArrayList<String> selectFilesMembersWithBasePath(String folder, ArrayList<File> files, String basePath) {
+    private static ArrayList<String> selectFilesMembersWithBasePath(ArrayList<File> files, String basePath) {
         ArrayList<String> members = []
-        files.each { file ->
+        files.each { File file ->
             String relativePath = Util.getRelativePath(file, basePath)
             String parentName = Util.getFirstPath(relativePath)
             String fileName = Util.getRelativePath(file, Paths.get(basePath, parentName).toString(), false)
-            if (parentName == folder && !fileName.isEmpty()) {
+            if (parentName == AURA_FOLDER_NAME && file.isFile()) {
+                members.push(file.getParentFile().getName() as String)
+                return
+            }
+            if (fileName && !fileName.isEmpty()) {
                 members.push(Util.getFileName(fileName as String))
             }
         }
@@ -119,14 +123,31 @@ class PackageUtil {
      * @param files contains an array of files
      * @return an arrayList of fileNames
      */
-    private static ArrayList<String> selectFilesMembersWithoutPath(String folder, ArrayList<File> files) {
+    private static ArrayList<String> selectFilesMembersWithoutPath(ArrayList<File> files) {
         ArrayList<String> members = []
         files.each { file ->
             File parentFile = file.getParentFile()
-            if (parentFile && parentFile.getName() == folder) {
+            if (parentFile.getName() == AURA_FOLDER_NAME) {
+                members.push(parentFile.getName() as String)
+                return
+            }
+            if (parentFile) {
                 members.push(Util.getFileName(file.getName() as String))
             }
         }
         return members
+    }
+
+    /**
+     * Gets files by folder
+     * @param folderName is folder name
+     * @param files is an array list of files
+     * @return array list of files
+     */
+    public static ArrayList<File> getFilesByFolder(String folderName, ArrayList<File> files) {
+        return files.grep({ File file ->
+            String filePath = file.getPath()
+            filePath.contains(folderName)
+        })
     }
 }
