@@ -63,7 +63,7 @@ class MetadataComponentsTest extends Specification {
     def "Test enum name is equals to directory name"() {
         expect:
             MetadataComponents.COMPONENT.each {key, value->
-                if(value.extension != 'sbc' && value.directory != 'aura') {
+                if(value.extension != 'sbc' && value.directory != 'aura' && value.directory != 'dataSources') {
                     assert key == value.directory.toUpperCase()
                 }
             }
@@ -72,6 +72,16 @@ class MetadataComponentsTest extends Specification {
     def "Test get a CustomPermission extension"() {
         expect:
             MetadataComponents.getComponent("customPermissions").getExtension() == "customPermission"
+    }
+
+    def "Test get a ExternalDataSource extension"() {
+        expect:
+        MetadataComponents.getComponent("ExternalDataSource").getExtension() == "dataSource"
+    }
+
+    def "Test get a ExternalDataSource by folder"() {
+        expect:
+        MetadataComponents.getComponentByPath("dataSources").typeName == "ExternalDataSource"
     }
 
     def "Test a component by folder"() {

@@ -74,7 +74,8 @@ public enum MetadataComponents {
     LISTVIEWS("ListView", "sbc", "listViews"),
     SHARINGREASON("SharingReason", "sbc", "SharingReason"),
     OBJECTWEBLINKS("Weblink", "sbc", "webLinks"),
-    CUSTOMPERMISSIONS("CustomPermission", "customPermission", "customPermissions")
+    CUSTOMPERMISSIONS("CustomPermission", "customPermission", "customPermissions"),
+    EXTERNALDATASOURCE("ExternalDataSource", "dataSource", "dataSources")
 
     public final static Map<String, MetadataComponents> COMPONENT
 
