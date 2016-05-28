@@ -5,8 +5,10 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.credentialmanager
 
+import org.eclipse.jdt.internal.compiler.impl.Constant
 import org.fundacionjala.gradle.plugins.enforce.credentialmanagement.CredentialManagerInput
 import org.fundacionjala.gradle.plugins.enforce.tasks.ForceTask
+import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 
 import java.nio.file.Paths
@@ -17,6 +19,7 @@ abstract class CredentialManagerTask extends ForceTask {
 
     public CredentialManagerInput credentialManagerInput
     public String location = 'home'
+    public String status = ""
 
     /**
      * Sets description and group task
@@ -40,6 +43,16 @@ abstract class CredentialManagerTask extends ForceTask {
     void loadLocationParameter() {
         if (Util.isValidProperty(project, LOCATION) && !Util.isEmptyProperty(project, LOCATION)) {
             location = project.properties[LOCATION].toString()
+        }
+
+        String statusTemp = project.properties[ShowCredentialOptions.STATUS.value()].toString()
+        switch (statusTemp) {
+            case ShowCredentialOptions.VALID_STATUS.value() : status = ShowCredentialOptions.VALID_STATUS.value()
+                break
+            case ShowCredentialOptions.INVALID_STATUS.value() : status = ShowCredentialOptions.INVALID_STATUS.value()
+                break
+            case Constants.EMPTY : status = ShowCredentialOptions.ALL_STATUS.value()
+                break
         }
     }
 
