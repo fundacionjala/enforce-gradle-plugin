@@ -82,12 +82,21 @@ class MetadataAPI extends ForceAPI {
     }
 
     /**
-     * Deploys asynchronously all salesforce components from a zip file
+     * Deploys asynchronously all salesforce components from a zip file without performing any validation
      * @param sourcePath the zip file to deploy
      * @return the deploy result obtained from server
      */
-    public DeployResult deploy(String sourcePath) {
+    public DeployResult deploy(String sourcePath, boolean checkOnly) {
+        return genericDeploy(sourcePath, checkOnly)
+    }
 
+    /**
+     * Deploys asynchronously all salesforce components from a zip file
+     * @param sourcePath the zip file to deploy
+     * @param checkOnly whether or not to perform a validation
+     * @return the deploy result obtained from server
+     */
+    private DeployResult genericDeploy(String sourcePath, boolean checkOnly) {
         def byteArray = new File(sourcePath).getBytes()
         DeployOptions deployOptions = new DeployOptions()
         deployOptions.setPerformRetrieve(false)
@@ -96,6 +105,7 @@ class MetadataAPI extends ForceAPI {
         deployOptions.setAllowMissingFiles(true)
         deployOptions.setPurgeOnDelete(true)
         deployOptions.setIgnoreWarnings(false)
+        deployOptions.setCheckOnly(checkOnly)
         AsyncResult asyncResult = metadataConnection.deploy(byteArray, deployOptions)
         DeployResult deployResult = inspectorResults.waitForDeployResult(asyncResult.id, poll, waitTime * THOUSAND)
 
