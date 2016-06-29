@@ -18,4 +18,4 @@ To be able to run a SonarQube analysis on your project, you will need:
 * To install [SonarQube scanner](https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-2.6.1.zip) and configure sonar-runner as an enviroment variable
 * The [Enforce SonarQube Apex Plug-in](https://bintray.com/fundacionjala/enforce/enforce-sonar-plugin/view).
 
-Now you'll be able to run the analysis for a project, following these next [steps]().
+Now you'll be able to run the analysis for a project, following these next [steps](http://fundacionjala.github.io/enforce-gradle-plugin/sonarqube/runanalysis).
