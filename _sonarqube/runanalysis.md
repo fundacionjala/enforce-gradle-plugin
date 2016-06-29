@@ -1,6 +1,6 @@
 ---
 layout: sonarqube
-title: Run Analysis
+title: Run the Analysis
 permalink: /sonarqube/runanalysis/
 ---
 
@@ -21,15 +21,17 @@ First off, you'll need to configure the [SonarQube scanner](https://sonarsource.
 
 Next, you are going to need to add the [Apex plugin](https://bintray.com/fundacionjala/enforce/enforce-sonar-plugin/view) jar file (apex-plugin.jar) to the plugins of Sonarqube, in the following subfolder "../sonarqube/extensions/plugins/".
 
-# Start the SonarQube server:
+# Start the SonarQube server
+
 	
 In the folder where you installed SonarQube, you need to go to the sub-folder `bin` and then to the sub-folder corresponding to your OS. 
 
 Once inside, run `./sonar.sh console` to start the SonarQube server.
 
-        ![starting SonarQube server](https://github.com/fundacionjala/enforce-sonarqube-plugin/blob/gh-pages/img/starting-sonarQube.png)
 
-#Scanning projects.
+
+# Scanning projects.
+
 
 1. Create a sonar-project.properties file at the root of your project
 
@@ -50,4 +52,3 @@ Once inside, run `./sonar.sh console` to start the SonarQube server.
 2. Run 'sonar-runner' command from the project root dir.
 
 3. Follow the link provided at the end of the analysis to browse your project's quality in SonarQube UI.
-![project analysis result](https://github.com/fundacionjala/enforce-sonarqube-plugin/blob/gh-pages/img/project-in-sonarqube-ui.png)

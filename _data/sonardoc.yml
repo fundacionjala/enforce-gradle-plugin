@@ -1,4 +1,5 @@
 - title: Sonarqube plugin documentation
   docs:
   - runanalysis
+  - rules
 
