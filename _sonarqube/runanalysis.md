@@ -30,7 +30,7 @@ Once inside, run `./sonar.sh console` to start the SonarQube server.
 
 
 
-# Scanning projects.
+# Scanning projects
 
 
 1. Create a sonar-project.properties file at the root of your project

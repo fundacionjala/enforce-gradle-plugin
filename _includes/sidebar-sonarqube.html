@@ -17,7 +17,7 @@
       {% for item in section.docs %}
       {% assign item_url = item | prepend:"/sonarqube/" | append:"/" %}
 
-      {% for p in site.docs %}
+      {% for p in site.sonarqube %}
         {% if p.url == item_url %}
           <a class="sidebar-nav-item{% if page.url == p.url %} active{% endif %}" href="{{ p.url | prepend: site.url }}">{{ p.title }}</a>
         {% endif %}

@@ -2,7 +2,7 @@
 markdown:         kramdown
 kramdown:
   input: GFM
-highlighter:      pygments
+highlighter:      rouge
 
 # Setup
 title:            EnForce
