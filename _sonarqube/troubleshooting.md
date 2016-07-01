@@ -12,18 +12,18 @@ In case you perform your analysis and see that some of the [rules](http://fundac
 
 #### Note: For this example, we assume running SonarQube locally so the credentials used are the default ones: 'admin' as login and 'admin' as password.
 
-![sonar login](../img/sonar-login.png)
+![sonar login](../../img/sonar-login.png)
 
 ### 2. Go to the Rules tab
-![rules tab](../img/rules-tab.png)
+![rules tab](../../img/rules-tab.png)
 
 ### 3. Select Apex in languages in the left panel.
-![select apex language](../img/select-apex-language.png)
+![select apex language](../../img/select-apex-language.png)
 
 ### 4. Then click on Bulk Change
 
 ### 5. Click on activate in
-![select Bulk Change](../img/select-bulk-change.png)
+![select Bulk Change](../../img/select-bulk-change.png)
 
 ### 6. Write Apex and click on apply
-![write apex](../img/write-the-languaje.png)
+![write apex](../../img/write-the-languaje.png)
