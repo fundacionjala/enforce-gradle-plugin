@@ -10,7 +10,7 @@ fa-icon: toggle-on
 
 - Create `build.gradle` file on your source code project, below you have an example
 
-{% highlight bash linenos=table%}
+{% highlight groovy%}
 buildscript {
    repositories {
        mavenCentral()
