@@ -10,7 +10,7 @@ fa-icon: toggle-on
 
 - Create `build.gradle` file on your source code project, below you have an example
 
-```{r, engine='bash', count_lines}
+{% highlight groovy linenos=table%}
 buildscript {
    repositories {
        mavenCentral()
@@ -27,7 +27,7 @@ enforce {
     srcPath = 'src'
     deleteTemporaryFiles = true
 }
-```
+{% endhighlight %}
 
 - Register a Salesforce credential to be used. [generate token security](http://www.salesforcegeneral.com/salesforce-articles/salesforce-security-token.html)
 {% highlight bash linenos=table%}
