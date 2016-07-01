@@ -10,8 +10,6 @@ In case you perform your analysis and see that some of the [rules](http://fundac
 
 ### 1. Log in as Administrator.
 
-#### Note: For this example, we assume running SonarQube locally so the credentials used are the default ones: 'admin' as login and 'admin' as password.
-
 ![sonar login](../../img/sonar-login.png)
 
 ### 2. Go to the Rules tab

@@ -11,15 +11,11 @@ These following steps will help you run a SonarQube analysis in one of your loca
 # Initial configuration
 
 First off, you'll need to configure the [SonarQube scanner](https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-2.6.1.zip) as an enviroment variable
-   * For linux use go to /etc/profile file, and add at the end of the file this code 
 
-               export SONAR_RUNNER_HOME=.../sonar-scanner-2.5.1
-               export PATH=$PATH:$SONAR_RUNNER_HOME/bin.
+               SONAR_RUNNER_HOME=home/sonar-scanner-2.5.1
+               PATH=$PATH:$SONAR_RUNNER_HOME/bin
 
-   * For windows use [these](http://www.computerhope.com/issues/ch000549.htm) steps using sonar scanner path and its bin folder as well.
-
-
-Next, you are going to need to add the [Apex plugin](https://bintray.com/fundacionjala/enforce/enforce-sonar-plugin/view) jar file (apex-plugin.jar) to the plugins of Sonarqube, in the following subfolder "../sonarqube/extensions/plugins/".
+Next, you are going to need to add the [Apex plugin](https://bintray.com/fundacionjala/enforce/enforce-sonar-plugin/view) jar file (apex-plugin.jar) to the plugins of Sonarqube, in the following subfolder "/sonarqube/extensions/plugins/"
 
 # Start the SonarQube server
 
