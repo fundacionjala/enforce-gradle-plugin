@@ -11,7 +11,7 @@ import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.ZipFileManager
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageBuilder
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.PackageBuilder
 
 import java.nio.file.Paths
 
@@ -37,6 +37,8 @@ class UninstallPackageTask extends Deployment {
     private String installedPkgsResultRootDir
     private String installedPkgsResultCompDir
     private String unpackagedPkgsDir
+    private final String START_MESSAGE = "Uninstalling package ....."
+    private final String SUCCESS_MESSAGE = "Package was uninstalled successfully!"
 
     UninstallPackageTask() {
         super(TASK_DESCRIPTION, TASK_GROUP)
@@ -45,12 +47,12 @@ class UninstallPackageTask extends Deployment {
     @Override
     void runTask() {
         if (Util.validateRequiredParameters(project, requiredParams)) {
-            setupEnv()
+            setup()
             logger.quiet("Verifying installed package '${packageNamespace}' ...")
             if (verifyPackageInstallation()) {
                 logger.quiet("Installed package '${packageNamespace}' found.")
                 createPackage()
-                executeDeploy(uninstallPkgRootDir)
+                executeDeploy(uninstallPkgRootDir, START_MESSAGE, SUCCESS_MESSAGE)
                 logger.quiet("Uninstall package '${packageNamespace}' success.")
             } else {
                 logger.quiet("Installed package '${packageNamespace}' not found.")
@@ -63,7 +65,8 @@ class UninstallPackageTask extends Deployment {
     /**
      * Setups to start uninstall package task
      */
-    def setupEnv() {
+    @Override
+    void setup() {
         this.uninstallPkgRootDir = Paths.get(buildFolderPath, TASK_DIR).toString()
         this.installedPkgsCompDir = Paths.get(this.uninstallPkgRootDir,
                 MetadataComponents.INSTALLEDPACKAGES.directory).toString()
@@ -87,9 +90,7 @@ class UninstallPackageTask extends Deployment {
     **/
     def verifyPackageInstallation() {
         File tempPkgFile = this.generatedInstallPackageFile(this.retrieveInstalledPkgsCompDir)
-        ArrayList<File> tempFiles = new ArrayList<File>()
-        tempFiles.add(tempPkgFile)
-        writePackage(Paths.get(this.retrieveInstalledPkgsRootDir, Constants.PACKAGE_FILE_NAME).toString(), tempFiles)
+        writePackage(Paths.get(this.retrieveInstalledPkgsRootDir, Constants.PACKAGE_FILE_NAME).toString(), [tempPkgFile], false)
         PackageBuilder packageBuilder = new PackageBuilder()
         RetrieveMetadata retrieveMetadata = new RetrieveMetadata(packageBuilder.metaPackage)
         retrieveMetadata.executeRetrieve(poll, waitTime, credential)
@@ -113,12 +114,10 @@ class UninstallPackageTask extends Deployment {
     /**
      * Creates destructive xml file and package xml file
      */
-    def createPackage() {
+    void createPackage() {
         File pkgFile = this.generatedInstallPackageFile(this.installedPkgsCompDir)
-        ArrayList<File> filesToUndeploy = new ArrayList<File>()
-        filesToUndeploy.add(pkgFile)
-        writePackage(Paths.get(this.uninstallPkgRootDir, Constants.PACKAGE_FILE_NAME).toString(), new ArrayList<File>())
-        writePackage(Paths.get(this.uninstallPkgRootDir, Constants.DESTRUCTIVE_FILE_NAME).toString(), filesToUndeploy)
+        writePackage(Paths.get(this.uninstallPkgRootDir, Constants.PACKAGE_FILE_NAME).toString(), [], false)
+        writePackage(Paths.get(this.uninstallPkgRootDir, Constants.DESTRUCTIVE_FILE_NAME).toString(), [pkgFile], false)
     }
 
     /**
@@ -131,8 +130,7 @@ class UninstallPackageTask extends Deployment {
                              "${MetadataComponents.INSTALLEDPACKAGES.extension}"
 
         FileWriter fileWriter = new FileWriter(pkgFileName)
-        PackageBuilder xml = new PackageBuilder()
-        xml.writeInstalledPackageXML(null, null, fileWriter)
+        PackageBuilder.writeInstalledPackageXML(null, null, fileWriter)
         return new File(pkgFileName)
     }
 }

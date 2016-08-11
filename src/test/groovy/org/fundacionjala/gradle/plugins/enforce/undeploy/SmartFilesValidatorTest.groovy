@@ -30,8 +30,8 @@ class SmartFilesValidatorTest extends Specification {
 
     def "Test should create a json format since string" () {
         given:
-            def jsonString1 = """{"entityTypeName":"ApexClass","records": [{"Name" : "Class1"},{"Name" : "Class2"}]"""
-            def jsonString2 = """{"entityTypeName":"ApexTrigger","records": [{"Name" : "Trigger1"},{"Name" : "Trigger2"}]"""
+            def jsonString1 = """{"entityTypeName":"ApexClass","records": [{"Name" : "Class1","attributes":{"type":"ApexClass"}},{"Name" : "Class2", "attributes":{"type":"ApexClass"}}]"""
+            def jsonString2 = """{"entityTypeName":"ApexTrigger","records": [{"Name" : "Trigger1", "attributes":{"type":"Trigger"}},{"Name" : "Trigger2", "attributes":{"type":"Trigger"}}]"""
             def jsonArrays = new ArrayList<String>()
             jsonArrays.push(jsonString1)
             jsonArrays.push(jsonString2)
@@ -43,8 +43,8 @@ class SmartFilesValidatorTest extends Specification {
 
     def "Test should fill a map with thw files on org" () {
         given:
-            def jsonString1 = """{"entityTypeName":"ApexClass","records": [{"Name" : "Class1"},{"Name" : "Class2"}]"""
-            def jsonString2 = """{"entityTypeName":"ApexTrigger","records": [{"Name" : "Trigger1"},{"Name" : "Trigger2"}]"""
+            def jsonString1 = """{"entityTypeName":"ApexClass","records": [{"Name" : "Class1","attributes":{"type":"ApexClass"}},{"Name" : "Class2", "attributes":{"type":"ApexClass"}}]"""
+            def jsonString2 = """{"entityTypeName":"ApexTrigger","records": [{"Name" : "Trigger1", "attributes":{"type":"ApexTrigger"}},{"Name" : "Trigger2", "attributes":{"type":"ApexTrigger"}}]"""
             def jsonArrays = new ArrayList<String>()
             jsonArrays.push(jsonString1)
             jsonArrays.push(jsonString2)
@@ -57,8 +57,8 @@ class SmartFilesValidatorTest extends Specification {
 
     def "Test should return only files that exist in organization" () {
         given:
-            def jsonString1 = """{"entityTypeName":"ApexClass","records": [{"Name" : "Class1"},{"Name" : "Class2"}]"""
-            def jsonString2 = """{"entityTypeName":"ApexTrigger","records": [{"Name" : "Trigger1"},{"Name" : "Trigger2"}]"""
+            def jsonString1 = """{"entityTypeName":"ApexClass","records": [{"Name" : "Class1","attributes":{"type":"ApexClass"}},{"Name" : "Class2", "attributes":{"type":"ApexClass"}}]"""
+            def jsonString2 = """{"entityTypeName":"ApexTrigger","records": [{"Name" : "Trigger1", "attributes":{"type":"ApexTrigger"}},{"Name" : "Trigger2", "attributes":{"type":"ApexTrigger"}}]"""
             def jsonArrays = new ArrayList<String>()
             jsonArrays.push(jsonString1)
             jsonArrays.push(jsonString2)
@@ -69,7 +69,7 @@ class SmartFilesValidatorTest extends Specification {
             filesToEvaluate.push(new File(Paths.get(SRC_PATH, "classes/Class2.cls").toString()))
             filesToEvaluate.push(new File(Paths.get(SRC_PATH, "classes/Class3.cls").toString()))
             filesToEvaluate.push(new File(Paths.get(SRC_PATH, "invalidFolder/Class3.cls").toString()))
-            def result = filesValidator.filterFilesAccordingOrganization(filesToEvaluate)
+            def result = filesValidator.filterFilesAccordingOrganization(filesToEvaluate, SRC_PATH)
             def expected = new ArrayList<File>()
             expected.push(new File(Paths.get(SRC_PATH, "classes/Class1.cls").toString()))
             expected.push(new File(Paths.get(SRC_PATH, "classes/Class2.cls").toString()))
@@ -79,9 +79,9 @@ class SmartFilesValidatorTest extends Specification {
 
     def "Test should verify if profile is accepted" () {
         given:
-            def jsonString1 = """{"entityTypeName":"ApexClass","records": [{"Name" : "Class1"},{"Name" : "Class2"}]"""
-            def jsonString2 = """{"entityTypeName":"ApexTrigger","records": [{"Name" : "Trigger1"},{"Name" : "Trigger2"}]"""
-            def jsonString3 = """{"entityTypeName":"Profile","records": [{"Name" : "Profile__custom"}]"""
+            def jsonString1 = """{"entityTypeName":"ApexClass","records": [{"Name" : "Class1","attributes":{"type":"ApexClass"}},{"Name" : "Class2", "attributes":{"type":"ApexClass"}}]"""
+            def jsonString2 = """{"entityTypeName":"ApexTrigger","records": [{"Name" : "Trigger1", "attributes":{"type":"ApexTrigger"}},{"Name" : "Trigger2", "attributes":{"type":"ApexTrigger"}}]"""
+            def jsonString3 = """{"entityTypeName":"Profile","records": [{"Name" : "Profile__custom", "attributes":{"type":"Profile"}}]"""
             def jsonArrays = new ArrayList<String>()
             jsonArrays.push(jsonString1)
             jsonArrays.push(jsonString2)
@@ -94,7 +94,7 @@ class SmartFilesValidatorTest extends Specification {
             filesToEvaluate.push(new File(Paths.get(SRC_PATH, "classes/Class3.cls").toString()))
             filesToEvaluate.push(new File(Paths.get(SRC_PATH, "invalidFolder/Class3.cls").toString()))
             filesToEvaluate.push(new File(Paths.get(SRC_PATH, "profiles/Profile__custom.profile").toString()))
-            def result = filesValidator.filterFilesAccordingOrganization(filesToEvaluate)
+            def result = filesValidator.filterFilesAccordingOrganization(filesToEvaluate, SRC_PATH)
             def expected = new ArrayList<File>()
             expected.push(new File(Paths.get(SRC_PATH, "classes/Class1.cls").toString()))
             expected.push(new File(Paths.get(SRC_PATH, "classes/Class2.cls").toString()))

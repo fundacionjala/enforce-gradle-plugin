@@ -1,0 +1,8 @@
+<!-- MyComponent -->
+<apex:component controller="MyComponentController" allowDML="true">
+<apex:attribute name="record" description="The type of record we are viewing."
+                    type="Object" required="true"/>
+<apex:attribute name= " myObject "    type="My_Object__c" assignTo="{!objectRef}" required="true" description="Description" />
+  <apex:attribute name="myClass" type="WrapperClass" assignTo="{!classRef}" required="true" description="Description" />
+  <apex:outputText value="{!classRef.something}"/>
+</apex:component>

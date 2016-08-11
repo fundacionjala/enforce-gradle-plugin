@@ -5,12 +5,12 @@
 
 package org.fundacionjala.gradle.plugins.enforce.wsc.soap
 
-import org.fundacionjala.gradle.plugins.enforce.wsc.InspectorResults
 import com.sforce.soap.metadata.*
 import org.fundacionjala.gradle.plugins.enforce.exceptions.deploy.DeployException
 import org.fundacionjala.gradle.plugins.enforce.exceptions.deploy.InfoDeploy
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.ForceAPI
+import org.fundacionjala.gradle.plugins.enforce.wsc.InspectorResults
 
 /**
  * This class wraps Metadata Api and exposes WSDL methods
@@ -82,12 +82,21 @@ class MetadataAPI extends ForceAPI {
     }
 
     /**
-     * Deploys asynchronously all salesforce components from a zip file
+     * Deploys asynchronously all salesforce components from a zip file without performing any validation
      * @param sourcePath the zip file to deploy
      * @return the deploy result obtained from server
      */
-    public DeployResult deploy(String sourcePath) {
+    public DeployResult deploy(String sourcePath, boolean checkOnly) {
+        return genericDeploy(sourcePath, checkOnly)
+    }
 
+    /**
+     * Deploys asynchronously all salesforce components from a zip file
+     * @param sourcePath the zip file to deploy
+     * @param checkOnly whether or not to perform a validation
+     * @return the deploy result obtained from server
+     */
+    private DeployResult genericDeploy(String sourcePath, boolean checkOnly) {
         def byteArray = new File(sourcePath).getBytes()
         DeployOptions deployOptions = new DeployOptions()
         deployOptions.setPerformRetrieve(false)
@@ -96,6 +105,7 @@ class MetadataAPI extends ForceAPI {
         deployOptions.setAllowMissingFiles(true)
         deployOptions.setPurgeOnDelete(true)
         deployOptions.setIgnoreWarnings(false)
+        deployOptions.setCheckOnly(checkOnly)
         AsyncResult asyncResult = metadataConnection.deploy(byteArray, deployOptions)
         DeployResult deployResult = inspectorResults.waitForDeployResult(asyncResult.id, poll, waitTime * THOUSAND)
 
@@ -108,8 +118,16 @@ class MetadataAPI extends ForceAPI {
      * @return the retrieve result
      */
     public RetrieveResult retrieve(Package metaPackage) {
+        retrieve(metaPackage, null)
+    }
+
+    public RetrieveResult retrieve(Package metaPackage, ArrayList<String> specificFiles) {
         RetrieveRequest retrieveRequest = new RetrieveRequest()
         retrieveRequest.setUnpackaged(metaPackage)
+        if (specificFiles && !specificFiles.isEmpty()) {
+            retrieveRequest.setSpecificFiles(specificFiles.toArray() as String[])
+            retrieveRequest.setSinglePackage(true)
+        }
         println STARTING_RETRIEVE
         AsyncResult asyncResult = metadataConnection.retrieve(retrieveRequest)
         println WAITING_RETRIEVE

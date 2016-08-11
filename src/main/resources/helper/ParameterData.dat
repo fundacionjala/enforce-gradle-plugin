@@ -1,0 +1,166 @@
+{
+    "sort": {
+        "description": "Sort the files by name",
+        "examples": [
+            "gradle *task* -Psort=name"
+        ]
+    },
+
+    "pkg.namespace": {
+       "description": "Package name to install",
+       "examples": [
+           "gradle *task* -Ppkg.namespace=al"
+       ]
+    },
+    "pkg.version": {
+        "description": "Version of the product / package you want to install",
+        "examples": [
+            "gradle *task* -Ppkg.version=1.18"
+        ]
+    },
+    "pkg.password": {
+         "description": "Password to package ",
+         "examples": [
+             "gradle *task* -Ppkg.namespace=al -Ppkg.version=1.18 -Ppkg.password=password"
+         ]
+    },
+    "files": {
+        "description": "Select which files will be executed by the process",
+        "examples": [
+            "gradle *task* -Pfiles=classes/Class1.cls",
+            "gradle *task* -Pfiles=classes/Class1.cls,classes/Class2.cls",
+            "gradle *task* -Pfiles=classes/*.cls,triggers/*.trigger",
+            "gradle *task* -Pfiles=classes/**"
+        ]
+    },
+    "folders": {
+        "description": "Select which folders will be executed by the process",
+        "examples": [
+            "gradle *task* -Pfolders=classes",
+            "gradle *task* -Pfolders=classes,triggers,objects"
+        ]
+    },
+    "excludes": {
+        "description": "Select which files they will be ignored by the process",
+        "examples": [
+            "gradle *task* -Pexcludes=classes/Class1.cls",
+            "gradle *task* -Pexcludes=classes/Class1.cls,classes/Class2.cls",
+            "gradle *task* -Pexcludes=classes/*.cls,triggers/*.trigger",
+            "gradle *task* -Pexcludes=classes/**"
+        ]
+    },
+    "destination": {
+        "description": "Specifies the folder on which the task is executed",
+        "examples": [
+           "gradle *task* -Pdestination=relative/path",
+           "gradle *task* -Pdestination=/absolute/path"
+        ]
+    },
+    "cls": {
+        "description": "Select which files will be executed by the process, it is possible to use wildcards",
+        "examples": [
+           "gradle *task* -Pcls=Test*"
+        ]
+    },
+    "input": {
+        "description": "Set a file or inline code that you want to execute",
+        "examples": [
+           "gradle *task* -Pinput=src/classes/ClassOne.cls"
+        ]
+    },
+    "output": {
+        "description": "Set a file path and get results in this file",
+        "examples": [
+           "gradle *task* -Poutput=build/file.txt"
+        ]
+    },
+    "validate": {
+        "description": "Validates that files to deleted exist within their Org",
+        "examples": [
+           "gradle *task* -Pvalidate=true",
+           "gradle *task* -Pvalidate=false"
+        ]
+    },
+    "id": {
+        "description": "Is necessary to management your credential",
+        "examples": [
+           "gradle *task* -Pid=myId",
+           "gradle *task* -Pid=john"
+        ]
+    },
+    "username": {
+        "description": "Is a SalesForce account",
+        "examples": [
+           "gradle *task* -Pusername=example@email.com",
+           "gradle *task* -Pusername=john@email.com"
+        ]
+    },
+    "password": {
+        "description": "Is your SalesForce password",
+        "examples": [
+            "gradle *task* -Ppassword=mypassword"
+        ]
+    },
+    "token": {
+        "description": "Is your SalesForce token",
+        "examples": [
+            "gradle *task* -Ptoken=2B9UvHKK2E1ky1EkkYBPFvbLM"
+        ]
+    },
+    "login": {
+        "description": "Is a login type",
+        "examples": [
+            "gradle *task* -Plogin=login (default value)",
+            "gradle *task* -Plogin=test",
+            "gradle *task* -Plogin=instance"
+        ]
+    },
+    "encrypted": {
+        "description": "Defines whether your credential is encrypted or not",
+        "examples": [
+            "gradle *task* -Pencrypted=n",
+            "gradle *task* -Pencrypted=y (default value)"
+        ]
+    },
+    "location": {
+        "description": "Is credentials.dat file directory",
+        "examples": [
+            "gradle *task* -Plocation=home (default value)",
+            "gradle *task* -Plocation=project"
+        ]
+    },
+    "test": {
+        "description": "Is used to choose specific test classes using wildcards",
+        "examples": [
+            "gradle *task* ­Ptest=Test*",
+            "gradle *task* ­Ptest=TestClass1.cls"
+        ]
+    },
+    "file": {
+        "description": "Used to enter Apex class names and infer their related test classes using an engine test selector",
+        "examples": [
+            "gradle *task* -Pfile=Class1.cls",
+            "gradle *task* -Pfile=Class1.cls,Class2.cls",
+            "gradle *task* -Pfile=allUpdated"
+        ]
+    },
+    "refreshMapping": {
+        "description": "Restart the mapping that the engine uses to select test classes, if it is not present, default it is false",
+        "examples": [
+            "gradle *task* -PrefreshMapping=true"
+        ]
+    },
+    "async": {
+        "description": "The test run asynchronously, by default it runs test synchronously",
+        "examples": [
+           "gradle *task* -Pasync=true",
+           "gradle *task* -Pasync=false"
+        ]
+    },
+    "destination": {
+        "description": "Choose a directory in where save the run test results, by default they are saved in build/report directory",
+        "examples": [
+            "gradle *task* -Pdestination=/home/temporalReports/"
+        ]
+    }
+ }

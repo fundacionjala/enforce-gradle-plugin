@@ -5,9 +5,9 @@
 
 package org.fundacionjala.gradle.plugins.enforce.credentialmanagement
 
-import org.fundacionjala.gradle.plugins.enforce.wsc.LoginType
 import groovy.json.JsonSlurper
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
+import org.fundacionjala.gradle.plugins.enforce.wsc.LoginType
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -226,5 +226,9 @@ class CredentialManagerTest extends Specification {
             credentialManager.getCredentialToAuthenticate(credentialId, credentialPaths)
         then:
             thrown(Exception)
+    }
+
+    def cleanupSpec() {
+        new File(pathSecretKeyGenerated).delete()
     }
 }

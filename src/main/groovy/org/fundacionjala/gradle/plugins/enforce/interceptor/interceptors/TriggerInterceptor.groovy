@@ -5,14 +5,16 @@
 
 package org.fundacionjala.gradle.plugins.enforce.interceptor.interceptors
 
+import org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor
+import org.fundacionjala.gradle.plugins.enforce.interceptor.MetadataInterceptor
 import org.fundacionjala.gradle.plugins.enforce.interceptor.commands.Trigger
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
-import org.fundacionjala.gradle.plugins.enforce.interceptor.MetadataInterceptor
-
+import groovy.util.logging.Slf4j
 /**
  * Implements methods to manage interceptors and load the triggers to truncate
  */
+@Slf4j
 class TriggerInterceptor extends MetadataInterceptor {
 
     /**
@@ -29,6 +31,8 @@ class TriggerInterceptor extends MetadataInterceptor {
      */
     @Override
     void loadInterceptors() {
-        addInterceptor(org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_TRIGGERS.id, new Trigger().execute)
+        Trigger trigger = new Trigger()
+        trigger.encoding = encoding
+        addInterceptor(Interceptor.TRUNCATE_TRIGGERS.id, trigger.execute)
     }
 }

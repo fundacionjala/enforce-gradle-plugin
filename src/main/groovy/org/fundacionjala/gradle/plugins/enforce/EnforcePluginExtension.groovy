@@ -4,6 +4,11 @@
  */
 
 package org.fundacionjala.gradle.plugins.enforce
+
+import org.fundacionjala.gradle.plugins.enforce.utils.Constants
+
+import java.nio.charset.StandardCharsets
+
 /**
  * This class creates a plugin extension to assign properties of the plugin.
  */
@@ -13,7 +18,7 @@ class EnforcePluginExtension {
     /**
      * The source directory path to monitor all changes on it.
      */
-    String srcPath = ""
+    String srcPath = "."
     /**
      * The temporal directory path to copy all files changed.
      */
@@ -23,7 +28,14 @@ class EnforcePluginExtension {
      */
     Map<String, String> mapFilesChanged = [:]
 
-    ArrayList<String> standardObjects = []
+    Boolean deleteTemporaryFiles = true
+
+    /**
+     * A list with wildcards that customize that subComponents can be deleted
+     */
+    ArrayList<String> deleteSubComponents = ['*']
+
+    ArrayList<String> standardComponents = []
 
     String tool = ""
 
@@ -33,11 +45,13 @@ class EnforcePluginExtension {
 
     String integration = "no"
 
+    String encoding = StandardCharsets.UTF_8.displayName()
+
     String foldersToDownload = "objects,staticresources,classes,pages,triggers,components"
 
     Map<String, Map<String, Closure>> interceptors
 
-    EnforcePluginExtension(){
+    EnforcePluginExtension() {
         interceptors = [:]
     }
 
@@ -55,4 +69,5 @@ class EnforcePluginExtension {
         interceptors.put(metadataGroup, interceptor)
     }
 
+    String showValidatedFiles
 }

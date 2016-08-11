@@ -5,43 +5,38 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 
-import org.gradle.api.file.FileTree
-import org.fundacionjala.gradle.plugins.enforce.filemonitor.FileMonitorSerializer
+import org.fundacionjala.gradle.plugins.enforce.filemonitor.ResultTracker
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
-
-import java.nio.file.Paths
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.PackageGenerator
 
 /**
  * Uploads files to an organization using metadata API without truncate values
  */
 class Upload extends Deployment {
-    private static final String DESCRIPTION_OF_TASK = "This task uploads all specific files or folders as user wants"
-    private final String ALL_FILES_UPLOAD = "All files will be uploaded from: "
-    private final String QUESTION_CONTINUE = " Do you want to continue? (y/n) :"
-    private final String UPLOAD_CANCELED ='Upload all files was canceled!!'
-    private final String DIR_UPLOAD_FOLDER = "upload"
-    private final String FILES_TO_UPLOAD = "files"
+    private static final String UPLOAD_DESCRIPTION = "This task uploads all specific files or folders as user wants"
+    private static final String ALL_FILES_UPLOAD = "All files will be uploaded from: "
+    private static final String QUESTION_CONTINUE = "Do you want to continue? (y/n) :"
+    private static final String QUESTION_CONTINUE_DELETE = "Do you want delete this files into your organization? (y/n) :"
+    private static final String UPLOAD_CANCELED ='Upload all files was canceled!!'
+    private static final String DIR_UPLOAD_FOLDER = "upload"
+    private static final String FILES_TO_UPLOAD = "files"
+    private static final String ALL_FILES_TO_UPLOAD = "all"
+    private static final String START_UPLOAD_TASK_MESSAGE = "Starting upload files process..."
+    private static final String SUCCESS_UPLOAD_TASK_MESSAGE = "The files were successfully uploaded"
 
-    public ArrayList<File> specificFilesToUpload
     public ArrayList<File> filesToUpload
-    public FileMonitorSerializer objSerializer
-    public String pathUpload
-    public Map filesChanged
-    public String files
-    public String option = 'y'
-    public final String YES_OPTION = 'y'
+    public PackageGenerator packageGenerator
+    public String option = Constants.YES_OPTION
+    public String all = Constants.FALSE_OPTION
+    String files = Constants.EMPTY
 
-    /**
-     * Sets description and group task
-     */
     Upload() {
-        super(DESCRIPTION_OF_TASK, Constants.DEPLOYMENT)
-        specificFilesToUpload = new ArrayList<File>()
-        objSerializer = new FileMonitorSerializer()
-        filesToUpload = new ArrayList<File>()
-        filesChanged = [:]
+        super(UPLOAD_DESCRIPTION, Constants.DEPLOYMENT)
+        packageGenerator = new PackageGenerator()
+        filesToUpload = []
         interceptorsToExecute = []
+        taskFolderName = DIR_UPLOAD_FOLDER
     }
 
     /**
@@ -49,134 +44,106 @@ class Upload extends Deployment {
      */
     @Override
     void runTask() {
-        pathUpload = Paths.get(buildFolderPath, DIR_UPLOAD_FOLDER).toString()
-        createDeploymentDirectory(pathUpload)
+        createDeploymentDirectory(taskFolderPath)
         loadFilesChangedToUpload()
-        loadParameter()
-        if (specificFilesToUpload.empty && !Util.isValidProperty(project, EXCLUDES)) {
-            logger.error("${ALL_FILES_UPLOAD}${projectPath}")
-            option = System.console().readLine(QUESTION_CONTINUE)
-        }
-        if (option == YES_OPTION) {
-            loadFiles()
-            copyFilesToUpload()
+        showWarningMessage()
+        if (option == Constants.YES_OPTION) {
+            loadClassifiedFiles(files, excludes)
+            loadFilesToUpload()
+            copyFilesToTaskDirectory(filesToUpload)
             createPackage()
-            truncate(pathUpload)
-            executeDeploy(pathUpload)
+            combinePackageToUpdate(taskPackagePath)
+            addInterceptor()
+            executeDeploy(taskFolderPath, START_UPLOAD_TASK_MESSAGE, SUCCESS_UPLOAD_TASK_MESSAGE)
             saveMapOfFilesChanged()
         } else {
             logger.error(UPLOAD_CANCELED)
         }
     }
 
-    def truncate(String pathToTruncate) {
-        interceptorsToExecute += interceptors
-        truncateComponents(pathToTruncate)
-    }
-
     /**
-     * Saves on file monitor the files which has been updated
+     * Loads all, excludes and files parameters
      */
-    void saveMapOfFilesChanged() {
-        if (filesChanged.isEmpty()) {
-            return
+    public void loadParameters() {
+        if (Util.isValidProperty(parameters, FILES_TO_UPLOAD) && !Util.isEmptyProperty(parameters, FILES_TO_UPLOAD)) {
+            files = parameters[FILES_TO_UPLOAD].toString()
         }
-
-        if (specificFilesToUpload.empty) {
-            objSerializer.saveMapUpdated(filesChanged)
-            return
+        loadCommonParameters()
+        if (Util.isValidProperty(parameters, ALL_FILES_TO_UPLOAD) && !Util.isEmptyProperty(parameters, ALL_FILES_TO_UPLOAD)) {
+            all = parameters[ALL_FILES_TO_UPLOAD].toString()
         }
-        objSerializer.saveMapUpdated(filterMapFilesChanged())
     }
 
     /**
-     * Filters the specific files changed to update
-     * @return
+     * Loads files classified at filesToUpload map
      */
-    Map filterMapFilesChanged() {
-        Map auxiliaryMap = [:]
-        specificFilesToUpload.each { file ->
-            if (filesChanged.get(file.toString())) {
-                auxiliaryMap.put(file.toString(), filesChanged.get(file.toString()))
-            }
-        }
-        return auxiliaryMap
+    public void loadFilesToUpload() {
+        filesToUpload = classifiedFile.validFiles
     }
 
     /**
-     * Loads all files which has been changed to be updated once user execute upload Task
-     */
-    void loadFilesChangedToUpload() {
-        objSerializer.setSrcProject(projectPath)
-        ArrayList<File> fileArray = fileManager.getValidElements(projectPath, excludeFilesToMonitor)
-        if (!objSerializer.verifyFileMap()) {
-            objSerializer.mapRefresh(fileArray)
-            return
-        }
-        filesChanged = objSerializer.getFileChangedExclude(fileArray)
-    }
-
-    /**
-     * Loads files that will be uploaded into specificFilesToUpload array.
-     */
-    def loadParameter() {
-        if (Util.isValidProperty(project, FILES_TO_UPLOAD) && !Util.isEmptyProperty(project, FILES_TO_UPLOAD)) {
-            files = project.properties[FILES_TO_UPLOAD].toString()
-        }
-        ArrayList<String> filesName = new ArrayList<String>()
-        if (files == null) {
-            return
-        }
-        validateParameter(files)
-        files.split(Constants.COMMA).each {String fileName ->
-            def fileNameChanged = fileName.replaceAll(BACKSLASH, SLASH)
-            if (!fileNameChanged.contains(SLASH)) {
-                filesName.push("${fileName}${File.separator}${Constants.WILDCARD}${Constants.WILDCARD}")
-                return
-            }
-            filesName.push(fileName)
-            filesName.push("${fileName}${Constants.META_XML}")
-        }
-
-        FileTree fileTree = project.fileTree(dir:projectPath, includes: filesName)
-        fileTree.each {File file ->
-            specificFilesToUpload.push(file)
-        }
-    }
-
-    /**
-     * Loads all files from project directory to specificFilesToUpload array
-     */
-    def loadFiles() {
-        if (specificFilesToUpload.isEmpty()) {
-            specificFilesToUpload = getFilesFiltered()
-        }
-    }
-
-    /**
-     * Creates packages of all files selected
+     * Creates the package xml file
      */
     public void createPackage() {
-        if (!specificFilesToUpload.empty) {
-            writePackage(Paths.get(pathUpload, PACKAGE_NAME).toString(), specificFilesToUpload)
+        if (filesToUpload && !filesToUpload.isEmpty()) {
+            writePackage(taskPackagePath, filesToUpload)
         }
     }
 
     /**
-     * Copies files to build folder to upload
+     * Shows a warning message to upload all files to org
      */
-    public void copyFilesToUpload() {
-        specificFilesToUpload = excludeFiles(specificFilesToUpload)
-        fileManager.copy(specificFilesToUpload, pathUpload)
+    public void showWarningMessage() {
+        if (!super.isIntegrationMode() && (all == Constants.FALSE_OPTION) && files.isEmpty()  && excludes.isEmpty()) {
+            logger.warn("${ALL_FILES_UPLOAD}${projectPath}")
+            Util.showExceptionWhenSystemConsoleIsNull(System.console())
+            option = System.console().readLine(QUESTION_CONTINUE)
+        }
     }
 
     /**
-     * Filters files to upload files
-     * @return ArrayList of files filtered
+    * Saves on file monitor the files which has been updated
+    */
+    public void saveMapOfFilesChanged() {
+        if (packageGenerator.fileTrackerMap.isEmpty()) {
+            return
+        }
+        if (filesToUpload.empty) {
+            packageGenerator.saveFileTrackerMap()
+            return
+        }
+        packageGenerator.fileTrackerMap = filterMapFilesChanged()
+        packageGenerator.saveFileTrackerMap()
+    }
+
+    /**
+    * Filters the specific files changed to update
+    * @return a map with files that were updated
+    */
+    public Map filterMapFilesChanged() {
+        Map<String, ResultTracker> fileChanged = [:]
+        ArrayList<File> validFiles = filesToUpload
+        validFiles.each { File file ->
+            if (packageGenerator.fileTrackerMap.get(file.toString())) {
+                fileChanged.put(file.toString(), packageGenerator.fileTrackerMap.get(file.toString()))
+            }
+        }
+        return fileChanged
+    }
+
+    /**
+    * Loads all files which has been changed to be updated once user execute upload Task
+    */
+    public void loadFilesChangedToUpload() {
+        ArrayList<File> validatedFiles = fileManager.getValidElements(projectPath, excludeFilesToMonitor)
+        packageGenerator.init(projectPath, validatedFiles, credential, project)
+    }
+
+    /**
+     * Adds interceptors
      */
-    private ArrayList<File> getFilesFiltered() {
-        ArrayList<File> sourceFiles = fileManager.getValidElements(projectPath)
-        sourceFiles.remove(new File(Paths.get(projectPath, Constants.PACKAGE_FILE_NAME).toString()))
-        return sourceFiles
+    public void addInterceptor() {
+        interceptorsToExecute += interceptors
+        truncateComponents(taskFolderPath)
     }
 }

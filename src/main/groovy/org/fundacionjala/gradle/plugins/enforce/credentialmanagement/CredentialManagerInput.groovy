@@ -5,20 +5,25 @@
 
 package org.fundacionjala.gradle.plugins.enforce.credentialmanagement
 
-import org.fundacionjala.gradle.plugins.enforce.exceptions.CredentialException
 import groovy.json.JsonSlurper
 import groovy.json.internal.LazyMap
+import org.fundacionjala.gradle.plugins.enforce.exceptions.CredentialException
 import org.fundacionjala.gradle.plugins.enforce.utils.AnsiColor
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.LoginType
 
+import java.nio.file.Paths
+
 class CredentialManagerInput {
+    private final String PROJECT = 'project'
     private CredentialManager credentialManager
-    private String pathCredentials
     private String pathSecretKey
     private String option
 
+    public static final String HOME_PATH = Paths.get(System.properties['user.home'].toString(), 'credentials.dat').toString()
+    public static final String PROJECT_PATH = Paths.get(System.getProperty("user.dir"), 'credentials.dat').toString()
+    public String locationInput
     public String idInput
     public String userNameInput
     public String passwordInput
@@ -27,16 +32,17 @@ class CredentialManagerInput {
     public String typeInput = CredentialMessage.ENCRYPTED.value()
     public Console console
     public boolean finished
+    public  String pathCredentials
 
     /**
      * Constructs an object of credential manager
-     * @param pathCredentials
-     * @param pathSecretKey
+     * @param location can be project or home to management credentials
+     * @param pathSecretKey is directory of secretKey
      */
-    CredentialManagerInput(String pathCredentials, String pathSecretKey) {
-        this.pathCredentials = pathCredentials
+    CredentialManagerInput(String location, String pathSecretKey) {
+        this.pathCredentials = location == PROJECT? PROJECT_PATH:HOME_PATH
         this.pathSecretKey = pathSecretKey
-        credentialManager = new CredentialManager(this.pathCredentials, this.pathSecretKey)
+        credentialManager = new CredentialManager(pathCredentials, pathSecretKey)
         typeInput = CredentialMessage.OPTION_YES.value()
         option = CredentialMessage.OPTION_NO.value()
         console = System.console()
@@ -46,13 +52,16 @@ class CredentialManagerInput {
     /**
      * Adds a new credential by console
      */
-    void addCredentialByConsole() {
+    public void addCredentialByConsole() {
         try {
+            pathCredentials = getCredentialFile()
+            CredentialManager addCredentialByConsole = new CredentialManager(pathCredentials, pathSecretKey)
             validCredentialFields()
-            addCredential(getCredentialInserted())
+            addCredentialByConsole.addCredential(getCredentialInserted())
             print AnsiColor.ANSI_GREEN.value()
             print CredentialMessage.MESSAGE_ADD_SUCCESSFULLY.value()
             print AnsiColor.ANSI_RESET.value()
+            finished = false
 
         } catch (Exception exception) {
             print AnsiColor.ANSI_RED.value()
@@ -71,6 +80,7 @@ class CredentialManagerInput {
             print AnsiColor.ANSI_GREEN.value()
             print CredentialMessage.MESSAGE_UPDATE_SUCCESSFULLY.value()
             print AnsiColor.ANSI_RESET.value()
+            finished = false
         } catch (Exception exception) {
             print AnsiColor.ANSI_RED.value()
             println exception
@@ -104,7 +114,6 @@ class CredentialManagerInput {
      */
     public void addCredential(Credential credential) {
         credentialManager.addCredential(credential)
-        finished = false
     }
 
     /**
@@ -112,13 +121,14 @@ class CredentialManagerInput {
      */
     public void updateCredential(Credential credential) {
         credentialManager.updateCredential(credential)
-        finished = false
     }
 
     /**
      * Updates a credential by console
      */
     public void updateCredential() {
+        pathCredentials = getCredentialFile()
+        CredentialManager updateCredentialByConsole = new CredentialManager(pathCredentials, pathSecretKey)
         showIdInput()
         if (!hasCredential(idInput)) {
             throw new CredentialException("${idInput} ${CredentialMessage.MESSAGE_ID_CREDENTIAL_DOES_NOT_EXIST.value()}")
@@ -130,11 +140,9 @@ class CredentialManagerInput {
         showConsoleInputs()
         if (!validateFields()) {
             throw new CredentialException(CredentialMessage.MESSAGE_EXCEPTION_EMPTY_FILES.value())
-
         }
-        typeInput = getCredentialToUpdate(idInput).type
-        credentialManager.updateCredential(getCredentialInserted())
-        finished = false
+        typeInput = updateCredentialByConsole.getCredentialById(idInput).type
+        updateCredentialByConsole.updateCredential(getCredentialInserted())
     }
 
     /**
@@ -151,7 +159,7 @@ class CredentialManagerInput {
      */
     public void showConsoleInputs() {
         passwordInput = console.readLine(CredentialMessage.PASSWORD.value()).toString()
-        tokenInput = console.readLine(CredentialMessage.TOKEN.value()).toString()
+        tokenInput = console.readLine(CredentialMessage.TOKEN_OPTION.value()).toString()
         loginTypeInput = console.readLine(CredentialMessage.LOGIN_TYPE.value()).toString()
     }
 
@@ -183,7 +191,7 @@ class CredentialManagerInput {
         print AnsiColor.ANSI_BLUE.value()
         println CredentialMessage.MESSAGE_QUESTION_TRY_AGAIN.value()
         println AnsiColor.ANSI_RESET.value()
-        option = System.console().readLine(' : ')
+        option = console.readLine(' : ')
         if (option != CredentialMessage.OPTION_YES.value()) {
             finished = false
         }
@@ -199,7 +207,7 @@ class CredentialManagerInput {
         credentialInserted.username = userNameInput
         credentialInserted.password = passwordInput
         credentialInserted.token = tokenInput
-        credentialInserted.loginFormat = getLoginType()
+        credentialInserted.loginFormat = loginTypeInput?:LoginType.DEV.value()
         credentialInserted.type = typeInput
         return credentialInserted
     }
@@ -209,7 +217,7 @@ class CredentialManagerInput {
      * @return true if are validates
      */
     public boolean validateFields() {
-        return !idInput.isEmpty() && !passwordInput.isEmpty() && !tokenInput.isEmpty()
+        return !idInput.isEmpty() && !passwordInput.isEmpty()
     }
 
     /**
@@ -217,25 +225,13 @@ class CredentialManagerInput {
      * @param idCredential is id credential
      * @return true if there is a id credential
      */
-    boolean hasCredential(String idCredential) {
+    public boolean hasCredential(String idCredential) {
         File credentialsFile = new File(pathCredentials)
         if (!credentialsFile.exists() || credentialsFile.getText().isEmpty()) {
             return false
         }
         LazyMap credentials = new JsonSlurper().parseText(credentialsFile.getText())
         return credentials[idCredential]
-    }
-
-    /**
-     * Gets a login type by default is DEV
-     * @return a login type
-     */
-    public String getLoginType() {
-        String loginType = LoginType.DEV.value()
-        if(loginTypeInput == LoginType.TEST.value()) {
-            loginType = LoginType.TEST.value()
-        }
-        return loginType
     }
 
     /**
@@ -248,5 +244,14 @@ class CredentialManagerInput {
             credentialType = CredentialMessage.NORMAL.value()
         }
         return credentialType
+    }
+
+    /**
+     * Gets credentials.dat file path
+     * @return a credentials.dat path
+     */
+    private String getCredentialFile() {
+        locationInput = console.readLine(CredentialMessage.LOCATION.value()).toString()
+        return locationInput == PROJECT? PROJECT_PATH:HOME_PATH
     }
 }

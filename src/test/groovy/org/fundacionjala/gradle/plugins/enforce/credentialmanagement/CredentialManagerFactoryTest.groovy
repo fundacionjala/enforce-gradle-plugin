@@ -38,4 +38,8 @@ class CredentialManagerFactoryTest extends Specification {
         then:
             instance == null
     }
+
+    def cleanupSpec() {
+        new File(pathSecretKeyGenerated).delete()
+    }
 }

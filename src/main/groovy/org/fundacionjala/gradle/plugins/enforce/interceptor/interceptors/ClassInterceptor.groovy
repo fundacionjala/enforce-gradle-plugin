@@ -5,15 +5,17 @@
 
 package org.fundacionjala.gradle.plugins.enforce.interceptor.interceptors
 
+import org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor
 import org.fundacionjala.gradle.plugins.enforce.interceptor.MetadataInterceptor
-import org.fundacionjala.gradle.plugins.enforce.interceptor.commands.ClassAnnotation
 import org.fundacionjala.gradle.plugins.enforce.interceptor.commands.Class
+import org.fundacionjala.gradle.plugins.enforce.interceptor.commands.ClassAnnotation
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
-
+import groovy.util.logging.Slf4j
 /**
  * Implements methods to manage interceptors and load the classes to truncate
  */
+@Slf4j
 class ClassInterceptor extends MetadataInterceptor {
     private final String DEPRECATE_ANNOTATION = '@deprecated'
 
@@ -31,10 +33,12 @@ class ClassInterceptor extends MetadataInterceptor {
      */
     @Override
     void loadInterceptors() {
-        ClassAnnotation annotationCmd = new ClassAnnotation()
-        annotationCmd.annotation = DEPRECATE_ANNOTATION
-        addInterceptor(org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.REMOVE_DEPRECATE.id, annotationCmd.execute)
-        Class contentCmd = new Class()
-        addInterceptor(org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_CLASSES.id, contentCmd.execute)
+        ClassAnnotation classAnnotation = new ClassAnnotation()
+        classAnnotation.encoding = encoding
+        classAnnotation.annotation = DEPRECATE_ANNOTATION
+        addInterceptor(Interceptor.REMOVE_DEPRECATE.id, classAnnotation.execute)
+        Class classCmd = new Class()
+        classCmd.encoding = encoding
+        addInterceptor(Interceptor.TRUNCATE_CLASSES.id, classCmd.execute)
     }
 }

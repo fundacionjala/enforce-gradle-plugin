@@ -1,51 +1,39 @@
 /*
- * Copyright (c) Fundacion Jala. All rights reserved.
- * Licensed under the MIT license. See LICENSE file in the project root for full license information.
- */
+* Copyright (c) Fundacion Jala. All rights reserved.
+* Licensed under the MIT license. See LICENSE file in the project root for full license information.
+*/
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 
 import org.fundacionjala.gradle.plugins.enforce.interceptor.InterceptorManager
 import org.fundacionjala.gradle.plugins.enforce.undeploy.PackageComponent
-import org.fundacionjala.gradle.plugins.enforce.undeploy.SmartFilesValidator
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponent
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
-import org.fundacionjala.gradle.plugins.enforce.wsc.rest.QueryBuilder
-import org.gradle.api.GradleException
-import org.gradle.api.file.FileTree
-import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.OrgValidator
 
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 
 /**
- * Undeploys an org using metadata API
- */
+* Undeploys an org using metadata API
+*/
 class Undeploy extends Deployment {
-    private final String START_MESSAGE_TRUNCATE = 'Starting undeploy...'
-    private final String SUCCESS_MESSAGE_TRUNCATE = 'All components truncated were successfully uploaded'
-    private final String SUCCESS_MESSAGE_DELETE = 'The files were successfully deleted'
-    private final String FILE_NAME_DESTRUCTIVE = "destructiveChanges.xml"
-    private final String CUSTOM_FIELD_NAME = 'CustomField'
-    private final String WORK_FLOW_RULE_NAME = 'WorkflowRule'
-    private final String DIR_UN_DEPLOY = "undeploy"
-    private List includesComponents
-    private FileTree files
-    private ArrayList<String> workflowNames
-    private ArrayList<File> workflowFiles
-    private QueryBuilder queryBuilder
-    public final String LOOKUP_NAME = 'Lookup'
-    public ToolingAPI toolingAPI
+    private static final String UN_DEPLOY_DESCRIPTION = 'This task removes all components in your organization according to local repository'
+    private static final String START_MESSAGE_TRUNCATE = 'Starting truncate process...'
+    private static final String SUCCESS_MESSAGE_TRUNCATE = 'All components truncated were successfully uploaded!'
+    private static final String SUCCESS_MESSAGE_DELETE = 'The files were successfully deleted!'
+    private static final String START_MESSAGE_UNDEPLOY = 'Starting undeploy process...'
+    private static final String DIR_UN_DEPLOY = "undeploy"
+    private static final String FILE_NOT_FOUND = "these files can't be deleted from your organization, because these weren't found!"
+    private static final String METADATA_WILDCARD = "*${File.separator}*-meta.xml"
+
     public PackageComponent packageComponent
     public ArrayList<File> filesToTruncate
-    public String folderUnDeploy
-    public String unDeployPackagePath
-    public SmartFilesValidator smartFilesValidator
     InterceptorManager componentManager
     List<String> standardComponents
+    private final List<String> COMPONENTS_TO_TRUNCATE = ['classes', 'objects', 'triggers', 'pages', 'components', 'workflows', 'tabs']
 
     /**
      * Sets description and group task
@@ -53,195 +41,130 @@ class Undeploy extends Deployment {
      * @param group is the group typeName the task
      */
     Undeploy() {
-        super('This task removes all components in your organization according to local repository', Constants.DEPLOYMENT)
+        super(UN_DEPLOY_DESCRIPTION, Constants.DEPLOYMENT)
         filesToTruncate = new ArrayList<File>()
         componentManager = new InterceptorManager()
         componentManager.buildInterceptors()
         interceptorsToExecute = org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.INTERCEPTORS.values().toList()
         standardComponents = MetadataComponent.COMPONENTS.values().toList()
-        workflowNames = []
+        taskFolderName = DIR_UN_DEPLOY
     }
 
     @Override
     void runTask() {
-        initializeQueries(getJsonQueries())
-        setupFilesToUnDeploy()
-        deployTruncatedComponents()
-        deployToDeleteComponents()
+        truncate()
+        addNewStandardComponents()
+        unDeploy()
     }
 
     /**
-     * Initializes queries to filter files to deploy
+     * Steps to deploy code truncated
      */
-    def initializeQueries(ArrayList<String> jsonQueries) {
-        smartFilesValidator = new SmartFilesValidator(jsonQueries)
+    public void truncate() {
+        createDeploymentDirectory(taskFolderPath)
+        loadClassifiedFiles(COMPONENTS_TO_TRUNCATE.join(','), excludes)
+        loadFilesToTruncate()
+        copyFilesToTaskDirectory(filesToTruncate)
+        addInterceptor()
+        writePackage(taskPackagePath, filesToTruncate)
+        combinePackageToUpdate(taskPackagePath)
+        executeDeploy(taskFolderPath, START_MESSAGE_TRUNCATE, SUCCESS_MESSAGE_TRUNCATE)
     }
 
     /**
-     * Setups files to UnDeploy
-     * Creates undeploy directory
-     * Copies package from source code directory to undeploy directory
-     * Validates salesForce's components
-     * Truncates files
+     * Loads files that will truncate using components to truncate by default.
+     * Components to truncate : 'classes', 'objects', 'triggers', 'pages', 'components', 'workflows', 'tabs'
      */
-    def setupFilesToUnDeploy() {
-        folderUnDeploy = Paths.get(buildFolderPath, DIR_UN_DEPLOY).toString()
-        unDeployPackagePath = Paths.get(folderUnDeploy, PACKAGE_NAME).toString()
-        createDeploymentDirectory(folderUnDeploy)
-        Files.copy(Paths.get(projectPath, PACKAGE_NAME), Paths.get(folderUnDeploy, PACKAGE_NAME), StandardCopyOption.REPLACE_EXISTING)
-        packageComponent = new PackageComponent(unDeployPackagePath)
-        filesToTruncate = fileManager.getFilesByFolders(projectPath, packageComponent.truncatedDirectories).sort()
-        filesToTruncate = smartFilesValidator.filterFilesAccordingOrganization(filesToTruncate)
-        filesToTruncate = excludeFiles(filesToTruncate)
-        fileManager.copy(filesToTruncate, folderUnDeploy)
+    public void loadFilesToTruncate() {
+        filesToTruncate = classifiedFile.validFiles
+    }
+
+    /**
+     * Adds interceptors
+     */
+    public void addInterceptor() {
         interceptorsToExecute += interceptors
-        truncateComponents(folderUnDeploy)
+        truncateComponents(taskFolderPath)
     }
 
     /**
-     * Deploys all truncated components
+     * Steps to delete files from your organization
      */
-    def deployTruncatedComponents() {
-        writePackage(unDeployPackagePath, filesToTruncate)
-        componentDeploy.startMessage = START_MESSAGE_TRUNCATE
-        componentDeploy.successMessage = SUCCESS_MESSAGE_TRUNCATE
-        executeDeploy(folderUnDeploy)
+    public void unDeploy() {
+        createDeploymentDirectory(taskFolderPath)
+        deployToDeleteComponents()
+        combinePackageToUpdate(taskDestructivePath)
+        executeDeploy(taskFolderPath, START_MESSAGE_UNDEPLOY, SUCCESS_MESSAGE_DELETE)
     }
 
     /**
      * Deploys to delete all components from package.xml
      */
-    def deployToDeleteComponents() {
-        addNewStandardObjects()
-        createDeploymentDirectory(folderUnDeploy)
-        writePackage(unDeployPackagePath, [])
-        includesComponents = packageComponent.components
-        def excludeComponents = getComponentsWithWildcard(standardComponents)
-        workflowNames = packageComponent.components.grep(~/.*.workflow$/) as ArrayList<String>
-        excludeComponents.addAll(workflowNames)
-        files = project.fileTree(dir: projectPath, includes: includesComponents, excludes: excludeComponents)
-        ArrayList<File> filesFiltered = smartFilesValidator.filterFilesAccordingOrganization(files.getFiles().sort() as ArrayList<File>)
-        filesFiltered = excludeFiles(filesFiltered)
-        preparePackage(Paths.get(folderUnDeploy, FILE_NAME_DESTRUCTIVE).toString(), filesFiltered)
-        includesComponents = getComponentsWithWildcard(standardComponents).grep(~/.*.object$/)
-        files = project.fileTree(dir: projectPath, includes: includesComponents)
-        ArrayList<File> objectFiles = files.getFiles().sort()
-        objectFiles = excludeFiles(objectFiles)
-        savePackage()
-        updatePackage(CUSTOM_FIELD_NAME, getFields(objectFiles), Paths.get(folderUnDeploy, FILE_NAME_DESTRUCTIVE).toString())
-        if (!workflowNames.empty) {
-            workflowFiles = project.fileTree(dir: projectPath, includes: workflowNames).toList()
-            workflowFiles = excludeFiles(workflowFiles)
-            updatePackage(WORK_FLOW_RULE_NAME, getRules(workflowFiles), Paths.get(folderUnDeploy, FILE_NAME_DESTRUCTIVE).toString())
+    public void deployToDeleteComponents() {
+        Files.copy(Paths.get(projectPackagePath), Paths.get(taskPackagePath), StandardCopyOption.REPLACE_EXISTING)
+        packageComponent = new PackageComponent(taskPackagePath)
+        writePackage(taskPackagePath, [])
+
+        ArrayList<String> includes = packageComponent.components
+        ArrayList<String> filesToExclude = Util.getComponentsWithWildcard(standardComponents)
+
+        includes.addAll(Util.getComponentsWithWildcard(standardComponents).grep(~/.*.object$/))
+        includes.addAll([METADATA_WILDCARD])
+        filesToExclude.addAll(packageComponent.components.grep(~/.*.workflow$/) as ArrayList<String>)
+        filesToExclude.add(excludes)
+        showValidatedFiles = Constants.FALSE_OPTION
+
+        loadClassifiedFiles(includes.join(', '), "${filesToExclude.join(', ')}")
+        ArrayList<File> filesToWriteAtDestructive = getValidFilesFromOrg(classifiedFile.validFiles)
+
+        writePackage(taskDestructivePath, filesToWriteAtDestructive as ArrayList<File>)
+        updatePackage(Constants.CUSTOM_FIELD, getCustomFieldsFromStandardObject(), taskDestructivePath)
+    }
+
+    /**
+     * Gets custom fields from standard objects
+     * @return an arrayList with custom field names
+     */
+    private ArrayList<String> getCustomFieldsFromStandardObject() {
+        ArrayList<File> standardObjects = []
+        standardComponents.grep(~/.*.object$/).each { String objectName ->
+            File standardObject = new File(Paths.get(projectPath, Constants.OBJECTS_FOLDER, objectName).toString())
+            if (standardObject.exists()) {
+                standardObjects.push(standardObject)
+            }
         }
-        componentDeploy.startMessage = ""
-        componentDeploy.successMessage = SUCCESS_MESSAGE_DELETE
-        executeDeploy(folderUnDeploy)
+        return Util.getFields(standardObjects)
+    }
+
+    /**
+     * Gets valid files from org if there aren't files it show an exception message
+     * @param files is an ArrayList of files
+     * @return an ArrayList with files validates from your org
+     */
+    public ArrayList<File> getValidFilesFromOrg(ArrayList<File> files) {
+        Map <String, ArrayList<File>> filesClassified = OrgValidator.validateFiles(credential, files, projectPath)
+        ArrayList<String> notFoundFiles = []
+
+        ArrayList<File> validFiles = filesClassified.get(Constants.VALID_FILE)
+        validFiles.addAll(filesClassified.get(Constants.FILE_WITHOUT_VALIDATOR))
+
+        filesClassified.get(Constants.FILES_NOT_FOUND).each { File file ->
+            notFoundFiles.push(file.name)
+        }
+
+        if (!notFoundFiles.isEmpty()) {
+            throw new Exception("${notFoundFiles} ${FILE_NOT_FOUND}")
+        }
+        return validFiles.sort()
     }
 
     /**
      * Adds new standard objects from user property
      */
-    def addNewStandardObjects() {
+    public void addNewStandardComponents() {
         if (Util.isValidProperty(project, Constants.FORCE_EXTENSION) &&
-                project[Constants.FORCE_EXTENSION].standardObjects) {
-            standardComponents += project[Constants.FORCE_EXTENSION].standardObjects
+                project[Constants.FORCE_EXTENSION].standardComponents) {
+            standardComponents += project[Constants.FORCE_EXTENSION].standardComponents
         }
-    }
-
-    /**
-     * Gets rules from list of workflow
-     * @param workflowList contains workflow files
-     * @return an array strings which are rules
-     */
-    def getRules(ArrayList<File> workflowList) {
-        def rules = []
-        workflowList.each { workflow ->
-            rules.addAll(getWorkflowRules(workflow))
-        }
-        return rules
-    }
-
-    /**
-     * Gets all rules from a workflow file
-     * @param workflowFile analyzes a workflow at once
-     * @return an array of rules in one workflow
-     */
-    def getWorkflowRules(File workflowFile) {
-        def Workflow = new XmlParser().parseText(workflowFile.text)
-        def workflowName = Util.getFileName(workflowFile.toPath().getFileName().toString())
-        def workflowRules = []
-        Workflow.rules.each { rule ->
-            workflowRules.add("${workflowName}.${rule.fullName.text()}")
-        }
-        return workflowRules
-    }
-
-    /**
-     * Gets queries from package.xml
-     * @return jsonQueries
-     */
-    def getJsonQueries() {
-        toolingAPI = new ToolingAPI(credential)
-        queryBuilder = new QueryBuilder()
-        ArrayList<String> jsonQueries = []
-        def queries = queryBuilder.createQueryFromPackage(Paths.get(projectPath, PACKAGE_NAME).toString())
-        queries.each { query ->
-            jsonQueries.push(toolingAPI.httpAPIClient.executeQuery(query as String))
-        }
-        return jsonQueries
-    }
-
-    /**
-     * Gets all components included to truncate
-     * @param components the components names
-     * @return components
-     */
-    def getComponentsWithWildcard(List components) {
-        def includesComponents = []
-        components.each { component ->
-            includesComponents.add("**/${component}")
-        }
-        return includesComponents
-    }
-
-    /**
-     * Gets fields from list of objects
-     * @param objectFiles contains objects to be analyzed
-     * @return a list of fields
-     */
-    def getFields(ArrayList<File> objectFiles) {
-        def customFields = []
-        objectFiles.each { objFile ->
-            customFields.addAll(getCustomFields(objFile))
-        }
-        return customFields
-    }
-
-    /**
-     * Gets all custom fields from a object file
-     * @return a list of fields from an specific object
-     */
-    def getCustomFields(File objectFile) {
-        if (!objectFile.exists()) {
-            throw new GradleException("File no found at:${objectFile.absolutePath}")
-        }
-        def CustomObject = new XmlParser().parseText(objectFile.text)
-        def customFields = []
-        def objectName = Util.getFileName(objectFile.getName())
-        if (!CustomObject) {
-            throw new GradleException("Object content is not valid")
-        }
-        CustomObject.namedFilters.each { namedFilter ->
-            customFields.add(namedFilter.field.text())
-        }
-        CustomObject.fields.each { field ->
-            def type = field.type.text()
-            String objReference = "${field.referenceTo.text()}.${MetadataComponents.OBJECTS.getExtension()}"
-            if (type == LOOKUP_NAME && PackageComponent.existObject(objectFile.parent, objReference)) {
-                customFields.add("${objectName}.${field.fullName.text()}")
-            }
-        }
-        return customFields
     }
 }

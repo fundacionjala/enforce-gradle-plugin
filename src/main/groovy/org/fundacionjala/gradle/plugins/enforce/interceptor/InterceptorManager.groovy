@@ -8,15 +8,21 @@
 package org.fundacionjala.gradle.plugins.enforce.interceptor
 
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
+import groovy.util.logging.Slf4j
+
+import java.nio.charset.StandardCharsets
 
 /**
  * This class manages all components created from source path
  */
+@Slf4j
 class InterceptorManager {
 
     Map<String, MetadataInterceptor> interceptors
     List truncatedDirectories = ['classes', 'objects', 'triggers', 'pages', 'components', 'workflows', 'tabs']
     List<String> interceptorsToExecute
+    String encoding
+
     /**
      * Creates a new interceptor management from source path
      * @param sourcePath the source directory path
@@ -24,6 +30,7 @@ class InterceptorManager {
     InterceptorManager() {
         this.interceptors = [:]
         interceptorsToExecute = []
+        encoding = StandardCharsets.UTF_8.displayName()
     }
 
     /**
@@ -31,10 +38,11 @@ class InterceptorManager {
      */
     public void buildInterceptors() {
         truncatedDirectories.each { dir ->
-            MetadataComponents componentType = MetadataComponents.getComponentByFolder(dir as String)
+            MetadataComponents componentType = MetadataComponents.getComponentByPath(dir as String)
             FactoryInterceptor factoryComponent = new FactoryInterceptor()
             MetadataInterceptor interceptor = factoryComponent.getInterceptor(componentType)
             if (interceptor) {
+                interceptor.encoding = encoding
                 interceptor.loadInterceptors()
                 this.interceptors.put(componentType.directory, interceptor)
             }
@@ -102,7 +110,8 @@ class InterceptorManager {
      * Executes the truncate method of all the component interceptors
      */
     public void executeTruncate() {
-        this.interceptors.values().each { interceptor ->
+        this.interceptors.each {String component, MetadataInterceptor interceptor ->
+            log.debug "----------------------" + component + "----------------------"
             interceptor.executeInterceptors()
         }
     }

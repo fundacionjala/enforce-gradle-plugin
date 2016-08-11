@@ -5,16 +5,17 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks
 
-import org.gradle.api.DefaultTask
-import org.gradle.api.GradleException
-import org.gradle.api.logging.StandardOutputListener
-import org.gradle.api.tasks.TaskAction
-import org.gradle.logging.internal.LoggingOutputInternal
 import org.fundacionjala.gradle.plugins.enforce.exceptions.CredentialException
 import org.fundacionjala.gradle.plugins.enforce.exceptions.deploy.DeployException
 import org.fundacionjala.gradle.plugins.enforce.tasks.exception.GradleDeployException
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.helperManager.Helper
+import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
+import org.gradle.api.logging.StandardOutputListener
+import org.gradle.api.tasks.TaskAction
+import org.gradle.logging.internal.LoggingOutputInternal
 
 import java.nio.file.Paths
 
@@ -29,6 +30,7 @@ abstract class ForceTask extends DefaultTask {
     private final String FILE_NAME = 'buildLog.log'
     private final String CLASS_PATH_ERROR = 'org.gradle.color.error'
     private final String COLOR_ERROR = 'RED'
+    private final String PARAMETER_HELP = 'help'
 
     public String projectPath
     public ManagementFile fileManager
@@ -50,10 +52,25 @@ abstract class ForceTask extends DefaultTask {
      */
     @TaskAction
     void start() {
-        startLogger()
-        withExceptionHandling {
-            executeTask()
+        if(!showHelper()) {
+            startLogger()
+            withExceptionHandling {
+                executeTask()
+            }
         }
+    }
+
+    /**
+     * Prints a help manual about a task on the terminal
+     * @return true if the task use de parameter help
+     */
+    public boolean showHelper() {
+        boolean parameterExist = false
+        if(project.properties.containsKey(PARAMETER_HELP)) {
+            Helper.showHelp(this.getName())
+            parameterExist = true
+        }
+        return parameterExist
     }
 
     /**
@@ -96,7 +113,7 @@ abstract class ForceTask extends DefaultTask {
         catch (DeployException deployException) {
             logger.error("Failed execute deployment task ")
             String message
-            if (project.enforce.integration == AFFIRMATIVE) {
+            if (this.isIntegrationMode()) {
                 message = deployException.getMessageJsonFormat()
             } else {
                 message = deployException.message
@@ -107,6 +124,10 @@ abstract class ForceTask extends DefaultTask {
             logger.error("Failed execute task")
             throw new GradleException(exception.message, exception)
         }
+    }
+
+    public Boolean isIntegrationMode() {
+        return  (project.enforce.integration == AFFIRMATIVE)
     }
 
     /**

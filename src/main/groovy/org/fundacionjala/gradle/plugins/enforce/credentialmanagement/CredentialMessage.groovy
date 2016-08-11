@@ -24,19 +24,29 @@ enum CredentialMessage {
     MESSAGE_ADD_SUCCESSFULLY('Credential was added successfully'),
     MESSAGE_UPDATE_SUCCESSFULLY('Credential was updated successfully'),
     MESSAGE_QUESTION_TRY_AGAIN('Do you want to try again (y/n)?'),
+    ADD_CREDENTIAL_DESCRIPTION("You can add a credential"),
+    GET_CREDENTIALS_DESCRIPTION("You can obtain a credential registered"),
+    CREDENTIAL_MANAGER_GROUP("Credential Manager"),
+    UPDATE_CREDENTIAL_DESCRIPTION("You can update a credential"),
+    LOCATION('\nCredential location (home/project by default is home):'),
     ID('\nId:'),
     USER_NAME('UserName(example@email.com):'),
     PASSWORD('Password:'),
-    TOKEN('Token:'),
+    TOKEN_OPTION('Token:'),
     TYPE('Encrypt credential(y/n, by default is encrypted):'),
-    LOGIN_TYPE('Login type (login/test/instance, by default login):'),
+    LOGIN_TYPE('Login type (by default is login):'),
     ID_PARAM('id'),
     OPTION_YES('y'),
     OPTION_NO('n'),
     ENCRYPTED('encrypted'),
     NORMAL('normal'),
     LOGIN('login'),
-    DEFAULT_CREDENTIAL_NAME('default')
+    TEST('test'),
+    DEVELOPER_ENVIRONMENT('Production/Developer'),
+    TEST_ENVIRONMENT('Sandbox'),
+    OTHER_ENVIRONMENT('(Specified)'),
+    DEFAULT_CREDENTIAL_NAME('default'),
+    TOKEN('token')
 
     CredentialMessage(String value) {
         this.value = value

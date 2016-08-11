@@ -9,7 +9,7 @@ import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment.Depl
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageBuilder
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.PackageBuilder
 
 import java.nio.file.Paths
 
@@ -30,6 +30,9 @@ class InstallPackageTask extends Deployment {
     private String packageNamespace
     private String packageVersion
     private String packagePassword
+    private final String START_MESSAGE = "Installing package......."
+    private final String SUCCESS_MESSAGE = "Package was installed successfully!"
+    private final String MISSING_PARAMETERS = "There are missing required parameters."
 
     InstallPackageTask() {
         super(TASK_DESCRIPTION, TASK_GROUP)
@@ -38,19 +41,20 @@ class InstallPackageTask extends Deployment {
     @Override
     void runTask() {
         if (Util.validateRequiredParameters(project, requiredParams)) {
-            setupEnv()
+            setup()
             createPackage()
-            executeDeploy(installPkgRootDir)
+            executeDeploy(installPkgRootDir, START_MESSAGE, SUCCESS_MESSAGE)
             logger.quiet("Install package '${packageNamespace}' v${packageVersion} success.")
         } else {
-            throw new Exception("There are missing required parameters.")
+            throw new Exception(MISSING_PARAMETERS)
         }
     }
 
     /**
      * Setups to start install package task
      */
-    def setupEnv() {
+    @Override
+    void setup() {
         this.installPkgRootDir = Paths.get(buildFolderPath, TASK_DIR).toString()
         this.installedPkgsCompDir = "${this.installPkgRootDir}${File.separator}" +
                 "${MetadataComponents.INSTALLEDPACKAGES.directory}"
@@ -66,11 +70,9 @@ class InstallPackageTask extends Deployment {
     /**
      * Creates a package xml file with a content by default
      */
-    def createPackage() {
+    void createPackage() {
         File pkgFile = this.generatedInstallPackageFile()
-        ArrayList<File> filesToDeploy = new ArrayList<File>()
-        filesToDeploy.add(pkgFile)
-        writePackage(Paths.get(this.installPkgRootDir, Constants.PACKAGE_FILE_NAME).toString(), filesToDeploy)
+        writePackage(Paths.get(this.installPkgRootDir, Constants.PACKAGE_FILE_NAME).toString(), [pkgFile], false)
     }
 
     /**
@@ -81,8 +83,7 @@ class InstallPackageTask extends Deployment {
         def pkgFileName = "${this.installedPkgsCompDir}${File.separator}${this.packageNamespace}" +
                           ".${MetadataComponents.INSTALLEDPACKAGES.extension}"
         def fileWriter = new FileWriter(pkgFileName)
-        PackageBuilder xml = new PackageBuilder()
-        xml.writeInstalledPackageXML(this.packageVersion, this.packagePassword, fileWriter)
+        PackageBuilder.writeInstalledPackageXML(this.packageVersion, this.packagePassword, fileWriter)
         return new File(pkgFileName)
     }
 }

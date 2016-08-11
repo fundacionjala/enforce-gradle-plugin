@@ -5,13 +5,13 @@
 
 package org.fundacionjala.gradle.plugins.enforce.wsc.soap
 
+import com.sforce.soap.tooling.*
+import com.sforce.ws.ConnectionException
 import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexRunTestResult
 import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexTestItem
 import org.fundacionjala.gradle.plugins.enforce.wsc.Connector
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.ForceAPI
-import com.sforce.soap.tooling.*
-import com.sforce.ws.ConnectionException
 
 /**
  * A wrapper around soap client that execute queries

@@ -17,18 +17,26 @@ import org.fundacionjala.gradle.plugins.enforce.wsc.soap.MetadataAPI
  */
 public class RetrieveMetadata {
 
-    private org.fundacionjala.gradle.plugins.enforce.utils.salesforce.Package metaPackage
+    private org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.Package metaPackage
     private byte[] zipFileRetrieved
     private ArrayList<String> warningMessages
+    private ArrayList<String> specificFiles
     private String RETRIEVE_RESULT_NULL = "Retrieve result instance is NULL"
 
     /**
      * Constructor of RetrieveMetadata
      * @param filePath contains the file xml
      */
-    RetrieveMetadata(org.fundacionjala.gradle.plugins.enforce.utils.salesforce.Package metaPackage) {
+    RetrieveMetadata(org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.Package metaPackage) {
         this.metaPackage = metaPackage
         warningMessages = new ArrayList<String>()
+    }
+    /**
+     * Allows define the files that will be downloaded in the Retrieve command's response.
+     * @param specificFiles, relative file paths with encoded names(URLEncoder).
+     */
+    public void setSpecificFiles(ArrayList<String> specificFiles) {
+        this.specificFiles = specificFiles
     }
 
     /**
@@ -64,7 +72,7 @@ public class RetrieveMetadata {
         MetadataAPI metadataAPI = (MetadataAPI) ForceFactory.getForceAPI(ForceApiType.METADATA, credential)
         metadataAPI.poll = poll
         metadataAPI.waitTime = waitTime
-        RetrieveResult retrieveResult = metadataAPI.retrieve(metaPackage)
+        RetrieveResult retrieveResult = metadataAPI.retrieve(metaPackage, specificFiles)
         checkStatusSucceeded(retrieveResult)
         loadWarningsMessages(retrieveResult.getMessages())
         zipFileRetrieved = retrieveResult.getZipFile()

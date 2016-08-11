@@ -5,14 +5,15 @@
 
 package org.fundacionjala.gradle.plugins.enforce.unittest
 
-import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexClasses
-import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexTestItem
 import org.cometd.bayeux.Channel
 import org.cometd.bayeux.Message
 import org.cometd.bayeux.client.ClientSessionChannel
 import org.cometd.bayeux.client.ClientSessionChannel.MessageListener
 import org.fundacionjala.gradle.plugins.enforce.streaming.StreamingClient
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.unittest.RunTestTask
+import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexClasses
+import org.fundacionjala.gradle.plugins.enforce.unittest.Apex.ApexTestItem
+import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
 import org.fundacionjala.gradle.plugins.enforce.wsc.soap.ToolingAPI
 
@@ -29,12 +30,12 @@ class RunTestListener {
     StreamingClient streamingClient
     OutputStream outputStream
     ArrayList<String> ids
+    ApexTestItem apexTestItem
     private Map methodInClass
     private ApexClasses apexClasses
-    boolean done
-    long startTime
-    long endTime
-    ApexTestItem apexTestItem
+    public boolean done
+    public long startTime
+    public long endTime
 
     /**
      * Creates a run test listener to subscribes to the TestResult system topic
@@ -102,10 +103,7 @@ class RunTestListener {
      */
     public void writeApexTestItems(ApexTestItem apexTestItems) {
         boolean testsCompleted
-        String messages
-        String messagesResult
         String messageTest
-        String className
 
         apexTestItems.apexTestResults.each { apexTestResult ->
 
@@ -114,11 +112,11 @@ class RunTestListener {
             if ((apexTestResult.getOutcome().equals("Fail") || apexTestResult.getOutcome().equals("CompileFail")) &&
                 !methodInClass.containsKey(key)) {
                 methodInClass.put(key, apexTestResult.getMethodName())
-                className = apexClasses.getClass(apexTestResult.getApexClassId()).name
-                String errorMessage = apexTestResult.message?"\r\t\tMessage: ${apexTestResult.message}":""
-                errorMessage = apexTestResult.stackTrace?"${errorMessage}\n\r\t\tStacktrace: ${apexTestResult.stackTrace}":errorMessage
+                apexTestResult.className = apexClasses.getClass(apexTestResult.getApexClassId()).name
+                String errorMessage = apexTestResult.message?"\n-------- Message --------\n${apexTestResult.message}":""
+                errorMessage = apexTestResult.stackTrace?"${errorMessage}\n-------- Stacktrace --------\n${apexTestResult.stackTrace}":errorMessage
                 if(!errorMessage.empty) {
-                    messageTest = "\r\t${className}.${apexTestResult.getMethodName()}\n${errorMessage}\n\n"
+                    messageTest = "${Constants.LINE_SEPARATOR}${apexTestResult.className}.${apexTestResult.getMethodName()}${errorMessage}"
                     outputStream.write(Util.getBytes(messageTest, CHARSET_UTF_8))
                     outputStream.flush()
                 }
@@ -133,6 +131,9 @@ class RunTestListener {
             long timeExecution = (endTime - startTime)
             if (methodInClass.size() == 0) {
                 outputStream.write(Util.getBytes("\r\t${SUCCESS_MESSAGE}\n", CHARSET_UTF_8))
+                outputStream.flush()
+            } else {
+                outputStream.write(Util.getBytes(Constants.LINE_SEPARATOR, CHARSET_UTF_8))
                 outputStream.flush()
             }
             outputStream.write(Util.getBytes("\rTotal time: ${Util.formatDurationHMS(timeExecution)}\n", CHARSET_UTF_8))

@@ -5,14 +5,18 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.filemonitor
 
+import org.fundacionjala.gradle.plugins.enforce.utils.Util
+
 import java.nio.file.Paths
 
 /**
  * Create a file tracker and display files status
  */
 class FilesStatus extends FileMonitorTask {
-
     private static final String DESCRIPTION_STATUS = "You can display elements that were changed"
+    private static final String PARAMETER_SORT_BY = "sort"
+    private static final String VALUE_SORT_BY_NAME = "name"
+
     Map filesChangedMap
 
     /**
@@ -27,12 +31,11 @@ class FilesStatus extends FileMonitorTask {
      */
     @Override
     void runTask() {
-        if (fileMonitorSerializer.verifyFileMap()) {
-            filesChangedMap = fileMonitorSerializer.getFileChangedExclude(fileArray)
+        if (componentMonitor.verifyFileMap()) {
+            filesChangedMap = componentMonitor.getComponentChanged(sourceComponents)
             displayFileChanged()
         } else {
-            Map initMapSave = fileMonitorSerializer.loadSignatureForFilesInDirectory(fileArray)
-            fileMonitorSerializer.saveMap(initMapSave)
+            componentMonitor.saveCurrentComponents(sourceComponents)
         }
     }
 
@@ -42,12 +45,21 @@ class FilesStatus extends FileMonitorTask {
      */
     def displayFileChanged() {
 
+        filesChangedMap = filesChangedMap.sort{it.key}
+        filesChangedMap = filesChangedMap.sort{it.value.state}
+
+        def hasSortParameter = Util.isValidProperty(project, PARAMETER_SORT_BY)
+
+        if ( hasSortParameter && VALUE_SORT_BY_NAME.equals(project.properties[PARAMETER_SORT_BY]) ) {
+            filesChangedMap = filesChangedMap.sort{it.key}
+        }
+
         if (filesChangedMap.size() > 0) {
             println "*********************************************"
             println "              Status Files Changed             "
             println "*********************************************"
-            filesChangedMap.each { key, value ->
-                println "${Paths.get(key).getFileName()}${" - "}${value}"
+            filesChangedMap.each { componentPath, resultTracker ->
+                println "${Paths.get(componentPath).getFileName()}${" - "}${resultTracker.toString()}"
             }
             println "*********************************************"
         }

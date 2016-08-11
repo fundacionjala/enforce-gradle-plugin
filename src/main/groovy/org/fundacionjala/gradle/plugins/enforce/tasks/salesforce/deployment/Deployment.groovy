@@ -5,14 +5,17 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 
-import org.fundacionjala.gradle.plugins.enforce.metadata.DeployMetadata
-import org.fundacionjala.gradle.plugins.enforce.utils.Constants
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
-import org.gradle.api.file.FileTree
-import org.gradle.api.tasks.bundling.Zip
 import org.fundacionjala.gradle.plugins.enforce.interceptor.InterceptorManager
+import org.fundacionjala.gradle.plugins.enforce.metadata.DeployMetadata
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.SalesforceTask
+import org.fundacionjala.gradle.plugins.enforce.undeploy.PackageComponent
+import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.Util
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.ClassifiedFile
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.FileValidator
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.PackageManager.PackageCombiner
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.filter.Filter
+import org.fundacionjala.gradle.plugins.enforce.wsc.Connector
 
 import java.nio.file.Paths
 
@@ -20,22 +23,20 @@ import java.nio.file.Paths
  * Represent base class for needs deploy code in salesforce
  */
 abstract class Deployment extends SalesforceTask {
+    public DeployMetadata componentDeploy
+    public InterceptorManager interceptorManager
+    public List<String> interceptorsToExecute = []
+    public List<String> interceptors = []
+    public String excludes = ""
+    public String showValidatedFiles = Constants.TRUE_OPTION
 
-    private final String NAME_TASK_ZIP = "createZip"
-    DeployMetadata componentDeploy
-    InterceptorManager componentManager
-    List<String> interceptorsToExecute = []
-    List<String> interceptors = []
-    private final String REG_EXP_TO_EXCLUDE = "([\\*/*.[A-Za-z0-9]{1,*}])"
-    public final String EXCLUDES = 'excludes'
-    public String excludes
-    public final String META_XML = '-meta.xml'
-    public final int FILE_NAME_POSITION = 1
-    public final int FOLDER_NAME_POSITION = 2
-    public final String DOT_ASTERISK = ".*"
-    public final String ASTERISK_DOT_ASTERISK = "*.*"
-    public final String SLASH = "/"
-    public final String BACKSLASH = "\\\\"
+    public Filter filter
+    public String taskFolderPath
+    public String taskFolderName
+    public String taskPackagePath
+    public String taskDestructivePath
+    ClassifiedFile classifiedFile
+    protected boolean checkOnly
 
     /**
      * Sets description and group task
@@ -44,19 +45,28 @@ abstract class Deployment extends SalesforceTask {
      */
     Deployment(String descriptionTask, String groupTask) {
         super(descriptionTask, groupTask)
+        checkOnly = false
         componentDeploy = new DeployMetadata()
-        componentManager = new InterceptorManager()
-        componentManager.buildInterceptors()
+        interceptorManager = new InterceptorManager()
+        interceptorManager.encoding = project.property(Constants.FORCE_EXTENSION).encoding
+        interceptorManager.buildInterceptors()
     }
 
     /**
-     * Executes deploy action
+     * Executes generic deploy action
      */
-    def executeDeploy(String sourcePath) {
+    public def executeDeploy(String sourcePath, String startMessage, String successMessage) {
         String fileName = new File(sourcePath).getName()
+        logger.debug("Creating zip file at: $buildFolderPath$File.separator$fileName")
+        componentDeploy.startMessage = startMessage
+        componentDeploy.successMessage = successMessage
         String pathZipToDeploy = createZip(sourcePath, buildFolderPath, fileName)
         componentDeploy.setPath(pathZipToDeploy)
-        componentDeploy.deploy(poll, waitTime, credential)
+        logger.debug('Deploying components')
+        String apiVersion = PackageComponent.getApiVersion(projectPackagePath) < Connector.API_VERSION?
+                Connector.API_VERSION : PackageComponent.getApiVersion(projectPackagePath)
+        componentDeploy.deploy(poll, waitTime, credential, apiVersion, checkOnly)
+        deleteTemporaryFiles()
     }
 
     /**
@@ -64,11 +74,15 @@ abstract class Deployment extends SalesforceTask {
      * @param dirToTruncate the directory path to truncate
      */
     def truncateComponents(String dirToTruncate) {
-        componentManager.loadFiles(dirToTruncate)
-        componentManager.addInterceptors(interceptorsToExecute)
-        componentManager.addInterceptorsRegistered(project.property(Constants.FORCE_EXTENSION).interceptors as Map)
-        componentManager.validateInterceptors()
-        componentManager.executeTruncate()
+        logger.debug('Loading files to truncate')
+        interceptorManager.loadFiles(dirToTruncate)
+        logger.debug('Adding interceptors')
+        interceptorManager.addInterceptors(interceptorsToExecute)
+        interceptorManager.addInterceptorsRegistered(project.property(Constants.FORCE_EXTENSION).interceptors as Map)
+        logger.debug('Validating interceptors')
+        interceptorManager.validateInterceptors()
+        logger.debug('Executing truncate process')
+        interceptorManager.executeTruncate()
     }
 
     /**
@@ -78,7 +92,7 @@ abstract class Deployment extends SalesforceTask {
      * @param interceptorAction the interceptor closure
      */
     void interceptor(String metadataComponent, String interceptorName = '', Closure interceptorAction) {
-        componentManager.addInterceptor(metadataComponent, interceptorName, interceptorAction)
+        interceptorManager.addInterceptor(metadataComponent, interceptorName, interceptorAction)
     }
 
     /**
@@ -88,7 +102,7 @@ abstract class Deployment extends SalesforceTask {
      * @param interceptorAction the new interceptor
      */
     void firstInterceptor(String componentName, String interceptorName = '', Closure interceptorAction) {
-        componentManager.addFirstInterceptor(componentName, interceptorName, interceptorAction)
+        interceptorManager.addFirstInterceptor(componentName, interceptorName, interceptorAction)
     }
 
     /**
@@ -100,162 +114,84 @@ abstract class Deployment extends SalesforceTask {
     }
 
     /**
-     * Creates a zip file
-     * @param destination is folder where will create zip
-     * @param fileName is name of file zip
-     * @param sourcePath is folder will compress
-     * @return a path zip  was created
+     * Combines package from build folder and package from source directory
+     * @param buildPackagePath is path of package that is into build directory
      */
-    String createZip(String sourcePath, String destination, String fileName) {
-        File folderDestination = new File(destination)
-
-        if (!folderDestination.exists()) {
-            throw new Exception("Cannot find the folder: $destination ")
-        }
-
-        String fileNameZip = "${fileName}.zip"
-        File fileZip = new File(Paths.get(destination, fileNameZip).toString())
-        if (fileZip.exists()) {
-            fileZip.delete()
-        }
-
-        project.task(NAME_TASK_ZIP, type: Zip, overwrite: true) {
-            destinationDir new File(destination)
-            archiveName fileNameZip
-            from sourcePath
-        }.execute()
-
-        return fileZip.getAbsolutePath()
-    }
-
-    /**
-     * Excludes file or files using criterion
-     * @param files to exclude
-     * @param criterion to filter files
-     */
-    public ArrayList<File> excludeFilesByCriterion(ArrayList<File> files, String criterion) {
-        if (criterion == null) {
-            logger.error("${Constants.NULL_PARAM_EXCEPTION} criterion")
-        }
-        ArrayList<File> filesFiltered = new ArrayList<File>()
-        ArrayList<File> sourceFiles = new ArrayList<File>()
-        ArrayList<String> criterias = new ArrayList<String>()
-        criterion.split(Constants.COMMA).each { String critery ->
-            critery = critery.replaceAll(BACKSLASH, SLASH)
-            def criteriaSplitted = critery.split(SLASH)
-            if (criteriaSplitted.size() == FILE_NAME_POSITION) {
-                criterias.push("${critery}${File.separator}${Constants.WILDCARD}${Constants.WILDCARD}")
-                return
-            }
-            criterias.push(critery)
-            criterias.push("${critery}${Constants.META_XML}")
-        }
-        FileTree fileTree = project.fileTree(dir: projectPath, excludes: criterias)
-        sourceFiles = fileTree.getFiles() as ArrayList<File>
-        sourceFiles.each { File file ->
-            if (files.contains(file)) {
-                filesFiltered.push(file)
-            }
-        }
-        return filesFiltered
-    }
-
-    /**
-     * Excludes files
-     * @param filesToFilter files that will be filter
-     * @return ArrayList with files filter
-     */
-    public excludeFiles(ArrayList<File> filesToFilter) {
-        if (filesToFilter == null) {
-            logger.error("${Constants.NULL_PARAM_EXCEPTION} filesToFilter")
-        }
-        ArrayList<File> filesFiltered = filesToFilter.clone() as ArrayList<File>
-        if (Util.isValidProperty(project, EXCLUDES) && !Util.isEmptyProperty(project, EXCLUDES)) {
-            excludes = project.excludes as String
-        }
+    public void combinePackageToUpdate(String buildPackagePath) {
+        PackageCombiner.packageCombineToUpdate(projectPackagePath, buildPackagePath)
         if (excludes) {
-            validateParameter(excludes)
-            filesFiltered = excludeFilesByCriterion(filesFiltered, excludes)
-        }
-        return filesFiltered
-    }
-
-    /**
-     * Validates parameter's values
-     * @param parameterValues are files name that will be excluded
-     */
-    public void validateParameter(String parameterValues) {
-        parameterValues = parameterValues.replaceAll(BACKSLASH, SLASH)
-        ArrayList<String> fileNames = new ArrayList<String>()
-        ArrayList<String> folderNames = new ArrayList<String>()
-        parameterValues.split(Constants.COMMA).each { String parameter ->
-            if (parameter.contains(Constants.WILDCARD)) {
-                return
-            }
-            if (parameter.contains(SLASH)) {
-                fileNames.push(parameter)
-            } else {
-                folderNames.push(parameter)
-            }
-        }
-        validateFolders(folderNames)
-        validateFiles(fileNames)
-    }
-
-    /**
-     * Validates folders name
-     * @param foldersName is type array list contents folders name
-     */
-    public void validateFolders(ArrayList<String> foldersName) {
-        ArrayList<String> invalidFolders = new ArrayList<String>()
-        invalidFolders = Util.getInvalidFolders(foldersName)
-        String errorMessage = ''
-        if (!invalidFolders.empty) {
-            errorMessage = "${Constants.INVALID_FOLDER}: ${invalidFolders}"
-        }
-
-        ArrayList<String> notExistFolders = new ArrayList<String>()
-        notExistFolders = Util.getNotExistFolders(foldersName, projectPath)
-        if (!notExistFolders.empty) {
-            errorMessage += "\n${Constants.DOES_NOT_EXIST_FOLDER} ${notExistFolders}"
-        }
-
-        ArrayList<String> emptyFolders = new ArrayList<String>()
-        emptyFolders = Util.getEmptyFolders(foldersName, projectPath)
-        if (!emptyFolders.empty) {
-            errorMessage += "\n${Constants.EMPTY_FOLDERS} ${emptyFolders}"
-        }
-
-        if (!errorMessage.isEmpty()) {
-            throw new Exception(errorMessage)
+            removeFilesExcluded(buildPackagePath)
         }
     }
 
+    private void removeFilesExcluded(String buildPackagePath) {
+        ArrayList<String> filesName = []
+        filter.getFiles(excludes, Constants.EMPTY).each { File file ->
+            String relativePath = Util.getRelativePath(file, projectPath)
+            filesName.push(relativePath)
+        }
+        PackageCombiner.removeMembersFromPackage(buildPackagePath, filesName.unique())
+    }
+
     /**
-     * Validates files name
-     * @param filesName is type array list contents files name
+     * Sets task path as: deploy, undeploy, update, upload, delete, truncate folder names
+     * Sets package path of build directory
+     * Sets destructive path of build directory
+     * Creates an instance of Filter class
      */
-    public void validateFiles(ArrayList<String> filesName) {
-        ArrayList<String> invalidFiles = new ArrayList<String>()
-        ArrayList<String> notExistFiles = new ArrayList<String>()
-        String errorMessage = ''
-        filesName.each { String fileName ->
-            def extension = Util.getFileExtension(new File(Paths.get(projectPath, fileName).toString()))
-            if (!MetadataComponents.validExtension(extension)) {
-                invalidFiles.push(fileName)
-            }
-            if (!new File(Paths.get(projectPath, fileName).toString()).exists()) {
-                notExistFiles.push(fileName)
-            }
+    @Override
+    void setup() {
+        taskFolderPath = Paths.get(buildFolderPath, taskFolderName).toString()
+        taskPackagePath = Paths.get(taskFolderPath, Constants.PACKAGE_FILE_NAME).toString()
+        taskDestructivePath = Paths.get(taskFolderPath, Constants.FILE_NAME_DESTRUCTIVE).toString()
+        filter = new Filter(project, projectPath)
+        classifiedFile = new ClassifiedFile()
+    }
+
+    /**
+     * Loads excludes parameter value
+     */
+    @Override
+    void loadParameters() {
+        loadCommonParameters()
+    }
+
+    /**
+     * Gets a map with files classified as valid, invalid and not found files
+     * @param includes is String type
+     * @param excludes is String type
+     * @return a map with files classified
+     */
+    void loadClassifiedFiles(String includes, String excludes) {
+        ArrayList<File> filesFiltered = filter.getFiles(includes, excludes)
+        classifiedFile = FileValidator.validateFiles(projectPath, filesFiltered)
+        classifiedFile.ShowClassifiedFiles(showValidatedFiles == Constants.TRUE_OPTION, projectPath)
+    }
+
+    /**
+     * Copies files into temporary folder of task
+     * @param filesToCopy is an arrayList of files to copy
+     */
+    void copyFilesToTaskDirectory(ArrayList<File> filesToCopy) {
+        fileManager.copy(projectPath, filesToCopy, taskFolderPath)
+    }
+
+    /**
+     * Loads showValidatedFiles and excludes parameter
+     */
+    void loadCommonParameters() {
+        if (Util.isValidProperty(parameters, Constants.PARAMETER_EXCLUDES) &&
+                !Util.isEmptyProperty(parameters, Constants.PARAMETER_EXCLUDES)) {
+            excludes = parameters[Constants.PARAMETER_EXCLUDES].toString()
         }
-        if (!invalidFiles.isEmpty()) {
-            errorMessage = "${Constants.INVALID_FILE}: ${invalidFiles}"
+
+        if (Util.isValidProperty(parameters, Constants.PARAMETER_SHOW_VALIDATED_FILES)) {
+            showValidatedFiles = parameters[Constants.PARAMETER_SHOW_VALIDATED_FILES].toString()
+            return
         }
-        if (!notExistFiles.isEmpty()) {
-            errorMessage += "\n${Constants.DOES_NOT_EXIST_FILES} ${notExistFiles}"
-        }
-        if (!errorMessage.isEmpty()) {
-            throw new Exception(errorMessage)
+
+        if (project.enforce.showValidatedFiles) {
+            showValidatedFiles = project.enforce.showValidatedFiles
         }
     }
 }
