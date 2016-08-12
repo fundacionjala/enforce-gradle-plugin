@@ -36,6 +36,7 @@ abstract class Deployment extends SalesforceTask {
     public String taskPackagePath
     public String taskDestructivePath
     ClassifiedFile classifiedFile
+    protected boolean checkOnly
 
     /**
      * Sets description and group task
@@ -44,6 +45,7 @@ abstract class Deployment extends SalesforceTask {
      */
     Deployment(String descriptionTask, String groupTask) {
         super(descriptionTask, groupTask)
+        checkOnly = false
         componentDeploy = new DeployMetadata()
         interceptorManager = new InterceptorManager()
         interceptorManager.encoding = project.property(Constants.FORCE_EXTENSION).encoding
@@ -51,9 +53,9 @@ abstract class Deployment extends SalesforceTask {
     }
 
     /**
-     * Executes deploy action
+     * Executes generic deploy action
      */
-    def executeDeploy(String sourcePath, String startMessage, String successMessage) {
+    public def executeDeploy(String sourcePath, String startMessage, String successMessage) {
         String fileName = new File(sourcePath).getName()
         logger.debug("Creating zip file at: $buildFolderPath$File.separator$fileName")
         componentDeploy.startMessage = startMessage
@@ -62,8 +64,8 @@ abstract class Deployment extends SalesforceTask {
         componentDeploy.setPath(pathZipToDeploy)
         logger.debug('Deploying components')
         String apiVersion = PackageComponent.getApiVersion(projectPackagePath) < Connector.API_VERSION?
-                            Connector.API_VERSION : PackageComponent.getApiVersion(projectPackagePath)
-        componentDeploy.deploy(poll, waitTime, credential, apiVersion)
+                Connector.API_VERSION : PackageComponent.getApiVersion(projectPackagePath)
+        componentDeploy.deploy(poll, waitTime, credential, apiVersion, checkOnly)
         deleteTemporaryFiles()
     }
 

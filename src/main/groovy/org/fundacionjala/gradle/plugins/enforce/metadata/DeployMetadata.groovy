@@ -31,16 +31,16 @@ class DeployMetadata {
         startMessage = START_MESSAGE
         successMessage = SUCCESS_MESSAGE
     }
+
     /**
      * Deploys an org using metadata API in the source path specified
      */
-    void deploy(int poll, int waitTime, Credential credential, String apiVersion) {
-
-        MetadataAPI metadataAPI =  new MetadataAPI(credential, new Connector(credential.loginFormat, apiVersion))
+    void deploy(int poll, int waitTime, Credential credential, String apiVersion, boolean checkOnly) {
+        MetadataAPI metadataAPI = new MetadataAPI(credential, new Connector(credential.loginFormat, apiVersion))
         metadataAPI.poll = poll
         metadataAPI.waitTime = waitTime
         println startMessage
-        DeployResult deployResult = metadataAPI.deploy(path)
+        DeployResult deployResult = metadataAPI.deploy(path, checkOnly)
         checkStatusDeploy(deployResult)
     }
 
