@@ -41,6 +41,8 @@ class CredentialValidatorTest extends Specification {
     Session session
 
     def setup() {
+        File secretKeyGeneratedFile = new File(pathSecretKeyGenerated)
+        secretKeyGeneratedFile.write("")
         credentialFileManager = new CredentialFileManager(pathCredentials, pathSecretKeyGenerated)
         credentialValidator = new CredentialValidator()
         credentialEncrypter = Mock(CredentialEncrypter)
@@ -121,5 +123,9 @@ class CredentialValidatorTest extends Specification {
         credentialValidator.validateCredential(credential, connector)
         then:
         1 * connector.login(_ as Credential)
+    }
+
+    def cleanupSpec() {
+        new File(pathSecretKeyGenerated).delete()
     }
 }
