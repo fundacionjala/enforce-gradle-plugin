@@ -145,7 +145,9 @@ class RunTestTask extends SalesforceTask {
             logger.quiet(RunTestTaskConstants.ALL_UNIT_TEST_WILL_BE_EXECUTED)
             request.allTests = true
         }
-        request.namespace = toolingAPI.getPrefixName()
+        if (!request.allTests) {
+            request.namespace = toolingAPI.getPrefixName()
+        }
         logger.log(LogLevel.INFO, String.format(RunTestTaskConstants.START_TIME, new Date().format(RunTestTaskConstants.HOUR_FORMAT)))
         RunTestsResult runTestResult = apexAPI.runTests(request)
 

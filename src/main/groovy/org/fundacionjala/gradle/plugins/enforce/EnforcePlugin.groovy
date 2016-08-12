@@ -16,6 +16,7 @@ import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment.Unde
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment.Update
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment.Upload
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment.Delete
+import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment.Validate
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.execute.ApexExecutor
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.managepackage.InstallPackageTask
 import org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.managepackage.UninstallPackageTask
@@ -54,6 +55,7 @@ class EnforcePlugin implements Plugin<Project> {
         project.task('upload', type: Upload)
         project.task('delete', type: Delete)
         project.task('truncate', type: Truncate)
+        project.task('validate', type: Validate)
 
         project.task("addCredential", type: CredentialAdder)
         project.task("updateCredential", type: CredentialUpdater)
