@@ -50,4 +50,8 @@ class TriggerInterceptorTest extends Specification {
             assert file.text.contains("{}")
         }
     }
+
+    def cleanup() {
+        new File(TRUNCATED_PATH).deleteDir()
+    }
 }

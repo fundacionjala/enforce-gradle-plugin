@@ -53,4 +53,8 @@ class PageInterceptorTest extends Specification {
                     !file.text.contains("Quote__c") || !file.text.contains("-->")
         }
     }
+
+    def cleanup() {
+        new File(TRUNCATED_PATH).deleteDir()
+    }
 }

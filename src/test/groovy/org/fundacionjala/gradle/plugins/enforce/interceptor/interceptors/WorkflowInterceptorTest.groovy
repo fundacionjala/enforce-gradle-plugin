@@ -51,4 +51,8 @@ class WorkflowInterceptorTest extends Specification {
             assert !file.text.contains("criteriaItems") || file.text.contains("<formula>true</formula>")
         }
     }
+
+    def cleanup() {
+        new File(TRUNCATED_PATH).deleteDir()
+    }
 }

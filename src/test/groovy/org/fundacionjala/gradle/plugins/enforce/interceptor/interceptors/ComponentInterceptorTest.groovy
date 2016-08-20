@@ -50,4 +50,8 @@ class ComponentInterceptorTest extends Specification {
             assert !file.text.contains("h1") || !file.text.contains("outputText")
         }
     }
+
+    def cleanup() {
+        new File(TRUNCATED_PATH).deleteDir()
+    }
 }

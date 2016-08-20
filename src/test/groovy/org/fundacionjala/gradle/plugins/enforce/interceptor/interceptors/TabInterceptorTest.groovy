@@ -50,4 +50,8 @@ class TabInterceptorTest extends Specification {
             assert !file.text.contains("customObject") || !file.text.contains("page")
         }
     }
+
+    def cleanup() {
+        new File(TRUNCATED_PATH).deleteDir()
+    }
 }
