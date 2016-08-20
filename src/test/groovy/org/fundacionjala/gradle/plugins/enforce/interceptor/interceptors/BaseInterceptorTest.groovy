@@ -10,11 +10,11 @@ import spock.lang.Specification
 
 import java.nio.file.Paths
 
-class ClassInterceptorTest extends Specification {
+class BaseInterceptorTest extends Specification {
     @Shared
     String ROOT_PATH = System.properties['user.dir']
     @Shared
-    String RESOURCE_PATH = "${ROOT_PATH}/src/test/groovy/org/fundacionjala/gradle/plugins/enforce/interceptor/resources/classes"
+    String RESOURCE_PATH = "${ROOT_PATH}/src/test/groovy/org/fundacionjala/gradle/plugins/enforce/interceptor/resources"
     @Shared
     String TRUNCATED_PATH = "${ROOT_PATH}/src/test/groovy/org/fundacionjala/gradle/plugins/enforce/interceptor/resources/interceptor"
 
@@ -27,26 +27,31 @@ class ClassInterceptorTest extends Specification {
 
     def "Should load classes from source path"() {
         given:
-        ClassInterceptor classInterceptor = new ClassInterceptor()
+        BaseInterceptor baseInterceptor = new BaseInterceptor()
+        baseInterceptor.directory = "profiles"
         String path = Paths.get(RESOURCE_PATH).toString()
         when:
-        classInterceptor.loadFiles(path)
+        baseInterceptor.loadFiles(path)
         then:
-        classInterceptor.files.size() == 3
+        baseInterceptor.files.size() == 2
     }
 
     def "Should execute the commands of class truncator"() {
         given:
-        ClassInterceptor classInterceptor = new ClassInterceptor()
+        BaseInterceptor baseInterceptor = new BaseInterceptor()
+        baseInterceptor.directory = "profiles"
         String path = Paths.get(TRUNCATED_PATH).toString()
-        classInterceptor.interceptorsToExecute = [org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_CLASSES.id]
+        baseInterceptor.addInterceptor("AddNewTag", { file ->
+            file.text.concat("<tag></tag>")
+        })
+        baseInterceptor.interceptorsToExecute = []
         when:
-        classInterceptor.loadFiles(path)
-        classInterceptor.loadInterceptors()
-        classInterceptor.executeInterceptors()
+        baseInterceptor.loadFiles(path)
+        baseInterceptor.loadInterceptors()
+        baseInterceptor.executeInterceptors()
         then:
-        classInterceptor.files.each { file ->
-            assert !file.text.contains("@deprecated")
+        baseInterceptor.files.each { file ->
+            assert !file.text.contains("<tag></tag>")
         }
     }
 

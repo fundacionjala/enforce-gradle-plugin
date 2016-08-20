@@ -92,10 +92,6 @@ dependencies {
 
 println "TOKEN:" + "$System.env.EV_TEST"
 
-
-
-
-
 group = 'org.fundacionjala.gradle.plugins.enforce'
 def major = "$System.env.VERSION_NUMBER_MAJOR"
 def minor = "$System.env.VERSION_NUMBER_MINOR"

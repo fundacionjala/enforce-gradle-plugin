@@ -15,16 +15,39 @@ class TriggerInterceptorTest extends Specification {
     String ROOT_PATH = System.properties['user.dir']
 
     @Shared
-    String RESOURCE_PATH = "${ROOT_PATH}/src/test/groovy/org/fundacionjala/gradle/plugins/enforce/interceptor/resources"
+    String RESOURCE_PATH = "${ROOT_PATH}/src/test/groovy/org/fundacionjala/gradle/plugins/enforce/interceptor/resources/triggers"
+    @Shared
+    String TRUNCATED_PATH = "${ROOT_PATH}/src/test/groovy/org/fundacionjala/gradle/plugins/enforce/interceptor/resources/interceptor"
 
-    def "Should create gets triggers from source path"(){
+    def setup() {
+        new AntBuilder().copy(todir: TRUNCATED_PATH) {
+            fileset(dir: RESOURCE_PATH) {
+            }
+        }
+    }
+
+    def "Should load triggers from source path"() {
         given:
-            TriggerInterceptor triggerInterceptor = new TriggerInterceptor()
-            String path = Paths.get(RESOURCE_PATH, 'triggers').toString()
+        TriggerInterceptor triggerInterceptor = new TriggerInterceptor()
+        String path = Paths.get(RESOURCE_PATH).toString()
         when:
-            triggerInterceptor.loadFiles(path)
+        triggerInterceptor.loadFiles(path)
         then:
-            triggerInterceptor.files.size() == 6
+        triggerInterceptor.files.size() == 6
+    }
 
+    def "Should execute the commands of trigger truncator"() {
+        given:
+        TriggerInterceptor triggerInterceptor = new TriggerInterceptor()
+        String path = Paths.get(TRUNCATED_PATH).toString()
+        triggerInterceptor.interceptorsToExecute = [org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_TRIGGERS.id]
+        when:
+        triggerInterceptor.loadFiles(path)
+        triggerInterceptor.loadInterceptors()
+        triggerInterceptor.executeInterceptors()
+        then:
+        triggerInterceptor.files.each { file ->
+            assert file.text.contains("{}")
+        }
     }
 }
