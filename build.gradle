@@ -90,8 +90,6 @@ dependencies {
     //testCompile 'org.spockframework:spock-core:1.0-groovy-2.3'
 }
 
-println "TOKEN:" + "$System.env.EV_TEST"
-
 group = 'org.fundacionjala.gradle.plugins.enforce'
 def major = "$System.env.VERSION_NUMBER_MAJOR"
 def minor = "$System.env.VERSION_NUMBER_MINOR"
