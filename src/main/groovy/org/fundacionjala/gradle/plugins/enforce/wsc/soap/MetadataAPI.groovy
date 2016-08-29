@@ -97,6 +97,7 @@ class MetadataAPI extends ForceAPI {
      * @return the deploy result obtained from server
      */
     private DeployResult genericDeploy(String sourcePath, boolean checkOnly) {
+        println ('JR- sourcePath:'+sourcePath)
         def byteArray = new File(sourcePath).getBytes()
         DeployOptions deployOptions = new DeployOptions()
         deployOptions.setPerformRetrieve(false)

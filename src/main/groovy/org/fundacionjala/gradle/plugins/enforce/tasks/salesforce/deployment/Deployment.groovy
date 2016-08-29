@@ -57,16 +57,17 @@ abstract class Deployment extends SalesforceTask {
      */
     public def executeDeploy(String sourcePath, String startMessage, String successMessage) {
         String fileName = new File(sourcePath).getName()
-        logger.debug("Creating zip file at: $buildFolderPath$File.separator$fileName")
+        logger.error("Creating zip file at: $buildFolderPath$File.separator$fileName")
         componentDeploy.startMessage = startMessage
         componentDeploy.successMessage = successMessage
         String pathZipToDeploy = createZip(sourcePath, buildFolderPath, fileName)
         componentDeploy.setPath(pathZipToDeploy)
-        logger.debug('Deploying components')
+        logger.error('Deploying components')
         String apiVersion = PackageComponent.getApiVersion(projectPackagePath) < Connector.API_VERSION?
                 Connector.API_VERSION : PackageComponent.getApiVersion(projectPackagePath)
+        logger.error('JR- apiVersion:'+apiVersion)
         componentDeploy.deploy(poll, waitTime, credential, apiVersion, checkOnly)
-        deleteTemporaryFiles()
+//        deleteTemporaryFiles()//JRojas
     }
 
     /**

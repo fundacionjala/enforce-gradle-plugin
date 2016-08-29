@@ -22,6 +22,7 @@ class Update extends Deployment {
     private static final String START_UPDATE_TASK_MESSAGE = "Starting update proccess..."
     private static final String SUCCESS_UPDATE_TASK_MESSAGE = "The files were successfully updated!"
     ArrayList<File> filesToCopy
+    Set<String> additionalFileFolderToCopy
     ArrayList<File> filesToUpdate
     String folders = ""
     ArrayList<File> filesExcludes
@@ -35,6 +36,7 @@ class Update extends Deployment {
     Update() {
         super(UPDATE_DESCRIPTION, Constants.DEPLOYMENT)
         filesToCopy = []
+        additionalFileFolderToCopy = []
         filesToUpdate = []
         filesExcludes = []
         packageGenerator = new PackageGenerator()
@@ -47,6 +49,7 @@ class Update extends Deployment {
      */
     @Override
     void runTask() {
+        logger.error('JR- update task')
         createDeploymentDirectory(taskFolderPath)
         loadFilesChanged()
         filterFiles()
@@ -59,6 +62,8 @@ class Update extends Deployment {
         copyFilesChanged()
         showFilesExcludes()
         truncate()
+
+        logger.error('JR- executing executeDeploy')
         executeDeploy(taskFolderPath, START_UPDATE_TASK_MESSAGE, SUCCESS_UPDATE_TASK_MESSAGE)
         packageGenerator.saveFileTrackerMap()
     }
@@ -72,11 +77,21 @@ class Update extends Deployment {
      * Creates packages to all files which has been changed
      */
     void createPackage() {
+        logger.error('JR- creating package')
+        File fileToCopy
         packageGenerator.fileTrackerMap.each { nameFile, resultTracker ->
             if (resultTracker.state != ComponentStates.DELETED) {
-                filesToCopy.add(new File(Paths.get(projectPath, nameFile).toString()))
+                fileToCopy = new File(Paths.get(projectPath, nameFile).toString())
+                filesToCopy.add(fileToCopy)
+                //TODO: jrojas - add .cmp for aura components
+                logger.error('JR- nameFile: ' + nameFile)
+                if (nameFile.startsWith("aura/") && !additionalFileFolderToCopy.contains(fileToCopy.getParentFile().getPath())) {
+                    additionalFileFolderToCopy.add(fileToCopy.getParentFile().getPath())
+                }
             }
         }
+        logger.error('JR- filesToCopy: ' + filesToCopy.toString())
+        logger.error('JR- additionalFileFolderToCopy: ' + additionalFileFolderToCopy)
         packageGenerator.buildPackage(taskPackagePath)
         combinePackageToUpdate(taskPackagePath)
     }
@@ -112,6 +127,19 @@ class Update extends Deployment {
                 filesToUpdate.push(xmlFolder)
             }
             filesToUpdate.push(file)
+        }
+        //TODO: jrojas - add files from additionalFileFolderToCopy
+        if (!additionalFileFolderToCopy.isEmpty()) {
+            additionalFileFolderToCopy.each { dir ->
+                File f = new File(dir)
+                logger.error('JR- dir: ' + dir + ' - ' + f.exists())
+                if (f.exists()) {
+                    f.listFiles().each { File file ->
+                        logger.error('JR- additional: ' + file.name)
+                        filesToUpdate.push(file)
+                    }
+                }
+            }
         }
         copyFilesToTaskDirectory(filesToUpdate)
     }
