@@ -41,6 +41,9 @@ class FactoryInterceptor {
             case MetadataComponents.COMPONENTS:
                 interceptor = new ComponentInterceptor()
                 break
+            default:
+                interceptor = new BaseInterceptor()
+                break
         }
         return interceptor
     }

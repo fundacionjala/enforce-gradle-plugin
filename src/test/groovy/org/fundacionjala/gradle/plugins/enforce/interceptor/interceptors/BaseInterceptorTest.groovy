@@ -10,12 +10,11 @@ import spock.lang.Specification
 
 import java.nio.file.Paths
 
-class TriggerInterceptorTest extends Specification {
+class BaseInterceptorTest extends Specification {
     @Shared
     String ROOT_PATH = System.properties['user.dir']
-
     @Shared
-    String RESOURCE_PATH = "${ROOT_PATH}/src/test/groovy/org/fundacionjala/gradle/plugins/enforce/interceptor/resources/triggers"
+    String RESOURCE_PATH = "${ROOT_PATH}/src/test/groovy/org/fundacionjala/gradle/plugins/enforce/interceptor/resources"
     @Shared
     String TRUNCATED_PATH = "${ROOT_PATH}/src/test/groovy/org/fundacionjala/gradle/plugins/enforce/interceptor/resources/interceptor"
 
@@ -26,28 +25,33 @@ class TriggerInterceptorTest extends Specification {
         }
     }
 
-    def "Should load triggers from source path"() {
+    def "Should load classes from source path"() {
         given:
-        TriggerInterceptor triggerInterceptor = new TriggerInterceptor()
+        BaseInterceptor baseInterceptor = new BaseInterceptor()
+        baseInterceptor.directory = "profiles"
         String path = Paths.get(RESOURCE_PATH).toString()
         when:
-        triggerInterceptor.loadFiles(path)
+        baseInterceptor.loadFiles(path)
         then:
-        triggerInterceptor.files.size() == 6
+        baseInterceptor.files.size() == 2
     }
 
-    def "Should execute the commands of trigger truncator"() {
+    def "Should execute the commands of class truncator"() {
         given:
-        TriggerInterceptor triggerInterceptor = new TriggerInterceptor()
+        BaseInterceptor baseInterceptor = new BaseInterceptor()
+        baseInterceptor.directory = "profiles"
         String path = Paths.get(TRUNCATED_PATH).toString()
-        triggerInterceptor.interceptorsToExecute = [org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_TRIGGERS.id]
+        baseInterceptor.addInterceptor("AddNewTag", { file ->
+            file.text.concat("<tag></tag>")
+        })
+        baseInterceptor.interceptorsToExecute = []
         when:
-        triggerInterceptor.loadFiles(path)
-        triggerInterceptor.loadInterceptors()
-        triggerInterceptor.executeInterceptors()
+        baseInterceptor.loadFiles(path)
+        baseInterceptor.loadInterceptors()
+        baseInterceptor.executeInterceptors()
         then:
-        triggerInterceptor.files.each { file ->
-            assert file.text.contains("{}")
+        baseInterceptor.files.each { file ->
+            assert !file.text.contains("<tag></tag>")
         }
     }
 

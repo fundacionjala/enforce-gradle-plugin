@@ -25,46 +25,40 @@ class ObjectInterceptorTest extends Specification {
         }
     }
 
-    def "Should create gets objects from source path"(){
+    def "Should load objects from source path"() {
         given:
-            ObjectInterceptor objectInterceptor = new ObjectInterceptor ()
-            String path = Paths.get(RESOURCE_PATH).toString()
+        ObjectInterceptor objectInterceptor = new ObjectInterceptor()
+        String path = Paths.get(RESOURCE_PATH).toString()
         when:
-            objectInterceptor.loadFiles(path)
+        objectInterceptor.loadFiles(path)
         then:
-            objectInterceptor.files.size() == 9
+        objectInterceptor.files.size() == 9
 
     }
 
-    def "Should execute the commands of page truncator"() {
+    def "Should execute the commands of object truncator"() {
         given:
         ObjectInterceptor objectInterceptor = new ObjectInterceptor()
         String path = Paths.get(TRUNCATED_PATH).toString()
-        int totalSize = 0
         objectInterceptor.interceptorsToExecute = [org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_ACTION_OVERRIDES.id, org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_FIELD_SETS.id,
-                                                 org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_FORMULAS.id, org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_WEB_LINKS.id]
-        int total = 0        
+                                                   org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_FORMULAS.id, org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_WEB_LINKS.id]
         when:
 
         objectInterceptor.loadFiles(path)
-
-        objectInterceptor.files.each { file ->
-            total += file.size()
-        }
         objectInterceptor.loadInterceptors()
         objectInterceptor.executeInterceptors()
-        objectInterceptor.files.each { file ->
-            totalSize += file.size()
-        }
         then:
-        totalSize < total
+        objectInterceptor.files.each { file ->
+            assert !file.text.contains("actionOverrides") || !file.text.contains("fieldSets") ||
+                    !file.text.contains("formula") || !file.text.contains("webLinks")
+        }
     }
 
     def "Should add new command as a first command"() {
         given:
         ObjectInterceptor objectInterceptor = new ObjectInterceptor()
         objectInterceptor.interceptorsToExecute = [org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_ACTION_OVERRIDES.id, org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_FIELD_SETS.id,
-                                                 org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_FORMULAS.id, org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_WEB_LINKS.id]
+                                                   org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_FORMULAS.id, org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_WEB_LINKS.id]
         when:
         objectInterceptor.loadInterceptors()
         def commands = objectInterceptor.interceptors.keySet().toArray()
@@ -81,7 +75,7 @@ class ObjectInterceptorTest extends Specification {
         given:
         ObjectInterceptor objectInterceptor = new ObjectInterceptor()
         objectInterceptor.interceptorsToExecute = [org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_ACTION_OVERRIDES.id, org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_FIELD_SETS.id,
-                                                 org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_FORMULAS.id, org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_WEB_LINKS.id]
+                                                   org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_FORMULAS.id, org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_WEB_LINKS.id]
 
         when:
         objectInterceptor.loadInterceptors()
@@ -99,7 +93,7 @@ class ObjectInterceptorTest extends Specification {
         given:
         ObjectInterceptor objectInterceptor = new ObjectInterceptor()
         objectInterceptor.interceptorsToExecute = [org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_ACTION_OVERRIDES.id, org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_FIELD_SETS.id,
-                                                 org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_FORMULAS.id, org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_WEB_LINKS.id]
+                                                   org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_FORMULAS.id, org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_WEB_LINKS.id]
 
         when:
         objectInterceptor.loadInterceptors()
