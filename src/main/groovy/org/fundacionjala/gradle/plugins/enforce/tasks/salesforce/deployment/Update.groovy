@@ -61,7 +61,6 @@ class Update extends Deployment {
         copyFilesChanged()
         showFilesExcludes()
         truncate()
-
         executeDeploy(taskFolderPath, START_UPDATE_TASK_MESSAGE, SUCCESS_UPDATE_TASK_MESSAGE)
         packageGenerator.saveFileTrackerMap()
     }

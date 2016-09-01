@@ -55,7 +55,6 @@ dependencies {
 
     compile 'com.twmacinta:fast-md5:2.7.1'
     compile 'xmlunit:xmlunit:1.3'
-
     compile 'com.force.api:force-metadata-api:32.0.0'
     compile 'com.force.api:force-partner-api:32.0.0'
     compile 'com.force.api:force-apex-api:32.0.0'

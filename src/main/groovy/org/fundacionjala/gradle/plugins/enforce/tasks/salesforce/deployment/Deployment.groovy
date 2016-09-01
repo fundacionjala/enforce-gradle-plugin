@@ -66,6 +66,7 @@ abstract class Deployment extends SalesforceTask {
         String apiVersion = PackageComponent.getApiVersion(projectPackagePath) < Connector.API_VERSION?
                 Connector.API_VERSION : PackageComponent.getApiVersion(projectPackagePath)
         componentDeploy.deploy(poll, waitTime, credential, apiVersion, checkOnly)
+        deleteTemporaryFiles()
     }
 
     /**
