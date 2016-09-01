@@ -48,7 +48,6 @@ class DeployMetadata {
      * Checks if the deploy result is executed successfully
      */
     void checkStatusDeploy(DeployResult deployResult) {
-//        println('JR- deployResult'+deployResult.toString())
         if (!deployResult.isSuccess()) {
             MetadataAPI.printDeployResult(deployResult)
         }
