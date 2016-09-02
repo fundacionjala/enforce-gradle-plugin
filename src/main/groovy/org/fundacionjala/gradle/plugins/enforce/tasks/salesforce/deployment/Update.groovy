@@ -22,7 +22,7 @@ class Update extends Deployment {
     private static final String START_UPDATE_TASK_MESSAGE = "Starting update proccess..."
     private static final String SUCCESS_UPDATE_TASK_MESSAGE = "The files were successfully updated!"
     ArrayList<File> filesToCopy
-    Set<String> additionalFileFolderToCopy
+    Set<String> auraFolderToCopy
     ArrayList<File> filesToUpdate
     String folders = ""
     ArrayList<File> filesExcludes
@@ -36,7 +36,7 @@ class Update extends Deployment {
     Update() {
         super(UPDATE_DESCRIPTION, Constants.DEPLOYMENT)
         filesToCopy = []
-        additionalFileFolderToCopy = []
+        auraFolderToCopy = []
         filesToUpdate = []
         filesExcludes = []
         packageGenerator = new PackageGenerator()
@@ -79,8 +79,8 @@ class Update extends Deployment {
             if (resultTracker.state != ComponentStates.DELETED) {
                 fileToCopy = new File(Paths.get(projectPath, nameFile).toString())
                 filesToCopy.add(fileToCopy)
-                if (nameFile.startsWith("aura/") && !additionalFileFolderToCopy.contains(fileToCopy.getParentFile().getPath())) {
-                    additionalFileFolderToCopy.add(fileToCopy.getParentFile().getPath())
+                if (nameFile.startsWith("aura/")) {
+                    auraFolderToCopy.add(fileToCopy.getParentFile().getPath())
                 }
             }
         }
@@ -120,17 +120,9 @@ class Update extends Deployment {
             }
             filesToUpdate.push(file)
         }
-        if (!additionalFileFolderToCopy.isEmpty()) {
-            additionalFileFolderToCopy.each { dir ->
-                File f = new File(dir)
-                if (f.exists()) {
-                    def appFiles = f.listFiles().findAll { item -> item.name.endsWith('.cmp') || item.name.endsWith('.app')}
-                    if (!appFiles.isEmpty()) {
-                        appFiles.each {file ->
-                            filesToUpdate.push(file)
-                        }
-                    }
-                }
+        auraFolderToCopy.each { dir ->
+            ((new File(dir)).listFiles().findAll { item -> item.name.endsWith('.cmp') || item.name.endsWith('.app')}).each {file ->
+                filesToUpdate.push(file)
             }
         }
         copyFilesToTaskDirectory(filesToUpdate)
