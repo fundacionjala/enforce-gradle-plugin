@@ -42,7 +42,7 @@ This is an open source plugin
            jcenter()
        }
        dependencies {
-           classpath 'org.fundacionjala.gradle.plugins.enforce:enforce-gradle-plugin:1.1.2'
+           classpath 'org.fundacionjala.gradle.plugins.enforce:enforce-gradle-plugin:1.1.5'
        }
    }
 
