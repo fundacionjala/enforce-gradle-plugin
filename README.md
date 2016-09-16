@@ -106,89 +106,7 @@ Development
 
 ### Using the plugin in your gradle build script
 
-If you are using gradle version higher than 2.4 use:
-
-```groovy
-classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2'
-```
-
-If you are using gradle version less than 2.4 use:
-
-```groovy
-classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.1'
-```
-
-To gradle 2.0 version
-
-```groovy
-dependencies {
-	compile 'org.codehaus.groovy:groovy-all:2.3.2'
-	testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
-}
-```
-or
-```groovy
-dependencies {
-	compile 'org.codehaus.groovy:groovy-all:2.3.4'
-	testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
-}
-```
-
-To gradle  2.1 and 2.2 versions
-
-```groovy
-dependencies {
-	compile 'org.codehaus.groovy:groovy-all:2.3.6'
-	testCompile 'org.spockframework:spock-core:1.0-groovy-2.3'
-}
-```
-
-To gradle  2.3 version
-
-```groovy
-dependencies {
-	compile 'org.codehaus.groovy:groovy-all:2.3.9'
-	testCompile 'org.spockframework:spock-core:1.0-groovy-2.3'
-}
-```
-
-To gradle  2.4 version
-
-```groovy
-dependencies {
-	compile 'org.codehaus.groovy:groovy-all:2.3.9'
-	testCompile 'org.spockframework:spock-core:1.0-groovy-2.3'
-}
-```
-
-or
-
-```groovy
-dependencies {
-	compile 'org.codehaus.groovy:groovy-all:2.3.10'
-	testCompile 'org.spockframework:spock-core:1.0-groovy-2.3'
-}
-```
-
-To gradle  2.5 and 2.6 versions
-
-```groovy
-dependencies {
-	compile 'org.codehaus.groovy:groovy-all:2.4.4'
-	testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
-}
-
-```
-To gradle  2.9 and 2.10 versions
-
-```groovy
-dependencies {
-	compile 'org.codehaus.groovy:groovy-all:2.4.4'
-	testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
-}
-```
- For more information about spock and groovy versions [click here](https://code.google.com/p/spock/wiki/SpockVersionsAndDependencies)
-
+You can use your own gradle version but to avoid unexpected results with the compatibility we recommend to use the gradle wrapper. You can modify the build.gradle file and specify your version there.
 
 #### It is desired a basic knowledge about Gradle and its plugin mechanism, as starting point you can review:
 
@@ -198,10 +116,10 @@ dependencies {
 #### Once you have the source code, open the source code in a console and execute:
 
 ```
-   $ gradle build
+   $ gradle wrapper
 ```
 
 #### Please, make sure that your changes are not breaking any functionality running the unit test:
 ```
-   $ gradle test
+   $ ./gradlew test
 ```

@@ -22,6 +22,7 @@ class Update extends Deployment {
     private static final String START_UPDATE_TASK_MESSAGE = "Starting update proccess..."
     private static final String SUCCESS_UPDATE_TASK_MESSAGE = "The files were successfully updated!"
     ArrayList<File> filesToCopy
+    Set<String> auraFolderToCopy
     ArrayList<File> filesToUpdate
     String folders = ""
     ArrayList<File> filesExcludes
@@ -35,6 +36,7 @@ class Update extends Deployment {
     Update() {
         super(UPDATE_DESCRIPTION, Constants.DEPLOYMENT)
         filesToCopy = []
+        auraFolderToCopy = []
         filesToUpdate = []
         filesExcludes = []
         packageGenerator = new PackageGenerator()
@@ -72,9 +74,14 @@ class Update extends Deployment {
      * Creates packages to all files which has been changed
      */
     void createPackage() {
+        File fileToCopy
         packageGenerator.fileTrackerMap.each { nameFile, resultTracker ->
             if (resultTracker.state != ComponentStates.DELETED) {
-                filesToCopy.add(new File(Paths.get(projectPath, nameFile).toString()))
+                fileToCopy = new File(Paths.get(projectPath, nameFile).toString())
+                filesToCopy.add(fileToCopy)
+                if (nameFile.startsWith("aura/")) {
+                    auraFolderToCopy.add(fileToCopy.getParentFile().getPath())
+                }
             }
         }
         packageGenerator.buildPackage(taskPackagePath)
@@ -112,6 +119,11 @@ class Update extends Deployment {
                 filesToUpdate.push(xmlFolder)
             }
             filesToUpdate.push(file)
+        }
+        auraFolderToCopy.each { dir ->
+            ((new File(dir)).listFiles().findAll { item -> item.name.endsWith('.cmp') || item.name.endsWith('.app')}).each {file ->
+                filesToUpdate.push(file)
+            }
         }
         copyFilesToTaskDirectory(filesToUpdate)
     }

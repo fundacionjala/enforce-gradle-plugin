@@ -25,7 +25,7 @@ class ClassInterceptorTest extends Specification {
         }
     }
 
-    def "Should create gets classes from source path"() {
+    def "Should load classes from source path"() {
         given:
         ClassInterceptor classInterceptor = new ClassInterceptor()
         String path = Paths.get(RESOURCE_PATH).toString()
@@ -33,29 +33,21 @@ class ClassInterceptorTest extends Specification {
         classInterceptor.loadFiles(path)
         then:
         classInterceptor.files.size() == 3
-
     }
 
     def "Should execute the commands of class truncator"() {
         given:
         ClassInterceptor classInterceptor = new ClassInterceptor()
         String path = Paths.get(TRUNCATED_PATH).toString()
-        int totalSize = 0
         classInterceptor.interceptorsToExecute = [org.fundacionjala.gradle.plugins.enforce.interceptor.Interceptor.TRUNCATE_CLASSES.id]
-        int total = 0
-
         when:
         classInterceptor.loadFiles(path)
-        classInterceptor.files.each { file ->
-            total += file.size()
-        }
         classInterceptor.loadInterceptors()
         classInterceptor.executeInterceptors()
-        classInterceptor.files.each { file ->
-            totalSize += file.size()
-        }
         then:
-        totalSize < total
+        classInterceptor.files.each { file ->
+            assert !file.text.contains("@deprecated")
+        }
     }
 
     def cleanup() {

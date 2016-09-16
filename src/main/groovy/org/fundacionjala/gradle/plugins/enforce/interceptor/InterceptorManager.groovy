@@ -4,11 +4,11 @@
  */
 
 
-
 package org.fundacionjala.gradle.plugins.enforce.interceptor
 
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 import groovy.util.logging.Slf4j
+import org.fundacionjala.gradle.plugins.enforce.interceptor.interceptors.BaseInterceptor
+import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataComponents
 
 import java.nio.charset.StandardCharsets
 
@@ -66,8 +66,13 @@ class InterceptorManager {
      * @param sourcePath the source path to truncate
      */
     public void loadFiles(String sourcePath) {
-        this.interceptors.values().each { interceptor ->
-            interceptor.loadFiles(sourcePath)
+        this.interceptors.each { dir, interceptor ->
+            if (truncatedDirectories.contains(dir)) {
+                interceptor.loadFiles(sourcePath)
+            } else {
+                interceptor.setDirectory(dir)
+                interceptor.loadFiles(sourcePath)
+            }
         }
     }
 
@@ -85,23 +90,23 @@ class InterceptorManager {
     /**
      * Validates if all interceptors to execute were added
      */
-    public void validateInterceptors(){
+    public void validateInterceptors() {
         List<String> interceptorNames = []
-        for (cmdName in interceptorsToExecute){
+        for (cmdName in interceptorsToExecute) {
             boolean found = false
-            for (interceptor in this.interceptors.values()){
-                if(interceptor.interceptors.containsKey(cmdName)){
+            for (interceptor in this.interceptors.values()) {
+                if (interceptor.interceptors.containsKey(cmdName)) {
                     found = true
                     break
                 }
             }
-            if(!found){
+            if (!found) {
                 interceptorNames.add(cmdName)
             }
         }
-        if(interceptorNames.size() > 0){
-            String message = interceptorNames.size() == 1?"The ${interceptorNames.pop()} interceptor was not found":
-                                                  "The ${interceptorNames.join(',')} interceptors were not found"
+        if (interceptorNames.size() > 0) {
+            String message = interceptorNames.size() == 1 ? "The ${interceptorNames.pop()} interceptor was not found" :
+                    "The ${interceptorNames.join(',')} interceptors were not found"
             throw new Exception(message)
         }
     }
@@ -110,7 +115,7 @@ class InterceptorManager {
      * Executes the truncate method of all the component interceptors
      */
     public void executeTruncate() {
-        this.interceptors.each {String component, MetadataInterceptor interceptor ->
+        this.interceptors.each { String component, MetadataInterceptor interceptor ->
             log.debug "----------------------" + component + "----------------------"
             interceptor.executeInterceptors()
         }
@@ -124,9 +129,15 @@ class InterceptorManager {
      */
     void addInterceptor(String metadataComponent, String interceptorName, Closure interceptorAction) {
         MetadataInterceptor interceptor = this.interceptors.get(metadataComponent)
+        interceptorName = interceptorName ?: interceptorAction.hashCode().toString()
         if (interceptor) {
-            interceptorName = interceptorName ?: interceptorAction.hashCode().toString()
             interceptor.addInterceptor(interceptorName, interceptorAction)
+            log.debug "Adding interceptor $interceptorName on $metadataComponent"
+        } else {
+            interceptor = new BaseInterceptor()
+            interceptor.addInterceptor(interceptorName, interceptorAction)
+            this.interceptors.put(metadataComponent, interceptor)
+            log.debug "Adding a new interceptor $interceptorName on $metadataComponent"
         }
     }
 
