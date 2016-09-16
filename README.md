@@ -21,7 +21,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'org.fundacionjala.gradle.plugins.enforce:enforce-gradle-plugin:1.1.4'
+        classpath 'org.fundacionjala.gradle.plugins.enforce:enforce-gradle-plugin:1.1.5'
     }
 }
 
