@@ -107,6 +107,8 @@ This task shows credentials registered at credentials.dat file located at home a
 
 ### Parameters
 
+#### ***Location***
+
 When you execute show credentials task, it shows credentials from home directory by default also, you are able to choose the credentials.dat file from project to choose this you should use parameter called ***location*** it has two values: 'project' and 'home'
 
 	 -Plocation is credentials.dat file location
@@ -122,6 +124,20 @@ The command to show the credentials from home directory is:
 or
 
 	$ gradle showCredentials -Plocation=home
+
+#### ***Status***
+
+It is also possible to display the status of all credentials by the parameter ***status***
+
+	$ gradle showCredentials -Pstatus
+
+This parameter can filter credentials with two values: 'valid' and 'invalid'.
+
+	$ gradle showCredentials -Pstatus=valid
+
+or
+
+	$ gradle showCredentials -Pstatus=invalid
 
 
 ## Examples
@@ -222,21 +238,91 @@ Output:
                 Credentials
 *********************************************
 
-Id : john.enforce
+Id        : john.enforce
 User name : john@enforce.com
-Type : Production/Developer
+Type      : Production/Developer
 
-Id : mine
+Id        : mine
 User name : john@hotmail.com
-Type : Production/Developer
+Type      : Production/Developer
 
-Id : my
+Id        : my
 User name : john.cdlv@gmail.com
-Type : Production/Developer
+Type      : Production/Developer
 
-Id : recru
+Id        : recru
 User name : admin@enforce.com
-Type : dev (Specified)
+Type      : dev (Specified)
+
+*********************************************
+Those credentials are located at /home/john/credentials.dat
+
+BUILD SUCCESSFUL
+```
+
+### Show credentials by status
+
+Command:
+
+	$ gradle showCredentials -Pstatus
+
+Output:
+
+```bash
+:showCredentials
+*********************************************
+                Credentials
+*********************************************
+
+Id        : john.enforce
+User name : john@enforce.com
+Type      : Production/Developer
+Status    : Ok
+
+Id        : mine
+User name : john@hotmail.com
+Type      : Production/Developer
+Status    : Ok
+
+Id        : my
+User name : john.cdlv@gmail.com
+Type      : Production/Developer
+Status    : Outdated
+Message   : Invalid username, password, security token; or user locked out.
+
+Id        : recru
+User name : admin@enforce.com
+Type      : dev (Specified)
+Status    : Outdated
+Message   : Invalid username, password, security token; or user locked out.
+
+*********************************************
+Those credentials are located at /home/john/credentials.dat
+
+BUILD SUCCESSFUL
+```
+
+Or, using the command(*valid/invalid*):
+
+	$ gradle showCredentials -Pstatus=valid
+
+Output:
+
+```bash
+:showCredentials
+*********************************************
+                Credentials
+*********************************************
+
+Id        : john.enforce
+User name : john@enforce.com
+Type      : Production/Developer
+Status    : Ok
+
+Id        : mine
+User name : john@hotmail.com
+Type      : Production/Developer
+Status    : Ok
 
 *********************************************
 Those credentials are located at /home/john/credentials.dat
