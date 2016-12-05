@@ -22,10 +22,11 @@ import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.MetadataCompone
 import org.fundacionjala.gradle.plugins.enforce.wsc.rest.ToolingAPI
 import org.fundacionjala.gradle.plugins.enforce.wsc.soap.ApexAPI
 import org.gradle.api.logging.LogLevel
-import org.gradle.logging.ProgressLoggerFactory
+import org.gradle.internal.logging.progress.ProgressLoggerFactory
 
 import java.nio.file.Paths
 
+//import org.gradle.logging.ProgressLoggerFactory
 /**
  * This class generates the unit tests and coverage files
  * GP is a gradle properties

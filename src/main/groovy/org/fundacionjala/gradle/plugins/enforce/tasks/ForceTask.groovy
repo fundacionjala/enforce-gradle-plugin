@@ -15,7 +15,6 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.logging.StandardOutputListener
 import org.gradle.api.tasks.TaskAction
-import org.gradle.logging.internal.LoggingOutputInternal
 
 import java.nio.file.Paths
 

@@ -8,13 +8,8 @@ package org.fundacionjala.gradle.plugins.enforce.tasks.salesforce.deployment
 import org.custommonkey.xmlunit.Diff
 import org.custommonkey.xmlunit.XMLUnit
 import org.fundacionjala.gradle.plugins.enforce.EnforcePlugin
-import org.fundacionjala.gradle.plugins.enforce.metadata.DeployMetadata
 import org.fundacionjala.gradle.plugins.enforce.undeploy.PackageComponent
-import org.fundacionjala.gradle.plugins.enforce.undeploy.SmartFilesValidator
-import org.fundacionjala.gradle.plugins.enforce.utils.Constants
 import org.fundacionjala.gradle.plugins.enforce.utils.ManagementFile
-import org.fundacionjala.gradle.plugins.enforce.utils.Util
-import org.fundacionjala.gradle.plugins.enforce.utils.salesforce.OrgValidator
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.LoginType
 import org.gradle.api.Project
@@ -23,9 +18,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Shared
 import spock.lang.Specification
 
-import java.nio.file.Files
 import java.nio.file.Paths
-import java.nio.file.StandardCopyOption
 
 class UndeployTest extends Specification {
     @Shared
@@ -142,7 +135,7 @@ class UndeployTest extends Specification {
 
     def "Test should build destructive before to execute deploy taking in account all function called into runTask() function"() {
         given:
-            undeployInstance.createDeploymentDirectory(Paths.get(SRC_PATH, 'build').toString())
+            undeployInstance.createDeploymenvtDirectory(Paths.get(SRC_PATH, 'build').toString())
             undeployInstance.buildFolderPath = Paths.get(SRC_PATH, 'build').toString()
             undeployInstance.projectPath = Paths.get(SRC_PATH, 'src').toString()
             undeployInstance.projectPackagePath = Paths.get(SRC_PATH, 'src', 'package.xml').toString()

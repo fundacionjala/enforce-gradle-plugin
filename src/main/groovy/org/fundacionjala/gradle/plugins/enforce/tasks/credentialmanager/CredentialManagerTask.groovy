@@ -5,7 +5,6 @@
 
 package org.fundacionjala.gradle.plugins.enforce.tasks.credentialmanager
 
-import org.eclipse.jdt.internal.compiler.impl.Constant
 import org.fundacionjala.gradle.plugins.enforce.credentialmanagement.CredentialManagerInput
 import org.fundacionjala.gradle.plugins.enforce.tasks.ForceTask
 import org.fundacionjala.gradle.plugins.enforce.utils.Constants
