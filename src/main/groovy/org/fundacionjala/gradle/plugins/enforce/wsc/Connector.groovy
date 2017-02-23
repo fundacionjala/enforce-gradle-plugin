@@ -14,7 +14,7 @@ import com.sforce.ws.ConnectorConfig
  * This class  is able to login and logout to access to web services of salesforce with the user credential provided
  */
 class Connector {
-    public static final String API_VERSION = '32.0'
+    public static final String API_VERSION = '39.0'
     private static final String LOGIN_URL = 'https://%s/services/Soap/u/%s'
     private static final String DEFAULT_LOGIN_BASE_URL = '%s.salesforce.com'
     private static final String EXCEPTION_PROPERTY_NAME = 'exceptionMessage'

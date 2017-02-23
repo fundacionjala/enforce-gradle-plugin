@@ -13,8 +13,7 @@ import org.fundacionjala.gradle.plugins.enforce.wsc.Connector
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.ForceAPI
 
-import com.sforce.ws.transport.SoapConnection
-import com.sforce.soap.tooling.RunTestsResult
+import com.sforce.soap.tooling.ToolingConnection;
 import com.sforce.soap.tooling.sobject.SObject
 import com.sforce.soap.tooling.sobject.ApexTestQueueItem
 import com.sforce.soap.tooling.sobject.ApexTestResult
@@ -25,7 +24,7 @@ import com.sforce.soap.tooling.sobject.ApexTestResult
 class ToolingAPI extends ForceAPI {
 
     private final String COMMA_SEPARATOR = ", "
-    SoapConnection soapConnection
+    ToolingConnection toolingConnection
     private final String QUERY_QUEUE_ITEM = "Select Id, ApexClassId, Status " +
                                             "FROM ApexTestQueueItem WHERE ParentJobId = "
 
@@ -71,8 +70,8 @@ class ToolingAPI extends ForceAPI {
      */
     @Override
     void createConnection() {
-        soapConnection = com.sforce.soap.tooling.Connector.newConnection(connectorConfig)
-        soapConnection.setDebuggingHeader(getLogInfoCollectors(), LogType.Detail)
+        toolingConnection = com.sforce.soap.tooling.Connector.newConnection(connectorConfig)
+        toolingConnection.setDebuggingHeader(getLogInfoCollectors(), LogType.Detail)
     }
 
     /**
@@ -99,7 +98,7 @@ class ToolingAPI extends ForceAPI {
      */
     public void runTests(ArrayList<String> ids) {
         try {
-            soapConnection.runTestsAsynchronous(ids.join(COMMA_SEPARATOR))
+            toolingConnection.runTestsAsynchronous(ids.join(COMMA_SEPARATOR))
         } catch (ConnectionException e) {
             throw new Exception("Error to run the async unit tests", e)
         }
@@ -113,7 +112,7 @@ class ToolingAPI extends ForceAPI {
 
         RunTestsRequest request = new RunTestsRequest()
         request.classes = classesNames.toArray()
-        runTestResult = soapConnection.runTests(request)
+        runTestResult = toolingConnection.runTests(request)
     }
 
     /**
@@ -125,7 +124,7 @@ class ToolingAPI extends ForceAPI {
 
         String queryByJob = "${QUERY_QUEUE_ITEM}'${jobId}'"
         ApexTestItem apexTestItem = new ApexTestItem()
-        apexTestItem.complete= verifyStatusRunTest(soapConnection.query(queryByJob))
+        apexTestItem.complete= verifyStatusRunTest(toolingConnection.query(queryByJob))
         apexTestItem.apexTestResults= getApexTestResult(jobId)
 
         return apexTestItem
@@ -159,7 +158,7 @@ class ToolingAPI extends ForceAPI {
     private ArrayList<ApexRunTestResult> getApexTestResult(String jobId) {
 
         String queryByJob = "${QUERY_TEST_RESULT} '${jobId}'"
-        QueryResult queryResult = soapConnection.query(queryByJob)
+        QueryResult queryResult = toolingConnection.query(queryByJob)
         ArrayList<ApexRunTestResult> apexRunTestResultArrayList = new ArrayList<ApexRunTestResult>()
 
         for (SObject sObject : queryResult.getRecords()) {

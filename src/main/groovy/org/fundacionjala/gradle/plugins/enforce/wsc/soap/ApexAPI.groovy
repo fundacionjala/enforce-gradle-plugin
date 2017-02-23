@@ -11,8 +11,8 @@ import org.fundacionjala.gradle.plugins.enforce.wsc.Connector
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.ForceAPI
 
-import com.sforce.ws.transport.SoapConnection
-//import com.sforce.soap.tooling.RunTestsResult
+import com.sforce.soap.apex.SoapConnection
+import com.sforce.soap.apex.ExecuteAnonymousResult
 
 /**
  * This class wraps Apex Api and exposes the WSDL methods

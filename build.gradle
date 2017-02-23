@@ -64,6 +64,7 @@ dependencies {
     compile 'org.cometd.java:cometd-java-client:2.3.1'
     compile 'org.cometd.java:cometd-java-common:2.3.1'
 
+    //TODO: move this lib to jcenter
     compile files('libs/force-tooling-api-39.0.1.jar')
 
     compile 'org.eclipse.jetty:jetty-client:7.4.4.v20110707'
