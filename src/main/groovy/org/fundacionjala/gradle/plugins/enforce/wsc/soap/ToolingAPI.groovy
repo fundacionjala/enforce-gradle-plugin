@@ -13,8 +13,7 @@ import org.fundacionjala.gradle.plugins.enforce.wsc.Connector
 import org.fundacionjala.gradle.plugins.enforce.wsc.Credential
 import org.fundacionjala.gradle.plugins.enforce.wsc.ForceAPI
 
-//import com.sforce.ws.transport.SoapConnection
-import com.sforce.soap.tooling.ToolingConnection;
+import com.sforce.ws.transport.SoapConnection
 import com.sforce.soap.tooling.RunTestsResult
 import com.sforce.soap.tooling.sobject.SObject
 import com.sforce.soap.tooling.sobject.ApexTestQueueItem
@@ -26,8 +25,7 @@ import com.sforce.soap.tooling.sobject.ApexTestResult
 class ToolingAPI extends ForceAPI {
 
     private final String COMMA_SEPARATOR = ", "
-    //SoapConnection soapConnection
-    ToolingConnection soapConnection
+    SoapConnection soapConnection
     private final String QUERY_QUEUE_ITEM = "Select Id, ApexClassId, Status " +
                                             "FROM ApexTestQueueItem WHERE ParentJobId = "
 
