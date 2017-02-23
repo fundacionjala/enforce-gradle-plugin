@@ -53,7 +53,7 @@ class ConnectorTest extends Specification {
         when:
         String resultUrl = connector1.loginUrl
         then:
-        resultUrl == "https://cs3.salesforce.com/services/Soap/u/39.0"
+        resultUrl == "https://cs3.salesforce.com/services/Soap/u/32.0"
 
     }
 
