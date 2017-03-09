@@ -83,13 +83,13 @@ class InspectorResults {
      */
     public RetrieveResult waitForRetrieveResult(String asyncResultId, int maxPolls, int waitTimeMilliSecs) throws Exception {
         int poll = Constants.ZERO
-        RetrieveResult result = metadataConnection.checkRetrieveStatus(asyncResultId)
+        RetrieveResult result = metadataConnection.checkRetrieveStatus(asyncResultId, true)
         while (!result.isDone()) {
             Thread.sleep(waitTimeMilliSecs)
             if (poll++ > maxPolls) {
                 throw new Exception(TIMEOUT_EXCEPTION)
             }
-            result = metadataConnection.checkRetrieveStatus(asyncResultId)
+            result = metadataConnection.checkRetrieveStatus(asyncResultId, true)
         }
         return result
     }
